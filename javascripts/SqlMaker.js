@@ -1,0 +1,65 @@
+function clearParam() {
+	document.getElementById("dataSpace").value='';
+	document.getElementById("recordName").value='';
+	document.getElementById("tableName").value='';
+}
+
+function copyIntoClip() {
+	document.getElementById("resultSpace").focus();
+	document.getElementById("resultSpace").select();
+}
+
+function productSQL() {
+	var table = document.getElementById("tableName").value;
+	var srcArea = document.getElementById("dataSpace");
+	var srcText = srcArea.value;
+	
+	//var result = srcText.match(/[\r\n]/g);
+	//var result = srcText.match(/[\r\n]\s*/g);
+	//var result = srcText.match(/[\r\n](?!\w)/g);
+	//alert(result.length);
+	
+	
+	// 去除单换行符或换行空格组合
+	srcText = srcText.replace(/[\r\n]\s*(?!\w)/g, "");
+	
+	// 替换制表符
+	srcText = srcText.replace(/[\t]/g, "','");
+	
+	// 字段
+	var record = getRecordArray();
+	if(record == null) {
+		// SQL补足
+		var pad = "');\n" + "insert into " + table + " values ('";
+		srcText = srcText.replace(/[\r\n]/g, pad);
+		
+		// 前后补足
+		srcText = "insert into " + table + " values ('" + srcText + "');";
+	} else {
+		// SQL补足
+		var pad = "');\n" + "insert into " + table + "(" + record + ") values ('";
+		srcText = srcText.replace(/[\r\n]/g, pad);
+		
+		// 前后补足
+		srcText = "insert into " + table + "(" + record + ") values ('" + srcText + "');";
+	}
+	
+	
+	document.getElementById("resultSpace").value = srcText;
+	
+}
+
+function getRecordArray() {
+	var record = document.getElementById("recordName").value;
+	if(record.match(/^\s$/) != null || record.length == 0) {
+		return null;
+	}
+	if(record.match(/,/) != null) {
+		var tmp = record.replace(/\s/g, "");
+		// alert(tmp);
+		return tmp;
+	}
+	var tmp = record.replace(/\s+/g, ",");
+	// alert(tmp);
+	return tmp;
+}
