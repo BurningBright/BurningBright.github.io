@@ -20,7 +20,7 @@ function Vector(x, y, z) {
  * point's collection
  */
 function PointCollection() {
-	this.mousePos = new Vector(0, 0);
+	this.mousePos = new Vector(-100, -100);
 	this.pointCollectionX = 0;
 	this.pointCollectionY = 0;
 	this.points = [];
@@ -78,7 +78,7 @@ function PointCollection() {
 			if (window.reset) {
 				this.pointCollectionX = 0;
 				this.pointCollectionY = 0;
-				this.mousePos = new Vector(0, 0);
+				this.mousePos = new Vector(-100, -100);
 			}
 
 			point.draw(bubbleShape, this.pointCollectionX,
@@ -218,7 +218,12 @@ function phraseToHex(phrase) {
  * all way's keep listen canvas right
  */
 function initEventListeners() {
-	$(window).bind('resize', updateCanvasDimensions).bind('mousemove', onMove);
+	if(IsPC()) {
+		$(window).bind('resize', updateCanvasDimensions).bind('mousemove', onMove);
+	} else {
+		$(document).on('tap', onMove).on('vmousemove', onMove);
+	}
+	
 
 	canvas.ontouchmove = function(e) {
 		e.preventDefault();
@@ -255,6 +260,8 @@ function onMove(e) {
 	if (pointCollection) {
 		pointCollection.mousePos.set(e.pageX - canvas.offset().left, e.pageY
 				- canvas.offset().top);
+//				console.log(e.pageX +"---"+ canvas.offset().left +"|"+ e.pageY +"---"+ canvas.offset().top);
+//				console.log((e.pageX - canvas.offset().left) + "|" + (e.pageY - canvas.offset().top));
 	}
 }
 

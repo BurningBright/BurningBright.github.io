@@ -10,5 +10,6 @@ var purple = [280, 50, 60];
 var letterColors = [red, orange, green, blue, purple];
 
 drawName(myName, letterColors);
+// square
 bubbleShape = 'circle';
 bounceBubbles();
