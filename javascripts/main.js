@@ -12,4 +12,8 @@ var letterColors = [red, orange, green, blue, purple];
 drawName(myName, letterColors);
 // square
 bubbleShape = 'circle';
-bounceBubbles();
+if(IsPC()) {
+	bounceBubbles();
+} else {
+	draw();
+}

@@ -218,11 +218,8 @@ function phraseToHex(phrase) {
  * all way's keep listen canvas right
  */
 function initEventListeners() {
-	if(IsPC()) {
-		$(window).bind('resize', updateCanvasDimensions).bind('mousemove', onMove);
-	} else {
-		$(document).on('tap', onMove).on('vmousemove', onMove);
-	}
+	$(window).bind('resize', updateCanvasDimensions).bind('mousemove', onMove);
+	//$(document).on('tap', onMove).on('vmousemove', onMove);
 	
 
 	canvas.ontouchmove = function(e) {
