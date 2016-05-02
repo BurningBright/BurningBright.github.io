@@ -299,7 +299,7 @@ function bounceBubbles() {
  */
 function draw(reset) {
 	var tmpCanvas = canvas.get(0);
-
+	
 	if (tmpCanvas.getContext === null) {
 		return;
 	}

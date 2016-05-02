@@ -4,7 +4,7 @@ function clearParam() {
 	document.getElementById("tableName").value='';
 }
 
-function copyIntoClip() {
+function selectSQL() {
 	document.getElementById("resultSpace").focus();
 	document.getElementById("resultSpace").select();
 }
@@ -47,6 +47,16 @@ function productSQL() {
 	
 	document.getElementById("resultSpace").value = srcText;
 	
+	$("#opt_5").zclip({
+		path:"images/ZeroClipboard.swf",
+		copy:srcText,
+		beforeCopy:function(b){
+			console.log(b);
+		},
+		afterCopy:function(){
+			console.log("done");
+		}
+	});
 }
 
 function getRecordArray() {
