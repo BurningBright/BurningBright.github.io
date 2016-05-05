@@ -1,15 +1,3 @@
-function IsPC() {
-    var userAgentInfo = navigator.userAgent;
-    var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
-    var flag = true;
-    for (var v = 0; v < Agents.length; v++) {
-        if (userAgentInfo.indexOf(Agents[v]) > 0) {
-            flag = false;
-            break;
-        }
-    }
-    return flag;
-}
 
 /**
  * js describe the real world's object
@@ -37,7 +25,7 @@ function PointCollection() {
 	this.pointCollectionX = 0;
 	this.pointCollectionY = 0;
 	this.points = [];
-	
+
 	//refresh every point's position
 	this.update = function() {
 		for (var i = 0; i < this.points.length; i++) {
@@ -49,7 +37,7 @@ function PointCollection() {
 			var d = Math.sqrt(dd);
 
 			//make sure every point target position
-			point.targetPos.x = d < 150 ? point.curPos.x - dx	
+			point.targetPos.x = d < 150 ? point.curPos.x - dx
 					: point.originalPos.x;
 			point.targetPos.y = d < 150 ? point.curPos.y - dy
 					: point.originalPos.y;
@@ -57,7 +45,7 @@ function PointCollection() {
 			point.update();
 		}
 	};
-	
+
 	//make point shake
 	this.shake = function() {
 		//var randomNum = Math.floor(Math.random() * 5) - 2;
@@ -68,7 +56,7 @@ function PointCollection() {
 			var dy = this.mousePos.y - point.curPos.y;
 			var dd = (dx * dx) + (dy * dy);
 			var d = Math.sqrt(dd);
-			
+
 			//if the direct distance less than 50 make point shake
 			if (d < 50) {
 				this.pointCollectionX = Math.floor(Math.random() * 5) - 2;
@@ -79,7 +67,7 @@ function PointCollection() {
 					this.pointCollectionY);
 		}
 	};
-	
+
 	//draw all point
 	this.draw = function(bubbleShape, reset) {
 		for (var i = 0; i < this.points.length; i++) {
@@ -112,23 +100,23 @@ function PointCollection() {
  * @param color 	point's color
  */
 function Point(x, y, z, size, color) {
-	
+
 	/**
 	 * object project's properties
 	 */
 	this.curPos = new Vector(x, y, z);						//current position
 	this.color = color;
-	
-	this.friction = document.Friction;						//ƒ¶≤¡
-	this.rotationForce = document.rotationForce;			//–˝◊™ ¡¶∂»
-	this.springStrength = 0.1;								//∑¥µØ ¡¶∂»
-	
+
+	this.friction = document.Friction;						//ƒ¶ÔøΩÔøΩ
+	this.rotationForce = document.rotationForce;			//ÔøΩÔøΩ◊™ ÔøΩÔøΩÔøΩÔøΩ
+	this.springStrength = 0.1;								//ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ
+
 	this.originalPos = new Vector(x, y, z);					//original position
 	this.radius = size;										//target's radius size
 	this.size = size;										//target's size
 	this.targetPos = new Vector(x, y, z);					//target's position
 	this.velocity = new Vector(0.0, 0.0, 0.0);				//speed
-	
+
 	//refresh this point's condition
 	this.update = function() {
 		var dx = this.targetPos.x - this.curPos.x;							//dynamic x coordinate
@@ -161,23 +149,23 @@ function Point(x, y, z, size, color) {
 		if (this.radius < 1)
 			this.radius = 1;
 	};
-	
+
 	//used to draw this target's shape
 	this.draw = function(bubbleShape, dx, dy) {
-		
+
 		/**
 		 * add some light effect
 		 */
-		
+
 		var grd=ctx.createLinearGradient(
 				this.curPos.x - this.radius,
-				this.curPos.y - this.radius, 
-				this.curPos.x - this.radius*1/4, 
+				this.curPos.y - this.radius,
+				this.curPos.x - this.radius*1/4,
 				this.curPos.y - this.radius*1/4);
-		
+
 		grd.addColorStop(0,"#FFFFFF");
 		grd.addColorStop(1,color);
-		/*		
+		/*
 		ctx.shadowBlur = 10;
 		ctx.shadowOffsetX = 10;
 		ctx.shadowOffsetY = 10;
@@ -185,15 +173,15 @@ function Point(x, y, z, size, color) {
 		*/
 //		ctx.fillStyle = this.color;
 		ctx.fillStyle = grd;
-		
+
 		//make sure bubble's shape and draw method
 		if (bubbleShape == "square") {
 			ctx.beginPath();											//begin a path or rest current path
-			ctx.fillRect(this.curPos.x + dx, this.curPos.y + dy,		//center coordinate 
+			ctx.fillRect(this.curPos.x + dx, this.curPos.y + dy,		//center coordinate
 					this.radius * 1.5, this.radius * 1.5);				//current position + dynamic x/y distance
 		} else {
 			ctx.beginPath();
-			ctx.arc(this.curPos.x + dx, this.curPos.y + dy, 
+			ctx.arc(this.curPos.x + dx, this.curPos.y + dy,
 					this.radius, 0,Math.PI * 2, true);
 			ctx.fill();
 		}
@@ -207,9 +195,9 @@ function Point(x, y, z, size, color) {
  * @returns {String}	be formated string
  */
 function makeColor(hslList, fade) {
-	var hue = hslList[0] /*- 17.0 * fade / 1000.0*/;		//hue			…´µ˜
-	var sat = hslList[1] /* + 81.0 * fade / 1000.0 */;		//Saturation	±•∫Õ∂»
-	var lgt = hslList[2] /* + 58.0 * fade / 1000.0 */;		//light			¡¡∂»
+	var hue = hslList[0] /*- 17.0 * fade / 1000.0*/;		//hue			…´ÔøΩÔøΩ
+	var sat = hslList[1] /* + 81.0 * fade / 1000.0 */;		//Saturation	ÔøΩÔøΩÔøΩÕ∂ÔøΩ
+	var lgt = hslList[2] /* + 58.0 * fade / 1000.0 */;		//light			ÔøΩÔøΩÔøΩÔøΩ
 	return "hsl(" + hue + "," + sat + "%," + lgt + "%)";
 }
 
@@ -233,7 +221,7 @@ function phraseToHex(phrase) {
 function initEventListeners() {
 	$(window).bind('resize', updateCanvasDimensions).bind('mousemove', onMove);
 	//$(document).on('tap', onMove).on('vmousemove', onMove);
-	
+
 
 	canvas.ontouchmove = function(e) {
 		e.preventDefault();
@@ -312,7 +300,7 @@ function bounceBubbles() {
  */
 function draw(reset) {
 	var tmpCanvas = canvas.get(0);
-	
+
 	if (tmpCanvas.getContext === null) {
 		return;
 	}
@@ -349,7 +337,7 @@ function shake() {
 }
 
 /**
- * update all point condition 
+ * update all point condition
  */
 function update() {
 	if (pointCollection)
@@ -365,7 +353,7 @@ function drawName(name, letterColors) {
 	updateCanvasDimensions();
 	var g = [];
 	var offset = 0;
-	
+
 	/**
 	 * make letter bubble
 	 * @param cc_hex 		character's hexadecimal value
@@ -373,7 +361,7 @@ function drawName(name, letterColors) {
 	 * @param letterCols	character's color
 	 */
 	function addLetter(cc_hex, ix, letterCols) {
-		
+
 		//make sure letter's color
 		if (typeof letterCols !== 'undefined') {
 			if (Object.prototype.toString.call(letterCols) === '[object Array]'
@@ -388,26 +376,26 @@ function drawName(name, letterColors) {
 			// if undefined set black
 			letterColors = [ [ 0, 0, 27 ] ];
 		}
-		
+
 		//make sure letter's bubble
 		if (document.alphabet.hasOwnProperty(cc_hex)) {
 			var chr_data = document.alphabet[cc_hex].P;				//get corresponding character data
 			var bc = letterColors[ix % letterColors.length];		//blank is no color circle loop
-			
+
 			//add letter's point into a array
 			for (var i = 0; i < chr_data.length; ++i) {
 				point = chr_data[i];
-				
-				
+
+
 						//x, y, z, size, color
 				g.push(new Point(point[0] + offset, point[1], 0.0, point[2],
 						makeColor(bc, point[3])));
 			}
-			
+
 			//offset show the letter's index contain the blank space
 			offset += document.alphabet[cc_hex].W;
 		}
-		
+
 	}
 
 	/**
@@ -437,7 +425,7 @@ function drawName(name, letterColors) {
 				+ g[j].originalPos.x;
 		g[j].originalPos.y = (canvasHeight / 2 - 105) + g[j].originalPos.y;
 	}
-	
+
 	/**
 	 * create new point collection
 	 * and set it's property
@@ -480,3 +468,38 @@ var blue = [ 196, 77, 55 ];
 var purple = [ 280, 50, 60 ];
 
 setTimeout(updateCanvasDimensions, 30);
+
+
+
+/** Âà§Êñ≠ÁßªÂä®Á´Ø */
+function IsPC() {
+    var userAgentInfo = navigator.userAgent;
+    var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+    var flag = true;
+    for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+            flag = false;
+            break;
+        }
+    }
+    return flag;
+}
+
+/*Bubble*/
+var myName = "lcg51271";
+var red = [0, 100, 63];
+var orange = [40, 100, 60];
+var green = [75, 100, 40];
+var blue = [196, 77, 55];
+var purple = [280, 50, 60];
+var letterColors = [red, orange, green, blue, purple];
+
+drawName(myName, letterColors);
+// square
+bubbleShape = 'circle';
+// ÊâãÊú∫‰∏çÂºπ
+if(IsPC()) {
+  bounceBubbles();
+} else {
+  draw();
+}
