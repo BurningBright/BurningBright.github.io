@@ -15,19 +15,19 @@ var drawGear = function(context,options){
 		for (var opt in default_options)
 			if (default_options.hasOwnProperty(opt) && !options.hasOwnProperty(opt))
 				options[opt] = default_options[opt];
-				
+
 		  var enddeg=0,deg=0;
 		  var angle=180/options.numberofTeath;
 		  radius = options.numberofTeath*options.outerRadius*2/Math.PI;
-		  
+
 		  var rad2deg = 180/Math.PI;
 		  //circle
 		  context.beginPath();
 		  context.arc(options.centerX, options.centerY, options.innerRadius, 0, 2 * Math.PI, false);
 		  context.strokeStyle = options.color;
 		  context.stroke();
-		  
-		  context.beginPath();	  
+
+		  context.beginPath();
 		  for(var i=0;i<=options.numberofTeath;++i)
 		  {
 			sdeg = i*angle*2+options.rotateAngle;
@@ -45,7 +45,7 @@ var drawGear = function(context,options){
 		  context.closePath();
 	  }
    }
-    	
+
   var gearCanvas = document.getElementById('gearCanvas');
   var context = gearCanvas.getContext('2d');
   var centerCanX = gearCanvas.width / 4;
@@ -78,12 +78,12 @@ var drawGear = function(context,options){
 			};
   //var angleChange = 10;
   var angleChange = 1;
-  drawGear(context,option1);    
+  drawGear(context,option1);
   drawGear(context,option2);
   setInterval(function(){
      context.clearRect ( 0 , 0 , gearCanvas.width , gearCanvas.height );
      option1.rotateAngle = (option1.rotateAngle - angleChange + 360 )%360;
      option2.rotateAngle = (option2.rotateAngle + angleChange)%360 ;
-     drawGear(context,option1);    
+     drawGear(context,option1);
      drawGear(context,option2);
   }  , speed);
