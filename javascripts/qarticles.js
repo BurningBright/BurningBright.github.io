@@ -477,4 +477,15 @@
 
     global.Qarticles = Qarticles
 
+    const options = {
+        speed: 50,
+        //dotColorFuc: covColorFuc,
+        //lineColorFuc: covColorFuc,
+        count: 7,
+        linkCount: 5,
+        screenWidth: 400,
+        screenHeight: 200
+    };
+    let qarticles = new Qarticles(document.getElementById('boboCanvas'), options);
+
 })(window);
