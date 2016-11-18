@@ -24,7 +24,7 @@ function productSQL() {
 	srcText = srcText.replace(/[\r\n]\s*(?!\w)/g, "");
 	
 	// Ìæ»»ÖÆ±í·û
-	srcText = srcText.replace(/[\t]/g, "','");
+	srcText = srcText.replace(/[\t,]/g, "','");
 	
 	// ×Ö¶Î
 	var record = getRecordArray();
