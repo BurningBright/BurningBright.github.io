@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Responsive SVG Sprite Animation that Adjusts Based on Viewport</title>
+  <link href='http://fonts.googleapis.com/css?family=Dosis:300,400,600,700' rel='stylesheet' type='text/css'>
+<meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="css/normalize.css">
+
+
+      <style>
+      /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+      /* -----------------------------------
+SLOWLY SIZE THE WINDOW HORIZONTALLY TO SEE THE ANIMATION CHANGE
+-------------------------------------*/
+html {
+  background: #989494;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Dosis', sans-serif;
+  font-size: 18px;
+  color: #576061;
+  line-height: 1.6em;
+}
+
+a, a:visited {
+  color: #148184;
+  text-decoration: none;
+  transition: 2s color ease;
+}
+
+a:hover, a:focus {
+  color: #32C8CC;
+  text-decoration: none;
+  transition: 2s color ease;
+}
+
+#paper {
+  width: 600px;
+  max-width: 600px;
+  background: #fff;
+  margin: 0 auto;
+  padding: 50px 100px;
+  height: 100vw;
+  border: 1px solid #576061;
+}
+
+.instruction {
+  background: #A05740;
+  padding: 5px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 17px;
+  letter-spacing: 0.04em;
+  color: #eee;
+  position: fixed;
+  z-index: 2000;
+  bottom: 0;
+  opacity: 0;
+  width: 100%;
+  animation: fade 2s ease both;
+}
+
+p.first {
+  font-size: 24px;
+  line-height: 1.7em;
+  padding-top: 15px;
+}
+
+h2 {
+  color: #3f4546;
+  margin-top: 50px;
+  font-weight: 600;
+}
+
+p.first:before, h2:before {
+  content: "";
+  display: block;
+  width: 85px;
+  height: 8px;
+  background: #3f4546;
+  margin: 85px 0 20px 57%;
+}
+
+h2:before {
+  margin: 50px 0 30px 0;
+}
+
+.initial {
+  width: 50%;
+  float: left;
+  margin: 0 7% 0 0;
+}
+
+.svg .fallback {
+  display: none;
+}
+
+.no-svg .fallback {
+  width: 50%;
+  float: left;
+  margin: 0 7% 0 0;
+}
+.no-svg .fallback img {
+  width: 100%;
+}
+
+[class^="star"] {
+  animation: blink 2s ease-in-out infinite both;
+}
+
+[class^="dot"] {
+  animation: blink 5s -3s ease-in-out infinite both;
+}
+
+.a {
+  animation: hover 5s ease-in-out infinite both;
+}
+
+[class^="mountain"], [class^="grass"] {
+  animation: slant 9s ease-in-out infinite both;
+  transform: skew(2deg);
+}
+
+.car {
+  animation: carmove 22s ease-in-out infinite both;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes hover {
+  50% {
+    transform: translateY(-15px);
+  }
+}
+@keyframes slant {
+  50% {
+    transform: skew(-2deg);
+  }
+}
+@keyframes fade {
+  100% {
+    opacity: 0.95;
+  }
+}
+@keyframes carmove {
+  35% {
+    transform: translateX(-300px);
+  }
+  55% {
+    transform: translateX(-300px);
+  }
+  85% {
+    transform: translateX(0px);
+  }
+}
+@media screen and (max-width: 500px) {
+  #paper {
+    padding: 50px 60px;
+  }
+
+  p.first:before {
+    margin-top: 0 !important;
+  }
+
+  .kells2, .kells1 {
+    display: none;
+  }
+
+  .a {
+    animation: hover 2s ease-in-out infinite both;
+  }
+
+  .kells3 {
+    display: block !important;
+  }
+
+  .mountain, [class^="mountain"], .grass, [class^="grass"] {
+    transform: skew(1.5deg) !important;
+  }
+}
+@media screen and (max-width: 700px) {
+  .kells3 {
+    display: block;
+  }
+
+  .background {
+    fill: #93A600;
+    opacity: 0.57;
+  }
+
+  .bridge {
+    transform: translateX(15px);
+  }
+
+  .mid-hide {
+    display: none;
+  }
+
+  html {
+    font-size: 14px;
+  }
+
+  p.first {
+    padding-top: 0px !important;
+    font-size: 19px;
+  }
+}
+@media screen and (min-width: 701px) {
+  .kells3, .kells2 {
+    display: none;
+  }
+}
+@media screen and (max-width: 800px) {
+  #paper {
+    width: 70vw;
+    max-width: 70vw;
+    height: 100%;
+  }
+}
+
+    </style>
+
+  <script src="js/prefixfree.min.js"></script>
+
+</head>
+
+<body>
+  <div class="instruction">
+  < slowly size the window horizontally to see the SVG animation change >
+</div>
+
+<div id="paper">
+    <svg id="svg" class="initial" xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 490 474" preserveAspectRatio="xMinYMin meet" enable-background="new 0 0 490 474" xml:space="preserve">
+    <g class="kells3">
+      <rect class="background_1_" y="474.97" opacity="0.67" fill="#2EAEB7" width="490" height="477.61"/>
+      <polygon class="grass_3_" fill="#A1B500" points="37.76 809.61 458.79 809.13 297.61 907.67 "/>
+      <g class="mountain_1_" opacity="0.38">
+        <polygon fill="#9B8579" points="257.88 809.13 365.4 809.13 365.4 607.36 "/>
+        <polygon fill="#7F5E35" points="365.4 607.36 365.4 809.13 459.24 809.13 "/>
+      </g>
+      <g class="mountain" opacity="0.62">
+        <polygon fill="#7F5E35" points="147.58 711.56 147.58 810.76 227.99 810.76 "/>
+        <polygon fill="#9B8579" points="32.36 811.24 147.58 810.76 147.58 711.56 "/>
+      </g>
+      <g class="tower" opacity="0.84">
+        <polygon fill="#9B8579" points="126.14 799.64 122.76 796.27 108.13 796.27 105.81 796.27 91.17 796.27 87.79 799.64 87.79 804.84 105.81 806.28 105.81 806.46 106.97 806.37 108.13 806.46 108.13 806.28 126.14 804.84 "/>
+        <path fill="#588BAD" d="M100.67 594.87l-1.91 145.53c0 0-10.66 4.18-10.96 20.14h38.35c0 0-0.77-14.23-10.96-20.14L113 594.87H100.67z"/>
+        <rect x="92" y="760.33" fill="#58595B" width="29.94" height="35.94"/>
+        <polygon fill="#58595B" points="101.92 574.69 112.01 574.69 111.14 585.5 113 594.87 100.67 594.87 102.83 585.5 "/>
+        <rect x="83.7" y="804.84" fill="#58595B" width="46.55" height="4.88"/>
+        <path fill="#588BAD" d="M108.04 548.44c-0.25-4.66-0.39-7.23-0.47-8.54v-7.35h-1.2v7.35c-0.08 1.31-0.22 3.88-0.47 8.54 -0.83 15.58-6.75 25.17-6.75 25.17v1.08h7.52 0.6 7.52v-1.08C114.79 573.61 108.88 564.02 108.04 548.44z"/>
+      </g>
+      <g class="star" opacity="0.79">
+        <polygon fill="#A6F4F0" points="398.82 576.62 421.65 599.45 421.65 553.79 "/>
+        <polygon fill="#1C6D7A" points="421.65 553.79 421.65 599.45 444.48 576.62 "/>
+      </g>
+      <g class="a" opacity="0.87">
+        <path fill="#5A486D" d="M225.4 635.9c-11.63 0-27.41-2.49-27.41-19.93 0-17.02 14.12-19.93 27.41-19.93h54.81c20.76 0 35.71 2.07 51.49 17.85 15.36 15.36 17.44 27.4 17.86 47.33l4.15 135.37c0.42 11.62-5.4 23.25-18.69 23.25 -10.38 0-20.76-8.72-20.35-19.93l-27.41 14.12c-11.21 5.81-11.63 5.81-24.5 5.81h-38.2c-17.85 0-30.73-2.08-45.26-14.11 -16.61-13.7-20.76-28.24-20.76-49v-17.44c0-19.1 4.57-31.15 19.52-44.44 13.7-12.04 29.07-14.94 46.51-14.94h85.54v-9.14c0-29.89-6.64-34.88-35.29-34.88H225.4zM224.98 719.77c-10.79 0-26.57 2.91-26.57 17.44v26.58c0 13.29 16.2 16.2 25.75 16.2h44.02l44.01-22.84v-8.72c0-22.01-6.23-28.65-28.23-28.65H224.98z"/>
+      </g>
+    </g>
+    <g class="kells1">
+      <rect class="background" y="-0.07" fill="#2EAEB7" width="490" height="475"/>
+      <circle class="dot_4_ mid-hide" opacity="0.4" fill="#1C75BC" cx="62.05" cy="354.55" r="11.91"/>
+      <polygon class="grass_1_ mid-hide" fill="#A1B500" points="16.63 319.93 229.1 319.45 147.76 417.45 "/>
+      <g class="mountain_4_" opacity="0.38">
+        <polygon fill="#9B8579" points="181.26 319.45 261.26 319.45 261.26 118.79 "/>
+        <polygon fill="#7F5E35" points="261.26 118.79 261.26 319.45 331.1 319.45 "/>
+      </g>
+      <g class="mountain_3_ mid-hide">
+        <polygon fill="#7F5E35" points="141.76 220.79 141.76 319.45 229.1 319.45 "/>
+        <polygon fill="#9B8579" points="16.63 319.93 141.76 319.45 141.76 220.79 "/>
+      </g>
+      <g class="star_5_ mid-hide">
+        <polygon fill="#BEDCED" points="30.26 132.04 43.51 145.29 43.51 118.79 "/>
+        <polygon fill="#76BBE3" points="43.51 118.79 43.51 145.29 56.76 132.04 "/>
+      </g>
+      <g class="star_4_">
+        <polygon fill="#BEDCED" points="147.36 71.98 164.72 89.34 164.72 54.62 "/>
+        <polygon fill="#76BBE3" points="164.72 54.62 164.72 89.34 182.09 71.98 "/>
+      </g>
+      <g class="star_3_" opacity="0.55">
+        <polygon fill="#BEDCED" points="422.71 185.59 440.07 202.95 440.07 168.23 "/>
+        <polygon fill="#76BBE3" points="440.07 168.23 440.07 202.95 457.44 185.59 "/>
+      </g>
+      <g class="star_2_">
+        <polygon fill="#BEDCED" points="310.34 47.08 320.08 56.82 320.08 37.34 "/>
+        <polygon fill="#76BBE3" points="320.08 37.34 320.08 56.82 329.81 47.08 "/>
+      </g>
+      <g class="star_1_ mid-hide" opacity="0.66">
+        <polygon fill="#BEDCED" points="94.41 429.71 104.15 439.45 104.15 419.97 "/>
+        <polygon fill="#76BBE3" points="104.15 419.97 104.15 439.45 113.89 429.71 "/>
+      </g>
+      <g class="bridge" opacity="0.7">
+        <rect x="178.63" y="258" fill="#686B7A" width="51.85" height="1.78"/>
+        <rect x="128.29" y="258" fill="#686B7A" width="51.85" height="1.78"/>
+        <rect class="mid-hide" x="276.12" y="287.15" fill="#999AA1" width="1.78" height="17.48"/>
+        <rect class="mid-hide" x="255.87" y="273.64" fill="#999AA1" width="1.78" height="30.56"/>
+        <rect class="mid-hide" x="266" y="281.05" fill="#999AA1" width="1.78" height="23.29"/>
+        <rect class="mid-hide" x="286.25" y="292.7" fill="#999AA1" width="1.78" height="11.79"/>
+        <path fill="#2B79A0" d="M317.27 301.21v1.75l-0.02 0.11c-0.01 0-0.01 0-0.02 0 -0.03 0-0.05-0.01-0.08-0.02 -4.56-0.94-8.9-2.06-13.01-3.31 -5.81-1.77-11.19-3.79-16.11-5.95 -0.6-0.27-1.19-0.53-1.78-0.8 -2.95-1.34-5.74-2.73-8.35-4.13 -0.6-0.32-1.19-0.65-1.78-0.97 -3.02-1.69-5.81-3.38-8.35-5.04 -0.61-0.4-1.2-0.8-1.78-1.19 -2.04-1.37-3.9-2.72-5.59-4 -0.96-0.73-1.88-1.45-2.76-2.15 -0.61-0.49-1.21-0.98-1.78-1.46 -3.62-3.01-6.51-5.76-8.69-8.01 -0.39-0.41-0.77-0.8-1.12-1.17 0-0.01-0.01-0.01-0.01-0.02 -0.61-0.65-1.15-1.25-1.62-1.78 -1.24-1.4-2-2.36-2.3-2.76 -0.08-0.1-0.13-0.17-0.15-0.19l1.47-1.09c0.02 0.03 0.89 1.19 2.62 3.11 2.83 3.15 7.97 8.37 15.46 14.06C272.61 284.62 291.29 295.77 317.27 301.21zM317.14 303.09l0.14-1.83c-53.2-3.98-67.07-29.42-72.99-40.28 -0.28-0.51-0.54-1-0.79-1.45l-1.6 0.89c0.25 0.45 0.51 0.93 0.79 1.44C248.74 272.99 262.94 299.04 317.14 303.09z"/>
+        <rect x="178.63" y="303.07" fill="#2B79A0" width="138.64" height="1.78"/>
+        <rect x="178.63" y="252.22" fill="#2B79A0" width="51.85" height="5.72"/>
+        <rect x="227.04" y="241.51" fill="#E5E3DF" width="19" height="61.47"/>
+        <polygon fill="#999AA1" points="246.01 241.51 243.05 230.7 240.1 241.51 "/>
+        <polygon fill="#999AA1" points="232.92 241.51 229.97 230.7 227.01 241.51 "/>
+        <polygon fill="#999AA1" points="241.42 241.51 236.54 223.66 231.66 241.51 "/>
+        <path class="mid-hide" fill="#686B7A" d="M236.54 269.03c1.03 0 1.88 1.08 1.88 2.41 0 0.02 0 0.03 0 0.05 0 0 0 4.13 0 4.13h-3.75v-4.13c0-0.02 0-0.03 0-0.05C234.66 270.11 235.5 269.03 236.54 269.03zM236.54 288.73c1.03 0 1.88 1.08 1.88 2.41 0 0.02 0 0.03 0 0.05 0 0 0 4.13 0 4.13h-3.75v-4.13c0-0.02 0-0.03 0-0.05C234.66 289.81 235.5 288.73 236.54 288.73z"/>
+        <rect class="mid-hide" x="234.66" y="254.18" fill="#686B7A" width="3.75" height="4.13"/>
+        <rect x="231.83" y="241.51" fill="#999AA1" width="9.42" height="7.94"/>
+        <path fill="#E0DA6C" d="M234.72 242.63c0-1.33 0.84-2.4 1.88-2.4 1.04 0 1.88 1.08 1.88 2.4 0 0.02 0 0.03 0 0.05 0.01 0 0.01 4.13 0.01 4.13h-3.75v-4.13C234.72 242.66 234.72 242.64 234.72 242.63z"/>
+        <rect x="226.55" y="281" fill="#999AA1" width="19.97" height="1.78"/>
+        <rect x="226.55" y="263.07" fill="#999AA1" width="19.97" height="1.78"/>
+        <rect x="226.55" y="249.07" fill="#999AA1" width="19.97" height="1.78"/>
+        <rect class="mid-hide" x="80.87" y="287.15" fill="#999AA1" width="1.78" height="17.48"/>
+        <rect class="mid-hide" x="101.12" y="273.64" fill="#999AA1" width="1.78" height="30.56"/>
+        <rect class="mid-hide" x="91" y="281.05" fill="#999AA1" width="1.78" height="23.29"/>
+        <rect class="mid-hide" x="70.75" y="292.7" fill="#999AA1" width="1.78" height="11.79"/>
+        <rect class="mid-hide" x="60.62" y="296.38" fill="#999AA1" width="1.78" height="7.68"/>
+        <path fill="#2B79A0" d="M116.82 260.12c-0.02 0.02-0.07 0.09-0.15 0.19 -0.31 0.4-1.07 1.36-2.3 2.76 -0.47 0.53-1.01 1.13-1.62 1.78 0 0-0.01 0.01-0.01 0.02 -0.35 0.37-0.72 0.76-1.12 1.17 -2.19 2.26-5.08 5-8.7 8.02 -0.57 0.48-1.17 0.96-1.78 1.45 -0.88 0.71-1.8 1.43-2.76 2.15 -1.69 1.28-3.55 2.62-5.59 4 -0.58 0.4-1.17 0.79-1.78 1.19 -2.54 1.66-5.32 3.35-8.35 5.04 -0.58 0.32-1.18 0.65-1.78 0.97 -2.61 1.41-5.39 2.79-8.35 4.14 -0.59 0.27-1.18 0.54-1.77 0.8 -2.65 1.17-5.44 2.29-8.35 3.36 -0.59 0.22-1.18 0.43-1.78 0.64 -1.94 0.68-3.93 1.34-5.98 1.96 -4.12 1.25-8.46 2.37-13.01 3.31 -0.03 0-0.06 0.01-0.08 0.02 -0.01 0-0.01 0-0.02 0 0 0-0.03-0.13-0.03-0.13v-1.73c25.98-5.43 44.66-16.59 55.77-25.01 7.5-5.69 12.63-10.9 15.46-14.06 1.73-1.93 2.59-3.08 2.62-3.11L116.82 260.12zM41.64 303.09l-0.14-1.83c53.21-3.98 67.07-29.42 72.99-40.28 0.28-0.51 0.54-1 0.79-1.45l1.6 0.89c-0.25 0.45-0.51 0.93-0.79 1.44C110.03 272.99 95.84 299.04 41.64 303.09z"/>
+        <rect x="41.5" y="303.07" fill="#2B79A0" width="137.74" height="1.78"/>
+        <rect x="128.29" y="252.22" fill="#2B79A0" width="51.85" height="5.72"/>
+        <rect x="112.73" y="241.51" fill="#E5E3DF" width="19" height="61.47"/>
+        <polygon fill="#999AA1" points="112.76 241.51 115.72 230.7 118.68 241.51 "/>
+        <polygon fill="#999AA1" points="125.85 241.51 128.81 230.7 131.76 241.51 "/>
+        <polygon fill="#999AA1" points="117.35 241.51 122.23 223.66 127.11 241.51 "/>
+        <path class="mid-hide" fill="#686B7A" d="M122.23 269.03c-1.03 0-1.87 1.08-1.87 2.41 0 0.02 0 0.03 0 0.05 0 0 0 4.13 0 4.13h3.75v-4.13c0-0.02 0-0.03 0-0.05C124.11 270.11 123.27 269.03 122.23 269.03zM122.23 288.73c-1.03 0-1.87 1.08-1.87 2.41 0 0.02 0 0.03 0 0.05 0 0 0 4.13 0 4.13h3.75v-4.13c0-0.02 0-0.03 0-0.05C124.11 289.81 123.27 288.73 122.23 288.73z"/>
+        <rect class="mid-hide" x="120.36" y="254.18" fill="#686B7A" width="3.75" height="4.13"/>
+        <path fill="#999AA1" d="M222.27 301.95v8.65c-1.29-0.41-4.1-1.24-8.35-2.15l-0.01-4.72 -1.78 0 0.01 4.35c-2.4-0.48-5.18-0.96-8.35-1.41l0-2.26 -1.78 0 0 2.01c-2.56-0.33-5.34-0.64-8.34-0.89l0-1.52 -1.78 0 0 1.38c-2.28-0.17-4.68-0.31-7.19-0.41v-0.28h-9.41v0.24c-2.96 0.1-5.77 0.26-8.42 0.45l0-1.84 -1.78 0 0 1.98c-3 0.25-5.78 0.56-8.34 0.89l0-2.47 -1.78 0 0 2.71c-3.16 0.45-5.94 0.93-8.35 1.41l0.01-4.12 -1.78 0 -0.01 4.49c-4.24 0.91-7.05 1.74-8.34 2.15v-8.65h-28.54v17.51h28.54v-6.93c1.8-0.62 16.53-5.38 42.43-5.84h0.91c25.9 0.46 40.63 5.23 42.43 5.84v6.93h28.54v-17.51H222.27z"/>
+        <rect x="117.52" y="241.51" fill="#999AA1" width="9.42" height="7.94"/>
+        <path fill="#E0DA6C" d="M124.05 242.63c0-1.33-0.84-2.4-1.87-2.4s-1.87 1.08-1.87 2.4c0 0.02 0 0.03 0 0.05 0 0 0 4.13 0 4.13h3.75v-4.13C124.05 242.66 124.05 242.64 124.05 242.63z"/>
+        <rect x="112.25" y="281" fill="#999AA1" width="19.97" height="1.78"/>
+        <rect x="112.25" y="263.07" fill="#999AA1" width="19.97" height="1.78"/>
+        <rect x="112.25" y="249.07" fill="#999AA1" width="19.97" height="1.78"/>
+        <polygon class="mid-hide" fill="#E5E3DF" points="183.04 257.94 175.6 257.94 175.6 252.22 179.21 250.61 183.04 252.22 "/>
+        <g display="none">
+          <rect x="202.8" y="251.99" display="inline" fill="#E5E3DF" width="3.43" height="5.95"/>
+          <rect x="152.54" y="251.99" display="inline" fill="#E5E3DF" width="3.43" height="5.95"/>
+        </g>
+      </g>
+      <g class="a" opacity="0.87">
+        <path fill="#58595B" d="M216.91 172.01c-10.74 0-25.32-2.3-25.32-18.41 0-15.73 13.04-18.41 25.32-18.41h50.64c19.18 0 32.99 1.92 47.57 16.5 14.19 14.19 16.11 25.32 16.5 43.73l3.84 125.06c0.38 10.74-4.99 21.48-17.26 21.48 -9.59 0-19.18-8.05-18.8-18.41l-25.32 13.04c-10.36 5.37-10.74 5.37-22.63 5.37h-35.29c-16.49 0-28.39-1.92-41.81-13.04 -15.34-12.66-19.18-26.08-19.18-45.26V267.53c0-17.65 4.22-28.77 18.03-41.05 12.66-11.12 26.85-13.81 42.96-13.81h79.02v-8.44c0-27.62-6.14-32.22-32.61-32.22H216.91zM216.52 249.5c-9.97 0-24.55 2.69-24.55 16.11v24.55c0 12.28 14.96 14.96 23.78 14.96h40.66l40.66-21.1v-8.06c0-20.33-5.75-26.47-26.09-26.47H216.52z"/>
+      </g>
+      <g class="grass_2_">
+        <polygon opacity="0.57" fill="#93A600" points="229.1 319.45 431.76 319.45 321.76 449.45 196.39 358.86 "/>
+        <polygon class="mid-hide" fill="#788700" points="159.54 403.26 207.1 433.45 251.94 399 196.39 358.86 "/>
+      </g>
+      <g class="upside-down" opacity="0.88">
+        <rect x="299.95" y="319.48" fill="#9B8579" width="16.82" height="75.57"/>
+        <path fill="#588BAD" d="M300.7 397.29c0.01 0.84 0.24 3.62 2.54 5.95 2.74 2.79 4.38 4.11 4.38 7.43 0 3.32 0 4.11 0 4.11h0.61 0.25 0.61c0 0 0-0.79 0-4.11 0-3.32 1.64-4.63 4.38-7.43 2.3-2.34 2.53-5.11 2.54-5.95h1.43v-2.47h-18.18v2.48H300.7z"/>
+        <rect x="371.37" y="319.48" fill="#9B8579" width="16.82" height="75.57"/>
+        <path fill="#588BAD" d="M372.12 397.29c0.02 0.84 0.25 3.62 2.54 5.95 2.74 2.79 4.38 4.11 4.38 7.43 0 3.32 0 4.11 0 4.11h0.61 0.25 0.61c0 0 0-0.79 0-4.11 0-3.32 1.64-4.63 4.38-7.43 2.3-2.34 2.53-5.11 2.54-5.95h1.43v-2.47h-18.18v2.48H372.12z"/>
+        <polygon fill="#7F5E35" points="321.55 379.92 321.55 375.66 326.73 375.66 326.73 379.92 331.51 379.92 331.51 375.66 336.69 375.66 336.69 379.92 341.47 379.92 341.47 375.66 346.66 375.66 346.66 379.92 351.44 379.92 351.44 375.66 356.62 375.66 356.62 379.92 361.4 379.92 361.4 375.66 366.59 375.66 366.59 379.92 371.37 379.92 371.37 375.66 371.37 319.48 316.77 319.48 316.77 375.66 316.77 379.92 "/>
+        <polygon fill="#B5A59C" points="336.46 320.4 331.68 320.4 331.68 350.6 332.8 350.6 332.8 368.23 335.35 368.23 335.35 350.6 336.46 350.6 "/>
+        <path class="mid-hide" fill="#58595B" d="M322.06 348.44c0 1.37 0.91 2.49 2.04 2.49s2.04-1.11 2.04-2.48c0-0.02 0-0.04 0-0.05h0v-4.26h-4.08v4.26h0C322.07 348.4 322.06 348.42 322.06 348.44zM321.08 332.14c0 2.03 1.36 3.68 3.03 3.68 1.67 0 3.03-1.65 3.03-3.68 0-0.08 0-0.17-0.01-0.25h0.01v-10.97h-6.05v10.97h0.01C321.08 331.98 321.08 332.06 321.08 332.14z"/>
+        <polygon fill="#B5A59C" points="356.28 320.4 351.5 320.4 351.5 350.6 352.62 350.6 352.62 368.23 355.16 368.23 355.16 350.6 356.28 350.6 "/>
+        <path class="mid-hide" fill="#58595B" d="M343.93 334.68c1.13 0 2.04-1.11 2.04-2.48 0-0.02 0-0.04 0-0.05h0v-5.48h-4.08v5.48h0.01c0 0.02 0 0.04 0 0.06C341.88 333.57 342.8 334.68 343.93 334.68zM341.88 348.11c0 1.37 0.92 2.48 2.04 2.48 1.13 0 2.04-1.11 2.04-2.48 0-0.02 0-0.04 0-0.05h0v-4.26h-4.08v4.26h0.01C341.89 348.08 341.88 348.1 341.88 348.11zM363.55 333.45c1.13 0 2.04-1.11 2.04-2.49 0-0.02 0-0.03 0-0.05h0v-4.26h-4.08v4.26h0.01c0 0.02 0 0.04 0 0.05C361.5 332.34 362.42 333.45 363.55 333.45zM361.5 348.15c0 1.37 0.92 2.48 2.04 2.48 1.13 0 2.04-1.11 2.04-2.48 0-0.02 0-0.04 0-0.05h0v-4.25h-4.08v4.26h0.01C361.51 348.12 361.5 348.14 361.5 348.15z"/>
+        <rect x="307.46" y="390.15" display="none" fill="#58595B" width="2.29" height="3.43"/>
+        <rect x="307.33" y="382.48" display="none" fill="#58595B" width="2.29" height="3.43"/>
+        <rect x="306.84" y="353.15" display="none" fill="#58595B" width="2.29" height="3.43"/>
+        <rect x="299.95" y="319.44" fill="#58595B" width="88.24" height="1.92"/>
+        <rect x="379.06" y="390.15" display="none" fill="#58595B" width="2.29" height="3.43"/>
+        <rect x="378.45" y="353.15" display="none" fill="#58595B" width="2.29" height="3.43"/>
+      </g>
+      <g class="mountain_5_ mid-hide" opacity="0.84">
+        <polygon fill="#7F5E35" points="365.39 217.21 365.39 319.45 402.63 319.45 "/>
+        <polygon fill="#9B8579" points="296.14 319.45 365.39 319.45 365.39 217.21 "/>
+      </g>
+      <g class="tower" opacity="0.84">
+        <polygon fill="#58595B" points="353.75 127.94 335.31 127.94 334.21 120.75 354.63 120.75 "/>
+        <polygon fill="#49B8D1" points="361.52 310.55 358.51 307.54 345.45 307.54 343.39 307.54 330.33 307.54 327.32 310.55 327.32 315.18 343.39 316.47 343.39 316.63 344.42 316.55 345.45 316.63 345.45 316.47 361.52 315.18 "/>
+        <rect x="331.07" y="275.49" fill="#58595B" width="26.7" height="32.05"/>
+        <polygon fill="#588BAD" points="358.5 268.77 356.27 268.77 356.27 263.61 354.1 263.61 354.1 260.26 351.74 257.73 350.91 134.65 344.98 134.65 343.85 134.65 337.93 134.65 337.09 257.73 334.74 260.26 334.74 263.61 332.56 263.61 332.56 268.77 330.33 268.77 327.32 271.78 327.32 275.68 343.39 275.68 345.45 275.68 361.52 275.68 361.52 271.78 "/>
+        <rect x="338.15" y="275.68" display="none" opacity="0.42" fill="#8ED2DD" width="13.24" height="31.86"/>
+        <polygon fill="#49B8D1" points="350.04 118.24 348.92 109.95 345.62 109.95 343.22 109.95 339.92 109.95 338.79 118.24 333.41 118.24 333.41 121 355.42 121 355.42 118.24 "/>
+        <rect x="323.67" y="315.18" fill="#588BAD" width="41.51" height="4.35"/>
+        <path fill="#588BAD" d="M345.38 86.54c-0.22-4.16-0.35-6.44-0.42-7.62v-6.56h-1.07v6.56c-0.07 1.17-0.2 3.46-0.42 7.62 -0.74 13.9-6.02 22.45-6.02 22.45v0.96h6.71 0.54 6.71v-0.96C351.4 108.98 346.12 100.44 345.38 86.54z"/>
+      </g>
+      <polygon class="grass mid-hide" fill="#A1B500" points="333.81 319.93 469.63 319.93 420.46 379.17 "/>
+      <g class="mountain_2_ mid-hide">
+        <polygon fill="#7F5E35" points="423.18 266.08 423.18 319.93 469.63 319.93 "/>
+        <polygon fill="#9B8579" points="368.89 319.93 423.18 319.93 423.18 266.08 "/>
+      </g>
+      <circle class"dot" opacity="0.4" fill="#1C75BC" cx="436.54" cy="420.06" r="11.91"/>
+      <circle class="dot_2_ mid-hide" opacity="0.4" fill="#1C75BC" cx="411.45" cy="79.89" r="11.91"/>
+      <circle class="dot_1_ mid-hide" opacity="0.4" fill="#1C75BC" cx="142.72" cy="154.76" r="7.67"/>
+      <circle class="dot mid-hide" opacity="0.27" fill="#1C75BC" cx="64.43" cy="47.08" r="7.67"/>
+      <path class="car" fill="#58595B" d="M407.47 309c-0.49-4-3.31-6-6.75-6h-15.52c-3.44 0-6.26 2-6.74 6H366v8h7.1c0.48 1 1.88 2.74 3.61 2.74 1.73 0 3.14-1.74 3.61-2.74h4.88 15.52 4.51c0.48 1 1.88 2.74 3.61 2.74s3.14-1.74 3.61-2.74H418v-8H407.47zM376.8 316.64c-0.96 0-1.73-0.78-1.73-1.73 0-0.96 0.78-1.73 1.73-1.73 0.96 0 1.73 0.78 1.73 1.73C378.54 315.87 377.76 316.64 376.8 316.64zM392 307.52l-10.23-0.01c2.48-3.01 10.23-2.42 10.23-2.42V307.52zM394.31 307.4l0.06-2.25c0 0 7.76-0.8 10.65 2.36L394.31 307.4zM408.94 316.64c-0.96 0-1.73-0.78-1.73-1.73 0-0.96 0.78-1.73 1.73-1.73 0.96 0 1.74 0.78 1.74 1.73C410.68 315.87 409.9 316.64 408.94 316.64z"/>
+    </g>
+    <g class="kells2">
+      <polygon class="grass_5_" fill="#A1B500" points="46.09 319.68 233.65 319.2 161.85 417.2 "/>
+      <g class="mountain_7_" opacity="0.55">
+        <polygon fill="#7F5E35" points="194.41 222.16 194.41 320.82 295.37 320.82 "/>
+        <polygon fill="#9B8579" points="49.75 321.3 194.41 320.82 194.41 222.16 "/>
+      </g>
+      <polygon class="grass_4_" fill="#A1B500" points="326.08 319.68 445.98 319.68 402.58 378.93 "/>
+      <g class="mountain_6_" opacity="0.82">
+        <polygon fill="#7F5E35" points="376.51 265.84 376.51 319.68 446.35 319.68 "/>
+        <polygon fill="#9B8579" points="294.87 319.68 376.51 319.68 376.51 265.84 "/>
+      </g>
+      <circle class="dot_6_" opacity="0.4" fill="#1C75BC" cx="61.8" cy="193.01" r="7.67"/>
+      <circle class="dot_5_" opacity="0.4" fill="#1C75BC" cx="72.47" cy="413.73" r="9.11"/>
+    </g>
+  </svg>
+  <div class="fallback">
+    <!--img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/28963/fallback.png"-->
+  </div>
+
+    <p class="first">small page inspired by the Book of Kells, a modern take, if you will. The Book of Kells is a stunningly beautiful manuscript containing the Four Gospels. It is Ireland's most precious medieval artifact, and is generally considered the finest surviving illuminated manuscript to have been produced in medieval Europe.</p>
+    <h2>Origins and History</h2>
+    <p>The Book of Kells was probably produced in a monastery on the Isle of Iona, Scotland, to honor Saint Columba in the early 8th century. After a Viking raid the book was moved to Kells, Ireland, sometime in the 9th century. It was stolen in the 11th century, at which time its cover was torn off and it was thrown into a ditch. The cover, which most likely included gold and gems, has never been found, and the book suffered some water damage; but otherwise it is extraordinarily well-preserved.</p>
+    <p>Source: <a href="http://historymedren.about.com/od/bookofkell1/p/book_of_kells.htm" target="_blank">historymedren.about.com/</a>
+</div><!--paper-->
+  <script src='js/modernizr.custom.75485.js'></script>
+
+    <script src="js/index.js"></script>
+
+</body>
+</html>
