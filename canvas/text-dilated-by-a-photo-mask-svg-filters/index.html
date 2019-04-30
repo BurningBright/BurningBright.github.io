@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Text dilated by a Photo Mask - SVG Filters</title>
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+  <svg x="50px" y="50px" height="680px" width="800px" viewbox="0 0 800 680">
+  <defs>
+    <filter id="photo-dilate">
+      <feImage y="-120" xlink:href="http://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Abraham_Lincoln_head_on_shoulders_photo_portrait.jpg/456px-Abraham_Lincoln_head_on_shoulders_photo_portrait.jpg" result="photo-input" preserveAspectRatio ="xMidYMin slice"/>
+      <feColorMatrix type="matrix" in="photo-input"  values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0 -5 -5 -5 0 5" result="alphamask"/> 
+       <feComposite operator="in" in="SourceGraphic" in2="alphamask" result="masked-image"/>  
+      <feMorphology operator="dilate" radius="1" in="masked-image" result="dilated-in"/>
+      <feGaussianBlur in="dilated-in" result="blurred-dilate" stdDeviation="1"/>
+      <feComposite result="pre-final" operator="arithmetic" in="SourceGraphic" in2="blurred-dilate" k2="1" k3="1"/>
+      <feFlood flood-color="#BBB" result="grey-fill"/>
+      <feBlend mode="lighten" in="grey-fill" in2="photo-input" result="photo-blend"/>
+      <feComposite operator="arithmetic" in="pre-final" in2="photo-blend" k2="1" k3=".1"/> 
+    </filter>
+  </defs>
+  <g font-size="30" font-family="serif" filter="url(#photo-dilate)" >
+  <text y="22">
+    Four score and seven years ago our fathers brought forth on this 
+      </text><text y="50">
+    continent, a new nation, conceived in Liberty, and dedicated to the </text><text y="80">proposition that all men are created equal.
+ Now we are engaged in </text><text y="110">a great civil war, testing whether that nation, or any nation so </text><text y="140">conceived and so dedicated, can long endure. We are met on a </text><text y="170">great battle-field of that war. We have come to dedicate a portion </text><text y="200">of that field, as a final resting place for those who here gave their</text><text y="230">  lives that that nation might live. It is altogether fitting and proper</text><text y="260"> that we should do this.
+
+ But, in a larger sense, we can not dedicate,  </text><text y="290"> we can not consecrate, we can not hallow, this ground. The brave </text><text y="320">men, living  and dead, who struggled here, have consecrated it, far </text><text y="350">above our poor power to add or detract. The world will little note, </text><text y="380">nor long remember what we say here, but it can never forget what </text><text y="410">they did here. It is for us the living, rather, to be dedicated here to </text><text y="440">the unfinished work which they who fought here have thus far so </text><text y="470">nobly advanced. It is rather for us to be here dedicated to the great </text><text y="500">task remaining before us -- that from these honored dead we take  </text><text y="530">increased devotion to that cause for which they gave the last full </text><text y="560">measure of devotion -- that we here highly resolve that these dead</text><text y="590"> shall not have died in vain -- that this nation, under God, shall </text><text y="620">have a new birth of freedom -- and that government of the people,</text><text y="650"> by the people, for the people, shall not perish from the earth.</text>
+  </g>
+  
+</svg>
+  
+  
+</body>
+</html>

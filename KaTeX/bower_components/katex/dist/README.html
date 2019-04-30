@@ -1,0 +1,49 @@
+<h1 id=""><a href="#" class="headerlink" title=" "></a><a href="https://khan.github.io/KaTeX/"><img src="https://khan.github.io/KaTeX/katex-logo.svg" width="130" alt="KaTeX"></a> <a href="https://travis-ci.org/Khan/KaTeX"><img src="https://travis-ci.org/Khan/KaTeX.svg?branch=master" alt="Build Status"></a></h1><p><a href="https://gitter.im/Khan/KaTeX?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/Khan/KaTeX"></a></p>
+<p>KaTeX is a fast, easy-to-use JavaScript library for TeX math rendering on the web.</p>
+<ul>
+<li><strong>Fast:</strong> KaTeX renders its math synchronously and doesn’t need to reflow the page. See how it compares to a competitor in <a href="http://www.intmath.com/cg5/katex-mathjax-comparison.php">this speed test</a>.</li>
+<li><strong>Print quality:</strong> KaTeX’s layout is based on Donald Knuth’s TeX, the gold standard for math typesetting.</li>
+<li><strong>Self contained:</strong> KaTeX has no dependencies and can easily be bundled with your website resources.</li>
+<li><strong>Server side rendering:</strong> KaTeX produces the same output regardless of browser or environment, so you can pre-render expressions using Node.js and send them as plain HTML.</li>
+</ul>
+<p>KaTeX supports all major browsers, including Chrome, Safari, Firefox, Opera, Edge, and IE 9 - IE 11. More information can be found on the <a href="https://khan.github.io/KaTeX/function-support.html">list of supported commands</a> and on the <a href="https://github.com/khan/katex/wiki">wiki</a>.</p>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><p>You can <a href="https://github.com/khan/katex/releases">download KaTeX</a> and host it on your server or include the <code>katex.min.js</code> and <code>katex.min.css</code> files on your page directly from a CDN:</p>
+<pre><code class="html"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css"</span> <span class="attr">integrity</span>=<span class="string">"sha384-exe4Ak6B0EoJI0ogGxjJ8rn+RN3ftPnEQrGwX59KTCl5ybGzvHGKjhPKk/KC3abb"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span>
+<span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js"</span> <span class="attr">integrity</span>=<span class="string">"sha384-OMvkZ24ANLwviZR2lVq8ujbE/bUO8IR1FdBrKLQBI14Gq5Xp/lksIccGkmKL8m+h"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span>
+</code></pre>
+<h4 id="In-browser-rendering"><a href="#In-browser-rendering" class="headerlink" title="In-browser rendering"></a>In-browser rendering</h4><p>Call <code>katex.render</code> with a TeX expression and a DOM element to render into:</p>
+<pre><code class="js">katex.render(<span class="string">"c = \\pm\\sqrt{a^2 + b^2}"</span>, element);
+</code></pre>
+<p>If KaTeX can’t parse the expression, it throws a <code>katex.ParseError</code> error.</p>
+<h4 id="Server-side-rendering-or-rendering-to-a-string"><a href="#Server-side-rendering-or-rendering-to-a-string" class="headerlink" title="Server side rendering or rendering to a string"></a>Server side rendering or rendering to a string</h4><p>To generate HTML on the server or to generate an HTML string of the rendered math, you can use <code>katex.renderToString</code>:</p>
+<pre><code class="js"><span class="keyword">var</span> html = katex.renderToString(<span class="string">"c = \\pm\\sqrt{a^2 + b^2}"</span>);
+<span class="comment">// '&lt;span class="katex"&gt;...&lt;/span&gt;'</span>
+</code></pre>
+<p>Make sure to include the CSS and font files, but there is no need to include the JavaScript. Like <code>render</code>, <code>renderToString</code> throws if it can’t parse the expression.</p>
+<h4 id="Rendering-options"><a href="#Rendering-options" class="headerlink" title="Rendering options"></a>Rendering options</h4><p>You can provide an object of options as the last argument to <code>katex.render</code> and <code>katex.renderToString</code>. Available options are:</p>
+<ul>
+<li><code>displayMode</code>: <code>boolean</code>. If <code>true</code> the math will be rendered in display mode, which will put the math in display style (so <code>\int</code> and <code>\sum</code> are large, for example), and will center the math on the page on its own line. If <code>false</code> the math will be rendered in inline mode. (default: <code>false</code>)</li>
+<li><code>throwOnError</code>: <code>boolean</code>. If <code>true</code>, KaTeX will throw a <code>ParseError</code> when it encounters an unsupported command. If <code>false</code>, KaTeX will render the unsupported command as text in the color given by <code>errorColor</code>. (default: <code>true</code>)</li>
+<li><code>errorColor</code>: <code>string</code>. A color string given in the format <code>&quot;#XXX&quot;</code> or <code>&quot;#XXXXXX&quot;</code>. This option determines the color which unsupported commands are rendered in. (default: <code>#cc0000</code>)</li>
+<li><code>macros</code>: <code>object</code>. A collection of custom macros. Each macro is a property with a name like <code>\name</code> (written <code>&quot;\\name&quot;</code> in JavaScript) which maps to a string that describes the expansion of the macro. Single-character keys can also be included in which case the character will be redefined as the given macro (similar to TeX active characters).</li>
+<li><code>colorIsTextColor</code>: <code>boolean</code>. If <code>true</code>, <code>\color</code> will work like LaTeX’s <code>\textcolor</code>, and take two arguments (e.g., <code>\color{blue}{hello}</code>), which restores the old behavior of KaTeX (pre-0.8.0). If <code>false</code> (the default), <code>\color</code> will work like LaTeX’s <code>\color</code>, and take one argument (e.g., <code>\color{blue}hello</code>).  In both cases, <code>\textcolor</code> works as in LaTeX (e.g., <code>\textcolor{blue}{hello}</code>).</li>
+<li><code>maxSize</code>: <code>number</code>. If non-zero, all user-specified sizes, e.g. in <code>\rule{500em}{500em}</code>, will be capped to <code>maxSize</code> ems. Otherwise, users can make elements and spaces arbitrarily large (the default behavior).</li>
+</ul>
+<p>For example:</p>
+<pre><code class="js">katex.render(<span class="string">"c = \\pm\\sqrt{a^2 + b^2}\\in\\RR"</span>, element, {
+  displayMode: <span class="literal">true</span>,
+  macros: {
+    <span class="string">"\\RR"</span>: <span class="string">"\\mathbb{R}"</span>
+  }
+});
+</code></pre>
+<h4 id="Automatic-rendering-of-math-on-a-page"><a href="#Automatic-rendering-of-math-on-a-page" class="headerlink" title="Automatic rendering of math on a page"></a>Automatic rendering of math on a page</h4><p>Math on the page can be automatically rendered using the auto-render extension. See <a href="contrib/auto-render/README.md">the Auto-render README</a> for more information.</p>
+<h4 id="Font-size-and-lengths"><a href="#Font-size-and-lengths" class="headerlink" title="Font size and lengths"></a>Font size and lengths</h4><p>By default, KaTeX math is rendered in a 1.21× larger font than the surrounding<br>context, which makes super- and subscripts easier to read. You can control<br>this using CSS, for example:</p>
+<pre><code class="css"><span class="selector-class">.katex</span> { <span class="attribute">font-size</span>: <span class="number">1.1em</span>; }
+</code></pre>
+<p>KaTeX supports all TeX units, including absolute units like <code>cm</code> and <code>in</code>.<br>Absolute units are currently scaled relative to the default TeX font size of<br>10pt, so that <code>\kern1cm</code> produces the same results as <code>\kern2.845275em</code>.<br>As a result, relative and absolute units are both uniformly scaled relative<br>to LaTeX with a 10pt font; for example, the rectangle <code>\rule{1cm}{1em}</code> has<br>the same aspect ratio in KaTeX as in LaTeX.  However, because most browsers<br>default to a larger font size, this typically means that a 1cm kern in KaTeX<br>will appear larger than 1cm in browser units.</p>
+<h2 id="Libraries"><a href="#Libraries" class="headerlink" title="Libraries"></a>Libraries</h2><h3 id="Angular2"><a href="#Angular2" class="headerlink" title="Angular2+"></a>Angular2+</h3><ul>
+<li><a href="https://github.com/garciparedes/ng-katex">ng-katex</a> Angular module to write beautiful math expressions with TeX syntax boosted by KaTeX library</li>
+</ul>
+<h2 id="Contributing"><a href="#Contributing" class="headerlink" title="Contributing"></a>Contributing</h2><p>See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+<h2 id="License"><a href="#License" class="headerlink" title="License"></a>License</h2><p>KaTeX is licensed under the <a href="http://opensource.org/licenses/MIT">MIT License</a>.</p>

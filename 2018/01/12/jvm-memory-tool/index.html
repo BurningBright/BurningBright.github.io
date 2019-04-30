@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="en"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>jvm memory tool | BurningBright</title><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/5.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">jvm memory tool</h1><a id="logo" href="/.">BurningBright</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">jvm memory tool</h1><div class="post-meta">Jan 12, 2018<span> | </span><span class="category"><a href="/categories/java/">java</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2018/01/12/jvm-memory-tool/vm-memory.png" alt=""></p>
+<h2 id="jps-JVM-Process-Status-Tool"><a href="#jps-JVM-Process-Status-Tool" class="headerlink" title="jps (JVM Process Status Tool)"></a>jps (JVM Process Status Tool)</h2><p>Used to check  progress id/ start path/ start argument.<br>If remote machine running <code>jstat</code>, <code>jps</code> can query remote vm progress.<br>define:<br><code>jps [-q] [-mlvV] [&lt;hostid&gt;]</code></p>
+<ul>
+<li>-m arguments that input into main</li>
+<li>-v arguments that input into jvm</li>
+<li>-l main class package path or jar file path</li>
+</ul>
+<h2 id="jmap-Memory-Map-for-Java"><a href="#jmap-Memory-Map-for-Java" class="headerlink" title="jmap( Memory Map for Java)"></a>jmap( Memory Map for Java)</h2><p>mapping jvm’s object/ reference<br>define:<br><code>jmap [option] &lt;pid&gt;</code></p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-heap</td>
+<td>heat info</td>
+</tr>
+<tr>
+<td>-histo[:live]</td>
+<td>default in live</td>
+</tr>
+<tr>
+<td>-dump</td>
+<td><br>live         dump only live objects<br>format=b     binary format<br>file=path  dump heap to</td>
+</tr>
+<tr>
+<td>-permstat</td>
+<td>permanent generation</td>
+</tr>
+<tr>
+<td>-finalizerinfo</td>
+<td>object waiting finaliz</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>force all object dump or histo</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap -histo 20836</span><br><span class="line">jmap -permstat 20836</span><br><span class="line">jmap -dump:live,format=b,file=data.hprof 20836</span><br></pre></td></tr></table></figure>
+<h2 id="jhat-JVM-Heap-Analysis-Tool"><a href="#jhat-JVM-Heap-Analysis-Tool" class="headerlink" title="jhat(JVM Heap Analysis Tool)"></a>jhat(JVM Heap Analysis Tool)</h2><p>offline dump file analysis, check memory info.<br>But Visual interface is much more better like <code>jvisualvm</code> <code>jconsole</code></p>
+<h2 id="jinfo-Configuration-Info-for-Java"><a href="#jinfo-Configuration-Info-for-Java" class="headerlink" title="jinfo(Configuration Info for Java)"></a>jinfo(Configuration Info for Java)</h2><p>print or modify java progress’s options(flag). print system properties<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jinfo -sysprops 20836</span><br><span class="line">jinfo -flags 20836</span><br></pre></td></tr></table></figure></p>
+<h2 id="jstat-JVM-statistics-Monitoring-Tool"><a href="#jstat-JVM-statistics-Monitoring-Tool" class="headerlink" title="jstat(JVM statistics Monitoring Tool)"></a>jstat(JVM statistics Monitoring Tool)</h2><p>monitor jvm grogress’s resource and performence<br>define:<br><code>jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]</code></p>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-class</td>
+<td>class’ mateinfo in jvm</td>
+</tr>
+<tr>
+<td>-compiler</td>
+<td>compiler info in jvm</td>
+</tr>
+<tr>
+<td>-gc</td>
+<td>current jvm global info</td>
+</tr>
+<tr>
+<td>-gccapacity</td>
+<td>similar as above</td>
+</tr>
+<tr>
+<td>-gccause</td>
+<td>reason cause gc option</td>
+</tr>
+<tr>
+<td>-gcnew</td>
+<td>youny generation (eden + servivor)</td>
+</tr>
+<tr>
+<td>-gcnewcapacity</td>
+<td></td>
+</tr>
+<tr>
+<td>-gcold</td>
+<td>old generation</td>
+</tr>
+<tr>
+<td>-gcoldcapacity</td>
+<td>old capacity</td>
+</tr>
+<tr>
+<td>-gcpermcapacity</td>
+<td>perm capacity <br>1.6 in method space<br>1.8 in true memory</td>
+</tr>
+<tr>
+<td>-gcutil</td>
+<td>static class ?</td>
+</tr>
+<tr>
+<td>-printcompilation</td>
+<td>compile summary</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0</td>
+<td>年轻代中第一个survivor（幸存区）已使用的占当前容量百分比</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>年轻代中第二个survivor（幸存区）已使用的占当前容量百分比</td>
+</tr>
+<tr>
+<td>S0C</td>
+<td>年轻代中第一个survivor（幸存区）的容量 (字节)</td>
+</tr>
+<tr>
+<td>S1C</td>
+<td>年轻代中第二个survivor（幸存区）的容量 (字节)</td>
+</tr>
+<tr>
+<td>S0U</td>
+<td>年轻代中第一个survivor（幸存区）目前已使用空间 (字节)</td>
+</tr>
+<tr>
+<td>S1U</td>
+<td>年轻代中第二个survivor（幸存区）目前已使用空间 (字节)</td>
+</tr>
+<tr>
+<td>S0CMX</td>
+<td>年轻代中第一个survivor（幸存区）的最大容量 (字节)</td>
+</tr>
+<tr>
+<td>S1CMX</td>
+<td>年轻代中第二个survivor（幸存区）的最大容量 (字节)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E</td>
+<td>年轻代中Eden（伊甸园）已使用的占当前容量百分比</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>年轻代中Eden（伊甸园）的容量 (字节)</td>
+</tr>
+<tr>
+<td>EU</td>
+<td>年轻代中Eden（伊甸园）目前已使用空间 (字节)</td>
+</tr>
+<tr>
+<td>NGCMN</td>
+<td>年轻代(young)中初始化(最小)的大小 (字节)</td>
+</tr>
+<tr>
+<td>NGCMX</td>
+<td>年轻代(young)的最大容量 (字节)</td>
+</tr>
+<tr>
+<td>NGC</td>
+<td>年轻代(young)中当前的容量 (字节)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>old代已使用的占当前容量百分比</td>
+</tr>
+<tr>
+<td>OC</td>
+<td>Old代的容量 (字节)</td>
+</tr>
+<tr>
+<td>OU</td>
+<td>Old代目前已使用空间 (字节)</td>
+</tr>
+<tr>
+<td>OGCMN</td>
+<td>old代中初始化(最小)的大小 (字节)</td>
+</tr>
+<tr>
+<td>OGCMX</td>
+<td>old代的最大容量 (字节)</td>
+</tr>
+<tr>
+<td>OGC</td>
+<td>old代当前新生成的容量 (字节)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P</td>
+<td>perm代已使用的占当前容量百分比</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>Perm(持久代)的容量 (字节)</td>
+</tr>
+<tr>
+<td>PU</td>
+<td>Perm(持久代)目前已使用空间 (字节)</td>
+</tr>
+<tr>
+<td>PGCMN</td>
+<td>perm代中初始化(最小)的大小 (字节)</td>
+</tr>
+<tr>
+<td>PGCMX</td>
+<td>perm代的最大容量 (字节)</td>
+</tr>
+<tr>
+<td>PGC</td>
+<td>perm代当前新生成的容量 (字节)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YGC</td>
+<td>从应用程序启动到采样时年轻代中gc次数</td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>从应用程序启动到采样时年轻代中gc所用时间(s)</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>从应用程序启动到采样时old代(全gc)gc次数</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>从应用程序启动到采样时old代(全gc)gc所用时间(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>从应用程序启动到采样时gc用的总时间(s)</td>
+</tr>
+<tr>
+<td>DSS</td>
+<td>当前需要survivor（幸存区）的容量 (字节)（Eden区已满）</td>
+</tr>
+<tr>
+<td>TT</td>
+<td>持有次数限制</td>
+</tr>
+<tr>
+<td>MTT</td>
+<td>最大持有次数限制</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><p>Local Applications Cannot Be Monitored (Error Dialog On Startup)<br>Description: An error dialog saying that local applications cannot be monitored<br>is shown immediately after VisualVM startup. Locally running Java applications<br>are displayed as <unknown application=""> (pid ###).</unknown></p>
+<p>Resolution:  This can happen on Windows systems if the username contains capitalized letters.<br>In this case, username is UserName but the jvmstat directory created by JDK is %TMP%\hsperfdata_username.<br>To workaround the problem, exit all Java applications, delete the %TMP%\hsperfdata_username directory<br>and create new %TMP%\hsperfdata_UserName directory.</p>
+<p>In windows platform if jconsole.exe interface, the local vm disenable, check user name, and directory name:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># If user name is Administrator</span><br><span class="line">C:\Users\Administrator\AppData\Local\Temp\hsperfdata_administrator</span><br><span class="line"># change to</span><br><span class="line">C:\Users\Administrator\AppData\Local\Temp\hsperfdata_Administrator</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://visualvm.github.io/troubleshooting.html#jpswin2" target="_blank" rel="noopener">https://visualvm.github.io/troubleshooting.html#jpswin2</a></p>
+<h2 id="jstack-Stack-Trace-for-Java"><a href="#jstack-Stack-Trace-for-Java" class="headerlink" title="jstack(Stack Trace for Java)"></a>jstack(Stack Trace for Java)</h2><p>print specific progress’s or remote jvm’s stack info</p>
+<h2 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h2><p><a href="http://blog.sina.com.cn/s/blog_b0e3dfe30102wfl5.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_b0e3dfe30102wfl5.html</a></p>
+<p><a href="http://www.bubuko.com/infodetail-792105.html" target="_blank" rel="noopener">http://www.bubuko.com/infodetail-792105.html</a></p>
+<p><a href="https://www.cnblogs.com/lishijia/p/5897236.html" target="_blank" rel="noopener">https://www.cnblogs.com/lishijia/p/5897236.html</a></p>
+<p><a href="http://www.talkwithtrend.com/Article/161055" target="_blank" rel="noopener">http://www.talkwithtrend.com/Article/161055</a></p>
+<p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-JVMGarbageCollection/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-lo-JVMGarbageCollection/</a></p>
+<p><a href="https://www.ibm.com/developerworks/cn/java/l-JavaMemoryLeak/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/l-JavaMemoryLeak/</a></p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://linchenguang.com/2018/01/12/jvm-memory-tool/" data-id="cjr4c2nba00cau3mvag5y7ei4" class="article-share-link">Share</a><div class="tags"><a href="/tags/jvm/">jvm</a></div><div class="post-nav"><a href="/2018/01/18/matrix-arithmetic-1/" class="pre">matrix &amp; arithmetic (1)</a><a href="/2017/12/28/determinant-4/" class="next">determinant(4)</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://linchenguang.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/algorithm/">algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/blog/">blog</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/cryptograpy/">cryptograpy</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/version/">version</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript/">javascript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/latex/">latex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ml/">ml</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/php/">php</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/raspberry/">raspberry</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/regex/">regex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/search/">search</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/theory/">theory</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/version/">version</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/sort/" style="font-size: 15px;">sort</a> <a href="/tags/hello/" style="font-size: 15px;">hello</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mybatis/" style="font-size: 15px;">mybatis</a> <a href="/tags/yml/" style="font-size: 15px;">yml</a> <a href="/tags/encode/" style="font-size: 15px;">encode</a> <a href="/tags/regex/" style="font-size: 15px;">regex</a> <a href="/tags/collection/" style="font-size: 15px;">collection</a> <a href="/tags/array/" style="font-size: 15px;">array</a> <a href="/tags/compress/" style="font-size: 15px;">compress</a> <a href="/tags/lucene/" style="font-size: 15px;">lucene</a> <a href="/tags/apache/" style="font-size: 15px;">apache</a> <a href="/tags/fundamental/" style="font-size: 15px;">fundamental</a> <a href="/tags/constructure/" style="font-size: 15px;">constructure</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/literal/" style="font-size: 15px;">literal</a> <a href="/tags/ascii/" style="font-size: 15px;">ascii</a> <a href="/tags/anchor/" style="font-size: 15px;">anchor</a> <a href="/tags/syntax/" style="font-size: 15px;">syntax</a> <a href="/tags/guide/" style="font-size: 15px;">guide</a> <a href="/tags/group/" style="font-size: 15px;">group</a> <a href="/tags/keyboard/" style="font-size: 15px;">keyboard</a> <a href="/tags/repetition/" style="font-size: 15px;">repetition</a> <a href="/tags/command/" style="font-size: 15px;">command</a> <a href="/tags/rename/" style="font-size: 15px;">rename</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/php/" style="font-size: 15px;">php</a> <a href="/tags/difference/" style="font-size: 15px;">difference</a> <a href="/tags/selector/" style="font-size: 15px;">selector</a> <a href="/tags/file/" style="font-size: 15px;">file</a> <a href="/tags/rsa/" style="font-size: 15px;">rsa</a> <a href="/tags/algorithm/" style="font-size: 15px;">algorithm</a> <a href="/tags/factor/" style="font-size: 15px;">factor</a> <a href="/tags/inverse/" style="font-size: 15px;">inverse</a> <a href="/tags/math/" style="font-size: 15px;">math</a> <a href="/tags/first/" style="font-size: 15px;">first</a> <a href="/tags/probability/" style="font-size: 15px;">probability</a> <a href="/tags/function/" style="font-size: 15px;">function</a> <a href="/tags/elasticsearch/" style="font-size: 15px;">elasticsearch</a> <a href="/tags/elastic/" style="font-size: 15px;">elastic</a> <a href="/tags/character/" style="font-size: 15px;">character</a> <a href="/tags/proxy/" style="font-size: 15px;">proxy</a> <a href="/tags/pattern/" style="font-size: 15px;">pattern</a> <a href="/tags/freemarker/" style="font-size: 15px;">freemarker</a> <a href="/tags/security/" style="font-size: 15px;">security</a> <a href="/tags/shiro/" style="font-size: 15px;">shiro</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/btree/" style="font-size: 15px;">btree</a> <a href="/tags/hash/" style="font-size: 15px;">hash</a> <a href="/tags/strategy/" style="font-size: 15px;">strategy</a> <a href="/tags/redis/" style="font-size: 15px;">redis</a> <a href="/tags/memcached/" style="font-size: 15px;">memcached</a> <a href="/tags/oracle/" style="font-size: 15px;">oracle</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/quantum/" style="font-size: 15px;">quantum</a> <a href="/tags/config/" style="font-size: 15px;">config</a> <a href="/tags/thread/" style="font-size: 15px;">thread</a> <a href="/tags/linear/" style="font-size: 15px;">linear</a> <a href="/tags/graph/" style="font-size: 15px;">graph</a> <a href="/tags/computer/" style="font-size: 15px;">computer</a> <a href="/tags/string/" style="font-size: 15px;">string</a> <a href="/tags/http/" style="font-size: 15px;">http</a> <a href="/tags/install/" style="font-size: 15px;">install</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/solr/" style="font-size: 15px;">solr</a> <a href="/tags/unicode/" style="font-size: 15px;">unicode</a> <a href="/tags/symbol/" style="font-size: 15px;">symbol</a> <a href="/tags/protocol/" style="font-size: 15px;">protocol</a> <a href="/tags/audio/" style="font-size: 15px;">audio</a> <a href="/tags/spring/" style="font-size: 15px;">spring</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/04/29/compile-spring-5-x-in-idea/">compile spring 5.x in idea</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/11/Bayes-theorem/">Bayes' theorem</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/29/thread-pool-anaylsis/">thread pool anaylsis</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/27/troubleshooting-high-cpu-occupancy-rate/">troubleshooting high cpu occupancy rate</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Lucene-fmn-index-output-format/">Lucene fmn index & output type</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/download-outside-GFW/">download outside GFW</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/11/Nginx-https-in-aws/">Nginx https in aws</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/11/Regex-in-repository/">Regex in repository</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/26/wireless-raspberry-audio/">wireless raspberry audio</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/20/Vector-group-1/">Vector group (1)</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://www.linchenguang.com/sql" title="sql" target="_blank">sql</a><ul></ul><a href="http://www.linchenguang.com/cron" title="cron" target="_blank">cron</a><ul></ul><a href="http://www.linchenguang.com/regex" title="regex" target="_blank">regex</a><ul></ul><a href="http://www.linchenguang.com/keyboard" title="keyboard" target="_blank">keyboard</a><ul></ul><a href="http://www.linchenguang.com/toy" title="toy" target="_blank">toy</a><ul></ul><a href="http://www.linchenguang.com/KaTeX" title="KaTeX" target="_blank">KaTeX</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">BurningBright.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

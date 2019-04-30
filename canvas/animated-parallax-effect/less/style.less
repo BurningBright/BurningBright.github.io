@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #02080f;
+}
+
+@moonSize: 14vw;
+@moonL: 24vw;
+@moonT: 50vh - @moonSize - 3vw;
+@titleL: @moonL + @moonSize + 7vw;
+@titleT: @moonT + 1.2vw;
+
+.stars-wrapper {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: radial-gradient(ellipse at center, #061a33 0%, #000000 100%);
+	background-size: 110%;
+    background-position: 100% 100%;
+    overflow: hidden;
+}
+
+.title-wrapper {
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: 1;
+
+	.title {
+		width: 31vw;
+		position: absolute;
+		text-align: justify;
+		top: @titleT;
+		left: @titleL;
+		right: 15%;
+		font-size: 5vw;
+		line-height: 1.3;
+		font-weight: normal;
+		margin: 0;
+		color: #fff;
+		color: #030f1d;
+		opacity: .8;
+		text-transform: uppercase;
+		letter-spacing: .1em;
+
+		&:after {
+			content: attr(data-title);
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+ 			background: linear-gradient(125deg, rgba(252,249,239,1) 0%, rgba(252,249,239,0.7) 30%, rgba(252,249,239,0.01) 100%);
+ 			background-repeat: no-repeat;
+ 			background-position: 100% 0;
+ 			background-size: 100%;
+ 			-webkit-background-clip: text;
+			overflow: hidden;
+			color: transparent;
+		}
+	}
+}
+
+.moon-wrapper {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 1;
+}
+.moon {
+	.square(@moonSize);
+	position: absolute;
+	top: @moonT;
+	left: @moonL;
+	border-radius: 50%;
+	//background: #e7e1df url(https://www.dropbox.com/s/l1ef0fihcjnftvs/moon.png?dl=1) 50% 50% no-repeat;
+	background-size: 102%;
+	box-shadow: 0px 0px 80px 0px rgba(183, 176, 130, 0.6),
+				0px 0px 350px 0px rgba(222, 221, 215, 0.3);
+
+	&:after {
+    	content: "";
+    	display: block;
+    	position: absolute;
+    	left: 5%;
+			top: 5%;
+			width: 90%;
+			height: 90%;
+			border-radius: 50%;
+			background-color: transparent;
+			box-shadow: 0px 0px 150px 0px rgba(183, 176, 130, 0.1),
+					0px 0px 340px 0px rgba(222, 221, 215, 0.1);
+			filter: blur(10px);
+    }
+}
+
+.stars-cluster {
+	position: absolute;
+	left: 3%;
+	right: 3%;
+	top: 3%;
+	bottom: 3%;
+
+	&.stars-cluster-1 {
+		left: 20%;
+		right: 25%;
+		top: 20%;
+		bottom: 40%;
+	}
+
+	&.stars-cluster-1 {
+		.star-7,
+		.star-22,
+		.star-30 {
+			animation: shooting-star 10s ease-out 1s forwards;
+		}
+		.star-22 {
+			animation-delay: 4s;
+			animation-iteration-count: infinite;
+		}
+		.star-30 {
+			animation-delay: 7s;
+		}
+		.star-20 {
+			animation: shooting-star-2 8s ease-out 5s forwards infinite;
+		}
+
+	}
+
+	&.stars-cluster-2 {
+		.star-11,
+		.star-16 {
+			animation: shooting-star 10s ease-out 8s forwards;
+		}
+		.star-16 {
+			animation-delay: 1s;
+		}
+		.star-7 {
+			animation-delay: 9s;
+			animation-iteration-count: infinite;
+		}
+
+		.star-4 {
+			animation: shooting-star-2 11s ease-out 6s forwards infinite;
+		}
+	}
+}
+
+.star {
+	background-color: #f3f2d6;
+	border-radius: 50%;
+	position: absolute;
+	animation-name: pulsate;
+	animation-timing-function: ease-in-out;
+	animation-iteration-count: infinite;
+	animation-direction: alternate-reverse;
+}
+
+.square(@size) {
+	width: @size;
+	height: @size;
+}
+
+.generateStars( @starsNo:25; @minSize:2; @maxSize:14; @clusterClass: stars-cluster-1;) when (@starsNo > 0) {
+
+	.generateStars(@starsNo - 1; @minSize; @maxSize; @clusterClass);
+
+	@randNo: `Math.random()`;
+
+	@currSize: unit((round(@randNo * (@maxSize - @minSize)) + @minSize),px);
+	@currtOpacity: (@randNo * 0.6) + 0.2;
+
+	.@{clusterClass} .star-@{starsNo} {
+		.square(@currSize);
+		opacity: @currtOpacity;
+		top: percentage(@randNo);
+		left: percentage(@randNo);
+		animation-duration: unit((@randNo*2) + 0.4,s);
+		animation-delay: unit(@randNo,s);
+	}
+}
+
+.generateStars(40; 1; 3; stars-cluster-1);
+.generateStars(40; 2; 4; stars-cluster-2);
+.generateStars(15; 2; 5; stars-cluster-3);
+
+
+
+/**
+ * ----------------------------------------
+ * @animation pulsate
+ * ---------------------------------------
+*/
+@keyframes pulsate {
+  0% {
+    transform: scale(.85);
+    opacity: .2;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/**
+ * ----------------------------------------
+ * @animation shooting-star
+ * ---------------------------------------
+*/
+@keyframes shooting-star {
+  0% {
+    transform: scale(1);
+    transform: translate(0,0);
+    opacity: 1;
+  }
+  20%,100% {
+    transform: scale(0);
+    transform: translate(400px,200px);
+    opacity: 0;
+  }
+}
+
+/**
+ * ----------------------------------------
+ * @animation shooting-star-2
+ * ---------------------------------------
+*/
+@keyframes shooting-star-2 {
+  0% {
+    transform: scale(1);
+    transform: translate(0,0);
+    opacity: 1;
+  }
+  10%,100% {
+    transform: scale(.7);
+    transform: translate(600px,150px);
+    opacity: .3;
+  }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  <title>Gravity Connectors</title>
+  
+  
+  
+      <!--link rel="stylesheet" href="css/style.css"-->
+<style>
+html, body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+}
+
+canvas {
+	box-shadow: 0 0 3em -1em rgba(0, 0, 0, 0.6);
+}
+</style>
+  
+</head>
+
+<body>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.7/p5.min.js"></script>
+
+    <script src="js/index.js"></script>
+	<script type="text/javascript">
+function Particle(x,y) {
+	this.pos = createVector(x,y);
+	this.vel = p5.Vector.random2D();
+	this.vel.setMag(random(1,2));
+	this.acc = createVector();
+	
+	this.update = function() {
+		this.pos.add(this.vel);
+		this.vel.add(this.acc);
+		this.acc.mult(0);
+	}
+	
+	this.attracted = function(target) {
+		var force = p5.Vector.sub(target, this.pos);
+		var dsquared = force.magSq();
+		dsquared = constrain(dsquared, 200, 400);
+		var g = 6.67408/2;
+		var strength = g/dsquared;
+		force.setMag(strength);
+		this.acc.add(force);
+	}
+}
+
+var attractors = [];
+var particles = [];
+
+function init() {
+	attractors = [];
+	particles = [];
+	
+	for (var i = 0; i < 50; i++) {
+		particles.push(new Particle(200, 200));
+	}
+	
+	for (var i = 0; i < random(2, 10); i++) {
+		attractors.push(createVector(random(50, width-50), random(50, height-50)));
+	}
+}
+
+function setup() {
+	createCanvas(400, 400);
+	init();
+}
+
+function mousePressed() {
+	init();
+}
+
+function draw() {
+	background(255);
+	
+	for (var i = particles.length - 1; i >= 0; i--) {
+		for (var j = attractors.length - 1; j >= 0; j--) {
+			particles[i].attracted(attractors[j]);
+		}
+		
+		for (var k = particles.length-1; k >= 0; k--) {
+				if (particles[i] !== particles[k]) {
+					var d = dist(particles[i].pos.x, particles[i].pos.y, particles[k].pos.x, particles[k].pos.y);
+					if (d < 100) {
+						var strokeColour = map(d, 0, 100, 0, 200);
+						stroke(strokeColour);
+						line(particles[i].pos.x, particles[i].pos.y, particles[k].pos.x, particles[k].pos.y);
+					}
+				}
+			}
+		
+		particles[i].update();
+	}
+}
+	</script>
+</body>
+</html>
