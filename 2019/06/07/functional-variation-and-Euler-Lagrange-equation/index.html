@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="泛函又被称为函数的函数，是将函数映射成数的方法。传统的函数将数映射成数 $x -&amp;gt; f(x) -&amp;gt; y$;泛函将 函数映射成数 $f(x) -&amp;gt; g(f) -&amp;gt; y$; 丢一些数进函数，得到一个数丢一些方程进泛函，得到一个数 变分用于分析一个泛函被扰动时的变化相当于对一个泛函做微积分变分法的关键定理是欧拉－拉格朗日方程。它对应于泛函的临界点。 变分的框架通常这样表示：  T">
+<meta name="keywords" content="math">
+<meta property="og:type" content="article">
+<meta property="og:title" content="泛函、变分和欧拉-拉格朗日方程">
+<meta property="og:url" content="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="泛函又被称为函数的函数，是将函数映射成数的方法。传统的函数将数映射成数 $x -&amp;gt; f(x) -&amp;gt; y$;泛函将 函数映射成数 $f(x) -&amp;gt; g(f) -&amp;gt; y$; 丢一些数进函数，得到一个数丢一些方程进泛函，得到一个数 变分用于分析一个泛函被扰动时的变化相当于对一个泛函做微积分变分法的关键定理是欧拉－拉格朗日方程。它对应于泛函的临界点。 变分的框架通常这样表示：  T">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/20190607082634.png">
+<meta property="og:updated_time" content="2019-06-08T08:15:17.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="泛函、变分和欧拉-拉格朗日方程">
+<meta name="twitter:description" content="泛函又被称为函数的函数，是将函数映射成数的方法。传统的函数将数映射成数 $x -&amp;gt; f(x) -&amp;gt; y$;泛函将 函数映射成数 $f(x) -&amp;gt; g(f) -&amp;gt; y$; 丢一些数进函数，得到一个数丢一些方程进泛函，得到一个数 变分用于分析一个泛函被扰动时的变化相当于对一个泛函做微积分变分法的关键定理是欧拉－拉格朗日方程。它对应于泛函的临界点。 变分的框架通常这样表示：  T">
+<meta name="twitter:image" content="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/20190607082634.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>泛函、变分和欧拉-拉格朗日方程 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">泛函、变分和欧拉-拉格朗日方程
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-07 17:19:58" itemprop="dateCreated datePublished" datetime="2019-06-07T17:19:58+08:00">2019-06-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-08 16:15:17" itemprop="dateModified" datetime="2019-06-08T16:15:17+08:00">2019-06-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="泛函"><a href="#泛函" class="headerlink" title="泛函"></a>泛函</h3><p>又被称为<code>函数的函数</code>，是将函数映射成数的方法。<br>传统的函数将数映射成数 $x -&gt; f(x) -&gt; y$;<br>泛函将 <strong>函数映射成数</strong> $f(x) -&gt; g(f) -&gt; y$;</p>
+<p>丢一些数进函数，得到一个数<br>丢一些方程进泛函，得到一个数</p>
+<h3 id="变分"><a href="#变分" class="headerlink" title="变分"></a>变分</h3><p>用于分析一个泛函被扰动时的变化<br>相当于对一个泛函做微积分<br>变分法的关键定理是<code>欧拉－拉格朗日方程</code>。它对应于泛函的临界点。</p>
+<p>变分的框架通常这样表示：</p>
+<script type="math/tex; mode=display">
+T = \int L(f(x), f(x)', x)dx</script><p>例如在最速降线问题中：<br><img src="/2019/06/07/functional-variation-and-Euler-Lagrange-equation/20190607082634.png" alt="20190607082634.png"></p>
+<p>$f(x)$是小球的下落轨道<br>$f(x)’$是小球下落轨道的导数<br>$x$是小球的横向坐标<br>$T$代表从A落到B点所需时间</p>
+<p>需要找到能使小球从A滚落B所需时间$T$最短的$f$</p>
+<p>其中时间的表达式可以写成</p>
+<script type="math/tex; mode=display">
+\begin{array}{rcl}
+T &=& \int dt \\
+&=& \int dL/V \\
+&=& \int \frac{ \sqrt {dx^2+df^2})}{g\sqrt {\frac{2f}{g}}}dx \\
+&=& \int \frac{ \sqrt {1+f^{'2}})}{\sqrt {2gf}}dx
+\end{array}</script><p>也就是距离微元除以当前速度的积分，将问题变为一个关于$f$, $f’$的积分问题。<br>在最速降线问题中仅涉及$f$, $f’$</p>
+<h3 id="E-L方程"><a href="#E-L方程" class="headerlink" title="E-L方程"></a>E-L方程</h3><p>欧拉-拉格朗日方程 用于求泛函极值</p>
+<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p>在函数中，我们可以通过求函数导数等于零，求出局部极值。这意味着在该变量附近做微小的扰动，会出现函数值达不到极值的现象。</p>
+<p>同样的，假设在泛函中的极值处，$f_0(x)$是最理想的解，如果对$f_0(x)$做微小的扰动$f_0(x)+\eta (x)$，会出现泛函数值达不到极值的现象。<br>表示为：</p>
+<script type="math/tex; mode=display">\int L(f_0(x) + \eta(x))dx \geqslant \int L(f_0(x))dx</script><h4 id="构建"><a href="#构建" class="headerlink" title="构建"></a>构建</h4><p>我们用 $\epsilon k(x)$ 来代替 $\eta (x)$，其中 $\epsilon$ 代表一个很小的标量，$k(x)$代表任意函数。<br>可以得到：</p>
+<script type="math/tex; mode=display">A(\epsilon) = \int L(f_0(x) + \epsilon k(x)) dx</script><p>将其转化为关于$\epsilon$的函数问题，我们需要证明：<br>在对于任意$k(x)$，导数$A(\epsilon)’ = 0$ 在 $\epsilon = 0$上取到。<br>其中扰动$k(x)$的两端同$f(x)$重叠不移动。<br>表示为：</p>
+<script type="math/tex; mode=display">
+A(\epsilon)' \vert_{\epsilon=0} \forall k(x)</script><p>这是经典的单值函数求极值问题</p>
+<h4 id="推导"><a href="#推导" class="headerlink" title="推导"></a>推导</h4><p>$f_1(x) = f_0(x) + \epsilon k(x)$，用$f_1$来表示</p>
+<p>由于是在这里积分求导是线性的，将其互换转入积分的内部:</p>
+<script type="math/tex; mode=display">
+A(\epsilon)' = \int \frac{dL(f_1(x), f_1(x)', x)}{d\epsilon} dx</script><p>根据积分链式求导，求关于$\epsilon$的偏导有：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rcl}
+
+A(\epsilon)' &=& \int_{x_1}^{x_2}
+(\frac{\partial L}{\partial f_1} \frac{\partial f_1}{\partial \epsilon} +
+\frac{\partial L}{\partial f_1'} \frac{\partial f_1'}{\partial \epsilon}) dx \\
+
+&=& \int_{x_1}^{x_2}
+(\frac{\partial L}{\partial f_1} k(x) +
+\frac{\partial L}{\partial f_1'} k(x)') dx
+\end{array}</script><p>根据积分分部求导 $(ab)’= ab’ + b’a$：</p>
+<script type="math/tex; mode=display">
+A(\epsilon)' = \int_{x_1}^{x_2}
+[\frac{\partial L}{\partial f_1} k(x) +
+(\frac{\partial L}{\partial f_1'}) k(x) \vert_{x_1}^{x_2} -
+(\frac{\partial L}{\partial f_1'})' k(x)] dx</script><p>由于在端点 $x_1$，$x_2$处，有约束所以$k(x_1) = k(x_2) = 0$：</p>
+<script type="math/tex; mode=display">
+A(\epsilon)' = \int_{x_1}^{x_2}
+[\frac{\partial L}{\partial f_1} - \frac{d}{dx} (\frac{\partial L}{\partial f_1'})] * k(x) dx = 0</script><p>可以得出E-L方程：</p>
+<script type="math/tex; mode=display">
+\frac{\partial L}{\partial f_1} - \frac{d}{dx} (\frac{\partial L}{\partial f_1'}) = 0</script><p>在满足该方程的条件下 $f_1(x)$ 是泛函极值函数<br>即：解函数相对于表达式的偏导 = 解函数导数相对于表达式的偏导变化率</p>
+<h4 id="引理"><a href="#引理" class="headerlink" title="引理"></a>引理</h4><blockquote>
+<p>如果$F(f, f’, x) = F(f, f’)$ E-L 方程可以写成：</p>
+<script type="math/tex; mode=display">
+\frac{\partial L}{\partial f'}f' - L = C</script></blockquote>
+<script type="math/tex; mode=display">
+\frac{d}{dx}(\frac{\partial L}{\partial f'}f') =  \frac{d}{dx}(\frac{\partial L}{\partial f'}) + \frac{\partial L}{\partial f'}f''</script><script type="math/tex; mode=display">
+\frac{d}{dx}(L) = \frac{\partial L}{\partial f}  \partial f' + \frac{\partial L}{\partial f'}  \partial f''</script><script type="math/tex; mode=display">
+\frac {d}{dx}(\frac{\partial L}{\partial f'}f' - L) =
+f'[\frac{d}{dx} (\frac{\partial L}{\partial f'}) - \frac{\partial L}{\partial f}] = 0</script><p>可以看出方程的导数在极值处为零，方程等于常数。<br>即：解函数导数相对于表达式的偏导 * 解函数导数 - 表达式 = 常数</p>
+<p><a href="https://www.zybuluo.com/zsh-o/note/1090046" target="_blank" rel="noopener">最速降线 与 第一次接触泛函</a><br><a href="http://open.163.com/movie/2017/12/S/Q/MD51CSAIT_MD55OEBSQ.html" target="_blank" rel="noopener">2.3．Euler-lagrange方程的推导</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/math/" rel="tag"># math</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/05/understand-lagrange-multiplier/" rel="next" title="拉格朗日乘子法（二）">
+                <i class="fa fa-chevron-left"></i> 拉格朗日乘子法（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/08/exercise-in-Euler-Lagrange-equation/" rel="prev" title="欧拉-拉格朗日方程练习">
+                欧拉-拉格朗日方程练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">186</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#泛函"><span class="nav-number">1.</span> <span class="nav-text">泛函</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#变分"><span class="nav-number">2.</span> <span class="nav-text">变分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-L方程"><span class="nav-number">3.</span> <span class="nav-text">E-L方程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#说明"><span class="nav-number">3.1.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建"><span class="nav-number">3.2.</span> <span class="nav-text">构建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#推导"><span class="nav-number">3.3.</span> <span class="nav-text">推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引理"><span class="nav-number">3.4.</span> <span class="nav-text">引理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

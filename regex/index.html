@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="RegexApp" class="ng-scope">
+<head><meta name="generator" content="Hexo 3.8.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}</style>
+<link type="text/css" href="regex_main.css" rel="stylesheet">
+<script type="text/javascript" src="regex_main.js"></script>
+
+<title>
+  Debuggex: Online visual regex tester. JavaScript, Python, and PCRE.
+</title>
+
+<meta name="description" content="Test your regex by visualizing it with a live editor. JavaScript, Python, and PCRE.">
+<meta name="keywords" content="javascript,regex,regular expression,visual,nfa,dfa,state,debugger,helper,tester,match,random match">
+<meta name="author" content="Sergiu Toarca">
+<link href="favicon.ico" rel="shortcut icon">
+</head>
+<body class>
+  <div id="page">
+    <div id="content" style="padding-top: 50px;>
+      <div ng-controller=" globalsctrl" class="ng-scope">
+
+<div ng-controller="UiDirectorCtrl" ng-init="referenceModel.show=false" class="ng-scope">
+    <div ng-controller="LightRegexMetaCtrl" class="ng-scope">
+    <div ng-controller="LightRegexCtrl" class="ng-scope">
+    <div ng-controller="LightNFACtrl" class="ng-scope">
+    <div ng-controller="LightTestStringCtrl" class="ng-scope">
+    <div ng-controller="UnitTestCtrl" class="ng-scope">
+    <div ng-controller="RegexApiCtrl" class="ng-scope">
+    <div ng-controller="GenCtrl" class="ng-scope">
+    <div ng-controller="RegexInitCtrl" class="ng-scope">
+    <div ng-controller="RegexInitGETCtrl" class="ng-scope">
+    <div ng-controller="RegexInitGlobalCtrl" class="ng-scope">
+    <div ng-controller="RegexInitHistoryCtrl" class="ng-scope">
+    </div>
+    </div>
+    </div>
+    </div>
+
+          <div class="width-restricted">
+            <div class="sidepadded">
+
+<div ng-controller="HiliteRegexCtrl" class="ng-scope">
+<div ng-controller="MarkerRegexCtrl" ng-init="reTrigger()" class="ng-scope">
+  <div class="main-outline">
+    <div>
+      <div class="meta-regex debug-section-header">
+        <span ng-hide="editing" title="Click to edit" ng-click="editing=true" style="cursor:pointer;">
+          <span class="title ng-binding">Untitled Regex</span>
+          <span class="description ng-binding" title="No description">
+            No description
+          </span>
+        </span>
+        <span ng-show="editing" style="position:relative;top:-5px;" class="ng-hide">
+          <span class="title">
+            <input type="text" ng-model="reMetaModel.title" class="ng-pristine ng-valid">
+          </span>
+          <span class="description">
+            <input type="text" ng-model="reMetaModel.description" class="ng-pristine ng-valid">
+          </span>
+          <span class="confirm">
+            <button ng-click="editing=false">Done Editing</button>
+          </span>
+        </span>
+      </div>
+    </div>
+    <div class="nfadiagram nfamarkerdiagram" style="min-height:200px" ng-hide="isTextMode" title="Regular expression visualization" dbx-nfa="nfaModel.val" dbx-dir="dbxDirModel" dbx-markers="mReModel">
+	</div>
+    <div class="nfatextdiagram nfatext ng-hide" style="min-height:207px" ng-show="isTextMode" title="Regular expression textualization" dbx-nfa="nfaModel.val">
+    </div>
+    <div>
+      <div style="margin-bottom:8px;position:relative;z-index:1;" class="clearfix">
+        <div class="lfloat">
+          <select class="flavorselect" style="display: none;">
+		  </select>
+          <a href="javascript:void(0);" style="margin-left:5px" ng-click="referenceModel.show=true">View Cheatsheet</a>
+          <span style="display:none"><div class="mode-button mode-button-true" onclick="_track(&#39;VisualMode&#39;)" ng-click="isTextMode=false">Visual Mode</div><div class="mode-button mode-button-" onclick="_track(&#39;TextMode&#39;)" ng-click="isTextMode=true">Text Mode</div></span>
+        </div>
+        <div class="rfloat">
+          <select class="flagselect" multiple="multiple" style="display: none;">
+		  <option value="i">Ignore case (i)</option>
+		  <option value="m">^ and $ match lines (m)</option>
+		  </select>
+        </div>
+      </div>
+      <div class="sa-message clearfix;">
+        <span class="center-align error">
+          <span ng-show="nfaModel.error.msg" class="ng-binding ng-hide"></span>
+          <span ng-hide="nfaModel.error.msg">&nbsp;</span>
+        </span>
+      </div>
+      <div class="modelarea markerarea" ng-init="mReModel.cls=dbxDirModel.reColor" title="Regular Expression editor" min-lines="4" dbx-model-val="reModel.val" dbx-model-pos="mReModel.pos" dbx-model-init="reModel.init" dbx-dir="dbxDirModel" dbx-trigger-func="reTrigger()" dbx-hilites="hReModel.hilites" dbx-markers="mReModel" dbx-placeholder="My regular expression" show-gutter="true">
+
+	  </div>
+    </div>
+    <div ng-controller="HiliteTestStringCtrl" style="margin-top:30px; padding-bottom: 20px;" class="ng-scope">
+    <div ng-controller="StateInfoTestStringCtrl" class="ng-scope">
+    <div ng-controller="MarkerTestStringCtrl" class="ng-scope">
+      <div>
+      <div class="sa-message clearfix">
+        <span class="left-align">
+          <strong>Result:</strong>
+          <span ng-show="hTestStringModel.positions[testStringModel.startAt]" class="ng-hide">
+            <span class="antierror">Matches</span>
+          </span>
+          <span ng-hide="hTestStringModel.positions[testStringModel.startAt]" class>
+            <span class="error">Does not match</span>
+          </span>
+          starting at the black triangle slider
+        </span>
+      </div>
+      </div>
+
+      <div class="slidearea" ng-init="mTestStringModel.cls=dbxDirModel.colors[0]" title="Test String Editor" min-lines="4" dbx-model-val="testStringModel.val" dbx-model-pos="mTestStringModel.pos" dbx-model-init="testStringModel.init" dbx-model-start-at="testStringModel.startAt" dbx-dir="dbxDirModel" dbx-trigger-func="testStrTrigger()" dbx-hilites="hTestStringModel.hilites" dbx-markers="mTestStringModel" dbx-placeholder="My test data" show-gutter="true">
+	  </div>
+    </div>
+    </div>
+    </div>
+  </div>
+
+</div>
+</div>
+<div>
+  <div ng-controller="RegexFlavorCtrl" id="cheatsheet" style="margin-top:20px;text-align:center;" class="ng-scope">
+  <a href="javascript:void(0);" ng-hide="referenceModel.show" ng-click="referenceModel.show=true">
+    Show cheatsheet
+  </a>
+  <div ng-show="referenceModel.show" style="display:inline-block" class="ng-hide">
+    <span style="font-weight:700" class="ng-binding">
+      JavaScript regex quick reference (<a href="javascript:void(0);" ng-click="referenceModel.show=false">hide</a>):
+    </span>
+    <br>
+    <table style="display:inline-block;vertical-align:top;margin-left:10px;text-align:left">
+      <tbody>
+        <tr>
+          <td><span class="code">[abx-z]</span></td>
+          <td>One character of: a, b, or the range x-z</td>
+        </tr>
+        <tr>
+          <td><span class="code">[^abx-z]</span></td>
+          <td>One character except: a, b, or the range x-z</td>
+        </tr>
+        <tr>
+          <td><span class="code">a|b</span></td>
+          <td>a or b</td>
+        </tr>
+        <tr>
+          <td><span class="code">a?</span></td>
+          <td>Zero or one a's (greedy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a??</span></td>
+          <td>Zero or one a's (lazy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a*</span></td>
+          <td>Zero or more a's (greedy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a*?</span></td>
+          <td>Zero or more a's (lazy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a+</span></td>
+          <td>One or more a's (greedy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a+?</span></td>
+          <td>One or more a's (lazy)</td>
+        </tr>
+        <tr>
+          <td><span class="code">a{4}</span></td>
+          <td>Exactly 4 a's</td>
+        </tr>
+        <tr>
+          <td><span class="code">a{4,8}</span></td>
+          <td>Between (inclusive) 4 and 8 a's</td>
+        </tr>
+        <tr>
+          <td><span class="code">a{9,}</span></td>
+          <td>9 or more a's</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39;" class="ng-hide">
+          <td><span class="code">(?&gt;...)</span></td>
+          <td>An atomic group</td>
+        </tr>
+        <tr>
+          <td><span class="code">(?=...)</span></td>
+          <td>A positive lookahead</td>
+        </tr>
+        <tr>
+          <td><span class="code">(?!...)</span></td>
+          <td>A negative lookahead</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39; || reModel.flavor==&#39;python&#39;" class="ng-hide">
+          <td><span class="code">(?&lt;=...)</span></td>
+          <td>A positive lookbehind</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39; || reModel.flavor==&#39;python&#39;" class="ng-hide">
+          <td><span class="code">(?&lt;!...)</span></td>
+          <td>A negative lookbehind</td>
+        </tr>
+        <tr>
+          <td><span class="code">(?:...)</span></td>
+          <td>A non-capturing group</td>
+        </tr>
+        <tr>
+          <td><span class="code">(...)</span></td>
+          <td>A capturing group</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39; || reModel.flavor==&#39;python&#39;" class="ng-hide">
+          <td><span class="code">(?P&lt;n&gt;...)</span></td>
+          <td>A capturing group named n</td>
+        </tr>
+      </tbody>
+    </table>
+    <table style="display:inline-block;vertical-align:top;margin-left:10px;text-align:left;">
+      <tbody>
+        <tr>
+          <td><span class="code code-escaped">^</span></td>
+          <td>Beginning of the string</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">$</span></td>
+          <td>End of the string</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\d</span></td>
+          <td>A digit (same as <span class="code">[0-9]</span>)</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\D</span></td>
+          <td>A non-digit (same as <span class="code">[^0-9]</span>)</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\w</span></td>
+          <td>A word character (same as <span class="code">[_a-zA-Z0-9]</span>)</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\W</span></td>
+          <td>
+            A non-word character (same as <span class="code">[^_a-zA-Z0-9]</span>)
+          </td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\s</span></td>
+          <td>A whitespace character</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\S</span></td>
+          <td>A non-whitespace character</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\b</span></td>
+          <td>A word boundary</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\B</span></td>
+          <td>A non-word boundary</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\n</span></td>
+          <td>A newline</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\t</span></td>
+          <td>A tab</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\cY</span></td>
+          <td>The control character with the hex code Y</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\xYY</span></td>
+          <td>The character with the hex code YY</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\uYYYY</span></td>
+          <td>The character with the hex code YYYY</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">.</span></td>
+          <td>Any character</td>
+        </tr>
+        <tr>
+          <td><span class="code code-escaped">\Y</span></td>
+          <td>The Y'th captured group</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39;" class="ng-hide">
+          <td><span class="code">(?1)</span></td>
+          <td>Recurse into numbered group 1</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39;" class="ng-hide">
+          <td><span class="code">(?&amp;x)</span></td>
+          <td>Recurse into named group x</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39; || reModel.flavor==&#39;python&#39;" class="ng-hide">
+          <td><span class="code">(?P=n)</span></td>
+          <td>The captured group named 'n'</td>
+        </tr>
+        <tr ng-show="reModel.flavor==&#39;pcre&#39; || reModel.flavor==&#39;python&#39;" class="ng-hide">
+          <td><span class="code">(?#...)</span></td>
+          <td>A comment</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <a href="https://www.debuggex.com/cheatsheet/regex/javascript" target="_blank" class="ng-binding">
+      Full JavaScript regex cheatsheet
+    </a>
+  </div>
+</div>
+
+</div>
+
+
+    </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+  </div>
+
+      </div>
+    </div>
+    <div class="footer-container">
+      <div class="footer">
+        <div class="sidepadded">
+          <div class="copyright lfloat">
+
+          </div>
+          <div class="links rfloat">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+</body>
+</html>

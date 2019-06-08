@@ -1,1 +1,2889 @@
-<!DOCTYPE html><html lang="en"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>BurningBright</title><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/5.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">BurningBright</h1><a id="logo" href="/.">BurningBright</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h2 class="post-title"><a href="/2017/05/01/Hash-index-in-mysql/">Hash index in mysql</a></h2><div class="post-meta">2017-05-01</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Just like the hash function in java<br>Dispatch field’s row pointer to a slot by field’s hash code.<br>If some rows have same hash code, then storage pointer to a list.</p></div><p class="readmore"><a href="/2017/05/01/Hash-index-in-mysql/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/04/30/raspberry-home-media/">raspberry home media</a></h2><div class="post-meta">2017-04-30</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure></div><p class="readmore"><a href="/2017/04/30/raspberry-home-media/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/04/29/B-Tree-index-in-mysql/">B-Tree index in mysql</a></h2><div class="post-meta">2017-04-29</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   birthday   date           not null,</span><br><span class="line">   gender     enum(&apos;m&apos;, &apos;f&apos;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p></div><p class="readmore"><a href="/2017/04/29/B-Tree-index-in-mysql/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/04/24/Introduce-Shiro/">Introduce Shiro</a></h2><div class="post-meta">2017-04-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="http://dl2.iteye.com/upload/attachment/0093/9788/d59f6d02-1f45-3285-8983-4ea5f18111d5.png" alt=""><br><strong>Shiro can be used in</strong></p></div><p class="readmore"><a href="/2017/04/24/Introduce-Shiro/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/04/19/Traversal-in-freemarker/">Traversal in freemarker</a></h2><div class="post-meta">2017-04-19</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><code>List&lt;Question&gt; question = new ArrayList&lt;Question&gt;();</code><br><code>Map&lt;Question, List&lt;Option&gt;&gt; mapping = new LinkedHashMap&lt;Question, List&lt;Option&gt;&gt;();</code></p></div><p class="readmore"><a href="/2017/04/19/Traversal-in-freemarker/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/04/10/Mapper-anaylsis/">Mapper anaylsis</a></h2><div class="post-meta">2017-04-10</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Package"><a href="#Package" class="headerlink" title="Package"></a>Package</h2><p><strong>org.apache.ibatis.binding</strong></p></div><p class="readmore"><a href="/2017/04/10/Mapper-anaylsis/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/03/26/Java-dynamic-proxy/">Java dynamic proxy</a></h2><div class="post-meta">2017-03-26</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Use-scope"><a href="#Use-scope" class="headerlink" title="Use scope"></a>Use scope</h3><ul></ul></div><p class="readmore"><a href="/2017/03/26/Java-dynamic-proxy/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/03/25/Latex-source-file-1/">Latex source file</a></h2><div class="post-meta">2017-03-25</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Latex’s-reserved-characters"><a href="#Latex’s-reserved-characters" class="headerlink" title="Latex’s reserved characters"></a>Latex’s reserved characters</h3><p><code># $ % ^ &amp; _ { } \</code></p></div><p class="readmore"><a href="/2017/03/25/Latex-source-file-1/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/03/22/Latex-source-file/">Latex source file</a></h2><div class="post-meta">2017-03-22</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="blank-space-distance"><a href="#blank-space-distance" class="headerlink" title="blank space distance"></a>blank space distance</h3><p>Blank space and table sign are same in Latex as a space.<br>The multi blank characters and a new line will be seem as one space.<br>The head blank space will be ignore normally.</p></div><p class="readmore"><a href="/2017/03/22/Latex-source-file/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/03/21/Elasticsearch-cluster-status/">Elasticsearch cluster status</a></h2><div class="post-meta">2017-03-21</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Terminology"><a href="#Terminology" class="headerlink" title="Terminology"></a>Terminology</h3><p>An Elasticsearch cluster is made up of one or more <strong>nodes</strong>.<br>Each of these nodes contains indexes which are split into multiple <strong>shards</strong>.<br>Elasticsearch makes copies of these shards called <strong>replicas</strong>.<br>These (primary) shards and replicas are then placed on various nodes throughout the cluster.</p></div><p class="readmore"><a href="/2017/03/21/Elasticsearch-cluster-status/">Read More</a></p></div><nav class="page-navigator"><a class="extend prev" rel="prev" href="/page/11/">Previous</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/13/">Next</a></nav></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://linchenguang.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/algorithm/">algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/blog/">blog</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/cryptograpy/">cryptograpy</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/version/">version</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript/">javascript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/latex/">latex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ml/">ml</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/php/">php</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/raspberry/">raspberry</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/regex/">regex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/search/">search</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/theory/">theory</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/version/">version</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/sort/" style="font-size: 15px;">sort</a> <a href="/tags/hello/" style="font-size: 15px;">hello</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mybatis/" style="font-size: 15px;">mybatis</a> <a href="/tags/yml/" style="font-size: 15px;">yml</a> <a href="/tags/encode/" style="font-size: 15px;">encode</a> <a href="/tags/regex/" style="font-size: 15px;">regex</a> <a href="/tags/collection/" style="font-size: 15px;">collection</a> <a href="/tags/array/" style="font-size: 15px;">array</a> <a href="/tags/compress/" style="font-size: 15px;">compress</a> <a href="/tags/lucene/" style="font-size: 15px;">lucene</a> <a href="/tags/apache/" style="font-size: 15px;">apache</a> <a href="/tags/fundamental/" style="font-size: 15px;">fundamental</a> <a href="/tags/constructure/" style="font-size: 15px;">constructure</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/literal/" style="font-size: 15px;">literal</a> <a href="/tags/ascii/" style="font-size: 15px;">ascii</a> <a href="/tags/anchor/" style="font-size: 15px;">anchor</a> <a href="/tags/syntax/" style="font-size: 15px;">syntax</a> <a href="/tags/guide/" style="font-size: 15px;">guide</a> <a href="/tags/group/" style="font-size: 15px;">group</a> <a href="/tags/keyboard/" style="font-size: 15px;">keyboard</a> <a href="/tags/repetition/" style="font-size: 15px;">repetition</a> <a href="/tags/command/" style="font-size: 15px;">command</a> <a href="/tags/rename/" style="font-size: 15px;">rename</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/php/" style="font-size: 15px;">php</a> <a href="/tags/difference/" style="font-size: 15px;">difference</a> <a href="/tags/selector/" style="font-size: 15px;">selector</a> <a href="/tags/file/" style="font-size: 15px;">file</a> <a href="/tags/rsa/" style="font-size: 15px;">rsa</a> <a href="/tags/algorithm/" style="font-size: 15px;">algorithm</a> <a href="/tags/factor/" style="font-size: 15px;">factor</a> <a href="/tags/inverse/" style="font-size: 15px;">inverse</a> <a href="/tags/math/" style="font-size: 15px;">math</a> <a href="/tags/first/" style="font-size: 15px;">first</a> <a href="/tags/probability/" style="font-size: 15px;">probability</a> <a href="/tags/function/" style="font-size: 15px;">function</a> <a href="/tags/elasticsearch/" style="font-size: 15px;">elasticsearch</a> <a href="/tags/elastic/" style="font-size: 15px;">elastic</a> <a href="/tags/character/" style="font-size: 15px;">character</a> <a href="/tags/proxy/" style="font-size: 15px;">proxy</a> <a href="/tags/pattern/" style="font-size: 15px;">pattern</a> <a href="/tags/freemarker/" style="font-size: 15px;">freemarker</a> <a href="/tags/security/" style="font-size: 15px;">security</a> <a href="/tags/shiro/" style="font-size: 15px;">shiro</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/btree/" style="font-size: 15px;">btree</a> <a href="/tags/hash/" style="font-size: 15px;">hash</a> <a href="/tags/strategy/" style="font-size: 15px;">strategy</a> <a href="/tags/redis/" style="font-size: 15px;">redis</a> <a href="/tags/memcached/" style="font-size: 15px;">memcached</a> <a href="/tags/oracle/" style="font-size: 15px;">oracle</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/quantum/" style="font-size: 15px;">quantum</a> <a href="/tags/config/" style="font-size: 15px;">config</a> <a href="/tags/thread/" style="font-size: 15px;">thread</a> <a href="/tags/linear/" style="font-size: 15px;">linear</a> <a href="/tags/graph/" style="font-size: 15px;">graph</a> <a href="/tags/computer/" style="font-size: 15px;">computer</a> <a href="/tags/string/" style="font-size: 15px;">string</a> <a href="/tags/http/" style="font-size: 15px;">http</a> <a href="/tags/install/" style="font-size: 15px;">install</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/solr/" style="font-size: 15px;">solr</a> <a href="/tags/unicode/" style="font-size: 15px;">unicode</a> <a href="/tags/symbol/" style="font-size: 15px;">symbol</a> <a href="/tags/protocol/" style="font-size: 15px;">protocol</a> <a href="/tags/audio/" style="font-size: 15px;">audio</a> <a href="/tags/spring/" style="font-size: 15px;">spring</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/05/20/Throttling-pattern/">Throttling pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/10/bayes-formula-comprehend/">bayes' formula comprehend</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/07/hide-csdn-ad-in-chrome/">hide csdn ad in chrome</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/29/compile-spring-5-x-in-idea/">compile spring 5.x in idea</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/11/Bayes-theorem/">Bayes' theorem</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/29/thread-pool-anaylsis/">thread pool anaylsis</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/27/troubleshooting-high-cpu-occupancy-rate/">troubleshooting high cpu occupancy rate</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Lucene-fmn-index-output-format/">Lucene fmn index & output type</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/download-outside-GFW/">download outside GFW</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/11/Nginx-https-in-aws/">Nginx https in aws</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://www.linchenguang.com/sql" title="sql" target="_blank">sql</a><ul></ul><a href="http://www.linchenguang.com/cron" title="cron" target="_blank">cron</a><ul></ul><a href="http://www.linchenguang.com/regex" title="regex" target="_blank">regex</a><ul></ul><a href="http://www.linchenguang.com/keyboard" title="keyboard" target="_blank">keyboard</a><ul></ul><a href="http://www.linchenguang.com/toy" title="toy" target="_blank">toy</a><ul></ul><a href="http://www.linchenguang.com/KaTeX" title="KaTeX" target="_blank">KaTeX</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">BurningBright.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="BurningBright">
+<meta property="og:url" content="http://linchenguang.com/page/12/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BurningBright">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/page/12/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/08/ORA-12154/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/08/ORA-12154/" class="post-title-link" itemprop="url">ORA-12154</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-08 20:21:38" itemprop="dateCreated datePublished" datetime="2017-05-08T20:21:38+08:00">2017-05-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Oracle is different with Mysql or sqlServer, it need client connect to DB server. But mysql or sqlServer can connect DB server with specific ip connect.</p>
+<h3 id="Install-oracle-instance-client"><a href="#Install-oracle-instance-client" class="headerlink" title="Install oracle instance client"></a>Install oracle instance client</h3><p>open <code>Net Manager</code> <code>Oracle Net Config</code> <code>Local</code> <code>Service Naming</code><br>click <code>add</code> config new net service.</p>
+<p>It actually add a config in this file:<br><code>E:\Oracle\product\10.2.0\client_1\NETWORK\ADMIN\tnsnames.ora</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">ORCL =</span><br><span class="line">  (DESCRIPTION =</span><br><span class="line">    (ADDRESS_LIST =</span><br><span class="line">      (ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))</span><br><span class="line">    )</span><br><span class="line">    (CONNECT_DATA =</span><br><span class="line">      (SERVICE_NAME = ORCL)</span><br><span class="line">    )</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<h3 id="Problem-1"><a href="#Problem-1" class="headerlink" title="Problem 1"></a>Problem 1</h3><p>If install server and client in one machine, server directory will have same config file.</p>
+<p><code>D:\Oracle\product\10.2.0\db_1\NETWORK\ADMIN\tnsnames.ora</code></p>
+<p>So when config done <code>Net Manager</code> connnet to oracle, <code>ORA-12154</code> may happen.<br>Then you should doubt, which config PL/SQL use.<br>In this time use <code>tnsping</code> command.</p>
+<ol>
+<li>copy config file content, make two file synchronized.</li>
+<li>move path position, put client before db service.</li>
+</ol>
+<p>This problem coursed by <strong>install sequence</strong><br>If <strong>install DB service first</strong>, Client next, then this problem will not happen**</p>
+<h3 id="Problem-2"><a href="#Problem-2" class="headerlink" title="Problem 2"></a>Problem 2</h3><p>If PL/SQL’s insatll directory have <code>()</code> like 64bit system <code>Program Files (x86)</code>,<br>then no matter how you adjust config, it always alert <code>ORA-12154</code>.<br>So check software’s <strong>insatll path</strong> can avoid this problem.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/07/Difference-between-redis-and-memcached/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/07/Difference-between-redis-and-memcached/" class="post-title-link" itemprop="url">Difference between redis and memcached</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-07 20:59:01" itemprop="dateCreated datePublished" datetime="2017-05-07T20:59:01+08:00">2017-05-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="IO-Model"><a href="#IO-Model" class="headerlink" title="IO Model"></a>IO Model</h2><p>Memcached is <strong>multi-thread</strong>, not block reuse IO net model.<br>it has main listen thread main worker sub thread.<br>‘leader’ listened net connnect, dispatch to worker thread.<br>In network layer, memcached use libevent package event.<br>But this bring concurrency and lock problem, like <code>stats</code> command.</p>
+<p>Redis reuse <strong>single thread</strong> IO model, it’s self package a AeEvent event framework.<br>It implements <code>epoll</code> <code>kqueue</code> <code>select</code> event,<br>for simple IO operation, single thread can reach the top speed.<br>But for some calc operation, this affect global throughput alot.</p>
+<h2 id="Memory-manage"><a href="#Memory-manage" class="headerlink" title="Memory manage"></a>Memory manage</h2><p>Memcached use prepare way to manage memory.<br>In this way memory pool can avoid the cost in apply and release memory.</p>
+<p>Redis use real-time way to manage memory.</p>
+<h2 id="Data-consistency"><a href="#Data-consistency" class="headerlink" title="Data consistency"></a>Data consistency</h2><p>Memcached provide <code>cas</code> command, it can make sure data consistency.</p>
+<p>Redis has no <code>cas</code> command, but it provide transaction function.<br>It make sure series of commands’ <strong>atomicity</strong>, it wouldn’t be interrupted.</p>
+<h2 id="Storage-way"><a href="#Storage-way" class="headerlink" title="Storage way"></a>Storage way</h2><p>Memcached only support <code>key-value</code> storage,<br>not support enumerate / persistence/ copy and so on function.</p>
+<p>Redis support except <code>key-value</code> way, but <code>list</code> <code>set</code> <code>sorted</code> <code>set</code> <code>hash</code>.<br>In other hand, redis support data persistence, copy and so on function.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><ol>
+<li><p>When data in-memory use Redis is better.</p>
+</li>
+<li><p>Redis in alot of place play a role in replace Memcached.</p>
+</li>
+<li><p>When need other data structure, Redis is better.</p>
+</li>
+<li><p>When storage data can’t be remove, Redis is better.</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/03/How-to-leak-memory-in-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/03/How-to-leak-memory-in-java/" class="post-title-link" itemprop="url">How to leak memory in java</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-03 18:46:10" itemprop="dateCreated datePublished" datetime="2017-05-03T18:46:10+08:00">2017-05-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Create-some-ghost-memory"><a href="#Create-some-ghost-memory" class="headerlink" title="Create some ghost memory"></a>Create some ghost memory</h2><ol>
+<li>Create a long exist thread or thread pool.</li>
+<li>Load a class through <code>ClassLoader</code>.</li>
+<li>Distribute a <strong>big block memory</strong> to a static strong reference.<br>Then use <code>ThreadLocal</code> storage [thread reference?] or [object reference?]</li>
+<li>Thread clean selfdefine class or <strong>load this class’s loader</strong>.</li>
+<li>repeat these steps.</li>
+</ol>
+<h2 id="Some-mistake"><a href="#Some-mistake" class="headerlink" title="Some mistake"></a>Some mistake</h2><ol>
+<li><p>static reference hold container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Holder &#123;</span><br><span class="line">    static final List list = new ArrayList(100);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>call long String’s <code>intern()</code> method</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String src = &quot;......&quot;;</span><br><span class="line">str.intern();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>forgot release resource</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    BufferedReader br = new BufferedReader(new FileReader(&quot;...&quot;));</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>forgot close door</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Connection conn = ConnectionFactory.getConnection();</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>GC can’t reach like <code>native</code> true memory</p>
+</li>
+<li><p>Web container in application context<br><code>getServletContext().setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> and not <strong>remove rubbish</strong>.</p>
+</li>
+<li><p>Web container in session context<br><code>session.setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> / not <strong>invalid</strong> and not <strong>remove rubbish</strong>.</p>
+</li>
+<li><p>Not right JVM option<br><strong>IBM JDK</strong> <code>noclassgc</code> option, it stop no use class’s garbage collect.</p>
+</li>
+</ol>
+<h2 id="Bean-not-define-properly"><a href="#Bean-not-define-properly" class="headerlink" title="Bean not define properly"></a>Bean not define properly</h2><p>If HashSet’s element object have <strong>no standard implement</strong><br>  or no implement of <code>equals()</code> and <code>hashCode()</code>.<br>Collection can’t <strong>ignore repeated element</strong>.</p>
+<h2 id="Thread-relevant"><a href="#Thread-relevant" class="headerlink" title="Thread relevant"></a>Thread relevant</h2><ol>
+<li>Create but not start thread.</li>
+<li><p>Thread inherited <code>ContextClassLoader</code> or <code>ccessControlContext</code>,<br>and use <code>ThreadGroup</code> or <code>InheritedThreadLocal</code>.<br>They affect <code>java.util.concurrent.Executor</code></p>
+</li>
+<li><p>Not use <code>ThreadLocal</code> <strong>as cache</strong> unless truly necessary.<br>If thread not in it’s life cycle, load <code>ContextClassLoader</code>, gc can’t reach it.</p>
+</li>
+<li><p>When <code>ThreadGroup</code> have no subThread<br>but have <code>sub ThreadGroup</code> call <code>ThreadGroup.destroy()</code>.<br>It lead to this <code>sub ThreadGroup</code> <strong>can’t remove</strong> from it’s <code>parent ThreadGroup</code>.</p>
+</li>
+<li><p>use WeakHashMap, value hold key reference..</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/02/NIO-in-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/02/NIO-in-java/" class="post-title-link" itemprop="url">NIO in java</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-02 17:09:13" itemprop="dateCreated datePublished" datetime="2017-05-02T17:09:13+08:00">2017-05-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Introduce"><a href="#Introduce" class="headerlink" title="Introduce"></a>Introduce</h2><p><code>NIO</code> is make up for <code>IO</code>‘s lack</p>
+<p>NIO have some new characters:<br>no block i/o, selector, buffer and channel<br><code>Channel</code> <code>Buffer</code> <code>Selector</code> is the main force.</p>
+<ul>
+<li><p><code>Channel</code> like Stream in traditional style java.</p>
+</li>
+<li><p><code>Buffer</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ByteBuffer    byte</span><br><span class="line">CharBuffer    char</span><br><span class="line">ShortBuffer   short</span><br><span class="line">IntBuffer     int</span><br><span class="line">LongBuffer    long</span><br><span class="line">FloatBuffer   float</span><br><span class="line">DoubleBuffer  double</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>Selector</code><br>Used to listen mulity channel’s <strong>event</strong>.<br>In traditional tyle when i/o unblock, we know we can i/o.<br>But use NIO, we need this equipment to manage i/o.</p>
+</li>
+</ul>
+<h2 id="The-difference"><a href="#The-difference" class="headerlink" title="The difference"></a>The difference</h2><ol>
+<li>IO is design for <strong>stream</strong>, NIO is design for <strong>block</strong>.<br>IO stream operate a byte every time, it lead to low efficiency.</li>
+</ol>
+<p>NIO operate a type of data block, it’s <em>bigger</em> than a byte[maybe].</p>
+<ol>
+<li>IO is block, NIO is unblock<br>Traditional IO when a thread call <code>read()</code> or <code>write()</code>,<br>thread need to waiting for <strong>data operation finished</strong>.<br>During this time thread will be hang on? nothing it can be done.</li>
+</ol>
+<p>To NIO when a thread send a request, but no response.<br>It’s a free, it can do any other tasks, until <strong>selector call</strong>.</p>
+<h2 id="Scene"><a href="#Scene" class="headerlink" title="Scene"></a>Scene</h2><p>NIO’s disadvantage is it need to check buffer space everytime.<br>Because it design for block, if block is not completed,<br>there is no meaning to operate data.</p>
+<p>NIO fit for thousands short link and <strong>little data</strong>.<br>IO fit for few long link and <strong>big data</strong>.</p>
+<h2 id="Explain"><a href="#Explain" class="headerlink" title="Explain"></a>Explain</h2><p>Three guys got a task, to drink <strong>50L water</strong>.<br>They all got a 100ml break. Have three water taps, it has <strong>no valve</strong>,<br><strong>occasionally</strong> 100ml water flow out.</p>
+<p>So these three poor guys have to <strong>wait until</strong> drink 500 cup of break.</p>
+<h3 id="Fantasy"><a href="#Fantasy" class="headerlink" title="Fantasy"></a>Fantasy</h3><p>But if they have a plumber to <strong>manage</strong> these water tap, thing wil be big different.</p>
+<ul>
+<li>First he can prepare three <strong>big bucket</strong> maybe 1L capacity each.</li>
+<li>Second he can install a <strong>valve</strong> in each tap.</li>
+<li>Third every guy told plumber their <strong>phone number</strong>,<br>when bucket filled with water, plumber call them to come, and close valve.</li>
+</ul>
+<p>Use this mechanism guy need to come and drink <strong>5 times bucket</strong>.</p>
+<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>If the water tap’s water <strong>flow</strong> is very strong,<br>  then this mechanism is not good.<br>Because plumber’s manage tap <strong>needs time</strong>, and it’s buckets <strong>needs space</strong>.<br>So in this condition, these guys waiting for break<br>  be filled with water and drink is <strong>a better chooice</strong>.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/01/High-performance-strategy-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/01/High-performance-strategy-in-mysql/" class="post-title-link" itemprop="url">High performance strategy in mysql</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-01 15:26:27" itemprop="dateCreated datePublished" datetime="2017-05-01T15:26:27+08:00">2017-05-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Clustered-Indexes"><a href="#Clustered-Indexes" class="headerlink" title="Clustered Indexes"></a>Clustered Indexes</h2><p><code>solidDB</code> and <code>innoDB</code> support clustered index.<br>It make sure the similar key’s row’s physical position similar too.<br>The field type ‘char’ or ‘varchar’ is not suitable for building clustered index.<br>Especially the field storage random char. It will lead to alot of movements.</p>
+<p><code>innoDB</code> will build a clustered index on primary key<br>If it not exists, system will replace it by a hidden primary key.</p>
+<p>Ordinary speak, DBMS will use clustered index to storage data<br>Second level index is base on it.</p>
+<h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><p><img src="/2017/05/01/High-performance-strategy-in-mysql/mysql02-09.JPG" alt><br>Contain row’s num and row’s value, it’s no difference with orther index.<br>It’s only a primary key named PRIMARY index(clustered index).</p>
+<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p><img src="/2017/05/01/High-performance-strategy-in-mysql/mysql02-08.JPG" alt></p>
+<ul>
+<li><code>TID</code> transaction id (transaction)</li>
+<li><code>RP</code> rollback pointer (MVCC)</li>
+</ul>
+<p>InnoDB’s secondary index have no need to maintain index<br>when base data moved or data splited.</p>
+<p>Because secondary storage <strong>primary key</strong> not <strong>row num</strong></p>
+<h3 id="Difference"><a href="#Difference" class="headerlink" title="Difference"></a>Difference</h3><p><img src="/2017/05/01/High-performance-strategy-in-mysql/mysql02-10.JPG" alt></p>
+<h2 id="Balance"><a href="#Balance" class="headerlink" title="Balance"></a>Balance</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Describe</th>
+<th>Clustered</th>
+<th>Not clustered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Offen group and sort</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Return range data</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>very little differ values</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>little differ values</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>big differ values</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>offen update field</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>foreign key field</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>primary key field</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Offen modify index field</td>
+<td>no</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="when-not"><a href="#when-not" class="headerlink" title="when not"></a>when not</h3><ul>
+<li>query quantity is very low.<br>If build a index, it will affect performance alot.</li>
+<li>table data is very low, should not build as will.</li>
+<li><code>text</code> <code>image</code> <code>bit</code> <code>blob</code>, should not build.</li>
+<li><code>INSERT</code> <code>DELETE</code> <code>UPDATE</code>, much more than <code>SELECT</code> operation.<br>They are mutex operation to each other.</li>
+</ul>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><ul>
+<li>build index on field always used to search/ link/ group.</li>
+<li><p>don’t calculate on index field behind <code>where</code>.</p>
+</li>
+<li><p>build and maintain will take time<br>and it’s proportional with table data quantity.</p>
+</li>
+<li>index file will obtain physical space.</li>
+<li>when <code>INSERT</code> <code>DELETE</code> <code>UPDATE</code> it needs to dynamic maintain index.</li>
+</ul>
+<p>If <code>CRUD</code> is balance in field search, the dynamic cost maybe worth while.<br>Because the other three except <code>Retrieve</code>, need to find operation target as will.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/01/Hash-index-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/01/Hash-index-in-mysql/" class="post-title-link" itemprop="url">Hash index in mysql</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-01 15:18:50" itemprop="dateCreated datePublished" datetime="2017-05-01T15:18:50+08:00">2017-05-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Just like the hash function in java<br>Dispatch field’s row pointer to a slot by field’s hash code.<br>If some rows have same hash code, then storage pointer to a list.</p>
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE animal (</span><br><span class="line">   name   VARCHAR(50)   NOT NULL,</span><br><span class="line">   weight DOUBLE(11, 3) NOT NULL,</span><br><span class="line">   KEY `name` (`name`) USING HASH</span><br><span class="line">) ENGINE=MEMORY;</span><br></pre></td></tr></table></figure></p>
+<p>mysql&gt; select * from animal;<br>+————+————-+<br>| name   | weight  |<br>+————+————-+<br>| python |  20.500 |<br>| bear   | 321.720 |<br>| lion   | 221.980 |<br>| rabbit |   7.123 |<br>+————+————-+</p>
+<h2 id="Try"><a href="#Try" class="headerlink" title="Try"></a>Try</h2><p><code>f</code> represent the hash function:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f(&apos;python&apos;) = 2123</span><br><span class="line">f(&apos;bear&apos;)   = 6417</span><br><span class="line">f(&apos;lion&apos;)   = 8771</span><br><span class="line">f(&apos;rabbit&apos;) = 2359</span><br></pre></td></tr></table></figure></p>
+<p>then:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>Hash value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2123</td>
+<td>point to row 1</td>
+</tr>
+<tr>
+<td>2359</td>
+<td>point to row 4</td>
+</tr>
+<tr>
+<td>6417</td>
+<td>point to row 2</td>
+</tr>
+<tr>
+<td>8771</td>
+<td>point to row 3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Mysql calculate query’s hash value to decide<br>which pointer or a pointer list, sql want.</li>
+<li>Because index it’s self only store a <code>short</code> value,<br>so hash code’s length is not determined by data type.</li>
+</ul>
+<h2 id="Some-limit"><a href="#Some-limit" class="headerlink" title="Some limit"></a>Some limit</h2><ol>
+<li>Index only have hash code, so can’t avoid table space i/o.<br>But if table engine is memory, that’s not affected much.</li>
+<li>Hash index can’t be used to sort query collection.</li>
+<li>Not support part match, it only rely on hash code.</li>
+<li>Only support <code>equal</code> operation like:<br><code>=</code> <code>&lt;&gt;</code> <code>in()</code> <code>not in()</code></li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/30/raspberry-home-media/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/30/raspberry-home-media/" class="post-title-link" itemprop="url">raspberry home media</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-30 20:06:20" itemprop="dateCreated datePublished" datetime="2017-04-30T20:06:20+08:00">2017-04-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>umask=0000</code> mean to all user <code>rwx</code></li>
+<li><code>0</code> followed mean no backup</li>
+<li><code>0</code> at last mean no <code>fsck</code> sequential check.</li>
+</ul>
+<h2 id="Mount-disk"><a href="#Mount-disk" class="headerlink" title="Mount disk"></a>Mount disk</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /mnt/seagate_2.5_80</span><br><span class="line">sudo mount -o uid=pi,gid=pi /dev/sda1 /mnt/seagate_2.5_80</span><br><span class="line">sudo umount /mnt/seagate_2.5_80</span><br></pre></td></tr></table></figure>
+<p><code>sda1</code>:</p>
+<ul>
+<li><code>sd</code> mean usb equipment</li>
+<li><code>a</code> mean first equipment</li>
+<li><code>1</code> mean the first partition</li>
+</ul>
+<p><a href="http://elinux.org/RPi_Adding_USB_Drives" target="_blank" rel="noopener">http://elinux.org/RPi_Adding_USB_Drives</a><br><a href="http://shumeipai.nxez.com/2013/09/08/raspberry-pi-to-mount-the-removable-hard-disk.html#comments" target="_blank" rel="noopener">raspberry-pi-to-mount-the-removable-hard-disk</a></p>
+<h2 id="Install-MiniDLNA"><a href="#Install-MiniDLNA" class="headerlink" title="Install MiniDLNA"></a>Install MiniDLNA</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install minidlna</span><br></pre></td></tr></table></figure>
+<h3 id="config-file"><a href="#config-file" class="headerlink" title="config file"></a>config file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/minidlna.conf</span><br><span class="line">media_dir=/mnt/seagate_2.5_80</span><br><span class="line">db_dir=/var/lib/minidlna</span><br><span class="line">listening_ip=192.168.3.1</span><br><span class="line">port=8200</span><br><span class="line">friendly_name=DLNA</span><br></pre></td></tr></table></figure>
+<h3 id="commands"><a href="#commands" class="headerlink" title="commands"></a>commands</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># start</span><br><span class="line">sudo service minidlna start</span><br><span class="line"># stop</span><br><span class="line">sudo service minidlna stop</span><br><span class="line">sudo killall minidlna</span><br><span class="line"># uninstall</span><br><span class="line">sudo apt-get remove --purge minidlna</span><br><span class="line"># auto load</span><br><span class="line">sudo update-rc.d minidlna defaults</span><br><span class="line"># cancel auto load</span><br><span class="line">sudo update-rc.d -f minidlna remove</span><br><span class="line"># reflesh resouces</span><br><span class="line">sudo service minidlna force-reload</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/29/B-Tree-index-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/29/B-Tree-index-in-mysql/" class="post-title-link" itemprop="url">B-Tree index in mysql</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-29 23:34:29" itemprop="dateCreated datePublished" datetime="2017-04-29T23:34:29+08:00">2017-04-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   birthday   date           not null,</span><br><span class="line">   gender     enum(&apos;m&apos;, &apos;f&apos;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+<p>Create a b-tree index by two name and birthday.</p>
+<p><strong>B-Tree structure’s data is Sequential</strong></p>
+<h2 id="Use-B-Tree-index"><a href="#Use-B-Tree-index" class="headerlink" title="Use B-Tree index"></a>Use B-Tree index</h2><blockquote>
+<p>First of all query’s sequential is required<br>    last_name -&gt; first_name -&gt; birthday<br>    if miss a key then the later condition is invalid.</p>
+</blockquote>
+<ol>
+<li><strong>Match the full value</strong> to all fields specific val.</li>
+<li><strong>Match a leftmost prefix</strong> search the the man who’s last_name is ‘Leon’</li>
+<li><strong>Match a column prefix</strong> last_name like ‘L%’<br>ps. the follow condition will be useless</li>
+<li><strong>Match a range of values</strong><br>date_format(birthday, ‘%Y-%m-%d’) &gt; ‘2017-04-29’ and<br>date_format(birthday, ‘%Y-%m-%d’) &lt; ‘2017-05-01’</li>
+<li><strong>Match one part exactly and match a range on another part</strong><br>last_name=’Leon’ and first_name like ‘L%’</li>
+</ol>
+<h2 id="Rule"><a href="#Rule" class="headerlink" title="Rule"></a>Rule</h2><ol>
+<li>Sql condition in B-Tree index must use the first field in index first.</li>
+<li>Sequential search condition, jump is useless(follower)</li>
+<li>Put range search condtion to the end of where<br>the follow index field is invalid</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/24/Introduce-Shiro/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/24/Introduce-Shiro/" class="post-title-link" itemprop="url">Introduce Shiro</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-24 13:41:20" itemprop="dateCreated datePublished" datetime="2017-04-24T13:41:20+08:00">2017-04-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="http://dl2.iteye.com/upload/attachment/0093/9788/d59f6d02-1f45-3285-8983-4ea5f18111d5.png" alt><br><strong>Shiro can be used in</strong></p>
+<ul>
+<li><em>Authentication</em> check current <code>user</code> has identity</li>
+<li><em>Authorization</em> check <code>user</code>‘s priority, what he can do</li>
+<li><em>Session management</em> when <code>user</code> not logout, it’s info will be storage in session.</li>
+<li><em>Cryptography</em> protect data, like password.</li>
+<li><em>Web support</em> easy integrate in web environment</li>
+<li><em>caching</em> like <code>user</code>‘s role/priority, for improve performence.</li>
+<li><em>Concurrency</em> support mulity thread priority share.</li>
+<li><em>Testing</em> test support.</li>
+<li><em>Run as</em> for <code>user</code> use other user’s mask</li>
+<li><em>Remember me</em> next time come, no more login.</li>
+</ul>
+<p><strong>Shiro wouldn’t maintain user/priority info</strong></p>
+<h2 id="See-shiro-from-outside"><a href="#See-shiro-from-outside" class="headerlink" title="See shiro from outside"></a>See shiro from outside</h2><p><img src="http://dl2.iteye.com/upload/attachment/0093/9790/5e0e9b41-0cca-367f-8c87-a8398910e7a6.png" alt></p>
+<ul>
+<li><em>Subject</em> represent a request entry from net, like user/ robot/ crawler</li>
+<li><em>SecurityManager</em> it’s the core of shiro, it’s the security executor.</li>
+<li><em>Realm</em> it’s the security data, like a class of user.</li>
+</ul>
+<p><strong>1. Use Subject to authentication and authorization, Subject entrust to SecurityManager</strong><br><strong>2. SecurityManager need Realm to judge whether a user is the use</strong></p>
+<h2 id="See-shiro-from-inside"><a href="#See-shiro-from-inside" class="headerlink" title="See shiro from inside"></a>See shiro from inside</h2><p><img src="http://dl2.iteye.com/upload/attachment/0093/9792/9b959a65-799d-396e-b5f5-b4fcfe88f53c.png" alt></p>
+<ul>
+<li><em>Subject</em> framework’s main body</li>
+<li><em>SecurityManager</em> like <code>DispatcherServlet</code> in SpringMVC, he controlls global; it’s shiro’s heart.</li>
+<li><em>Authenticator</em> this is a extention point</li>
+<li><em>Authrizer</em> the request controller, determain whether subject has priority to do so.</li>
+<li><em>Realm</em> maybe JDBC/ LDAP/ CAS</li>
+<li><em>SessionManager</em> manage session’s life cycle.</li>
+<li><em>SessionDAO</em> if we wan’t to put session into redis, we can implements SessionDao in ourselves.</li>
+<li><em>CacheManager</em> put user/role/priority into it, for improving performence.</li>
+<li><em>Cryptography</em> shiro improve some encryption module.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/19/Traversal-in-freemarker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/19/Traversal-in-freemarker/" class="post-title-link" itemprop="url">Traversal in freemarker</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-19 18:54:30" itemprop="dateCreated datePublished" datetime="2017-04-19T18:54:30+08:00">2017-04-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><code>List&lt;Question&gt; question = new ArrayList&lt;Question&gt;();</code><br><code>Map&lt;Question, List&lt;Option&gt;&gt; mapping = new LinkedHashMap&lt;Question, List&lt;Option&gt;&gt;();</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;#if question??&gt;</span><br><span class="line">  &lt;#list question as ask&gt;</span><br><span class="line">    &lt;#list options[ask.id?c] as option&gt;</span><br><span class="line">      &lt;#if option.status = 0&gt;right&lt;#else&gt;false&lt;/#if&gt;</span><br><span class="line">    &lt;/#list&gt;</span><br><span class="line">  &lt;/#list&gt;</span><br><span class="line">&lt;/#if&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Is freemarker’s key <strong>only be String</strong> -_- shit.</li>
+<li>Why can’t use object as a key</li>
+<li>Use <code>?c</code> transform int varable to string</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">186</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

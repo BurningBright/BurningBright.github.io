@@ -1,7 +1,3214 @@
-<!DOCTYPE html><html lang="en"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>BurningBright</title><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/5.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">BurningBright</h1><a id="logo" href="/.">BurningBright</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h2 class="post-title"><a href="/2017/01/28/lucene-demo/">lucene demo</a></h2><div class="post-meta">2017-01-28</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Build-Index"><a href="#Build-Index" class="headerlink" title="Build Index"></a>Build Index</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.Analyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.standard.StandardAnalyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Field;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.TextField;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriter;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriterConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.Directory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.FSDirectory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.RAMDirectory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Indexer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>  IndexWriter writer;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例化写索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Indexer</span><span class="params">(String indexDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Analyzer analyzer=<span class="keyword">new</span> StandardAnalyzer();<span class="comment">//分词器</span></span><br><span class="line">        IndexWriterConfig writerConfig=<span class="keyword">new</span> IndexWriterConfig(analyzer);<span class="comment">//写索引配置</span></span><br><span class="line">        <span class="comment">//Directory ramDirectory= new RAMDirectory();//索引写的内存</span></span><br><span class="line">        Directory directory= FSDirectory.open(Paths.get(indexDir));<span class="comment">//索引存储磁盘位置</span></span><br><span class="line">        writer=<span class="keyword">new</span> IndexWriter(directory,writerConfig);<span class="comment">//实例化一个写索引</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭写索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加指定目录的所有文件的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">index</span><span class="params">(String dataDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File[] files=<span class="keyword">new</span> File(dataDir).listFiles();<span class="comment">//得到指定目录的文档数组</span></span><br><span class="line">        <span class="keyword">for</span>(File file:files)&#123;</span><br><span class="line">            indexFile(file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> writer.numDocs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">indexFile</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"索引文件:"</span>+file.getCanonicalPath());<span class="comment">//打印索引到的文件路径信息</span></span><br><span class="line">        Document document=getDocument(file);<span class="comment">//得到一个文档信息，相对一个表记录</span></span><br><span class="line">        writer.addDocument(document);<span class="comment">//写入到索引，相当于插入一个表记录</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个文档记录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Document <span class="title">getDocument</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Document document=<span class="keyword">new</span> Document();<span class="comment">//实例化一个文档</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"context"</span>,<span class="keyword">new</span> FileReader(file)));<span class="comment">//添加一个文档信息，相当于一个数据库表字段</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"fileName"</span>,file.getName(), Field.Store.YES));<span class="comment">//添加文档的名字属性</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"filePath"</span>,file.getCanonicalPath(),Field.Store.YES));<span class="comment">//添加文档的路径属性</span></span><br><span class="line">        <span class="keyword">return</span> document;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []ages)</span></span>&#123;</span><br><span class="line">        String indexDir=<span class="string">"E:\\LuceneIndex"</span>;</span><br><span class="line">        String dataDir=<span class="string">"E:\\LuceneTestData"</span>;</span><br><span class="line">        Indexer indexer=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> indexSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            indexer=<span class="keyword">new</span> Indexer(indexDir);</span><br><span class="line">            indexSum= indexer.index(dataDir);</span><br><span class="line">            System.out.printf(<span class="string">"完成"</span>+indexSum+<span class="string">"个文件的索引"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                indexer.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div><p class="readmore"><a href="/2017/01/28/lucene-demo/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/28/lucene-concept/">lucene concept</a></h2><div class="post-meta">2017-01-28</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Document"><a href="#Document" class="headerlink" title="Document"></a>Document</h2><p>Document used to describe a document, it can be a html page, a email or a text file. a Document made by a series of File.You can imagine a record of DB as a Document, fields as Fields object</p></div><p class="readmore"><a href="/2017/01/28/lucene-concept/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/27/Apache-Lucene-Core/">Apache Lucene Core</a></h2><div class="post-meta">2017-01-27</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Apache LuceneTM is a high-performance, full-featured text search engine library<br>written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform.<br>Apache Lucene is an open source project available for free download.<br>Please use the links on the right to access Lucene.</p></div><p class="readmore"><a href="/2017/01/27/Apache-Lucene-Core/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/26/collection-and-array/">collection and array</a></h2><div class="post-meta">2017-01-26</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Collection-to-array"><a href="#Collection-to-array" class="headerlink" title="Collection to array"></a>Collection to array</h2><ol></ol></div><p class="readmore"><a href="/2017/01/26/collection-and-array/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/26/gzip-stream/">gzip stream</a></h2><div class="post-meta">2017-01-26</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
-<p>Use GZIPOutputStream ZipOutputStream packing the output<br>maybe it’s destination a file or a socket, it’s not the  point. usually we use generic paradigm the reprecent the  data source in stream and the compressed data out stream</p></blockquote></div><p class="readmore"><a href="/2017/01/26/gzip-stream/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/24/url-encoding/">url encoding</a></h2><div class="post-meta">2017-01-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ul>
-<li><p>RFC 3986 section 2.2 reserved january 2005</p></li></ul></div><p class="readmore"><a href="/2017/01/24/url-encoding/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/24/mybatis-foreach-error/">mybatis foreach error</a></h2><div class="post-meta">2017-01-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Parameter-‘-frch-item-0’-not-found-Available-parameters-are-list"><a href="#Parameter-‘-frch-item-0’-not-found-Available-parameters-are-list" class="headerlink" title="Parameter ‘__frch_item_0’ not found. Available parameters are [list]"></a>Parameter ‘__frch_item_0’ not found. Available parameters are [list]</h2><p><strong>Mybatis parameter in list</strong></p></div><p class="readmore"><a href="/2017/01/24/mybatis-foreach-error/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/24/hexo-install/">hexo install</a></h2><div class="post-meta">2017-01-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-amp-theme"><a href="#Install-amp-theme" class="headerlink" title="Install &amp; theme"></a>Install &amp; theme</h2><blockquote></blockquote></div><p class="readmore"><a href="/2017/01/24/hexo-install/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/24/mybatis-foreach/">mybatis foreach</a></h2><div class="post-meta">2017-01-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><table>
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="BurningBright">
+<meta property="og:url" content="http://linchenguang.com/page/18/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BurningBright">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/page/18/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/01/lucene-index-file-constructure-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/01/lucene-index-file-constructure-1/" class="post-title-link" itemprop="url">lucene index file constructure (1)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-01 18:59:24" itemprop="dateCreated datePublished" datetime="2017-02-01T18:59:24+08:00">2017-02-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ul>
+<li>Index<ul>
+<li>In Lucene an Index is in a directory</li>
+<li>All files constitute an Index</li>
+</ul>
+</li>
+<li>Segment<ul>
+<li>An Index could contain a lot of Segments, each Segment is independent.<br>The new added document could be build into a new Segment, different Segment can be merged.</li>
+<li>If files prefix is same, they belong to same Segment, like “_0”, “_1”, “_2”.</li>
+<li>segments.gen and segments_X is Segment’s metaldata, storage it’s propertites information.</li>
+</ul>
+</li>
+<li>Document<ul>
+<li>Document is the basic unit in building Index. Different Document storage in different Segment, a Segment can contain a lot of Documents.</li>
+<li>New added Document is in Segment new build, when Segment be merged, different document be merged into same Segment.</li>
+</ul>
+</li>
+<li>Field<ul>
+<li>A document may contain different type informations, like time, content, write and so on, it can be index separately, and be storage in different Term.</li>
+<li>Different Term’s Index way can be different, when analysis Term’s storage, we would explain it.</li>
+</ul>
+</li>
+<li>Term<ul>
+<li>Term is the basic unit in Index. It is the string after lexical analysis and language processing</li>
+</ul>
+</li>
+</ul>
+<div class="table-container">
+<table>
 <thead>
 <tr>
-<th>Option</th>
-<th style="text-align:right">Description</th></tr></thead></table></div><p class="readmore"><a href="/2017/01/24/mybatis-foreach/">Read More</a></p></div><div class="post"><h2 class="post-title"><a href="/2017/01/24/skip-render/">skip_render</a></h2><div class="post-meta">2017-01-24</div><div class="post-content"><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="No-translate-source-dirctory"><a href="#No-translate-source-dirctory" class="headerlink" title="No translate source dirctory"></a>No translate source dirctory</h2><p>set _config.yml skip_render to ignore translate like:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">skip_render: Demo/*.html</span><br></pre></td></tr></table></figure></p></div><p class="readmore"><a href="/2017/01/24/skip-render/">Read More</a></p></div><nav class="page-navigator"><a class="extend prev" rel="prev" href="/page/17/">Previous</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/19/">Next</a></nav></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://linchenguang.com"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/algorithm/">algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/blog/">blog</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/cryptograpy/">cryptograpy</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/db/">db</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/java/">java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/java/version/">version</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript/">javascript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/latex/">latex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/math/">math</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/ml/">ml</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/php/">php</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/python/">python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/raspberry/">raspberry</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/regex/">regex</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/search/">search</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/spring/">spring</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/theory/">theory</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tool/">tool</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/version/">version</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/sort/" style="font-size: 15px;">sort</a> <a href="/tags/hello/" style="font-size: 15px;">hello</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mybatis/" style="font-size: 15px;">mybatis</a> <a href="/tags/yml/" style="font-size: 15px;">yml</a> <a href="/tags/encode/" style="font-size: 15px;">encode</a> <a href="/tags/regex/" style="font-size: 15px;">regex</a> <a href="/tags/collection/" style="font-size: 15px;">collection</a> <a href="/tags/array/" style="font-size: 15px;">array</a> <a href="/tags/compress/" style="font-size: 15px;">compress</a> <a href="/tags/lucene/" style="font-size: 15px;">lucene</a> <a href="/tags/apache/" style="font-size: 15px;">apache</a> <a href="/tags/fundamental/" style="font-size: 15px;">fundamental</a> <a href="/tags/constructure/" style="font-size: 15px;">constructure</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/literal/" style="font-size: 15px;">literal</a> <a href="/tags/ascii/" style="font-size: 15px;">ascii</a> <a href="/tags/anchor/" style="font-size: 15px;">anchor</a> <a href="/tags/syntax/" style="font-size: 15px;">syntax</a> <a href="/tags/guide/" style="font-size: 15px;">guide</a> <a href="/tags/group/" style="font-size: 15px;">group</a> <a href="/tags/keyboard/" style="font-size: 15px;">keyboard</a> <a href="/tags/repetition/" style="font-size: 15px;">repetition</a> <a href="/tags/command/" style="font-size: 15px;">command</a> <a href="/tags/rename/" style="font-size: 15px;">rename</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/php/" style="font-size: 15px;">php</a> <a href="/tags/difference/" style="font-size: 15px;">difference</a> <a href="/tags/selector/" style="font-size: 15px;">selector</a> <a href="/tags/file/" style="font-size: 15px;">file</a> <a href="/tags/rsa/" style="font-size: 15px;">rsa</a> <a href="/tags/algorithm/" style="font-size: 15px;">algorithm</a> <a href="/tags/factor/" style="font-size: 15px;">factor</a> <a href="/tags/inverse/" style="font-size: 15px;">inverse</a> <a href="/tags/math/" style="font-size: 15px;">math</a> <a href="/tags/first/" style="font-size: 15px;">first</a> <a href="/tags/probability/" style="font-size: 15px;">probability</a> <a href="/tags/function/" style="font-size: 15px;">function</a> <a href="/tags/elasticsearch/" style="font-size: 15px;">elasticsearch</a> <a href="/tags/elastic/" style="font-size: 15px;">elastic</a> <a href="/tags/character/" style="font-size: 15px;">character</a> <a href="/tags/proxy/" style="font-size: 15px;">proxy</a> <a href="/tags/pattern/" style="font-size: 15px;">pattern</a> <a href="/tags/freemarker/" style="font-size: 15px;">freemarker</a> <a href="/tags/security/" style="font-size: 15px;">security</a> <a href="/tags/shiro/" style="font-size: 15px;">shiro</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/btree/" style="font-size: 15px;">btree</a> <a href="/tags/hash/" style="font-size: 15px;">hash</a> <a href="/tags/strategy/" style="font-size: 15px;">strategy</a> <a href="/tags/redis/" style="font-size: 15px;">redis</a> <a href="/tags/memcached/" style="font-size: 15px;">memcached</a> <a href="/tags/oracle/" style="font-size: 15px;">oracle</a> <a href="/tags/sql/" style="font-size: 15px;">sql</a> <a href="/tags/jvm/" style="font-size: 15px;">jvm</a> <a href="/tags/quantum/" style="font-size: 15px;">quantum</a> <a href="/tags/config/" style="font-size: 15px;">config</a> <a href="/tags/thread/" style="font-size: 15px;">thread</a> <a href="/tags/linear/" style="font-size: 15px;">linear</a> <a href="/tags/graph/" style="font-size: 15px;">graph</a> <a href="/tags/computer/" style="font-size: 15px;">computer</a> <a href="/tags/string/" style="font-size: 15px;">string</a> <a href="/tags/http/" style="font-size: 15px;">http</a> <a href="/tags/install/" style="font-size: 15px;">install</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/solr/" style="font-size: 15px;">solr</a> <a href="/tags/unicode/" style="font-size: 15px;">unicode</a> <a href="/tags/symbol/" style="font-size: 15px;">symbol</a> <a href="/tags/protocol/" style="font-size: 15px;">protocol</a> <a href="/tags/audio/" style="font-size: 15px;">audio</a> <a href="/tags/spring/" style="font-size: 15px;">spring</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/05/20/Throttling-pattern/">Throttling pattern</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/10/bayes-formula-comprehend/">bayes' formula comprehend</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/05/07/hide-csdn-ad-in-chrome/">hide csdn ad in chrome</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/29/compile-spring-5-x-in-idea/">compile spring 5.x in idea</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/11/Bayes-theorem/">Bayes' theorem</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/29/thread-pool-anaylsis/">thread pool anaylsis</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/27/troubleshooting-high-cpu-occupancy-rate/">troubleshooting high cpu occupancy rate</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/22/Lucene-fmn-index-output-format/">Lucene fmn index & output type</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/21/download-outside-GFW/">download outside GFW</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/11/Nginx-https-in-aws/">Nginx https in aws</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Blogroll</i></div><ul></ul><a href="http://www.linchenguang.com/sql" title="sql" target="_blank">sql</a><ul></ul><a href="http://www.linchenguang.com/cron" title="cron" target="_blank">cron</a><ul></ul><a href="http://www.linchenguang.com/regex" title="regex" target="_blank">regex</a><ul></ul><a href="http://www.linchenguang.com/keyboard" title="keyboard" target="_blank">keyboard</a><ul></ul><a href="http://www.linchenguang.com/toy" title="toy" target="_blank">toy</a><ul></ul><a href="http://www.linchenguang.com/KaTeX" title="KaTeX" target="_blank">KaTeX</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">BurningBright.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+<th>名称</th>
+<th>文件拓展名</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>段文件</td>
+<td>segments_N</td>
+<td style="text-align:center">保存了索引包含的多少段，每个段包含多少文档。</td>
+</tr>
+<tr>
+<td>段元数据</td>
+<td>.si</td>
+<td style="text-align:center">保存了索引段的元数据信息</td>
+</tr>
+<tr>
+<td>锁文件&nbsp;</td>
+<td>write.lock</td>
+<td style="text-align:center">防止多个IndexWriter同时写到一份索引文件中。</td>
+</tr>
+<tr>
+<td>复合索引文件</td>
+<td>.cfs, .cfe</td>
+<td style="text-align:center">把所有索引信息都存储到复合索引文件中。</td>
+</tr>
+<tr>
+<td>索引段的域信息</td>
+<td>.fnm</td>
+<td style="text-align:center">保存此段包含的域，以及域的名称和域的索引类型。</td>
+</tr>
+<tr>
+<td>索引段的文档信息</td>
+<td>.fdx, .fdt</td>
+<td style="text-align:center">保存此段包含的文档，每篇文档中包含的域以及每个域的信息。</td>
+</tr>
+<tr>
+<td>索引段Term信息</td>
+<td>.tim, .tip</td>
+<td style="text-align:center">.tim文件中存储着每个域中Term的统计信息且保存着指向  .doc, .pos, and .pay 索引文件的指针。  .tip文件保存着Term 字典的索引信息，可支持随机访问。</td>
+</tr>
+<tr>
+<td>文档中Term词频和跳表信息</td>
+<td>.doc</td>
+<td style="text-align:center">保存此段中每个文档对应的Term频率信息。</td>
+</tr>
+<tr>
+<td>文档中Term的位置信息</td>
+<td>.pos</td>
+<td style="text-align:center">保存此段中每个文档对应的Term位置信息。</td>
+</tr>
+<tr>
+<td>文档的有效载荷和部分位置信息</td>
+<td>.pay</td>
+<td style="text-align:center">保存此段中每个文档的有效载体(payload) 和 Term的位置信息(offsets)。 其中有一部分的Term位置信息存储在.pos文件中。</td>
+</tr>
+<tr>
+<td>索引字段加权因子</td>
+<td>.nvd, .nvm</td>
+<td style="text-align:center">.nvm 文件保存索引字段加权因子的元数据  .nvd 文件保存索引字段加权数据</td>
+</tr>
+<tr>
+<td>索引文档加权因子</td>
+<td>.dvd, .dvm</td>
+<td style="text-align:center">.dvm 文件保存索引文档加权因子的元数据  .dvd 文件保存索引文档加权数据</td>
+</tr>
+<tr>
+<td>索引矢量数据</td>
+<td>.tvx, .tvd, .tvf</td>
+<td style="text-align:center">.tvd 存储此段文档的Term、Term频率、位置信息、有效载荷等信息。  .tvx 索引文件，用于把特定的文档加载到内存。  .tvf 保存索引字段的矢量信息。</td>
+</tr>
+<tr>
+<td>有效文档</td>
+<td>.liv</td>
+<td style="text-align:center">保存有效文档的索引文件信息</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Extension</th>
+<th style="text-align:center">Brief Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Segments File</td>
+<td>segments.gen, segments_N</td>
+<td style="text-align:center">Stores information about segments</td>
+</tr>
+<tr>
+<td>Lock File</td>
+<td>write.lock</td>
+<td style="text-align:center">The Write lock prevents multiple IndexWriters from writing to the same file.</td>
+</tr>
+<tr>
+<td>Compound File</td>
+<td>.cfs</td>
+<td style="text-align:center">An optional “virtual” file consisting of all the other index files for systems that frequently run out of file handles.</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>.fnm</td>
+<td style="text-align:center">Stores information about the fields</td>
+</tr>
+<tr>
+<td>Field Index</td>
+<td>.fdx</td>
+<td style="text-align:center">Contains pointers to field data</td>
+</tr>
+<tr>
+<td>Field Data</td>
+<td>.fdt</td>
+<td style="text-align:center">The stored fields for documents</td>
+</tr>
+<tr>
+<td>Term Infos</td>
+<td>.tis</td>
+<td style="text-align:center">Part of the term dictionary, stores term info</td>
+</tr>
+<tr>
+<td>Term Info Index</td>
+<td>.tii</td>
+<td style="text-align:center">The index into the Term Infos file</td>
+</tr>
+<tr>
+<td>Frequencies</td>
+<td>.frq</td>
+<td style="text-align:center">Contains the list of docs which contain each term along with frequency</td>
+</tr>
+<tr>
+<td>Positions</td>
+<td>.prx</td>
+<td style="text-align:center">Stores position information about where a term occurs in the index</td>
+</tr>
+<tr>
+<td>Norms</td>
+<td>.nrm</td>
+<td style="text-align:center">Encodes length and boost factors for docs and fields</td>
+</tr>
+<tr>
+<td>Term Vector Index</td>
+<td>.tvx</td>
+<td style="text-align:center">Stores offset into the document data file</td>
+</tr>
+<tr>
+<td>Term Vector Documents</td>
+<td>.tvd</td>
+<td style="text-align:center">Contains information about each document that has term vectors</td>
+</tr>
+<tr>
+<td>Term Vector Fields</td>
+<td>.tvf</td>
+<td style="text-align:center">The field level info about term vectors</td>
+</tr>
+<tr>
+<td>Deleted Documents</td>
+<td>.del</td>
+<td style="text-align:center">Info about what files are deleted</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping"><a href="#Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping" class="headerlink" title="Lucene’s index not only storage positive mapping but also storage negative mapping"></a>Lucene’s index not only storage positive mapping but also storage negative mapping</h2><h3 id="Positive-mapping"><a href="#Positive-mapping" class="headerlink" title="Positive mapping"></a>Positive mapping</h3><ul>
+<li>From Index to Term : Index –&gt; segment –&gt; Document –&gt; Field –&gt; Term</li>
+<li>Each upper floor storage it’s children floors’ matedata. Like a province, a city, a county, they got it’s chilren’s info.<ul>
+<li>segments_N : how many segment the Index have, how many Documents each segment have.</li>
+<li>.fnm : how many Fields the segment contain, each Field’s name and Index way.</li>
+<li>.fdx , .fdt : all Documents the segment have, how many Fields each Document have, what information each field recorded.</li>
+<li>.tvx , .tvd , .tvf : how many Documents the segment have, how many Fields each Document have, how many words each Field have, every words’ string, position, and so on.<h3 id="Negative-mapping"><a href="#Negative-mapping" class="headerlink" title="Negative mapping"></a>Negative mapping</h3></li>
+</ul>
+</li>
+<li>Term -&gt; Document<ul>
+<li>.tis , .tii : Term dictionary, that is segment’s words sort by alphabet sequencely.</li>
+<li>.frq : posting sorted table, that is table that contain all words’ Document ID.</li>
+<li>.prx : the word position in Document at posting sorted table.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Primary-Type"><a href="#Primary-Type" class="headerlink" title="Primary Type"></a>Primary Type</h2><ul>
+<li>Byte : the most basic type, 8 bits long.</li>
+<li>UInt32 : composed by 4 Bytes.</li>
+<li>UInt64 : composed by 8 Bytes.</li>
+<li>VInt :<ul>
+<li>May be composed by many Bytes.</li>
+<li>Front byte represent lower number bit.</li>
+<li>For example: 51271 - [1]1000111, [1]0010000, [0]0000011</li>
+</ul>
+</li>
+<li>Chars : UTF-8 encoding bytes.</li>
+<li>String : first a VInt represent Char numbers, then a series of Chars.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/30/Full-text-retrieval-fundamental-2/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (2)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="How-to-build-Index"><a href="#How-to-build-Index" class="headerlink" title="How to build Index"></a>How to build Index</h2><h3 id="1-Prepare-origin-Document"><a href="#1-Prepare-origin-Document" class="headerlink" title="1. Prepare origin Document"></a>1. Prepare origin Document</h3><ul>
+<li>file1: Researches of Chinese full-text search technologies based on word indexing is related to many fields.</li>
+<li>file2: The Index Data Service provides basic full-text functions for storage and retrieval of terms and indexed summary documents.<h3 id="2-Put-Document-TOKENIZER"><a href="#2-Put-Document-TOKENIZER" class="headerlink" title="2. Put Document TOKENIZER"></a>2. Put Document TOKENIZER</h3></li>
+</ul>
+<ol>
+<li>split Document into words</li>
+<li>separate <code>symbols</code></li>
+<li><p>separate <code>Stop word</code></p>
+<p>Stop word in english like: “like”, “a”, “this”…<br>After Tokenier got Token:<br>“Researches” “Chinese” “full” “text” “search” “technologies” “word” “indexing” “related” “many” “fields” “Index” “Data” “Service” “provides” “basic” “full” “text” “functions” “storage” “retrieval” “terms” “indexed” “summary” “documents”</p>
+</li>
+</ol>
+<h3 id="3-Put-TOKEN-to-LINGUISTIC-PROCESSOR"><a href="#3-Put-TOKEN-to-LINGUISTIC-PROCESSOR" class="headerlink" title="3. Put TOKEN to LINGUISTIC PROCESSOR"></a>3. Put TOKEN to LINGUISTIC PROCESSOR</h3><ol>
+<li>to Lowercase</li>
+<li>words reduce to root type like “fields” to “field” <code>stemming</code></li>
+<li><p>words to origin type like “indexed” to “index” <code>lemmatization</code></p>
+<p><strong><em>the difference between “Stemming” and “lemmatization”</em></strong></p>
+<ul>
+<li>same: make words to initial</li>
+<li><p>difference:</p>
+<blockquote>
+<ul>
+<li>Stemming is reduce</li>
+<li>lemmatization is change</li>
+</ul>
+</blockquote>
+</li>
+<li><p>difference in algorithm:</p>
+<blockquote>
+<ul>
+<li>Stemming is delete “s”, “ing”-&gt;”e”, “ational”-&gt;”ate”, “tional”-&gt; “tion”</li>
+<li>lemmatization is “drove” -&gt; “drive”</li>
+</ul>
+</blockquote>
+</li>
+<li>they are not mutex, but mates</li>
+</ul>
+<p><strong><em>After linguistic processor result be call <code>Term</code>:</em></strong><br>“researche” “chinese” “full” “text” “search” “technologie” “word” “index” “relate” “many” “field” “index” “data” “service” “provide” “basic” “full” “text” “function” “storage” “retrieve” “term” “index” “summary” “document”</p>
+<p>Because the linguistic processor when search drove, drive’s documents can be found.</p>
+</li>
+</ol>
+<h3 id="4-Put-TERM-to-INDEXER"><a href="#4-Put-TERM-to-INDEXER" class="headerlink" title="4. Put TERM to INDEXER"></a>4. Put TERM to INDEXER</h3><ol>
+<li>Build a dictionary in Term</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th style="text-align:right">Document ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>researche</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>chinese</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>full</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>text</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>search</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>technologie</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>word</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>relate</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>many</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>field</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>data</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>service</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>provide</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>basic</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>full</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>text</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>function</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>storage</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>retrieve</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>term</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>summary</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>document</td>
+<td style="text-align:right">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>sort table by key’s first letter</li>
+</ol>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th style="text-align:right">Document ID</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>basic</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>chinese</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>data</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>document</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>field</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>full</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>full</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>function</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>index</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>many</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>provide</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>relate</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>researche</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>retrieve</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>search</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>service</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>storage</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>summary</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>technologie</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>term</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>text</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>text</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>word</td>
+<td style="text-align:right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ol>
+<li>merge same Term into Posting List<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Term-[Document Frequency] | DocumentID-Frequency</span><br><span class="line">basic-1        2-1</span><br><span class="line">chinese-1     1-1</span><br><span class="line">data-1        2-1</span><br><span class="line">document-1    2-1</span><br><span class="line">field-1       1-1</span><br><span class="line">full-2        1-1 -&gt; 2-1</span><br><span class="line">function-1    2-1</span><br><span class="line">index-2       2-2 -&gt; 1-1</span><br><span class="line">many-1        1-1</span><br><span class="line">provide-1     2-1</span><br><span class="line">relate-1      1-1</span><br><span class="line">researche-1   1-1</span><br><span class="line">retrieve-2    2-1</span><br><span class="line">search-1      1-1</span><br><span class="line">service-2     2-1</span><br><span class="line">storage-2     2-1</span><br><span class="line">summary-2     2-1</span><br><span class="line">technologie-1 1-1</span><br><span class="line">term-2        2-1</span><br><span class="line">text-2        2-1 -&gt; 1-1</span><br><span class="line">word-1        1-1</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ul>
+<li>Document Frequency: Document appear times</li>
+<li>Frequency: Term appear times in Document</li>
+</ul>
+<p><strong><em> When searching “drive” “driving” “drove” “driven” will be processor to drive like build Index process </em></strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/30/Full-text-retrieval-fundamental-3/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (3)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="How-to-search-in-Index"><a href="#How-to-search-in-Index" class="headerlink" title="How to search in Index"></a>How to search in Index</h2><p> <strong>How to find the result you want most, or the most relevant result with query phrase?</strong></p>
+<h3 id="1-first-User-input-query-pharse"><a href="#1-first-User-input-query-pharse" class="headerlink" title="1. first: User input query pharse"></a>1. first: User input query pharse</h3><p>  <em>The basic query grammar like “AND”, “OR”, “NOT”.</em><br>  <code>elephant and tiger or lion not sheep</code></p>
+<h3 id="2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing"><a href="#2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing" class="headerlink" title="2. second: Query pharse lexical analysis, syntax analysis, and language processing"></a>2. second: Query pharse lexical analysis, syntax analysis, and language processing</h3><ol>
+<li>lexical analysis used to distinguish words and key words</li>
+<li>syntax analysis used to build a grammar tree by syntax rule</li>
+<li>language processing just like the processe in building Index. check page 2</li>
+</ol>
+<h3 id="3-third-Traverse-Index-get-result-that-fit-syntax-tree"><a href="#3-third-Traverse-Index-get-result-that-fit-syntax-tree" class="headerlink" title="3. third: Traverse Index, get result that fit syntax tree"></a>3. third: Traverse Index, get result that fit syntax tree</h3><ol>
+<li>first find the documents contain words(elephant tiger lion) in the posting list.</li>
+<li>second merge documents contain both elephant, tiger or lion.</li>
+<li>third separate documents contain sheep, got result contain both elephant, tiger or lion not sheep.</li>
+</ol>
+<h3 id="4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result"><a href="#4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result" class="headerlink" title="4. fourth: Sort result by relevant between query pharse and search result"></a>4. fourth: Sort result by relevant between query pharse and search result</h3><p> <strong>How to calculate the relevance between documents and query pharse?</strong><br> Toke query pharse as a shot document, scoring relevance between documents, the higher score is the higher rank document is.<br> <em>How to score the relevance between documents?</em><br> <strong><em>It’s not easy a thing</em></strong></p>
+<ul>
+<li>Check what is the important factors between documents</li>
+<li>Check the relation between these factors</li>
+</ul>
+<hr>
+<ul>
+<li>The process of finding the importance of a word (Term) to a document is called the weight (Term) process.</li>
+<li>The process of judging the relationship between Term to get document relevance using an algorithm called <code>Vector Space Model</code></li>
+</ul>
+<hr>
+<h2 id="Term-weight-process"><a href="#Term-weight-process" class="headerlink" title="Term weight process"></a>Term weight process</h2><p><strong>This is a simple classic implementation, lucene’s have a little difference</strong></p>
+<script type="math/tex; mode=display">w_{t_\eta}{_d} = tf_{t_\eta}{_d} \times log(n/df_t)</script><ul>
+<li>$w_{t_\eta}{_d}$ = the weight of the term t in document d</li>
+<li>$tf_{t_\eta}{_d}$ = frequency of term t in document d</li>
+<li>$n$ = total number of documents</li>
+<li>$df_t$ = the number of documents that contain term t</li>
+</ul>
+<ul>
+<li>Term Frequency (tf): How many times this Term show in this document, the bigger tf is , the more importance this Term is.</li>
+<li>Document Frequency (df)：How many documents contain this Term, the bigger df is, the less importance this Term is.</li>
+</ul>
+<p><strong>Like programmer, the deeper technology you leanr is better(tf big), the less technology people know is better (df little). When finding job your competitive power would be grate. Man’s value is about unsubsititutability</strong></p>
+<h2 id="Vector-Space-Model"><a href="#Vector-Space-Model" class="headerlink" title="Vector Space Model"></a>Vector Space Model</h2><p><strong>Less the two vector’s angle is the more relevance is</strong><br><strong>We take two vector’s consine as the score point</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Full-text-retrieval-fundamental-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/29/Full-text-retrieval-fundamental-1/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (1)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-29 22:01:21" itemprop="dateCreated datePublished" datetime="2017-01-29T22:01:21+08:00">2017-01-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Introduce"><a href="#Introduce" class="headerlink" title="Introduce"></a>Introduce</h2><ul>
+<li>结构化数据: 指有规律结构固定格式长度的数据, 如数据库</li>
+<li>非结构化数据: 指无规律不定长不固定格式的数据, 如邮件</li>
+<li>半结构化数据: XML/HTML等, 可按需求以不同形式处理</li>
+</ul>
+<p>非结构化数据又一种叫法叫全文数据。</p>
+<p>全文检索大体分两个过程，索引创建(Indexing)和搜索索引(Search)。</p>
+<ul>
+<li>索引创建：将现实世界中所有的结构化和非结构化数据提取信息，创建索引的过程。</li>
+<li>搜索索引：就是得到用户的查询请求，搜索创建的索引，然后返回结果的过程。</li>
+</ul>
+<p>全文检索就存在三个重要问题：</p>
+<ol>
+<li>索引里面究竟存些什么？(Index)</li>
+<li>如何创建索引？(Indexing)</li>
+<li>如何对索引进行搜索？(Search)</li>
+</ol>
+<h2 id="What-fuck-in-these-Index"><a href="#What-fuck-in-these-Index" class="headerlink" title="What fuck in these Index"></a>What fuck in these Index</h2><ul>
+<li>存的是<strong> 符号表 </strong> 通俗的说是个映射表</li>
+<li>从字符串到文件的映射是文件到字符串映射的反向过程，于是保存这种信息的索引称为<strong> 反向索引 </strong> 。</li>
+<li>左边的一系列为词典也叫Key</li>
+<li>右边的一系列为倒排表也叫Value</li>
+</ul>
+<p><em>建索引的好处是一次建立, 多次使用, 如果建索引的频率过于频繁反而会拖累整体性能</em></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Apache-Lucene-Demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/29/Apache-Lucene-Demo/" class="post-title-link" itemprop="url">Apache Lucene Demo</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-29 20:31:32" itemprop="dateCreated datePublished" datetime="2017-01-29T20:31:32+08:00">2017-01-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="IndexFiles"><a href="#IndexFiles" class="headerlink" title="IndexFiles"></a>IndexFiles</h2><p>As we discussed in the previous walk-through, the IndexFiles class creates a Lucene Index. Let’s take a look at how it does this.</p>
+<p>The main() method parses the command-line parameters, then in preparation for instantiating <code>IndexWriter</code>, opens a <code>Directory</code>, and instantiates <code>StandardAnalyzer</code> and <code>IndexWriterConfig</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;args.length;i++) &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="string">"-index"</span>.equals(args[i])) &#123;</span><br><span class="line">    indexPath = args[i+<span class="number">1</span>];</span><br><span class="line">    i++;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"-docs"</span>.equals(args[i])) &#123;</span><br><span class="line">    docsPath = args[i+<span class="number">1</span>];</span><br><span class="line">    i++;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"-update"</span>.equals(args[i])) &#123;</span><br><span class="line">    create = <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The value of the <code>-index</code> command-line parameter is the name of the <strong> filesystem directory </strong> where all index information should be stored. If IndexFiles is invoked with a relative path given in the -index command-line parameter, or if the -index command-line parameter is not given, causing the default relative index path “index” to be used, the index path will be created as a subdirectory of the current working directory (if it does not already exist). On some platforms, the index path may be created in a different directory (such as the user’s home directory).</p>
+<p>The <code>-docs</code> command-line parameter value is the location of the directory containing files <strong> to be indexed </strong> .</p>
+<p>The <code>-update</code> command-line parameter tells IndexFiles <strong> not to delete </strong> the index if it already exists. When -update is not given, IndexFiles will first wipe the slate clean before indexing any documents.</p>
+<p>Lucene <code>Directorys</code> are used by the IndexWriter to store information in the index. In addition to the <code>FSDirectory</code> implementation we are using, there are several other Directory subclasses that can write to RAM, to databases, etc.<br>(索引可以放在文件/内存/数据库…)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Directory dir = FSDirectory.open(Paths.get(indexPath));</span><br></pre></td></tr></table></figure>
+<p>Lucene <code>Analyzers</code> are processing pipelines that break up text into indexed tokens, a.k.a. terms, and optionally perform other operations on these tokens, e.g. downcasing, synonym insertion, filtering out unwanted tokens, etc. The Analyzer we are using is StandardAnalyzer, which creates tokens using the Word Break rules from the Unicode Text Segmentation algorithm specified in <a href="http://unicode.org/reports/tr29/" target="_blank" rel="noopener">Unicode Standard Annex #29</a>; converts tokens to lowercase; and then filters out stopwords. Stopwords are common language words such as articles (a, an, the, etc.) and other tokens that may have less value for searching. It should be noted that there are different rules for every language, and you should use the proper analyzer for each. Lucene currently provides Analyzers for a number of different languages (see the javadocs under <a href="http://lucene.apache.org/core/6_4_0/analyzers-common/overview-summary.html" target="_blank" rel="noopener">lucene/analysis/common/src/java/org/apache/lucene/analysis</a>).</p>
+<p>The IndexWriterConfig instance holds all configuration for IndexWriter. For example, we set the OpenMode to use here based on the value of the -update command-line parameter.</p>
+<p>Looking further down in the file, after IndexWriter is instantiated, you should see the indexDocs() code. This recursive function crawls the directories and creates <code>Document</code> objects. The Document is simply a data object to represent the text content from the file as well as its creation time and location. These instances are added to the IndexWriter. If the -update command-line parameter is given, the IndexWriterConfig OpenMode will be set to <code>OpenMode.CREATE_OR_APPEND</code>, and rather than adding documents to the index, the IndexWriter will <strong> update </strong> them in the index by attempting to find an already-indexed document with the same identifier (in our case, the file path serves as the identifier); deleting it from the index if it exists; and then adding the new document to the index.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Indexes a single document */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">indexDoc</span><span class="params">(IndexWriter writer, Path file, <span class="keyword">long</span> lastModified)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> (InputStream stream = Files.newInputStream(file)) &#123;</span><br><span class="line">    <span class="comment">// make a new, empty document</span></span><br><span class="line">    Document doc = <span class="keyword">new</span> Document();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the path of the file as a field named "path".  Use a</span></span><br><span class="line">    <span class="comment">// field that is indexed (i.e. searchable), but don't tokenize</span></span><br><span class="line">    <span class="comment">// the field into separate words and don't index term frequency</span></span><br><span class="line">    <span class="comment">// or positional information:</span></span><br><span class="line">    Field pathField = <span class="keyword">new</span> StringField(<span class="string">"path"</span>, file.toString(), Field.Store.YES);</span><br><span class="line">    doc.add(pathField);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the last modified date of the file a field named "modified".</span></span><br><span class="line">    <span class="comment">// Use a LongPoint that is indexed (i.e. efficiently filterable with</span></span><br><span class="line">    <span class="comment">// PointRangeQuery).  This indexes to milli-second resolution, which</span></span><br><span class="line">    <span class="comment">// is often too fine.  You could instead create a number based on</span></span><br><span class="line">    <span class="comment">// year/month/day/hour/minutes/seconds, down the resolution you require.</span></span><br><span class="line">    <span class="comment">// For example the long value 2011021714 would mean</span></span><br><span class="line">    <span class="comment">// February 17, 2011, 2-3 PM.</span></span><br><span class="line">    doc.add(<span class="keyword">new</span> LongPoint(<span class="string">"modified"</span>, lastModified));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the contents of the file to a field named "contents".  Specify a Reader,</span></span><br><span class="line">    <span class="comment">// so that the text of the file is tokenized and indexed, but not stored.</span></span><br><span class="line">    <span class="comment">// Note that FileReader expects the file to be in UTF-8 encoding.</span></span><br><span class="line">    <span class="comment">// If that's not the case searching for special characters will fail.</span></span><br><span class="line">    doc.add(<span class="keyword">new</span> TextField(<span class="string">"contents"</span>, <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(stream, StandardCharsets.UTF_8))));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (writer.getConfig().getOpenMode() == OpenMode.CREATE) &#123;</span><br><span class="line">      <span class="comment">// New index, so we just add the document (no old document can be there):</span></span><br><span class="line">      System.out.println(<span class="string">"adding "</span> + file);</span><br><span class="line">      writer.addDocument(doc);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// Existing index (an old copy of this document may have been indexed) so</span></span><br><span class="line">      <span class="comment">// we use updateDocument instead to replace the old one matching the exact</span></span><br><span class="line">      <span class="comment">// path, if present:</span></span><br><span class="line">      System.out.println(<span class="string">"updating "</span> + file);</span><br><span class="line">      writer.updateDocument(<span class="keyword">new</span> Term(<span class="string">"path"</span>, file.toString()), doc);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Searching-Files"><a href="#Searching-Files" class="headerlink" title="Searching Files"></a>Searching Files</h2><p>The SearchFiles class is quite simple. It primarily collaborates with an <code>IndexSearcher</code>, <code>StandardAnalyzer</code>, (which is used in the <code>IndexFiles</code> class as well) and a QueryParser. The query parser is constructed with an analyzer used to interpret your query text in the same way the documents are interpreted: finding word boundaries, downcasing, and removing useless words like ‘a’, ‘an’ and ‘the’. The Query object contains the results from the QueryParser which is passed to the searcher. Note that it’s also possible to programmatically construct a rich <code>Query</code> object without using the <code>query parser</code>. The <code>query</code> parser just enables decoding the <a href="http://lucene.apache.org/core/6_4_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package_description" target="_blank" rel="noopener">Lucene query syntax</a> into the corresponding Query object.</p>
+<p>SearchFiles uses the <code>IndexSearcher.search(query,n)</code> method that returns <code>TopDocs</code> with max n hits. The results are printed in pages, sorted by score (i.e. relevance).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Collect enough docs to show 5 pages</span></span><br><span class="line">TopDocs results = searcher.search(query, <span class="number">5</span> * hitsPerPage);</span><br><span class="line">ScoreDoc[] hits = results.scoreDocs;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/28/lucene-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/28/lucene-demo/" class="post-title-link" itemprop="url">lucene demo</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-28 21:52:23" itemprop="dateCreated datePublished" datetime="2017-01-28T21:52:23+08:00">2017-01-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Build-Index"><a href="#Build-Index" class="headerlink" title="Build Index"></a>Build Index</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.Analyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.standard.StandardAnalyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Field;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.TextField;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriter;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriterConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.Directory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.FSDirectory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.RAMDirectory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Indexer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>  IndexWriter writer;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例化写索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Indexer</span><span class="params">(String indexDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Analyzer analyzer=<span class="keyword">new</span> StandardAnalyzer();<span class="comment">//分词器</span></span><br><span class="line">        IndexWriterConfig writerConfig=<span class="keyword">new</span> IndexWriterConfig(analyzer);<span class="comment">//写索引配置</span></span><br><span class="line">        <span class="comment">//Directory ramDirectory= new RAMDirectory();//索引写的内存</span></span><br><span class="line">        Directory directory= FSDirectory.open(Paths.get(indexDir));<span class="comment">//索引存储磁盘位置</span></span><br><span class="line">        writer=<span class="keyword">new</span> IndexWriter(directory,writerConfig);<span class="comment">//实例化一个写索引</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭写索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加指定目录的所有文件的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">index</span><span class="params">(String dataDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File[] files=<span class="keyword">new</span> File(dataDir).listFiles();<span class="comment">//得到指定目录的文档数组</span></span><br><span class="line">        <span class="keyword">for</span>(File file:files)&#123;</span><br><span class="line">            indexFile(file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> writer.numDocs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">indexFile</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"索引文件:"</span>+file.getCanonicalPath());<span class="comment">//打印索引到的文件路径信息</span></span><br><span class="line">        Document document=getDocument(file);<span class="comment">//得到一个文档信息，相对一个表记录</span></span><br><span class="line">        writer.addDocument(document);<span class="comment">//写入到索引，相当于插入一个表记录</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个文档记录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Document <span class="title">getDocument</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Document document=<span class="keyword">new</span> Document();<span class="comment">//实例化一个文档</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"context"</span>,<span class="keyword">new</span> FileReader(file)));<span class="comment">//添加一个文档信息，相当于一个数据库表字段</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"fileName"</span>,file.getName(), Field.Store.YES));<span class="comment">//添加文档的名字属性</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"filePath"</span>,file.getCanonicalPath(),Field.Store.YES));<span class="comment">//添加文档的路径属性</span></span><br><span class="line">        <span class="keyword">return</span> document;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []ages)</span></span>&#123;</span><br><span class="line">        String indexDir=<span class="string">"E:\\LuceneIndex"</span>;</span><br><span class="line">        String dataDir=<span class="string">"E:\\LuceneTestData"</span>;</span><br><span class="line">        Indexer indexer=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> indexSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            indexer=<span class="keyword">new</span> Indexer(indexDir);</span><br><span class="line">            indexSum= indexer.index(dataDir);</span><br><span class="line">            System.out.printf(<span class="string">"完成"</span>+indexSum+<span class="string">"个文件的索引"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                indexer.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Read-amp-Query"><a href="#Read-amp-Query" class="headerlink" title="Read &amp; Query"></a>Read &amp; Query</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.Analyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.standard.StandardAnalyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Field;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.TextField;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriter;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriterConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.Directory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.FSDirectory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.RAMDirectory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Indexer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>  IndexWriter writer;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例化写索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Indexer</span><span class="params">(String indexDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Analyzer analyzer=<span class="keyword">new</span> StandardAnalyzer();<span class="comment">//分词器</span></span><br><span class="line">        IndexWriterConfig writerConfig=<span class="keyword">new</span> IndexWriterConfig(analyzer);<span class="comment">//写索引配置</span></span><br><span class="line">        <span class="comment">//Directory ramDirectory= new RAMDirectory();//索引写的内存</span></span><br><span class="line">        Directory directory= FSDirectory.open(Paths.get(indexDir));<span class="comment">//索引存储磁盘位置</span></span><br><span class="line">        writer=<span class="keyword">new</span> IndexWriter(directory,writerConfig);<span class="comment">//实例化一个写索引</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭写索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加指定目录的所有文件的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">index</span><span class="params">(String dataDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File[] files=<span class="keyword">new</span> File(dataDir).listFiles();<span class="comment">//得到指定目录的文档数组</span></span><br><span class="line">        <span class="keyword">for</span>(File file:files)&#123;</span><br><span class="line">            indexFile(file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> writer.numDocs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">indexFile</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"索引文件:"</span>+file.getCanonicalPath());<span class="comment">//打印索引到的文件路径信息</span></span><br><span class="line">        Document document=getDocument(file);<span class="comment">//得到一个文档信息，相对一个表记录</span></span><br><span class="line">        writer.addDocument(document);<span class="comment">//写入到索引，相当于插入一个表记录</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个文档记录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Document <span class="title">getDocument</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Document document=<span class="keyword">new</span> Document();<span class="comment">//实例化一个文档</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"context"</span>,<span class="keyword">new</span> FileReader(file)));<span class="comment">//添加一个文档信息，相当于一个数据库表字段</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"fileName"</span>,file.getName(), Field.Store.YES));<span class="comment">//添加文档的名字属性</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"filePath"</span>,file.getCanonicalPath(),Field.Store.YES));<span class="comment">//添加文档的路径属性</span></span><br><span class="line">        <span class="keyword">return</span> document;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []ages)</span></span>&#123;</span><br><span class="line">        String indexDir=<span class="string">"E:\\LuceneIndex"</span>;</span><br><span class="line">        String dataDir=<span class="string">"E:\\LuceneTestData"</span>;</span><br><span class="line">        Indexer indexer=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> indexSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            indexer=<span class="keyword">new</span> Indexer(indexDir);</span><br><span class="line">            indexSum= indexer.index(dataDir);</span><br><span class="line">            System.out.printf(<span class="string">"完成"</span>+indexSum+<span class="string">"个文件的索引"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                indexer.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/28/lucene-concept/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/28/lucene-concept/" class="post-title-link" itemprop="url">lucene concept</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-28 20:54:56" itemprop="dateCreated datePublished" datetime="2017-01-28T20:54:56+08:00">2017-01-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Document"><a href="#Document" class="headerlink" title="Document"></a>Document</h2><p>Document used to describe a document, it can be a html page, a email or a text file. a Document made by a series of File.You can imagine a record of DB as a Document, fields as Fields object</p>
+<h2 id="Field"><a href="#Field" class="headerlink" title="Field"></a>Field</h2><p>Field used to descibe a property in Document, like a email’s title and content can be descibed by two Fileds</p>
+<h2 id="Analyzer"><a href="#Analyzer" class="headerlink" title="Analyzer"></a>Analyzer</h2><p>Before a Document be Indexed, Document content should be participle first, Analyzer will done the job. Analyzer class is a abstract class, it have a lot of implementations. In different language, it should choose right Analyzer to do this. After Analysis , the content token to IndexWriter to build Index.</p>
+<h2 id="IndexWriter"><a href="#IndexWriter" class="headerlink" title="IndexWriter"></a>IndexWriter</h2><p>IndexWriter is the core Lucene used to build Index, it’s job is to take every Document into Index.</p>
+<h2 id="Directory"><a href="#Directory" class="headerlink" title="Directory"></a>Directory</h2><p>This class represent Lucene’s Index save path. It is a abstract class, it has two implementations. First is FSDirectory, it represent the Index in file system. Second is RAMDirectory, it represent the Index in random memory.</p>
+<h2 id="Query"><a href="#Query" class="headerlink" title="Query"></a>Query</h2><p>Query is a abstract class, has a lot of implementations, like TermQuery, BooleanQuery, PrefixQuery. The task of this class is to take user’s query string packing into a Query that Lucene could recognize</p>
+<h2 id="IndexSearcher"><a href="#IndexSearcher" class="headerlink" title="IndexSearcher"></a>IndexSearcher</h2><p>IndexSearcher is used to search in the builded Index. It’s only way to open a Index is read, so it could be a lot of IndexSearcher on a single Index implementations do operations.</p>
+<h2 id="Hits"><a href="#Hits" class="headerlink" title="Hits"></a>Hits</h2><p>Hits used to save search result.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/27/Apache-Lucene-Core/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/27/Apache-Lucene-Core/" class="post-title-link" itemprop="url">Apache Lucene Core</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-27 19:43:14" itemprop="dateCreated datePublished" datetime="2017-01-27T19:43:14+08:00">2017-01-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Apache LuceneTM is a high-performance, full-featured text search engine library<br>written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform.<br>Apache Lucene is an open source project available for free download.<br>Please use the links on the right to access Lucene.</p>
+<h2 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h2><p>Lucene offers powerful features through a simple API:\</p>
+<h3 id="Scalable-High-Performance-Indexing"><a href="#Scalable-High-Performance-Indexing" class="headerlink" title="Scalable, High-Performance Indexing"></a>Scalable, High-Performance Indexing</h3><ul>
+<li>over <a href="http://home.apache.org/~mikemccand/lucenebench/indexing.html" target="_blank" rel="noopener">150GB/hour on modern hardware</a></li>
+<li>small RAM requirements — only 1MB heap</li>
+<li>incremental indexing as fast as batch indexing</li>
+<li>index size roughly 20-30% the size of text indexed</li>
+</ul>
+<h3 id="Powerful-Accurate-and-Efficient-Search-Algorithms"><a href="#Powerful-Accurate-and-Efficient-Search-Algorithms" class="headerlink" title="Powerful, Accurate and Efficient Search Algorithms"></a>Powerful, Accurate and Efficient Search Algorithms</h3><ul>
+<li>ranked searching — best results returned first</li>
+<li>many powerful query types: phrase queries, wildcard queries, proximity queries, range queries and more</li>
+<li>fielded searching (e.g. title, author, contents)</li>
+<li>sorting by any field</li>
+<li>multiple-index searching with merged results</li>
+<li>allows simultaneous update and searching</li>
+<li>flexible faceting, highlighting, joins and result grouping</li>
+<li>fast, memory-efficient and typo-tolerant suggesters</li>
+<li>pluggable ranking models, including the <a href="https://en.wikipedia.org/wiki/Vector_space_model" target="_blank" rel="noopener">Vector Space Model</a> and <a href="https://en.wikipedia.org/wiki/Okapi_BM25" target="_blank" rel="noopener">Okapi BM25</a></li>
+<li>configurable storage engine (codecs)</li>
+</ul>
+<h3 id="Cross-Platform-Solution"><a href="#Cross-Platform-Solution" class="headerlink" title="Cross-Platform Solution"></a>Cross-Platform Solution</h3><ul>
+<li>Available as Open Source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank" rel="noopener">Apache License</a> which lets you use Lucene in both commercial and Open Source programs</li>
+<li>100%-pure Java</li>
+<li>Implementations in other <a href="https://wiki.apache.org/lucene-java/LuceneImplementations" target="_blank" rel="noopener">programming languages</a> available that are index-compatible</li>
+</ul>
+<h3 id="The-Apache-Software-Foundation"><a href="#The-Apache-Software-Foundation" class="headerlink" title="The Apache Software Foundation"></a>The Apache Software Foundation</h3><p>The <a href="http://www.apache.org/" target="_blank" rel="noopener">Apache Software Foundation</a> provides support for the Apache community of open-source software projects. The Apache projects are defined by collaborative consensus based processes, an open, pragmatic software license and a desire to create high quality software that leads the way in its field. Apache Lucene, Apache Solr, Apache PyLucene, Apache Open Relevance Project and their respective logos are trademarks of The Apache Software Foundation. All other marks mentioned may be trademarks or registered trademarks of their respective owners.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/26/collection-and-array/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/26/collection-and-array/" class="post-title-link" itemprop="url">collection and array</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-26 19:16:51" itemprop="dateCreated datePublished" datetime="2017-01-26T19:16:51+08:00">2017-01-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Collection-to-array"><a href="#Collection-to-array" class="headerlink" title="Collection to array"></a>Collection to array</h2><ol>
+<li><p>Object[]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object[] listArray = list.toArray();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>specific array</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String[] listArray = (String[]) list.toArray(new String[0])</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>ps. it’s can’t be used to translate generic paradigm typed array</p>
+<h2 id="Array-to-collection"><a href="#Array-to-collection" class="headerlink" title="Array to collection"></a>Array to collection</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List list = new ArrayList();</span><br><span class="line">list = Arrays.asList(array);</span><br></pre></td></tr></table></figure>
+<p>ps. primary type can’t do it like this, it’s parameter must be objects</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/26/gzip-stream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/26/gzip-stream/" class="post-title-link" itemprop="url">gzip stream</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-26 18:50:24" itemprop="dateCreated datePublished" datetime="2017-01-26T18:50:24+08:00">2017-01-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
+<p>Use GZIPOutputStream ZipOutputStream packing the output<br>maybe it’s destination a file or a socket, it’s not the  point. usually we use generic paradigm the reprecent the  data source in stream and the compressed data out stream</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">compress</span><span class="params">(InputStream is, OutputStream os)</span></span></span><br><span class="line"><span class="function">              <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    GZIPOutputStream gos = <span class="keyword">new</span> GZIPOutputStream(os);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">byte</span> data[] = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER];</span><br><span class="line">    <span class="keyword">while</span> ((count = is.read(data, <span class="number">0</span>, BUFFER)) != -<span class="number">1</span>) &#123;</span><br><span class="line">        gos.write(data, <span class="number">0</span>, count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    gos.finish();</span><br><span class="line">    gos.flush();</span><br><span class="line">    gos.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">186</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
