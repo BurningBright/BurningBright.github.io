@@ -320,6 +320,375 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/28/querySelector-and-querySelectorAll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/28/querySelector-and-querySelectorAll/" class="post-title-link" itemprop="url">querySelector and querySelectorAll</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-28 23:10:06" itemprop="dateCreated datePublished" datetime="2017-02-28T23:10:06+08:00">2017-02-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="javascript-advance-selector"><a href="#javascript-advance-selector" class="headerlink" title="javascript advance selector"></a>javascript advance selector</h3><p>Define in <code>W3C Selectors API</code>, used to locate element in document by <code>CSS rule</code>.</p>
+<p>IE &gt;= 8, Firefox, Chrome, Safari, Opera support them.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">module dom &#123;</span><br><span class="line">  [Supplemental, NoInterfaceObject]</span><br><span class="line">  interface NodeSelector &#123;</span><br><span class="line">     Element querySelector(in DOMString selectors);</span><br><span class="line">     NodeList querySelectorAll(in DOMString selectors);</span><br><span class="line">  &#125;;</span><br><span class="line">  Document implements NodeSelector;</span><br><span class="line">  DocumentFragment implements NodeSelector;</span><br><span class="line">  Element implements NodeSelector;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Document, DocumentFragment, Element implements NodeSelector interface.<br>The difference is querySelector return <code>an object</code>, querySelectorAll return a <code>collection</code>(NodeList).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">document.getElementById(&quot;test&quot;);</span><br><span class="line">document.querySelector(&quot;#test&quot;);</span><br><span class="line">document.querySelectorAll(&quot;#test&quot;)[0];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">document.getElementsByClassName(&apos;red&apos;)</span><br><span class="line">document.querySelector(&apos;.red&apos;)</span><br><span class="line">document.querySelectorAll(&apos;.red&apos;)</span><br></pre></td></tr></table></figure>
+<h3 id="Difference-between-jQuery-element-find-selector"><a href="#Difference-between-jQuery-element-find-selector" class="headerlink" title="Difference between jQuery(element).find(selector)"></a>Difference between <code>jQuery(element).find(selector)</code></h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"test1"</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://www.linchenguang.com/"</span>&gt;</span>lcg<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">"bar"</span>&gt;</span>I'm a bar<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line">var d1 = document.getElementById('test1'),</span><br><span class="line">obj1 = d1.querySelector('div a'),</span><br><span class="line">obj2 = d1.querySelectorAll('div a');</span><br><span class="line">obj3 = $(d1).find('div a');</span><br><span class="line"><span class="xml">//<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://www.linchenguang.com/"</span>&gt;</span>lcg<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span></span><br><span class="line">console.log(obj1)</span><br><span class="line">//1</span><br><span class="line">console.log(obj2.length)</span><br><span class="line">//null</span><br><span class="line">console.log(obj3)</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>querySelectorAll</code> find element in DOM, contain Element it’s self.<br><code>jQuery(element).find(selector)</code> find element in DOM, not contain Element it’s self.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/27/php-5-3-5-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/27/php-5-3-5-6/" class="post-title-link" itemprop="url">php 5.3 & 5.6</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-27 22:12:03" itemprop="dateCreated datePublished" datetime="2017-02-27T22:12:03+08:00">2017-02-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ul>
+<li>In PHP 5.3</li>
+</ul>
+<p><code>imagejpeg($image, &#39;&#39;, 100);</code></p>
+<ul>
+<li>In PHP 5.4</li>
+</ul>
+<p><code>imagejpeg($image, NULL, 100);</code></p>
+<hr>
+<ul>
+<li><p>In PHP 5.3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$current_gallery = array_pop(preg_split(&quot;/[\/]/&quot;, dirname($img)));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>In PHP 5.4</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$some_path_array = preg_split(&quot;/[\/]/&quot;, dirname($img));</span><br><span class="line">$current_gallery = array_pop($some_path_array);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/26/Hello-PhotoSwipe/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1935,413 +2304,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/15/Linux-init-task/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/15/Linux-init-task/" class="post-title-link" itemprop="url">Linux init task</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-15 22:59:32" itemprop="dateCreated datePublished" datetime="2017-02-15T22:59:32+08:00">2017-02-15</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Modify-rc-local"><a href="#Modify-rc-local" class="headerlink" title="Modify rc.local"></a>Modify rc.local</h2><p><code>/etc/rc.local</code> add command before <code>exit 0</code><br>script must have execute authority <code>x</code></p>
-<h2 id="update-rc-d-command"><a href="#update-rc-d-command" class="headerlink" title="update-rc.d command"></a>update-rc.d command</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo cp -f /home/pi/autowifi.sh /etc/init.d/</span><br><span class="line">[ln -s /home/pi/autowifi.sh /etc/init.d/autowifi]</span><br><span class="line">sudo chmod +x /etc/init.d/autowifi.sh</span><br><span class="line">sudo chown root:root /etc/init.d/autowifi.sh</span><br><span class="line">sudo update-rc.d autowifi.sh defaults 99</span><br><span class="line">sudo update-rc.d -f autowifi.sh remove</span><br></pre></td></tr></table></figure>
-<ol>
-<li>add file or link to <code>/etc/init.d</code></li>
-<li>add execute authority to script</li>
-<li>add user authority to script</li>
-<li>command add script to init start</li>
-<li>defaults [num] mean start sequence, the bigger the latter.</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">update-rc.d [-n] [-f] name remove</span><br><span class="line">update-rc.d [-n] name default [NN | SS KK]</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>-n</code> do nothing, only preview.</li>
-<li><code>-f</code> delete link, even script remain in <code>/etc/init.d</code></li>
-<li><code>NN</code> execute sequence</li>
-<li><code>SS</code> begin sequence <code>KK</code> end sequence</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/14/Lazy-Greedy-Selfish/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/14/Lazy-Greedy-Selfish/" class="post-title-link" itemprop="url">Lazy Greedy Selfish</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-14 17:03:47" itemprop="dateCreated datePublished" datetime="2017-02-14T17:03:47+08:00">2017-02-14</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Repeat-Certain-Number"><a href="#Repeat-Certain-Number" class="headerlink" title="Repeat Certain Number"></a>Repeat Certain Number</h3><h4 id="Hexadecimal-number"><a href="#Hexadecimal-number" class="headerlink" title="Hexadecimal number"></a>Hexadecimal number</h4><p><code>\b[a-f0-9]{1,8}\b</code></p>
-<ul>
-<li>Regex options: Case insensitive</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<h4 id="Floating-point-number"><a href="#Floating-point-number" class="headerlink" title="Floating-point number"></a>Floating-point number</h4><p><code>\d*\.\d+(e\d+)?</code></p>
-<ul>
-<li>Regex options: Case insensitive</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<h2 id="Lazy-quantifiers"><a href="#Lazy-quantifiers" class="headerlink" title="Lazy quantifiers"></a>Lazy quantifiers</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*?</span><br><span class="line">+?</span><br><span class="line">??</span><br><span class="line">&#123;7,42&#125;?</span><br></pre></td></tr></table></figure>
-<ol>
-<li><em>any times</em>, one after another, the less the better</li>
-<li><em>more than one time</em>, one after another, the less the better</li>
-<li><em>have or not have</em>, not have first</li>
-<li><em>seven to fourtytwo times</em>, the less the better</li>
-</ol>
-<p>In <strong>default repeat</strong> like <code>*</code> <code>+</code> <code>?</code> <code>{}</code> after match unit are all greedy[<strong><em>greedy is not selfish</em></strong>]</p>
-<h2 id="Possessive-quantifiers"><a href="#Possessive-quantifiers" class="headerlink" title="Possessive quantifiers"></a>Possessive quantifiers</h2><p><strong><em>Possessive quantifiers is greedy and selfish</em></strong><br>It’s <strong>greedy and selfish</strong>, when it matches, it wouldn’t care other expressions’ express.<br>In other words, it <strong>wouldn’t Backtracking</strong> when matches.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*+</span><br><span class="line">++</span><br><span class="line">?+</span><br><span class="line">&#123;7,42&#125;+</span><br></pre></td></tr></table></figure>
-<ol>
-<li><em>any times</em>, block reduce to match, the more the better, no backtracking</li>
-<li><em>more than one time</em>, the more the better, no backtracking</li>
-<li><em>have or not have</em>, the more the better, no backtracking</li>
-<li><em>seven to fourtytwo times</em>, the more the better, no backtracking</li>
-</ol>
-<p><code>\b\d++\b</code></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: Java, PCRE, Perl 5.10, Ruby 1.9</li>
-</ul>
-<p><code>\b(?&gt;\d+)\b</code></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
-</ul>
-<p>ps. <code>(?&gt;\d+)</code> is an atomic group that essentially is a <strong>noncapturing group</strong>,<br>with the extra job of <strong>refusing to backtrack</strong>.</p>
-<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p><code>\w++\d++</code> <strong>can’t mathes</strong> “123abc”<br>Because <code>\w++</code> <strong>selfishly occupy</strong> “123abc”, don’t care \d++ failed to match.<br>When use <code>(\w+)(\d+)</code> to match “123abc”, i found <em>gourp \1</em> matches “12”<br>and <em>group \2</em> matches “3”, <strong>so greedy works</strong>.<br>It’s <strong>not mean selfish is bad</strong>, but only unusual work in <strong>simply task</strong>.</p>
-<h2 id="Prevent-Runaway-Repetition"><a href="#Prevent-Runaway-Repetition" class="headerlink" title="Prevent Runaway Repetition"></a>Prevent Runaway Repetition</h2><p>Why prevent? because in some complex condition, expression will complex the same.<br>In these condition <code>Possessive quantifiers</code> is necessary.</p>
-<h3 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h3><p><em>Match a html’s origin code</em><br>Solution<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;(?&gt;.*?&lt;head&gt;)(?&gt;.*?&lt;title&gt;)(?&gt;.*?&lt;/title&gt;)↵</span><br><span class="line">(?&gt;.*?&lt;/head&gt;)(?&gt;.*?&lt;body[^&gt;]*&gt;)(?&gt;.*?&lt;/body&gt;).*?&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: Case insensitive, dot matches line breaks</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
-</ul>
-<p>ps.If some <strong>tag properties</strong> need be matched, please modify expression.</p>
-<p>This regular expression has a worst-case complexity$^3$ of $O(n^7)$<br>If the file is <strong>twice the size</strong>, the regex can need up to <strong>128 times</strong><br>as many steps to figure out it doesn’t match.</p>
-<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h2><p><code>(x+x+)+y</code> to matches “xxxxxxxxxx”<br>It should not matches, watching the operation progress.<br>This regex is $O(2^n)$, if one more ‘x’ is added, the regex can need up to <strong>2times</strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2388,7 +2350,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">186</span>
+                    <span class="site-state-item-count">188</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2604,7 +2566,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">71</span>
+                      
+                    
+                    <span class="site-state-item-count">72</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
