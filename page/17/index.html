@@ -320,6 +320,1895 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/14/Lazy-Greedy-Selfish/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/14/Lazy-Greedy-Selfish/" class="post-title-link" itemprop="url">Lazy Greedy Selfish</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-14 17:03:47" itemprop="dateCreated datePublished" datetime="2017-02-14T17:03:47+08:00">2017-02-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Repeat-Certain-Number"><a href="#Repeat-Certain-Number" class="headerlink" title="Repeat Certain Number"></a>Repeat Certain Number</h3><h4 id="Hexadecimal-number"><a href="#Hexadecimal-number" class="headerlink" title="Hexadecimal number"></a>Hexadecimal number</h4><p><code>\b[a-f0-9]{1,8}\b</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<h4 id="Floating-point-number"><a href="#Floating-point-number" class="headerlink" title="Floating-point number"></a>Floating-point number</h4><p><code>\d*\.\d+(e\d+)?</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<h2 id="Lazy-quantifiers"><a href="#Lazy-quantifiers" class="headerlink" title="Lazy quantifiers"></a>Lazy quantifiers</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*?</span><br><span class="line">+?</span><br><span class="line">??</span><br><span class="line">&#123;7,42&#125;?</span><br></pre></td></tr></table></figure>
+<ol>
+<li><em>any times</em>, one after another, the less the better</li>
+<li><em>more than one time</em>, one after another, the less the better</li>
+<li><em>have or not have</em>, not have first</li>
+<li><em>seven to fourtytwo times</em>, the less the better</li>
+</ol>
+<p>In <strong>default repeat</strong> like <code>*</code> <code>+</code> <code>?</code> <code>{}</code> after match unit are all greedy[<strong><em>greedy is not selfish</em></strong>]</p>
+<h2 id="Possessive-quantifiers"><a href="#Possessive-quantifiers" class="headerlink" title="Possessive quantifiers"></a>Possessive quantifiers</h2><p><strong><em>Possessive quantifiers is greedy and selfish</em></strong><br>It’s <strong>greedy and selfish</strong>, when it matches, it wouldn’t care other expressions’ express.<br>In other words, it <strong>wouldn’t Backtracking</strong> when matches.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*+</span><br><span class="line">++</span><br><span class="line">?+</span><br><span class="line">&#123;7,42&#125;+</span><br></pre></td></tr></table></figure>
+<ol>
+<li><em>any times</em>, block reduce to match, the more the better, no backtracking</li>
+<li><em>more than one time</em>, the more the better, no backtracking</li>
+<li><em>have or not have</em>, the more the better, no backtracking</li>
+<li><em>seven to fourtytwo times</em>, the more the better, no backtracking</li>
+</ol>
+<p><code>\b\d++\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: Java, PCRE, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b(?&gt;\d+)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p>ps. <code>(?&gt;\d+)</code> is an atomic group that essentially is a <strong>noncapturing group</strong>,<br>with the extra job of <strong>refusing to backtrack</strong>.</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p><code>\w++\d++</code> <strong>can’t mathes</strong> “123abc”<br>Because <code>\w++</code> <strong>selfishly occupy</strong> “123abc”, don’t care \d++ failed to match.<br>When use <code>(\w+)(\d+)</code> to match “123abc”, i found <em>gourp \1</em> matches “12”<br>and <em>group \2</em> matches “3”, <strong>so greedy works</strong>.<br>It’s <strong>not mean selfish is bad</strong>, but only unusual work in <strong>simply task</strong>.</p>
+<h2 id="Prevent-Runaway-Repetition"><a href="#Prevent-Runaway-Repetition" class="headerlink" title="Prevent Runaway Repetition"></a>Prevent Runaway Repetition</h2><p>Why prevent? because in some complex condition, expression will complex the same.<br>In these condition <code>Possessive quantifiers</code> is necessary.</p>
+<h3 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h3><p><em>Match a html’s origin code</em><br>Solution<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;(?&gt;.*?&lt;head&gt;)(?&gt;.*?&lt;title&gt;)(?&gt;.*?&lt;/title&gt;)↵</span><br><span class="line">(?&gt;.*?&lt;/head&gt;)(?&gt;.*?&lt;body[^&gt;]*&gt;)(?&gt;.*?&lt;/body&gt;).*?&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: Case insensitive, dot matches line breaks</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p>ps.If some <strong>tag properties</strong> need be matched, please modify expression.</p>
+<p>This regular expression has a worst-case complexity$^3$ of $O(n^7)$<br>If the file is <strong>twice the size</strong>, the regex can need up to <strong>128 times</strong><br>as many steps to figure out it doesn’t match.</p>
+<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h2><p><code>(x+x+)+y</code> to matches “xxxxxxxxxx”<br>It should not matches, watching the operation progress.<br>This regex is $O(2^n)$, if one more ‘x’ is added, the regex can need up to <strong>2times</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/14/Keyboard-special-characters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/14/Keyboard-special-characters/" class="post-title-link" itemprop="url">Keyboard special characters</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-14 13:44:27" itemprop="dateCreated datePublished" datetime="2017-02-14T13:44:27+08:00">2017-02-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>_<strong>sign</strong>_</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`</td>
+<td>backquote 反引号</td>
+</tr>
+<tr>
+<td>~</td>
+<td>tilde</td>
+</tr>
+<tr>
+<td>!</td>
+<td>exclam</td>
+</tr>
+<tr>
+<td>@</td>
+<td>at</td>
+</tr>
+<tr>
+<td>#</td>
+<td>numbersign,英语国家是hash&lt;/br&gt;美语是pound&lt;/br&gt;音乐里作sharp,如C#</td>
+</tr>
+<tr>
+<td>$</td>
+<td>dollar</td>
+</tr>
+<tr>
+<td>%</td>
+<td>percent</td>
+</tr>
+<tr>
+<td>^</td>
+<td>caret</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>ampersand</td>
+</tr>
+<tr>
+<td>*</td>
+<td>asterisk,star(美语),数学公式中作multiply</td>
+</tr>
+<tr>
+<td>(</td>
+<td>parenleft,opening parentheses</td>
+</tr>
+<tr>
+<td>)</td>
+<td>parenright,closing paretheses</td>
+</tr>
+<tr>
+<td>-</td>
+<td>minus;hyphen连字符,不读</td>
+</tr>
+<tr>
+<td>_</td>
+<td>underscore</td>
+</tr>
+<tr>
+<td>+</td>
+<td>plus</td>
+</tr>
+<tr>
+<td>=</td>
+<td>equal</td>
+</tr>
+<tr>
+<td>[</td>
+<td>bracketleft,opening bracket</td>
+</tr>
+<tr>
+<td>]</td>
+<td>bracketright,closing bracket</td>
+</tr>
+<tr>
+<td>{</td>
+<td>braceleft</td>
+</tr>
+<tr>
+<td>}</td>
+<td>braceright</td>
+</tr>
+<tr>
+<td>;</td>
+<td>semicolon</td>
+</tr>
+<tr>
+<td>:</td>
+<td>colon</td>
+</tr>
+<tr>
+<td>‘</td>
+<td>quote</td>
+</tr>
+<tr>
+<td>“</td>
+<td>doublequote</td>
+</tr>
+<tr>
+<td>/</td>
+<td>slash</td>
+</tr>
+<tr>
+<td>\</td>
+<td>backslash 反斜杠</td>
+</tr>
+<tr>
+<td>&#124;</td>
+<td>bar</td>
+</tr>
+<tr>
+<td>,</td>
+<td>comma</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>less  angle brackets</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>greater  angle brackets</td>
+</tr>
+<tr>
+<td>.</td>
+<td>period</td>
+</tr>
+<tr>
+<td>?</td>
+<td>question</td>
+</tr>
+<tr>
+<td></td>
+<td>space</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/13/Group-match/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/13/Group-match/" class="post-title-link" itemprop="url">Group match</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-13 15:01:25" itemprop="dateCreated datePublished" datetime="2017-02-13T15:01:25+08:00">2017-02-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Group-number-rules"><a href="#Group-number-rules" class="headerlink" title="Group number rules"></a>Group number rules</h3><p><code>\b(\d\d(\d\d))-\2-\2\b</code><br>From outer to inner , from left to right number increase start from 1.</p>
+<h3 id="Noncapturing-group"><a href="#Noncapturing-group" class="headerlink" title="Noncapturing group"></a>Noncapturing group</h3><p><code>\b(?i:Mary|Jane|Sue)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p><code>(?i-sm:Mary.*?\r\n)</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p><strong>Inner config</strong> the group capture options<br>parentheses start like ‘?:’ ‘?xxx:’, means group <strong>match but no capture</strong>.</p>
+<h2 id="Match-Previously-Matched-Again"><a href="#Match-Previously-Matched-Again" class="headerlink" title="Match Previously Matched Again"></a>Match Previously Matched Again</h2><p><code>\b\d\d(\d\d)-\1-\1\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<blockquote>
+<p>\01 is either an <em>octal escape</em> or an <em>error</em>, <strong>dont’t use it</strong>.<br>\xFF <em>hexadecimal</em> escapes are much easier to understand</p>
+<p>JavaScript if the <code>\1</code> appear in front of group it match like a zero-length<br><code>\d\d\1-\1-(\d\d)</code> can match <code>12--34</code><br>after ‘2’ and ‘-‘ two zero-length position matches.</p>
+</blockquote>
+<h2 id="Name-the-capture-group"><a href="#Name-the-capture-group" class="headerlink" title="Name the capture group"></a>Name the capture group</h2><h3 id="Named-capture"><a href="#Named-capture" class="headerlink" title="Named capture"></a>Named capture</h3><p><code>\b(?&lt;year&gt;\d\d\d\d)-(?&lt;month&gt;\d\d)-(?&lt;day&gt;\d\d)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java 7, XRegExp, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b(?&#39;year&#39;\d\d\d\d)-(?&#39;month&#39;\d\d)-(?&#39;day&#39;\d\d)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b(?P&lt;year&gt;\d\d\d\d)-(?P&lt;month&gt;\d\d)-(?P&lt;day&gt;\d\d)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: PCRE 4 and later, Perl 5.10, Python</li>
+</ul>
+<h3 id="Named-backreferences"><a href="#Named-backreferences" class="headerlink" title="Named backreferences"></a>Named backreferences</h3><p><code>\b\d\d(?&lt;magic&gt;\d\d)-\k&lt;magic&gt;-\k&lt;magic&gt;\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java 7, XRegExp, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b\d\d(?&#39;magic&#39;\d\d)-\k&#39;magic&#39;-\k&#39;magic&#39;\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b\d\d(?P&lt;magic&gt;\d\d)-(?P=magic)-(?P=magic)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: PCRE 4 and later, Perl 5.10, Python</li>
+</ul>
+<p>Group’s <strong>name must</strong> consist of word characters matched by <code>\w</code></p>
+<p>Angle brackets not friend in xml style environment.<br>So some language support use in <code>&#39;</code> <strong>single quotes</strong> instead of angle brackets.</p>
+<p>Use <strong>same name</strong> in expression is not recommanded</p>
+<h2 id="Syntax-history"><a href="#Syntax-history" class="headerlink" title="Syntax history"></a>Syntax history</h2><p><em>Python</em> was the <strong>first</strong> regular expression flavor to support named capture.</p>
+<p>Perhaps due to .NET’s <strong>popularity over</strong> Python, the .NET syntax seems to be the one<br>that other regex library developers <strong>prefer to copy</strong>. <code>Perl 5.10</code> and later have it, and so<br>does the Oniguruma engine in <code>Ruby 1.9</code>. <code>Perl 5.10</code> and <code>Ruby 1.9</code> support both the syntax<br>using angle brackets and single quotes. <strong>Java 7</strong> also copied the <code>.NET syntax</code>, but only<br>the variant using angle brackets. Standard JavaScript does not support named capture.<br>XRegExp adds support for named capture using the .NET syntax, but only the variant<br>with angle brackets.</p>
+<p>PCRE copied Python’s syntax long ago, at a time when Perl did not support named<br>capture at all. <code>PCRE 7</code>, the version that adds the new features in <code>Perl 5.10</code>, supports<br><strong>both</strong> the .NET syntax and the Python syntax. Perhaps as a testament to the success of<br>PCRE, in a reverse compatibility move, <code>Perl 5.10</code> also supports the Python syntax. In<br>PCRE and Perl 5.10, <em>the functionality of the .NET syntax and the Python syntax for<br>named capture is identical.</em></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/11/Hello-Raspberry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/11/Hello-Raspberry/" class="post-title-link" itemprop="url">Hello Raspberry</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-11 21:54:11" itemprop="dateCreated datePublished" datetime="2017-02-11T21:54:11+08:00">2017-02-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="First-Git-commit-by-raspberry"><a href="#First-Git-commit-by-raspberry" class="headerlink" title="First Git commit by raspberry"></a>First Git commit by raspberry</h3><p>Interesting! a lot of fun<br>Bug in 2017-02-02<br>Raspberry Pi -Read 20Mb/s Write 20Mb/s in board tf card</p>
+<h4 id="change-keyboard-layout"><a href="#change-keyboard-layout" class="headerlink" title="change keyboard layout"></a>change keyboard layout</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/default/keyboard</span><br><span class="line"></span><br><span class="line">XKBLAYOUT=&quot;us&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="setting-location-amp-timezone"><a href="#setting-location-amp-timezone" class="headerlink" title="setting location&amp;timezone"></a>setting location&amp;timezone</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
+<h4 id="wireless-ctl"><a href="#wireless-ctl" class="headerlink" title="wireless ctl"></a>wireless ctl</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</span><br><span class="line">network=&#123;</span><br><span class="line">	ssid=&quot;TP-LINK XXX&quot;</span><br><span class="line">	psk=&quot;i&apos;m password&quot;</span><br><span class="line">	key_mgmt=WPA-PSK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>if not work first check ssid &amp; passwd correct<br>then ckeck net card status<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iwconfig</span><br><span class="line">ifconfig wlan0</span><br></pre></td></tr></table></figure></p>
+<p>try manually restart the interface with<br><code>sudo ifdown wlan0</code> and <code>sudo ifup wlan0</code><br>at last try <code>sudo reboot</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/09/Version-of-javascript/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/09/Version-of-javascript/" class="post-title-link" itemprop="url">Version of javascript</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-09 22:39:41" itemprop="dateCreated datePublished" datetime="2017-02-09T22:39:41+08:00">2017-02-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Version</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JavaScript 1.0</td>
+<td style="text-align:left">The original version of the language. It was buggy and is now essentially obsolete. Implemented by Netscape 2.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.1</td>
+<td style="text-align:left">Introduced a true Array object; most serious bugs resolved. Implemented by Netscape 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.2</td>
+<td style="text-align:left">Introduced the <code>switch</code> statement, <strong>regular expressions</strong>, and a number of other features. Almost compliant with ECMA v1, but has some incompatibilities. Implemented by Netscape 4.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.3</td>
+<td style="text-align:left">Fixed incompatibilities of JavaScript 1.2. Compliant with ECMA v1. Implemented by Netscape 4.5.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.4</td>
+<td style="text-align:left">Implemented only in Netscape server products.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.5</td>
+<td style="text-align:left">Introduced exception handling. Compliant with ECMA v3. Implemented by Mozilla and Netscape 6.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 1.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.0. Implemented by early releases of IE 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 2.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.1. Implemented by later releases of IE 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 3.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.3. Compliant with ECMA v1. Implemented by IE 4.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 4.0</td>
+<td style="text-align:left">Not implemented by any web browser.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 5.0</td>
+<td style="text-align:left">Supported exception handling. Partially compliant with ECMA v3. Implemented by IE 5.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 5.5</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.5. Fully compliant with ECMA v3. Implemented by IE 5.5 and IE 6. (IE 6 actually implements JScript 5.6, but 5.6 is not different from 5.5 in any way that is relevant to client-side JavaScript programmers.)</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v1</td>
+<td style="text-align:left">The first standard version of the language. Standardized the basic features of JavaScript 1.1 and added a few new features. Did not standardize the <code>switch</code> statement or regular expression support. Conformant implementations are JavaScript 1.3 and JScript 3.0.</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v2</td>
+<td style="text-align:left">A maintenance release of the standard that included clarifications but defined no new features.</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v3</td>
+<td style="text-align:left">Standardized the <code>switch</code> statement, <strong>regular expressions</strong>, and exception handling. Conformant implementations are JavaScript 1.5 and JScript 5.5.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-cherry-pick-rebase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-cherry-pick-rebase/" class="post-title-link" itemprop="url">visual git cherry-pick & rebase</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:45:27" itemprop="dateCreated datePublished" datetime="2017-02-08T11:45:27+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/version/" itemprop="url" rel="index"><span itemprop="name">version</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="Cherry-Pick"><a href="#Cherry-Pick" class="headerlink" title="Cherry Pick"></a>Cherry Pick</h4><p>cherry-pick命令”复制”一个提交节点并在当前分支做一次完全一样的新提交。<br><img src="http://marklodato.github.io/visual-git-guide/cherry-pick.svg" alt></p>
+<h4 id="Rebase"><a href="#Rebase" class="headerlink" title="Rebase"></a>Rebase</h4><p>衍合是合并命令的另一种选择。合并把两个父分支合并进行一次提交，提交历史不是线性的。衍合在当前分支上重演另一个分支的历史，提交历史是线性的。 本质上，这是线性化的自动的 cherry-pick<br><img src="http://marklodato.github.io/visual-git-guide/rebase.svg" alt></p>
+<p>上面的命令都在topic分支中进行，而不是master分支，在master分支上重演，并且把分支指向新的节点。注意旧提交没有被引用，将被回收。</p>
+<p>要限制回滚范围，使用—onto选项。下面的命令在master分支上重演当前分支从169a6以来的最近几个提交，即2c33a。<br><img src="http://marklodato.github.io/visual-git-guide/rebase-onto.svg" alt><br>同样有git rebase —interactive让你更方便的完成一些复杂操作，比如丢弃、重排、修改、合并提交。没有图片体现这些，细节看这里:<a href="http://www.kernel.org/pub/software/scm/git/docs/git-rebase.html#_interactive_mode" target="_blank" rel="noopener">git-rebase(1)</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-reset-merge/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-reset-merge/" class="post-title-link" itemprop="url">visual git reset & merge</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:42:46" itemprop="dateCreated datePublished" datetime="2017-02-08T11:42:46+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/version/" itemprop="url" rel="index"><span itemprop="name">version</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="Reset"><a href="#Reset" class="headerlink" title="Reset"></a>Reset</h4><p>reset命令把当前分支指向另一个位置，并且有选择的变动工作目录和索引。也用来在从历史仓库中复制文件到索引，而不动工作目录。</p>
+<p>如果不给选项，那么当前分支指向到那个提交。如果用—hard选项，那么工作目录也更新，如果用—soft选项，那么都不变。<br><img src="http://marklodato.github.io/visual-git-guide/reset-commit.svg" alt><br>如果没有给出提交点的版本号，那么默认用HEAD。这样，分支指向不变，但是索引会回滚到最后一次提交，如果用—hard选项，工作目录也同样。<br><img src="http://marklodato.github.io/visual-git-guide/reset.svg" alt><br>如果给了文件名(或者 -p选项), 那么工作效果和带文件名的<a href="/2017/02/08/visual-git-checkout/">checkout</a>差不多，除了索引被更新。<br><img src="http://marklodato.github.io/visual-git-guide/reset-files.svg" alt></p>
+<h4 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h4><p>merge 命令把不同分支合并起来。合并前，索引必须和当前提交相同。如果另一个分支是当前提交的祖父节点，那么合并命令将什么也不做。 另一种情况是如果当前提交是另一个分支的祖父节点，就导致fast-forward合并。指向只是简单的移动，并生成一个新的提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge-ff.svg" alt><br>否则就是一次真正的合并。默认把当前提交(ed489 如下所示)和另一个提交(33104)以及他们的共同祖父节点(b325c)进行一次<code>三方合并</code>。结果是先保存当前目录和索引，然后和父节点33104一起做一次新提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge.svg" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-checkout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-checkout/" class="post-title-link" itemprop="url">visual git checkout</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:41:11" itemprop="dateCreated datePublished" datetime="2017-02-08T11:41:11+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/version/" itemprop="url" rel="index"><span itemprop="name">version</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h4 id="Checkout"><a href="#Checkout" class="headerlink" title="Checkout"></a>Checkout</h4><p>checkout命令用于从历史提交（或者暂存区域）中拷贝文件到工作目录，也可用于切换分支。</p>
+<p>当给定某个文件名（或者打开-p选项，或者文件名和-p选项同时打开）时，git会从指定的提交中拷贝文件到暂存区域和工作目录。比如，git checkout HEAD~ foo.c会将提交节点HEAD~(即当前提交节点的父节点)中的foo.c复制到工作目录并且加到暂存区域中。（如果命令中没有指定提交节点，则会从暂存区域中拷贝内容。）注意当前分支不会发生变化。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-files.svg" alt><br>当不指定文件名，而是给出一个（本地）分支时，那么HEAD标识会移动到那个分支（也就是说，我们“切换”到那个分支了），然后暂存区域和工作目录中的内容会和HEAD对应的提交节点一致。新提交节点（下图中的a47c3）中的所有文件都会被复制（到暂存区域和工作目录中）；只存在于老的提交节点（ed489）中的文件会被删除；不属于上述两者的文件会被忽略，不受影响。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-branch.svg" alt><br>如果既没有指定文件名，也没有指定分支名，而是一个标签、远程分支、SHA-1值或者是像master~3类似的东西，就得到一个匿名分支，称作detached HEAD（被分离的HEAD标识）。这样可以很方便地在历史版本之间互相切换。比如说你想要编译1.6.6.1版本的git，你可以运行git checkout v1.6.6.1（这是一个标签，而非分支名），编译，安装，然后切换回另一个分支，比如说git checkout master。然而，当提交操作涉及到“分离的HEAD”时，其行为会略有不同，详情见在下面。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-detached.svg" alt></p>
+<h3 id="HEAD标识处于分离状态时的提交操作"><a href="#HEAD标识处于分离状态时的提交操作" class="headerlink" title="HEAD标识处于分离状态时的提交操作"></a>HEAD标识处于分离状态时的提交操作</h3><p>当HEAD处于分离状态（不依附于任一分支）时，提交操作可以正常进行，但是不会更新任何已命名的分支。(你可以认为这是在更新一个匿名分支。)<br><img src="http://marklodato.github.io/visual-git-guide/commit-detached.svg" alt><br>一旦此后你切换到别的分支，比如说master，那么这个提交节点（可能）再也不会被引用到，然后就会被丢弃掉了。注意这个命令之后就不会有东西引用2eecb。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-after-detached.svg" alt><br>但是，如果你想保存这个状态，可以用命令git checkout -b name来创建一个新的分支。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-b-detached.svg" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-diff-commit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-diff-commit/" class="post-title-link" itemprop="url">visual git diff & commit</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:36:20" itemprop="dateCreated datePublished" datetime="2017-02-08T11:36:20+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/version/" itemprop="url" rel="index"><span itemprop="name">version</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Diff"><a href="#Diff" class="headerlink" title="Diff"></a>Diff</h3><p>有许多种方法查看两次提交之间的变动。下面是一些示例。</p>
+<p><img src="http://marklodato.github.io/visual-git-guide/diff.svg" alt></p>
+<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p>提交时，git用暂存区域的文件创建一个新的提交，并把此时的节点设为父节点。然后把当前分支指向新的提交节点。下图中，当前分支是master。 在运行命令之前，master指向ed489，提交后，master指向新的节点f0cec并以ed489作为父节点。<br><img src="http://marklodato.github.io/visual-git-guide/commit-master.svg" alt><br>即便当前分支是某次提交的祖父节点，git会同样操作。下图中，在master分支的祖父节点maint分支进行一次提交，生成了1800b。 这样，maint分支就不再是master分支的祖父节点。此时，<a href="/2017/02/08/visual-git-reset-merge/">合并</a> (或者 <a href="/2017/02/08/visual-git-cherry-pick-rebase/">衍合</a>) 是必须的。<br><img src="http://marklodato.github.io/visual-git-guide/commit-maint.svg" alt><br>如果想更改一次提交，使用 git commit —amend。git会使用与当前提交相同的父节点进行一次新提交，旧的提交会被取消。<br><img src="http://marklodato.github.io/visual-git-guide/commit-amend.svg" alt><br>另一个例子是<a href="/2017/02/08/visual-git-checkout/">分离HEAD</a>提交,后文讲。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -495,3097 +2384,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/07/Markdown-syntax/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/07/Markdown-syntax/" class="post-title-link" itemprop="url">Markdown syntax</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-07 10:40:16" itemprop="dateCreated datePublished" datetime="2017-02-07T10:40:16+08:00">2017-02-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">**Blod**</span><br><span class="line">*Emphasize*</span><br><span class="line">++Undeline++</span><br><span class="line">~~Strikethrough~~</span><br><span class="line">==Heightlight==</span><br><span class="line">^Superscript^</span><br><span class="line">~Subscript~</span><br><span class="line"></span><br><span class="line">![pic](pic.jpg)</span><br><span class="line">[git](http://github.com)</span><br><span class="line">@[]()[?]</span><br><span class="line"></span><br><span class="line">- unordered list</span><br><span class="line">1. Order list</span><br><span class="line">- [] Task[?]</span><br><span class="line"></span><br><span class="line">[^id]</span><br><span class="line">[^id]:xxx</span><br><span class="line"></span><br><span class="line">`code`</span><br><span class="line">\`\`\`code block\`\`\`</span><br><span class="line"></span><br><span class="line">***page break</span><br><span class="line"></span><br><span class="line">---section break</span><br><span class="line"></span><br><span class="line">___sentence break</span><br><span class="line"></span><br><span class="line">[TOC]</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/07/Unicode-block/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/07/Unicode-block/" class="post-title-link" itemprop="url">Unicode block</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-07 10:23:31" itemprop="dateCreated datePublished" datetime="2017-02-07T10:23:31+08:00">2017-02-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br></pre></td></tr></table></figure>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>D</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0000-007F</td>
-<td>\p{InBasicLatin}</td>
-<td>0000-007F</td>
-<td>C0控制符及基本拉丁文&lt;/br&gt;(C0 Control and Basic Latin)</td>
-</tr>
-<tr>
-<td>0080-00FF</td>
-<td>\p{InLatin-1Supplement}</td>
-<td>0080-00FF</td>
-<td>C1控制符及拉丁文补充-1&lt;/br&gt;(C1 Control and Latin 1 Supplement)</td>
-</tr>
-<tr>
-<td>0100-017F</td>
-<td>\p{InLatinExtended-A}</td>
-<td>0100-017F</td>
-<td>拉丁文扩展-A&lt;/br&gt;(Latin Extended-A)</td>
-</tr>
-<tr>
-<td>0180-024F</td>
-<td>\p{InLatinExtended-B}</td>
-<td>0180-024F</td>
-<td>拉丁文扩展-B&lt;/br&gt;(Latin Extended-B)</td>
-</tr>
-<tr>
-<td>0250-02AF</td>
-<td>\p{InIPAExtensions}</td>
-<td>0250-02AF</td>
-<td>国际音标扩展&lt;/br&gt;(IPA Extensions)</td>
-</tr>
-<tr>
-<td>02B0-02FF</td>
-<td>\p{InSpacingModifierLetters}</td>
-<td>02B0-02FF</td>
-<td>空白修饰字母&lt;/br&gt;(Spacing Modifiers)</td>
-</tr>
-<tr>
-<td>0300-036F</td>
-<td>\p{InCombiningDiacriticalMarks}</td>
-<td>0300-036F</td>
-<td>结合用读音符号&lt;/br&gt;(Combining Diacritics Marks)</td>
-</tr>
-<tr>
-<td>0370-03FF</td>
-<td>\p{InGreekandCoptic}</td>
-<td>0370-03FF</td>
-<td>希腊文及科普特文&lt;/br&gt;(Greek and Coptic)</td>
-</tr>
-<tr>
-<td>0400-04FF</td>
-<td>\p{InCyrillic}</td>
-<td>0400-04FF</td>
-<td>西里尔字母(Cyrillic)</td>
-</tr>
-<tr>
-<td>0500-052F</td>
-<td>\p{InCyrillicSupplement}</td>
-<td>0500-052F</td>
-<td>西里尔字母补充&lt;/br&gt;(Cyrillic Supplement)</td>
-</tr>
-<tr>
-<td>0530-058F</td>
-<td>\p{InArmenian}</td>
-<td>0530-058F</td>
-<td>亚美尼亚语&lt;/br&gt;(Armenian)</td>
-</tr>
-<tr>
-<td>0590-05FF</td>
-<td>\p{InHebrew}</td>
-<td>0590-05FF</td>
-<td>希伯来文&lt;/br&gt;(Hebrew)</td>
-</tr>
-<tr>
-<td>0600-06FF</td>
-<td>\p{InArabic}</td>
-<td>0600-06FF</td>
-<td>阿拉伯文&lt;/br&gt;(Arabic)</td>
-</tr>
-<tr>
-<td>0700-074F</td>
-<td>\p{InSyriac}</td>
-<td>0700-074F</td>
-<td>叙利亚文&lt;/br&gt;(Syriac)</td>
-</tr>
-<tr>
-<td>0750-077F</td>
-<td>\p{InArabicSupplement}</td>
-<td>0750-077F</td>
-<td>阿拉伯文补充&lt;/br&gt;(Arabic Supplement)</td>
-</tr>
-<tr>
-<td>0780-07BF</td>
-<td>\p{InThaana}</td>
-<td>0780-07BF</td>
-<td>马尔代夫语&lt;/br&gt;(Thaana)</td>
-</tr>
-<tr>
-<td>07C0-07FF</td>
-<td>\p{InNKo}</td>
-<td>07C0-077F</td>
-<td>西非书面语言&lt;/br&gt;(N’Ko)</td>
-</tr>
-<tr>
-<td>0800-083F</td>
-<td>\p{InSamaritan}</td>
-<td>0800-085F</td>
-<td>阿维斯塔语及巴列维语(Avestan and Pahlavi)</td>
-</tr>
-<tr>
-<td>0840-085F</td>
-<td>\p{InMandaic}</td>
-<td>0860-087F</td>
-<td>Mandaic</td>
-</tr>
-<tr>
-<td>08A0-08FF</td>
-<td>\p{InArabicExtended-A}</td>
-<td>0880-08AF</td>
-<td>撒马利亚语&lt;/br&gt;(Samaritan)</td>
-</tr>
-<tr>
-<td>0900-097F</td>
-<td>\p{InDevanagari}</td>
-<td>0900-097F</td>
-<td>天城文书&lt;/br&gt;(Devanagari)</td>
-</tr>
-<tr>
-<td>0980-09FF</td>
-<td>\p{InBengali}</td>
-<td>0980-09FF</td>
-<td>孟加拉语&lt;/br&gt;(Bengali)</td>
-</tr>
-<tr>
-<td>0A00-0A7F</td>
-<td>\p{InGurmukhi}</td>
-<td>0A00-0A7F</td>
-<td>锡克教文&lt;/br&gt;(Gurmukhi)</td>
-</tr>
-<tr>
-<td>0A80-0AFF</td>
-<td>\p{InGujarati}</td>
-<td>0A80-0AFF</td>
-<td>古吉拉特文&lt;/br&gt;(Gujarati)</td>
-</tr>
-<tr>
-<td>0B00-0B7F</td>
-<td>\p{InOriya}</td>
-<td>0B00-0B7F</td>
-<td>奥里亚文&lt;/br&gt;(Oriya)</td>
-</tr>
-<tr>
-<td>0B80-0BFF</td>
-<td>\p{InTamil}</td>
-<td>0B80-0BFF</td>
-<td>泰米尔文&lt;/br&gt;(Tamil)</td>
-</tr>
-<tr>
-<td>0C00-0C7F</td>
-<td>\p{InTelugu}</td>
-<td>0C00-0C7F</td>
-<td>泰卢固文&lt;/br&gt;(Telugu)</td>
-</tr>
-<tr>
-<td>0C80-0CFF</td>
-<td>\p{InKannada}</td>
-<td>0C80-0CFF</td>
-<td>卡纳达文&lt;/br&gt;(Kannada)</td>
-</tr>
-<tr>
-<td>0D00-0D7F</td>
-<td>\p{InMalayalam}</td>
-<td>0D00-0D7F</td>
-<td>德拉维族语&lt;/br&gt;(Malayalam)</td>
-</tr>
-<tr>
-<td>0D80-0DFF</td>
-<td>\p{InSinhala}</td>
-<td>0D80-0DFF</td>
-<td>僧伽罗语&lt;/br&gt;(Sinhala)</td>
-</tr>
-<tr>
-<td>0E00-0E7F</td>
-<td>\p{InThai}</td>
-<td>0E00-0E7F</td>
-<td>泰文&lt;/br&gt;(Thai)</td>
-</tr>
-<tr>
-<td>0E80-0EFF</td>
-<td>\p{InLao}</td>
-<td>0E80-0EFF</td>
-<td>老挝文&lt;/br&gt;(Lao)</td>
-</tr>
-<tr>
-<td>0F00-0FFF</td>
-<td>\p{InTibetan}</td>
-<td>0F00-0FFF</td>
-<td>藏文&lt;/br&gt;(Tibetan)</td>
-</tr>
-<tr>
-<td>1000-109F</td>
-<td>\p{InMyanmar}</td>
-<td>1000-109F</td>
-<td>缅甸语&lt;/br&gt;(Myanmar)</td>
-</tr>
-<tr>
-<td>10A0-10FF</td>
-<td>\p{InGeorgian}</td>
-<td>10A0-10FF</td>
-<td>格鲁吉亚语(Georgian)</td>
-</tr>
-<tr>
-<td>1100-11FF</td>
-<td>\p{InHangulJamo}</td>
-<td>1100-11FF</td>
-<td>朝鲜文&lt;/br&gt;(Hangul Jamo)</td>
-</tr>
-<tr>
-<td>1200-137F</td>
-<td>\p{InEthiopic}</td>
-<td>1200-137F</td>
-<td>埃塞俄比亚语&lt;/br&gt;(Ethiopic)</td>
-</tr>
-<tr>
-<td>1380-139F</td>
-<td>\p{InEthiopicSupplement}</td>
-<td>1380-139F</td>
-<td>埃塞俄比亚语补充&lt;/br&gt;(Ethiopic Supplement)</td>
-</tr>
-<tr>
-<td>13A0-13FF</td>
-<td>\p{InCherokee}</td>
-<td>13A0-13FF</td>
-<td>切罗基语&lt;/br&gt;(Cherokee)</td>
-</tr>
-<tr>
-<td>1400-167F</td>
-<td>\p{InUnifiedCanadianAboriginalSyllabics}</td>
-<td>1400-167F</td>
-<td>统一加拿大土著语音节&lt;/br&gt;(Unified Canadian Aboriginal Syllabics)</td>
-</tr>
-<tr>
-<td>1680-169F</td>
-<td>\p{InOgham}</td>
-<td>1680-169F</td>
-<td>欧甘字母&lt;/br&gt;(Ogham)</td>
-</tr>
-<tr>
-<td>16A0-16FF</td>
-<td>\p{InRunic}</td>
-<td>16A0-16FF</td>
-<td>如尼文(Runic)</td>
-</tr>
-<tr>
-<td>1700-171F</td>
-<td>\p{InTagalog}</td>
-<td>1700-171F</td>
-<td>塔加拉语&lt;/br&gt;(Tagalog)</td>
-</tr>
-<tr>
-<td>1720-173F</td>
-<td>\p{InHanunoo}</td>
-<td>1720-173F</td>
-<td>Hanunóo</td>
-</tr>
-<tr>
-<td>1740-175F</td>
-<td>\p{InBuhid}</td>
-<td>1740-175F</td>
-<td>Buhid</td>
-</tr>
-<tr>
-<td>1760-177F</td>
-<td>\p{InTagbanwa}</td>
-<td>1760-177F</td>
-<td>Tagbanwa</td>
-</tr>
-<tr>
-<td>1780-17FF</td>
-<td>\p{InKhmer}</td>
-<td>1780-17FF</td>
-<td>高棉语&lt;/br&gt;(Khmer)</td>
-</tr>
-<tr>
-<td>1800-18AF</td>
-<td>\p{InMongolian}</td>
-<td>1800-18AF</td>
-<td>蒙古文&lt;/br&gt;(Mongolian)</td>
-</tr>
-<tr>
-<td>18B0-18FF</td>
-<td>\p{InUnifiedCanadianAboriginalSyllabicsExtended}</td>
-<td>18B0-18FF</td>
-<td>Cham</td>
-</tr>
-<tr>
-<td>1900-194F</td>
-<td>\p{InLimbu}</td>
-<td>1900-194F</td>
-<td>Limbu</td>
-</tr>
-<tr>
-<td>1950-197F</td>
-<td>\p{InTaiLe}</td>
-<td>1950-197F</td>
-<td>德宏泰语&lt;/br&gt;(Tai Le)</td>
-</tr>
-<tr>
-<td>1980-19DF</td>
-<td>\p{InNewTaiLue}</td>
-<td>1980-19DF</td>
-<td>新傣仂语&lt;/br&gt;(New Tai Lue)</td>
-</tr>
-<tr>
-<td>19E0-19FF</td>
-<td>\p{InKhmerSymbols}</td>
-<td>19E0-19FF</td>
-<td>高棉语记号&lt;/br&gt;(Kmer Symbols)</td>
-</tr>
-<tr>
-<td>1A00-1A1F</td>
-<td>\p{InBuginese}</td>
-<td>1A00-1A1F</td>
-<td>Buginese</td>
-</tr>
-<tr>
-<td>1A20-1AAF</td>
-<td>\p{InTaiTham}</td>
-<td>1A20-1A5F</td>
-<td>Batak</td>
-</tr>
-<tr>
-<td>1B00-1B7F</td>
-<td>\p{InBalinese}</td>
-<td>1A80-1AEF</td>
-<td>Lanna</td>
-</tr>
-<tr>
-<td>1B80-1BBF</td>
-<td>\p{InSundanese}</td>
-<td>1B00-1B7F</td>
-<td>巴厘语&lt;/br&gt;(Balinese)</td>
-</tr>
-<tr>
-<td>1BC0-1BFF</td>
-<td>\p{InBatak}</td>
-<td>1B80-1BB0</td>
-<td>巽他语&lt;/br&gt;(Sundanese)</td>
-</tr>
-<tr>
-<td>1C00-1C4F</td>
-<td>\p{InLepcha}</td>
-<td>1BC0-1BFF</td>
-<td>Pahawh Hmong</td>
-</tr>
-<tr>
-<td>1C50-1C7F</td>
-<td>\p{InOlChiki}</td>
-<td>1C00-1C4F</td>
-<td>雷布查语(Lepcha)</td>
-</tr>
-<tr>
-<td>1CC0-1CCF</td>
-<td>\p{InSundaneseSupplement}</td>
-<td>1C50-1C7F</td>
-<td>Ol Chiki</td>
-</tr>
-<tr>
-<td>1CD0-1CFF</td>
-<td>\p{InVedicExtensions}</td>
-<td>1C80-1CDF</td>
-<td>曼尼普尔语(Meithei/Manipuri)</td>
-</tr>
-<tr>
-<td>1D00-1D7F</td>
-<td>\p{InPhoneticExtensions}</td>
-<td>1D00-1D7F</td>
-<td>语音学扩展&lt;/br&gt;(Phonetic Extensions)</td>
-</tr>
-<tr>
-<td>1D80-1DBF</td>
-<td>\p{InPhoneticExtensionsSupplement}</td>
-<td>1D80-1DBF</td>
-<td>语音学扩展补充&lt;/br&gt;(Phonetic Extensions Supplement)</td>
-</tr>
-<tr>
-<td>1DC0-1DFF</td>
-<td>\p{InCombiningDiacriticalMarksSupplement}</td>
-<td>1DC0-1DFF</td>
-<td>结合用读音符号补充&lt;/br&gt;(Combining Diacritics Marks Supplement)</td>
-</tr>
-<tr>
-<td>1E00-1EFF</td>
-<td>\p{InLatinExtendedAdditional}</td>
-<td>1E00-1EFF</td>
-<td>拉丁文扩充附加&lt;/br&gt;(Latin Extended Additional)</td>
-</tr>
-<tr>
-<td>1F00-1FFF</td>
-<td>\p{InGreekExtended}</td>
-<td>1F00-1FFF</td>
-<td>希腊语扩充&lt;/br&gt;(Greek Extended)</td>
-</tr>
-<tr>
-<td>2000-206F</td>
-<td>\p{InGeneralPunctuation}</td>
-<td>2000-206F</td>
-<td>常用标点(General Punctuation)</td>
-</tr>
-<tr>
-<td>2070-209F</td>
-<td>\p{InSuperscriptsandSubscripts}</td>
-<td>2070-209F</td>
-<td>上标及下标&lt;/br&gt;(Superscripts and Subscripts)</td>
-</tr>
-<tr>
-<td>20A0-20CF</td>
-<td>\p{InCurrencySymbols}</td>
-<td>20A0-20CF</td>
-<td>货币符号&lt;/br&gt;(Currency Symbols)</td>
-</tr>
-<tr>
-<td>20D0-20FF</td>
-<td>\p{InCombiningDiacriticalMarksforSymbols}</td>
-<td>20D0-20FF</td>
-<td>组合用记号&lt;/br&gt;(Combining Diacritics Marks for Symbols)</td>
-</tr>
-<tr>
-<td>2100-214F</td>
-<td>\p{InLetterlikeSymbols}</td>
-<td>2100-214F</td>
-<td>字母式符号&lt;/br&gt;(Letterlike Symbols)</td>
-</tr>
-<tr>
-<td>2150-218F</td>
-<td>\p{InNumberForms}</td>
-<td>2150-218F</td>
-<td>数字形式&lt;/br&gt;(Number Form)</td>
-</tr>
-<tr>
-<td>2190-21FF</td>
-<td>\p{InArrows}</td>
-<td>2190-21FF</td>
-<td>箭头&lt;/br&gt;(Arrows)</td>
-</tr>
-<tr>
-<td>2200-22FF</td>
-<td>\p{InMathematicalOperators}</td>
-<td>2200-22FF</td>
-<td>数学运算符&lt;/br&gt;(Mathematical Operator)</td>
-</tr>
-<tr>
-<td>2300-23FF</td>
-<td>\p{InMiscellaneousTechnical}</td>
-<td>2300-23FF</td>
-<td>杂项工业符号&lt;/br&gt;(Miscellaneous Technical)</td>
-</tr>
-<tr>
-<td>2400-243F</td>
-<td>\p{InControlPictures}</td>
-<td>2400-243F</td>
-<td>控制图片&lt;/br&gt;(Control Pictures)</td>
-</tr>
-<tr>
-<td>2440-245F</td>
-<td>\p{InOpticalCharacterRecognition}</td>
-<td>2440-245F</td>
-<td>光学识别符&lt;/br&gt;(Optical Character Recognition)</td>
-</tr>
-<tr>
-<td>2460-24FF</td>
-<td>\p{InEnclosedAlphanumerics}</td>
-<td>2460-24FF</td>
-<td>封闭式字母数字&lt;/br&gt;(Enclosed Alphanumerics)</td>
-</tr>
-<tr>
-<td>2500-257F</td>
-<td>\p{InBoxDrawing}</td>
-<td>2500-257F</td>
-<td>制表符&lt;/br&gt;(Box Drawing)</td>
-</tr>
-<tr>
-<td>2580-259F</td>
-<td>\p{InBlockElements}</td>
-<td>2580-259F</td>
-<td>方块元素&lt;/br&gt;(Block Element)</td>
-</tr>
-<tr>
-<td>25A0-25FF</td>
-<td>\p{InGeometricShapes}</td>
-<td>25A0-25FF</td>
-<td>几何图形&lt;/br&gt;(Geometric Shapes)</td>
-</tr>
-<tr>
-<td>2600-26FF</td>
-<td>\p{InMiscellaneousSymbols}</td>
-<td>2600-26FF</td>
-<td>杂项符号&lt;/br&gt;(Miscellaneous Symbols)</td>
-</tr>
-<tr>
-<td>2700-27BF</td>
-<td>\p{InDingbats}</td>
-<td>2700-27BF</td>
-<td>印刷符号&lt;/br&gt;(Dingbats)</td>
-</tr>
-<tr>
-<td>27C0-27EF</td>
-<td>\p{InMiscellaneousMathematicalSymbols-A}</td>
-<td>27C0-27EF</td>
-<td>杂项数学符号-A&lt;/br&gt;(Miscellaneous Mathematical Symbols-A)</td>
-</tr>
-<tr>
-<td>27F0-27FF</td>
-<td>\p{InSupplementalArrows-A}</td>
-<td>27F0-27FF</td>
-<td>追加箭头-A&lt;/br&gt;(Supplemental Arrows-A)</td>
-</tr>
-<tr>
-<td>2800-28FF</td>
-<td>\p{InBraillePatterns}</td>
-<td>2800-28FF</td>
-<td>盲文点字模型&lt;/br&gt;(Braille Patterns)</td>
-</tr>
-<tr>
-<td>2900-297F</td>
-<td>\p{InSupplementalArrows-B}</td>
-<td>2900-297F</td>
-<td>追加箭头-B&lt;/br&gt;(Supplemental Arrows-B)</td>
-</tr>
-<tr>
-<td>2980-29FF</td>
-<td>\p{InMiscellaneousMathematicalSymbols-B}</td>
-<td>2980-29FF</td>
-<td>杂项数学符号-B&lt;/br&gt;(Miscellaneous Mathematical Symbols-B)</td>
-</tr>
-<tr>
-<td>2A00-2AFF</td>
-<td>\p{InSupplementalMathematicalOperators}</td>
-<td>2A00-2AFF</td>
-<td>追加数学运算符&lt;/br&gt;(Supplemental Mathematical Operator)</td>
-</tr>
-<tr>
-<td>2B00-2BFF</td>
-<td>\p{InMiscellaneousSymbolsandArrows}</td>
-<td>2B00-2BFF</td>
-<td>杂项符号和箭头&lt;/br&gt;(Miscellaneous Symbols and Arrows)</td>
-</tr>
-<tr>
-<td>2C00-2C5F</td>
-<td>\p{InGlagolitic}</td>
-<td>2C00-2C5F</td>
-<td>格拉哥里字母(Glagolitic)</td>
-</tr>
-<tr>
-<td>2C60-2C7F</td>
-<td>\p{InLatinExtended-C}</td>
-<td>2C60-2C7F</td>
-<td>拉丁文扩展-C&lt;/br&gt;(Latin Extended-C)</td>
-</tr>
-<tr>
-<td>2C80-2CFF</td>
-<td>\p{InCoptic}</td>
-<td>2C80-2CFF</td>
-<td>古埃及语&lt;/br&gt;(Coptic)</td>
-</tr>
-<tr>
-<td>2D00-2D2F</td>
-<td>\p{InGeorgianSupplement}</td>
-<td>2D00-2D2F</td>
-<td>格鲁吉亚语补充&lt;/br&gt;(Georgian Supplement)</td>
-</tr>
-<tr>
-<td>2D30-2D7F</td>
-<td>\p{InTifinagh}</td>
-<td>2D30-2D7F</td>
-<td>提非纳文&lt;/br&gt;(Tifinagh)</td>
-</tr>
-<tr>
-<td>2D80-2DDF</td>
-<td>\p{InEthiopicExtended}</td>
-<td>2D80-2DDF</td>
-<td>埃塞俄比亚语扩展&lt;/br&gt;(Ethiopic Extended)</td>
-</tr>
-<tr>
-<td>2DE0-2DFF</td>
-<td>\p{InCyrillicExtended-A}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>2E00-2E7F</td>
-<td>\p{InSupplementalPunctuation}</td>
-<td>2E00-2E7F</td>
-<td>追加标点&lt;/br&gt;(Supplemental Punctuation)</td>
-</tr>
-<tr>
-<td>2E80-2EFF</td>
-<td>\p{InCJKRadicalsSupplement}</td>
-<td>2E80-2EFF</td>
-<td>CJK 部首补充&lt;/br&gt;(CJK Radicals Supplement)</td>
-</tr>
-<tr>
-<td>2F00-2FDF</td>
-<td>\p{InKangxiRadicals}</td>
-<td>2F00-2FDF</td>
-<td>康熙字典部首&lt;/br&gt;(Kangxi Radicals)</td>
-</tr>
-<tr>
-<td>2FF0-2FFF</td>
-<td>\p{InIdeographicDescriptionCharacters}</td>
-<td>2FF0-2FFF</td>
-<td>表意文字描述符&lt;/br&gt;(Ideographic Description Characters)</td>
-</tr>
-<tr>
-<td>3000-303F</td>
-<td>\p{InCJKSymbolsandPunctuation}</td>
-<td>3000-303F</td>
-<td>CJK 符号和标点&lt;/br&gt;(CJK Symbols and Punctuation)</td>
-</tr>
-<tr>
-<td>3040-309F</td>
-<td>\p{InHiragana}</td>
-<td>3040-309F</td>
-<td>日文平假名&lt;/br&gt;(Hiragana)</td>
-</tr>
-<tr>
-<td>30A0-30FF</td>
-<td>\p{InKatakana}</td>
-<td>30A0-30FF</td>
-<td>日文片假名&lt;/br&gt;(Katakana)</td>
-</tr>
-<tr>
-<td>3100-312F</td>
-<td>\p{InBopomofo}</td>
-<td>3100-312F</td>
-<td>注音字母&lt;/br&gt;(Bopomofo)</td>
-</tr>
-<tr>
-<td>3130-318F</td>
-<td>\p{InHangulCompatibilityJamo}</td>
-<td>3130-318F</td>
-<td>朝鲜文兼容字母&lt;/br&gt;(Hangul Compatibility Jamo)</td>
-</tr>
-<tr>
-<td>3190-319F</td>
-<td>\p{InKanbun}</td>
-<td>3190-319F</td>
-<td>象形字注释标志&lt;/br&gt;(Kanbun)</td>
-</tr>
-<tr>
-<td>31A0-31BF</td>
-<td>\p{InBopomofoExtended}</td>
-<td>31A0-31BF</td>
-<td>注音字母扩展&lt;/br&gt;(Bopomofo Extended)</td>
-</tr>
-<tr>
-<td>31C0-31EF</td>
-<td>\p{InCJKStrokes}</td>
-<td>31C0-31EF</td>
-<td>CJK 笔画&lt;/br&gt;(CJK Strokes)</td>
-</tr>
-<tr>
-<td>31F0-31FF</td>
-<td>\p{InKatakanaPhoneticExtensions}</td>
-<td>31F0-31FF</td>
-<td>日文片假名语音扩展&lt;/br&gt;(Katakana Phonetic Extensions)</td>
-</tr>
-<tr>
-<td>3200-32FF</td>
-<td>\p{InEnclosedCJKLettersandMonths}</td>
-<td>3200-32FF</td>
-<td>封闭式 CJK 文字和月份&lt;/br&gt;(Enclosed CJK Letters and Months)</td>
-</tr>
-<tr>
-<td>3300-33FF</td>
-<td>\p{InCJKCompatibility}</td>
-<td>3300-33FF</td>
-<td>CJK 兼容&lt;/br&gt;(CJK Compatibility)</td>
-</tr>
-<tr>
-<td>3400-4DBF</td>
-<td>\p{InCJKUnifiedIdeographsExtensionA}</td>
-<td>3400-4DBF</td>
-<td>CJK 统一表意符号扩展 A&lt;/br&gt;(CJK Unified Ideographs Extension A)</td>
-</tr>
-<tr>
-<td><strong>4DC0-4DFF</strong></td>
-<td><strong>\p{InYijingHexagramSymbols}</strong></td>
-<td><strong>4DC0-4DFF</strong></td>
-<td><strong>易经六十四卦符号&lt;/br&gt;(Yijing Hexagrams Symbols)</strong></td>
-</tr>
-<tr>
-<td><strong>4E00-9FFF</strong></td>
-<td><strong>\p{InCJKUnifiedIdeographs}</strong></td>
-<td><strong>4E00-9FBF</strong></td>
-<td><strong>CJK 统一表意符号&lt;/br&gt;(CJK Unified Ideographs)</strong></td>
-</tr>
-<tr>
-<td>A000-A48F</td>
-<td>\p{InYiSyllables}</td>
-<td>A000-A48F</td>
-<td>彝文音节&lt;/br&gt;(Yi Syllables)</td>
-</tr>
-<tr>
-<td>A490-A4CF</td>
-<td>\p{InYiRadicals}</td>
-<td>A490-A4CF</td>
-<td>彝文字根&lt;/br&gt;(Yi Radicals)</td>
-</tr>
-<tr>
-<td>A4D0-A4FF</td>
-<td>\p{InLisu}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A500-A63F</td>
-<td>\p{InVai}</td>
-<td>A500-A61F</td>
-<td>Vai</td>
-</tr>
-<tr>
-<td>A640-A69F</td>
-<td>\p{InCyrillicExtended-B}</td>
-<td>A660-A6FF</td>
-<td>统一加拿大土著语音节补充&lt;/br&gt;(Unified Canadian Aboriginal Syllabics Supplement)</td>
-</tr>
-<tr>
-<td>A6A0-A6FF</td>
-<td>\p{InBamum}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A700-A71F</td>
-<td>\p{InModifierToneLetters}</td>
-<td>A700-A71F</td>
-<td>声调修饰字母&lt;/br&gt;(Modifier Tone Letters)</td>
-</tr>
-<tr>
-<td>A720-A7FF</td>
-<td>\p{InLatinExtended-D}</td>
-<td>A720-A7FF</td>
-<td>拉丁文扩展-D&lt;/br&gt;(Latin Extended-D)</td>
-</tr>
-<tr>
-<td>A800-A82F</td>
-<td>\p{InSylotiNagri}</td>
-<td>A800-A82F</td>
-<td>Syloti Nagri</td>
-</tr>
-<tr>
-<td>A830-A83F</td>
-<td>\p{InCommonIndicNumberForms}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A840-A87F</td>
-<td>\p{InPhags-pa}</td>
-<td>A840-A87F</td>
-<td>八思巴字&lt;/br&gt;(Phags-pa)</td>
-</tr>
-<tr>
-<td>A880-A8DF</td>
-<td>\p{InSaurashtra}</td>
-<td>A880-A8DF</td>
-<td>Saurashtra</td>
-</tr>
-<tr>
-<td>A8E0-A8FF</td>
-<td>\p{InDevanagariExtended}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A900-A92F</td>
-<td>\p{InKayahLi}</td>
-<td>A900-A97F</td>
-<td>爪哇语&lt;/br&gt;(Javanese)</td>
-</tr>
-<tr>
-<td>A930-A95F</td>
-<td>\p{InRejang}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A960-A97F</td>
-<td>\p{InHangulJamoExtended-A}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>A980-A9DF</td>
-<td>\p{InJavanese}</td>
-<td>A980-A9DF</td>
-<td>Chakma</td>
-</tr>
-<tr>
-<td>AA00-AA5F</td>
-<td>\p{InCham}</td>
-<td>AA00-AA3F</td>
-<td>Varang Kshiti</td>
-</tr>
-<tr>
-<td>AA60-AA7F</td>
-<td>\p{InMyanmarExtended-A}</td>
-<td>AA40-AA6F</td>
-<td>Sorang Sompeng</td>
-</tr>
-<tr>
-<td>AA80-AADF</td>
-<td>\p{InTaiViet}</td>
-<td>AA80-AADF</td>
-<td>Newari</td>
-</tr>
-<tr>
-<td>AAE0-AAFF</td>
-<td>\p{InMeeteiMayekExtensions}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>AB00-AB2F</td>
-<td>\p{InEthiopicExtended-A}</td>
-<td>AB00-AB5F</td>
-<td>越南傣语&lt;/br&gt;(Vi?t Thái)</td>
-</tr>
-<tr>
-<td>ABC0-ABFF</td>
-<td>\p{InMeeteiMayek}</td>
-<td>AB80-ABA0</td>
-<td>Kayah Li</td>
-</tr>
-<tr>
-<td>AC00-D7AF</td>
-<td>\p{InHangulSyllables}</td>
-<td>AC00-D7AF</td>
-<td>朝鲜文音节&lt;/br&gt;(Hangul Syllables)</td>
-</tr>
-<tr>
-<td>D7B0-D7FF</td>
-<td>\p{InHangulJamoExtended-B}</td>
-<td>D800-DBFF</td>
-<td>High-half zone of UTF-16</td>
-</tr>
-<tr>
-<td>D800-DB7F</td>
-<td>\p{InHighSurrogates}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>DB80-DBFF</td>
-<td>\p{InHighPrivateUseSurrogates}</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>DC00-DFFF</td>
-<td>\p{InLowSurrogates}</td>
-<td>DC00-DFFF</td>
-<td>Low-half zone of UTF-16</td>
-</tr>
-<tr>
-<td>E000-F8FF</td>
-<td>\p{InPrivateUseArea}</td>
-<td>E000-F8FF</td>
-<td>自行使用区域&lt;/br&gt;(Private Use Zone)</td>
-</tr>
-<tr>
-<td>F900-FAFF</td>
-<td>\p{InCJKCompatibilityIdeographs}</td>
-<td>F900-FAFF</td>
-<td>CJK 兼容象形文字&lt;/br&gt;(CJK Compatibility Ideographs)</td>
-</tr>
-<tr>
-<td>FB00-FB4F</td>
-<td>\p{InAlphabeticPresentationForms}</td>
-<td>FB00-FB4F</td>
-<td>字母表达形式&lt;/br&gt;(Alphabetic Presentation Form)</td>
-</tr>
-<tr>
-<td>FB50-FDFF</td>
-<td>\p{InArabicPresentationForms-A}</td>
-<td>FB50-FDFF</td>
-<td>阿拉伯表达形式A&lt;/br&gt;(Arabic Presentation Form-A)</td>
-</tr>
-<tr>
-<td>FE00-FE0F</td>
-<td>\p{InVariationSelectors}</td>
-<td>FE00-FE0F</td>
-<td>变量选择符&lt;/br&gt;(Variation Selector)</td>
-</tr>
-<tr>
-<td>FE10-FE1F</td>
-<td>\p{InVerticalForms}</td>
-<td>FE10-FE1F</td>
-<td>竖排形式&lt;/br&gt;(Vertical Forms)</td>
-</tr>
-<tr>
-<td>FE20-FE2F</td>
-<td>\p{InCombiningHalfMarks}</td>
-<td>FE20-FE2F</td>
-<td>组合用半符号&lt;/br&gt;(Combining Half Marks)</td>
-</tr>
-<tr>
-<td>FE30-FE4F</td>
-<td>\p{InCJKCompatibilityForms}</td>
-<td>FE30-FE4F</td>
-<td>CJK 兼容形式&lt;/br&gt;(CJK Compatibility Forms)</td>
-</tr>
-<tr>
-<td>FE50-FE6F</td>
-<td>\p{InSmallFormVariants}</td>
-<td>FE50-FE6F</td>
-<td>小型变体形式&lt;/br&gt;(Small Form Variants)</td>
-</tr>
-<tr>
-<td>FE70-FEFF</td>
-<td>\p{InArabicPresentationForms-B}</td>
-<td>FE70-FEFF</td>
-<td>阿拉伯表达形式B&lt;/br&gt;(Arabic Presentation Form-B)</td>
-</tr>
-<tr>
-<td>FF00-FFEF</td>
-<td>\p{InHalfwidthandFullwidthForms}</td>
-<td>FF00-FFEF</td>
-<td>半型及全型形式&lt;/br&gt;(Halfwidth and Fullwidth Form)</td>
-</tr>
-<tr>
-<td>FFF0-FFFF</td>
-<td>\p{InSpecials}</td>
-<td>FFF0-FFFF</td>
-<td>特殊&lt;/br&gt;(Specials)</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-whole-words/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/06/Match-whole-words/" class="post-title-link" itemprop="url">Match whole words</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-06 22:07:37" itemprop="dateCreated datePublished" datetime="2017-02-06T22:07:37+08:00">2017-02-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><blockquote>
-<p>My cat is brown<br>category<br>octocat<br>staccato</p>
-</blockquote>
-<ul>
-<li>find word ‘cat’</li>
-<li>find word begin with ‘cat’</li>
-<li>find word end with ‘cat’</li>
-<li>find word contain ‘cat’</li>
-<li>find word not begin with ‘cat’</li>
-<li>find word not end with ‘cat’</li>
-<li>find word not contain ‘cat’</li>
-</ul>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p><strong>Word boundaries</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\bcat\b</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li><p>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<br><strong>Nonboundaries</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\Bcat\B</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Regex options: None</p>
-</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\bcat       (?&lt;!\w)(?=\w)cat</span><br><span class="line">cat\b       cat(?&lt;=\w)(?!\w)</span><br><span class="line">\Bcat       (?&lt;=\w)cat(?!\w)</span><br><span class="line">cat\B       (?&lt;!\w)cat(?=\w)</span><br><span class="line">\b(?!\w*?cat\w*?)\w+?\b</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><strong><em>\b  -&gt;  (?&lt;=\w)(?!\w)|(?&lt;!\w)(?=\w)</em></strong></p>
-<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p><strong>‹\b› matches in these three positions:</strong></p>
-<ul>
-<li>Before the first character in the subject, if the first character is a word character</li>
-<li>After the last character in the subject, if the last character is a word character</li>
-<li>Between two characters in the subject, where one is a word character and the other<br>is not a word character</li>
-</ul>
-<p><strong>‹\B› matches in these five positions:</strong></p>
-<ul>
-<li>Before the first character in the subject, if the first character is not a word character</li>
-<li>After the last character in the subject, if the last character is not a word character</li>
-<li>Between two word characters</li>
-<li>Between two nonword characters</li>
-<li>The empty string</li>
-</ul>
-<h2 id="Word-Characters"><a href="#Word-Characters" class="headerlink" title="Word Characters"></a>Word Characters</h2><ul>
-<li><code>Java</code> :<ul>
-<li><strong>Java 4 to 6</strong> ‹\w› matches <strong>only ASCII</strong> characters</li>
-<li><strong>Java 7</strong> ‹\w› extended matches Unicode characters if set the <code>UNICODE_CHARACTER_CLASS</code> flag</li>
-<li><strong>All version Java</strong> ‹\b› is Unicode-enabled, supporting any script</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><code>.NET, JavaScript, PCRE, Perl, Python, and Ruby have</code>:<ul>
-<li>‹\b› match between two characters where <strong>one is</strong> matched by ‹\w› and <strong>the other</strong> by ‹\W›.</li>
-<li>‹\B› always matches between two characters where <strong>both</strong> are matched by ‹\w› or ‹\W›</li>
-</ul>
-</li>
-<li><code>JavaScript, PCRE, and Ruby</code> : ‹\w› is identical to ‹[a-zA-Z0-9_]› so only “whole words only” search in language which use <strong>Latin alphabet</strong>.</li>
-<li><p><code>.NET</code> : treats letters and digits from <strong>all scripts</strong> as word characters. You can do a “whole words only” search on words in <strong>any language</strong></p>
-</li>
-<li><p><code>Python 2.x</code>: non-ASCII characters are included only if you pass the <code>UNICODE</code> or <code>U</code> flag when creating the regex.</p>
-</li>
-<li><p><code>Python 3.x</code>: non-ASCII character are included by default, but you can exclude them with the <code>ASCII</code> or <code>A</code>flag. This flag affects both ‹\b› and ‹\w› equally.</p>
-</li>
-<li><p><code>Perl</code>: depends on your version of <code>Perl</code> and <code>/adlu</code> flags whether ‹\w› is pure ASCII or includes all Unicode letters, digits, and underscores.</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-start-end/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/06/Match-start-end/" class="post-title-link" itemprop="url">Match "start" & "end"</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-06 17:11:42" itemprop="dateCreated datePublished" datetime="2017-02-06T17:11:42+08:00">2017-02-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><blockquote>
-<p>alpha…..↵<br>alpha…..↵<br>begin…..↵<br>…….end↵<br>….omega↵<br>….omega↵</p>
-</blockquote>
-<ul>
-<li>Match <code>&#39;alpha&#39;</code> occurs at the very beginning</li>
-<li>Match two <code>&#39;alpha&#39;</code> at line head</li>
-<li>Match <code>&#39;omega&#39;</code> occurs at the very end</li>
-<li>Match two <code>&#39;omega&#39;</code> at line end</li>
-<li>Match <code>&#39;begin&#39;</code> at line’s head</li>
-<li>Match <code>&#39;end&#39;</code> at line’s tail</li>
-</ul>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>Start of the subject<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^alpha</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None (“^ and $ match at line breaks” must not be set, if not <strong>matches two</strong>)</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\Aalpha</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby<br>End of the subject</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">omega$</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None (“^ and $ match at line breaks” must not be set, if not <strong>matches two</strong>)</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">omega\Z</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby Start of a line</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^begin</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: ^ and $ match at line breaks</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">end\$</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: ^ and $ match at line breaks</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><ul>
-<li><code>JavaScript</code> does not support ‹\A›.</li>
-<li>The anchor ‹^› is equivalent to ‹\A›, as long as you do not turn on the <strong>“^ and $ match at line breaks”</strong> option.</li>
-<li><p>The anchor ‹$› is equivalent to ‹\Z›, as long as you do not turn on the <strong>“^ and $ match at line breaks”</strong> option.</p>
-<ul>
-<li>In <code>Java</code> is <strong>Pattern.MULTILINE</strong> option<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Enables multiline mode.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt; In multiline mode the expressions &lt;tt&gt;^&lt;/tt&gt; and &lt;tt&gt;$&lt;/tt&gt; match</span><br><span class="line"> * just after or just before, respectively, a line terminator or the end of</span><br><span class="line"> * the input sequence.  By default these expressions only match at the</span><br><span class="line"> * beginning and the end of the entire input sequence.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt; Multiline mode can also be enabled via the embedded flag</span><br><span class="line"> * expression&amp;nbsp;&lt;tt&gt;(?m)&lt;/tt&gt;.  &lt;/p&gt;</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>The anchors ‹\Z› and ‹\z› always match at the very end of the subject text, <strong>after the last character</strong></p>
-</li>
-<li>&lt;\Z› without having to worry about stripping off a <strong>trailing line break</strong> at the end of your subject text.</li>
-<li>&lt;\Z&gt; The very last <code>\r\n|\r|\n</code> -&gt; <code>↵</code> will be ignore.</li>
-<li>&lt;\z&gt; The very last <code>\r\n|\r|\n</code> -&gt; <code>↵</code> will not be ignore.</li>
-</ul>
-<hr>
-<ul>
-<li><code>JavaScript</code> does not support ‹\A›</li>
-<li><code>JavaScript</code> does not support ‹\Z› or ‹\z› at all</li>
-<li><code>.NET, Java, PCRE, Perl, and Ruby</code> support both ‹\Z› and ‹\z›.</li>
-<li><code>Python</code> supports only ‹\Z›.</li>
-</ul>
-<h2 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h2><ul>
-<li><code>.NET, Java, XRegExp, PCRE, Perl, and Python1</code>: (?m) internal mode, for “^ and $ match at line breaks”.</li>
-<li>Ruby uses‹(?m)› to turn on <strong>“dot matches line breaks”</strong> mode.</li>
-<li>In Ruby, ‹^› and ‹$› <strong>always match</strong> at the start and end of each line.</li>
-<li>‹(?-m)› to turn off the option.</li>
-<li>&lt;(?i)&gt; turn on the ignore the sensitive of letter.</li>
-<li>&lt;(?s)&gt; dot matches line breaks.[except <code>Ruby</code>]</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Full-text-retrieval-fundamental-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/06/Full-text-retrieval-fundamental-4/" class="post-title-link" itemprop="url">Full-text retrieval fundamental</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-06 13:40:14" itemprop="dateCreated datePublished" datetime="2017-02-06T13:40:14+08:00">2017-02-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2017/02/06/Full-text-retrieval-fundamental-4/Full-text retrieval.png" alt></p>
-<h3 id="Build-Index"><a href="#Build-Index" class="headerlink" title="Build Index"></a>Build Index</h3><ol>
-<li>Data source(Documents) ready be index.</li>
-<li>Lexcial analysis, language processing, translate to Terms.</li>
-<li>Create dictionary, posting index table.</li>
-<li>Writen into hard disk, or other space.</li>
-</ol>
-<h3 id="Query-process"><a href="#Query-process" class="headerlink" title="Query process"></a>Query process</h3><ul>
-<li>A. Input query parse.</li>
-<li>B. Lexcial analysis, language processing, translate to terms.</li>
-<li>C. Syntax analysis, translate to a query tree.</li>
-<li>D. Read hard disk index to memory</li>
-<li>E. Get every term’s documents list by query tree, get result documents by ‘And’/‘Or’/‘Not’ operations on list.</li>
-<li>F. Sort result documents by doc relevance.</li>
-<li>G. Return query result.</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-characters/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/05/Match-characters/" class="post-title-link" itemprop="url">Match characters</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-05 19:20:32" itemprop="dateCreated datePublished" datetime="2017-02-05T19:20:32+08:00">2017-02-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="Match-a-character"><a href="#Match-a-character" class="headerlink" title="Match a character"></a>Match a character</h1><p><strong>Hexadecimal character</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<p><strong>Nonhexadecimal character</strong><br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<blockquote>
-<p>The notation using square brackets is called<br><strong>a character class</strong></p>
-</blockquote>
-<ul>
-<li><p><strong><code>\, ^, -, and ]</code> have special function in square brackets</strong></p>
-</li>
-<li><p><em>JavaScript</em> treats ‹[]› as an empty character class that <strong>always fails to match</strong>.</p>
-</li>
-<li><p>In all the regex flavors discussed in this book, a <strong>negated character class</strong> matches <strong>line break characters</strong>, unless you add them to the negated character class. Make sure that you don’t accidentally allow your regex to span <em>across lines</em>.</p>
-</li>
-</ul>
-<hr>
-<h3 id="About-w"><a href="#About-w" class="headerlink" title="About \w"></a>About <code>\w</code></h3><ul>
-<li>Java 4-6, JavaScript, PCRE, Ruby : <code>\w</code> -&gt; [a-zA-Z0-9_]</li>
-<li>Java 7 : set <strong>Pattern.UNICODE_CHARACTER_CLASS</strong> flag, <code>\w</code> matches unicode characters. <strong>(?U)</strong> Inner regex usage.</li>
-<li>Python2.x : set UNICODE or U flag, matches unicode characters.</li>
-<li>Python3.x : matches unicode characters in default, <code>\w</code> ASCII-only with the ASCII or A flag.</li>
-<li>Perl&gt;=5.1.4 : <code>/u (Unicode)</code> adds all Unicode scripts, and <code>/l
-(locale)</code> makes <code>\w</code> depend on the locale. (<code>/d</code>, no <code>adlu</code>) Unicode scripts rule same as Perl&lt;5.1.4.</li>
-<li>Perl&lt;5.1.4 : matches unicode characters in default, <code>\w</code> automatically includes Unicode scripts if the subject string or the regex are <strong>encoded as UTF-8</strong>, or the regex includes a code <strong>point above 255</strong> such as ‹\x{100}› or a Unicode property such as ‹\p{L}›. If not, the default for <code>\w</code> is pure ASCII</li>
-</ul>
-<h3 id="About-d"><a href="#About-d" class="headerlink" title="About \d"></a>About <code>\d</code></h3><ul>
-<li><code>\d</code> follows the same rules as <code>\w</code> in all these flavors.</li>
-<li>In .NET, digits from other scripts are always included.</li>
-<li>In Python it depends on the <strong>UNICODE</strong> and <strong>ASCII</strong> flags, and whether you’re using Python 2.x or 3.x. In Perl 5.14, it depends on the <strong>/adlu</strong> flags.</li>
-<li>In earlier versions of Perl, it depends on <strong>the encoding</strong> of the subject and regex, and whether the regex has any Uncicode tokens</li>
-</ul>
-<h3 id="About-s"><a href="#About-s" class="headerlink" title="About \s"></a>About <code>\s</code></h3><ul>
-<li><code>\s</code> matches any whitespace character. This includes spaces, tabs, and line breaks.</li>
-<li><code>\S</code> matches any character <strong>not matched</strong> by <code>\s</code></li>
-<li>In .NET and JavaScript, <code>\s</code> also matches any character defined as whitespace by the <strong>Unicode standard</strong>.</li>
-<li>In Java, Perl, and Python, <code>\s</code> follows the same rules as <code>\w</code> and <code>\d</code>.</li>
-<li>Notice that JavaScript uses <strong>Unicode</strong> for ‹\s› but <strong>ASCII</strong> for <code>\d</code> and <code>\w</code>.</li>
-</ul>
-<hr>
-<h3 id="Flavor-Specific-Features"><a href="#Flavor-Specific-Features" class="headerlink" title="Flavor-Specific Features"></a>Flavor-Specific Features</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9-[g-zG-Z]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET 2.0 or later</li>
-</ul>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\w&amp;&amp;[a-fA-F0-9\s]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>uses character class <strong>intersection</strong> to match a hexadecimal digit.</li>
-<li>Regex options: None</li>
-<li>Regex flavors: Java</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9&amp;&amp;[^g-zG-Z]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>uses character class <strong>subtraction</strong> to match a single hexadecimal character in a roundabout way.</li>
-<li>Regex options: None</li>
-<li>Regex flavors: Java</li>
-</ul>
-<h1 id="Match-any-character"><a href="#Match-any-character" class="headerlink" title="Match any character"></a>Match any character</h1><h3 id="Any-character-except-line-breaks"><a href="#Any-character-except-line-breaks" class="headerlink" title="Any character except line breaks"></a>Any character except line breaks</h3><blockquote>
-<p><code>&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None (the “dot matches line breaks” option must not be set)</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<h3 id="Any-character-including-line-breaks"><a href="#Any-character-including-line-breaks" class="headerlink" title="Any character including line breaks"></a>Any character including line breaks</h3><blockquote>
-<p><code>&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: Dot matches line breaks</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
-</ul>
-<blockquote>
-<p><code>&#39;[\s\S]&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<h3 id="Inner-mode"><a href="#Inner-mode" class="headerlink" title="Inner mode"></a>Inner mode</h3><blockquote>
-<p><code>(?s)&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python</li>
-</ul>
-<blockquote>
-<p><code>(?m)&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: Ruby</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/ASCII/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/05/ASCII/" class="post-title-link" itemprop="url">ASCII</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-05 16:15:21" itemprop="dateCreated datePublished" datetime="2017-02-05T16:15:21+08:00">2017-02-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>0</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-<th>6</th>
-<th>7</th>
-<th>8</th>
-<th>9</th>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>D</th>
-<th>E</th>
-<th>F</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>NUL</td>
-<td>SOH</td>
-<td>STX</td>
-<td>ETX</td>
-<td>EOT</td>
-<td>ENQ</td>
-<td>ACK</td>
-<td>BEL</td>
-<td>BS</td>
-<td>HT</td>
-<td>LF</td>
-<td>VT</td>
-<td>FF</td>
-<td>CR</td>
-<td>SO</td>
-<td>SI</td>
-</tr>
-<tr>
-<td>1</td>
-<td>DLE</td>
-<td>DC1</td>
-<td>DC2</td>
-<td>DC3</td>
-<td>DC4</td>
-<td>NAK</td>
-<td>SYN</td>
-<td>ETB</td>
-<td>CAN</td>
-<td>EM</td>
-<td>SUB</td>
-<td>ESC</td>
-<td>FS</td>
-<td>GS</td>
-<td>RS</td>
-<td>US</td>
-</tr>
-<tr>
-<td>2</td>
-<td>(space)</td>
-<td>!</td>
-<td>“</td>
-<td>#</td>
-<td>$</td>
-<td>%</td>
-<td>&amp;</td>
-<td>‘</td>
-<td>(</td>
-<td>)</td>
-<td>*</td>
-<td>+</td>
-<td>,</td>
-<td>-</td>
-<td>.</td>
-<td>/</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0</td>
-<td>1</td>
-<td>2</td>
-<td>3</td>
-<td>4</td>
-<td>5</td>
-<td>6</td>
-<td>7</td>
-<td>8</td>
-<td>9</td>
-<td>:</td>
-<td>;</td>
-<td>&lt;</td>
-<td>=</td>
-<td>&gt;</td>
-<td>?</td>
-</tr>
-<tr>
-<td>4</td>
-<td>@</td>
-<td>A</td>
-<td>B</td>
-<td>C</td>
-<td>D</td>
-<td>E</td>
-<td>F</td>
-<td>G</td>
-<td>H</td>
-<td>I</td>
-<td>J</td>
-<td>K</td>
-<td>L</td>
-<td>M</td>
-<td>N</td>
-<td>O</td>
-</tr>
-<tr>
-<td>5</td>
-<td>P</td>
-<td>Q</td>
-<td>R</td>
-<td>S</td>
-<td>T</td>
-<td>U</td>
-<td>V</td>
-<td>W</td>
-<td>X</td>
-<td>Y</td>
-<td>Z</td>
-<td>[</td>
-<td>\</td>
-<td>]</td>
-<td>^</td>
-<td>_</td>
-</tr>
-<tr>
-<td>6</td>
-<td>`</td>
-<td>a</td>
-<td>b</td>
-<td>c</td>
-<td>d</td>
-<td>e</td>
-<td>f</td>
-<td>g</td>
-<td>h</td>
-<td>i</td>
-<td>j</td>
-<td>k</td>
-<td>l</td>
-<td>m</td>
-<td>n</td>
-<td>o</td>
-</tr>
-<tr>
-<td>7</td>
-<td>p</td>
-<td>q</td>
-<td>r</td>
-<td>s</td>
-<td>t</td>
-<td>u</td>
-<td>v</td>
-<td>w</td>
-<td>x</td>
-<td>y</td>
-<td>z</td>
-<td>{</td>
-<td>&#124;</td>
-<td>}</td>
-<td>~</td>
-<td>DEL (delete)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h3 id="Contrast"><a href="#Contrast" class="headerlink" title="Contrast"></a>Contrast</h3><ul>
-<li>NUL(null)</li>
-<li>SOH(start of headline)</li>
-<li>STX (start of text)</li>
-<li>ETX (end of text)</li>
-<li>EOT (end of transmission)</li>
-<li>ENQ (enquiry)</li>
-<li>ACK (acknowledge)</li>
-<li>BEL (bell)</li>
-<li>BS (backspace)</li>
-<li>HT (horizontal tab)</li>
-<li>LF (NL line feed, new line)</li>
-<li>VT (vertical tab)</li>
-<li>FF (NP form feed, new page)</li>
-<li>CR (carriage return)</li>
-<li>SO (shift out)</li>
-<li>SI (shift in)</li>
-<li>DLE (data link escape)</li>
-<li>DC1 (device control 1)</li>
-<li>DC2 (device control 2)</li>
-<li>DC3 (device control 3)</li>
-<li>DC4 (device control 4)</li>
-<li>NAK (negative acknowledge)</li>
-<li>SYN (synchronous idle)</li>
-<li>ETB (end of trans. block)</li>
-<li>CAN (cancel)</li>
-<li>EM (end of medium)</li>
-<li>SUB (substitute)</li>
-<li>ESC (escape)</li>
-<li>FS (file separator)</li>
-<li>GS (group separator)</li>
-<li>RS (record separator)</li>
-<li>US (unit separator)</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-nonprintable-characters/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/05/Match-nonprintable-characters/" class="post-title-link" itemprop="url">Match nonprintable characters</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-05 15:24:03" itemprop="dateCreated datePublished" datetime="2017-02-05T15:24:03+08:00">2017-02-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these characters</strong></p>
-<ul>
-<li>bell</li>
-<li>escape</li>
-<li>form feed</li>
-<li>line</li>
-<li>feed</li>
-<li>carriage return</li>
-<li>horizontal tab</li>
-<li>vertical tab<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexadecimal ASCII codes :</span><br><span class="line">07, 1B, 0C, 0A, 0D, 09, 0B</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\v</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\f\n\r\t\v</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\x0B</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
-</ul>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Representation</th>
-<th>Meaning</th>
-<th>Hex</th>
-<th>Regex flavors</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>‹\a›</td>
-<td>bell</td>
-<td>0x07</td>
-<td>.NET, Java, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\e›</td>
-<td>escape</td>
-<td>0x1B</td>
-<td>.NET, Java, PCRE, Perl, Ruby</td>
-</tr>
-<tr>
-<td>‹\f›</td>
-<td>form feed</td>
-<td>0x0C</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\n›</td>
-<td>line feed (newline)</td>
-<td>0x0A</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\r›</td>
-<td>carriage return</td>
-<td>0x0D</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\t›</td>
-<td>horizontal tab</td>
-<td>0x09</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\v›</td>
-<td>vertical tab</td>
-<td>0x0B</td>
-<td>.NET, Java, JavaScript, Python, Ruby, Perl-5.10, PCRE-7.2</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\cG\x1B\cL\cJ\cM\cI\cK</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Ruby 1.9</li>
-</ul>
-<hr>
-<p><strong>The 7-bit character set</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\x0C\x0A\x0D\x09\x0B</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/04/Match-literal-text/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/04/Match-literal-text/" class="post-title-link" itemprop="url">Match literal text</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-04 21:30:47" itemprop="dateCreated datePublished" datetime="2017-02-04T21:30:47+08:00">2017-02-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these literal</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The punctuation characters in the ASCII table are: !&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~</span><br></pre></td></tr></table></figure></p>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">!&quot;#\$%&amp;&apos;\(\)\*\+,-\./:;&lt;=&gt;\?@\[\\]\^_`\&#123;\|&#125;~</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$()*+.?[\^&#123;|</span><br></pre></td></tr></table></figure>
-<ul>
-<li>these characters is key words, only <strong><em>matches itsself</em></strong></li>
-<li><strong><em>‘]’ and ‘}’</em></strong> is not</li>
-</ul>
-<hr>
-<h3 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">\Q!&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~\E</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: Java 6, PCRE, Perl</li>
-</ul>
-<p><strong>use \Q \E to suppresses the meaning<br>of all metacharacters, including the backslash</strong></p>
-<hr>
-<h3 id="Case-insensitive-matching"><a href="#Case-insensitive-matching" class="headerlink" title="Case-insensitive matching"></a>Case-insensitive matching</h3><p><strong>Outside the regex</strong><br><code>ascii</code></p>
-<ul>
-<li>Regex options: Case insensitive</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<p><strong>Inside the regex</strong><br><code>(?i)ascii</code></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python, Ruby</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -3627,7 +2430,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">188</span>
+                    <span class="site-state-item-count">197</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3845,7 +2648,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">72</span>
+                      
+                    
+                    <span class="site-state-item-count">73</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

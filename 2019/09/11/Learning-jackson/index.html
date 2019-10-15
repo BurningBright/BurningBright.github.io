@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="JS number type accuracy problemIn js number type is 53 bit, if backgroud response 64 bit long type,js will lose accuracy, number will not be the origin number. 53 bit in decimal system length is about">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Learning jackson">
+<meta property="og:url" content="http://linchenguang.com/2019/09/11/Learning-jackson/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="JS number type accuracy problemIn js number type is 53 bit, if backgroud response 64 bit long type,js will lose accuracy, number will not be the origin number. 53 bit in decimal system length is about">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-15T13:38:58.264Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Learning jackson">
+<meta name="twitter:description" content="JS number type accuracy problemIn js number type is 53 bit, if backgroud response 64 bit long type,js will lose accuracy, number will not be the origin number. 53 bit in decimal system length is about">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2019/09/11/Learning-jackson/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Learning jackson | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/09/11/Learning-jackson/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Learning jackson
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-09-11 19:41:49" itemprop="dateCreated datePublished" datetime="2019-09-11T19:41:49+08:00">2019-09-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="JS-number-type-accuracy-problem"><a href="#JS-number-type-accuracy-problem" class="headerlink" title="JS number type accuracy problem"></a>JS number type accuracy problem</h2><p>In js number type is 53 bit, if backgroud response 64 bit long type,<br>js will lose accuracy, number will not be the origin number.</p>
+<p>53 bit in decimal system length is about 16(2^52),but in java long type is about 20(2^64).<br>So backgroud return type in string is a better choice to void accuracy problem.</p>
+<h2 id="JsonSerializer-JsonDeserializer"><a href="#JsonSerializer-JsonDeserializer" class="headerlink" title="JsonSerializer JsonDeserializer"></a>JsonSerializer JsonDeserializer</h2><p>Avoiding JS loss of accuracy<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String text = (value == <span class="keyword">null</span> ? <span class="keyword">null</span> : String.valueOf(value));</span><br><span class="line">        <span class="keyword">if</span> (text != <span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeString(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Deserialize input model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">deserialize</span><span class="params">(JsonParser jsonParser, DeserializationContext deserializationContext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String value = jsonParser.getText();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : Long.parseLong(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">            log.error(<span class="string">"Deserialize long type error: &#123;&#125;"</span>, value);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Annotate the target property<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using = LongJsonSerializer.class)</span><br><span class="line"><span class="meta">@JsonDeserialize</span>(using = LongJsonDeserializer.class)</span><br><span class="line"><span class="keyword">private</span> Long id;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Data-Binding-Commonly-used"><a href="#Data-Binding-Commonly-used" class="headerlink" title="Data Binding [Commonly used]"></a>Data Binding [Commonly used]</h2><h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--jackson--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Country</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String countryName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Province&gt; provinces;</span><br><span class="line">    <span class="keyword">private</span> String[] lakes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Province</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String provinceName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;City&gt; cities;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String cityName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Bean2JsonStr"><a href="#Bean2JsonStr" class="headerlink" title="Bean2JsonStr"></a>Bean2JsonStr</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Bean2JsonStr</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">// Convert the object to Json</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    <span class="comment">// set format</span></span><br><span class="line">    SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);</span><br><span class="line">    mapper.setDateFormat(dateFormat);</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    Province province = <span class="keyword">new</span> Province();</span><br><span class="line">    province.setId(<span class="number">1</span>);</span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;City&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line">    province.setCities(cities);</span><br><span class="line"></span><br><span class="line">    Country country = <span class="keyword">new</span> Country();</span><br><span class="line">    country.setCountryName(<span class="string">"China"</span>);</span><br><span class="line">    country.setId(<span class="number">1</span>);</span><br><span class="line">    country.setLakes(<span class="keyword">new</span> String[]&#123;<span class="string">"Qinghai Lake"</span>, <span class="string">"Poyang Lake"</span>, <span class="string">"Dongting Lake"</span>, <span class="string">"Taihu Lake"</span>&#125;);</span><br><span class="line">    List&lt;Province&gt; provinces = <span class="keyword">new</span> ArrayList&lt;Province&gt;();</span><br><span class="line">    provinces.add(province);</span><br><span class="line">    country.setProvinces(provinces);</span><br><span class="line">    <span class="comment">// set true make json readable, no need in produce environment</span></span><br><span class="line">    mapper.configure(SerializationFeature.INDENT_OUTPUT, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// ignore null property</span></span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    <span class="comment">// java property as key in default, customize key name in @JsonProperty annotation</span></span><br><span class="line">    mapper.writeValue(<span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>), country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;id&quot; : 1,</span><br><span class="line">  &quot;countryName&quot; : &quot;China&quot;,</span><br><span class="line">  &quot;provinces&quot; : [ &#123;</span><br><span class="line">    &quot;id&quot; : 1,</span><br><span class="line">    &quot;cities&quot; : [ &#123;</span><br><span class="line">      &quot;id&quot; : 1,</span><br><span class="line">      &quot;cityName&quot; : &quot;hangzhou&quot;</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      &quot;id&quot; : 2,</span><br><span class="line">      &quot;cityName&quot; : &quot;taizhou&quot;</span><br><span class="line">    &#125; ]</span><br><span class="line">  &#125; ],</span><br><span class="line">  &quot;lakes&quot; : [ &quot;Qinghai Lake&quot;, &quot;Poyang Lake&quot;, &quot;Dongting Lake&quot;, &quot;Taihu Lake&quot; ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JsonStr2Bean"><a href="#JsonStr2Bean" class="headerlink" title="JsonStr2Bean"></a>JsonStr2Bean</h3><p>string -&gt; object<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2Bean</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    File jsonFile = <span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>);</span><br><span class="line">    <span class="comment">// not interrupt unknown properties</span></span><br><span class="line">    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);</span><br><span class="line">    Country country = mapper.readValue(jsonFile, Country.class);</span><br><span class="line"></span><br><span class="line">    log.info(country.getCountryName());</span><br><span class="line">    List&lt;Province&gt; provinces = country.getProvinces();</span><br><span class="line">    <span class="keyword">for</span> (Province province : provinces) &#123;</span><br><span class="line">        <span class="keyword">for</span> (City city : province.getCities()) &#123;</span><br><span class="line">            log.info(city.getId() + <span class="string">" "</span> + city.getCityName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:05.570 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:05.574 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:05.575 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
+<h3 id="JsonStr2List"><a href="#JsonStr2List" class="headerlink" title="JsonStr2List"></a>JsonStr2List</h3><p>string -&gt; list<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line">    List&lt;City&gt; list = mapper.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:15.610 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:15.612 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:15.613 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
+<h2 id="Streaming-API-high-performence"><a href="#Streaming-API-high-performence" class="headerlink" title="Streaming API [high performence]"></a>Streaming API [high performence]</h2><p>self define paser</p>
+<h3 id="JsonSerializer"><a href="#JsonSerializer" class="headerlink" title="JsonSerializer"></a>JsonSerializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">City</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(City city, JsonGenerator jsonGenerator, SerializerProvider arg2)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        jsonGenerator.writeStartObject();</span><br><span class="line">        <span class="keyword">if</span> ( city.getId()!=<span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeNumberField(<span class="string">"id"</span>, city.getId());</span><br><span class="line">        jsonGenerator.writeStringField(<span class="string">"cityName"</span>, city.getCityName());</span><br><span class="line">        jsonGenerator.writeEndObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JsonDeserializer"><a href="#JsonDeserializer" class="headerlink" title="JsonDeserializer"></a>JsonDeserializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">List</span>&lt;<span class="title">City</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;City&gt; <span class="title">deserialize</span><span class="params">(JsonParser parser, DeserializationContext deserializationcontext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        List&lt;City&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">// deserialize array, fist token must be JsonToken.START_ARRAY '['</span></span><br><span class="line">        <span class="keyword">if</span> (!JsonToken.START_ARRAY.equals(parser.getCurrentToken())) &#123;</span><br><span class="line">            log.info(parser.getCurrentToken().asString());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// until the EOF</span></span><br><span class="line">        <span class="keyword">while</span> (!parser.isClosed()) &#123;</span><br><span class="line">            <span class="comment">// loop until the target token</span></span><br><span class="line">            JsonToken token = parser.nextToken();</span><br><span class="line">            <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">// every element in array is object, so the nect JsonToken is JsonToken.START_OBJECT '&#123;'</span></span><br><span class="line">            <span class="keyword">if</span> (!JsonToken.START_OBJECT.equals(token)) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            City city = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.START_OBJECT.equals(token))</span><br><span class="line">                    city = <span class="keyword">new</span> City();</span><br><span class="line"></span><br><span class="line">                token = parser.nextToken();</span><br><span class="line">                <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (JsonToken.FIELD_NAME.equals(token)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"id"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setId(parser.getIntValue());</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"cityName"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setCityName(parser.getText());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.END_OBJECT.equals(token))</span><br><span class="line">                    list.add(city);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="StreamJsonStr2List"><a href="#StreamJsonStr2List" class="headerlink" title="StreamJsonStr2List"></a>StreamJsonStr2List</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">StreamJsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City();</span><br><span class="line">    city1.setCityName(<span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule <span class="keyword">module</span> = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    <span class="keyword">module</span>.addSerializer(City.class, <span class="keyword">new</span> CityJsonSerializer());</span><br><span class="line">    mapper.registerModule(<span class="keyword">module</span>);</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line"></span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper2 = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule module2 = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    module2.addDeserializer(List.class, <span class="keyword">new</span> CityJsonDeserializer());</span><br><span class="line">    mapper2.registerModule(module2);</span><br><span class="line">    List&lt;City&gt; list = mapper2.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10:15:03.874 [main] INFO jackson.JacksonDemoTester - [&#123;&quot;cityName&quot;:&quot;hangzhou&quot;&#125;,&#123;&quot;id&quot;:2,&quot;cityName&quot;:&quot;taizhou&quot;&#125;]</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:null cityName:hangzhou</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:2 cityName:taizhou</span><br></pre></td></tr></table></figure>
+<p>use annotation to avoid module in code<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using=CityJsonSerializer.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Tree-Model-flexible"><a href="#Tree-Model-flexible" class="headerlink" title="Tree Model [flexible]"></a>Tree Model [flexible]</h2><h3 id="TreeMode2Json"><a href="#TreeMode2Json" class="headerlink" title="TreeMode2Json"></a>TreeMode2Json</h3><p>no java class/ pojo, create model by tree model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeMode2Json</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create a factory provide node</span></span><br><span class="line">    JsonNodeFactory factory = <span class="keyword">new</span> JsonNodeFactory(<span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// create a factory to convert tree model to json</span></span><br><span class="line">    JsonFactory jsonFactory = <span class="keyword">new</span> JsonFactory();</span><br><span class="line">    <span class="comment">//create a json generator</span></span><br><span class="line">    JsonGenerator generator = jsonFactory.createGenerator(<span class="keyword">new</span> FileWriter(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>)));</span><br><span class="line"></span><br><span class="line">    ArrayNode cities = factory.arrayNode();</span><br><span class="line">    cities.add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"cityName"</span>, <span class="string">"hangzhou"</span>))</span><br><span class="line">            .add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">2</span>).put(<span class="string">"cityName"</span>, <span class="string">"taizhou"</span>));</span><br><span class="line"></span><br><span class="line">    ArrayNode provinces = factory.arrayNode();</span><br><span class="line">    ObjectNode province = factory.objectNode();</span><br><span class="line">    province.put(<span class="string">"cities"</span>, cities);</span><br><span class="line">    province.put(<span class="string">"provinceName"</span>, <span class="string">"zhejiang"</span>);</span><br><span class="line">    provinces.add(province);</span><br><span class="line"></span><br><span class="line">    ObjectNode country = factory.objectNode();</span><br><span class="line">    country.put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"countryName"</span>, <span class="string">"China"</span>);</span><br><span class="line">    country.put(<span class="string">"provinces"</span>, provinces);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// caution! in default mapper not set root node</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    mapper.writeTree(generator, country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="TreeModeReadJson"><a href="#TreeModeReadJson" class="headerlink" title="TreeModeReadJson"></a>TreeModeReadJson</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeModeReadJson</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    JsonNode node = mapper.readTree(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>));</span><br><span class="line">    <span class="comment">// show node type</span></span><br><span class="line">    log.info(<span class="string">"node JsonNodeType:"</span>+node.getNodeType());</span><br><span class="line">    log.info(<span class="string">"----------------sub node name----------------------"</span>);</span><br><span class="line">    Iterator&lt;String&gt; fieldNames = node.fieldNames();</span><br><span class="line">    <span class="keyword">while</span> (fieldNames.hasNext()) &#123;</span><br><span class="line">        String fieldName = fieldNames.next();</span><br><span class="line">        log.info(fieldName+<span class="string">" "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    log.info(<span class="string">"---------------------------------------------------"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">10:58:44.995 [main] INFO jackson.JacksonDemoTester - node JsonNodeType:OBJECT</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - ----------------sub node name----------------------</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - id</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - countryName</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - provinces</span><br><span class="line">10:58:45.000 [main] INFO jackson.JacksonDemoTester - ---------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p><a href="https://www.cnblogs.com/lvgg/p/7475140.html" target="_blank" rel="noopener">https://www.cnblogs.com/lvgg/p/7475140.html</a><br><a href="https://www.cnblogs.com/williamjie/p/9242451.html" target="_blank" rel="noopener">https://www.cnblogs.com/williamjie/p/9242451.html</a><br><a href="https://blog.csdn.net/gjb724332682/article/details/51586701" target="_blank" rel="noopener">https://blog.csdn.net/gjb724332682/article/details/51586701</a><br><a href="https://blog.csdn.net/java_huashan/article/details/46375857" target="_blank" rel="noopener">https://blog.csdn.net/java_huashan/article/details/46375857</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/28/docker-in-centeros7/" rel="next" title="docker in centeros7">
+                <i class="fa fa-chevron-left"></i> docker in centeros7
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/26/proxy-in-docker/" rel="prev" title="proxy in docker">
+                proxy in docker <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">197</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">73</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JS-number-type-accuracy-problem"><span class="nav-number">1.</span> <span class="nav-text">JS number type accuracy problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JsonSerializer-JsonDeserializer"><span class="nav-number">2.</span> <span class="nav-text">JsonSerializer JsonDeserializer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Binding-Commonly-used"><span class="nav-number">3.</span> <span class="nav-text">Data Binding [Commonly used]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Maven"><span class="nav-number">3.1.</span> <span class="nav-text">Maven</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Model"><span class="nav-number">3.2.</span> <span class="nav-text">Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bean2JsonStr"><span class="nav-number">3.3.</span> <span class="nav-text">Bean2JsonStr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonStr2Bean"><span class="nav-number">3.4.</span> <span class="nav-text">JsonStr2Bean</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonStr2List"><span class="nav-number">3.5.</span> <span class="nav-text">JsonStr2List</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming-API-high-performence"><span class="nav-number">4.</span> <span class="nav-text">Streaming API [high performence]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonSerializer"><span class="nav-number">4.1.</span> <span class="nav-text">JsonSerializer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JsonDeserializer"><span class="nav-number">4.2.</span> <span class="nav-text">JsonDeserializer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamJsonStr2List"><span class="nav-number">4.3.</span> <span class="nav-text">StreamJsonStr2List</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tree-Model-flexible"><span class="nav-number">5.</span> <span class="nav-text">Tree Model [flexible]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TreeMode2Json"><span class="nav-number">5.1.</span> <span class="nav-text">TreeMode2Json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TreeModeReadJson"><span class="nav-number">5.2.</span> <span class="nav-text">TreeModeReadJson</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
