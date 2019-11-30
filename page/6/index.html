@@ -320,6 +320,815 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/11/Intelij-maven-3-x-nexus-2-x/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/06/11/Intelij-maven-3-x-nexus-2-x/" class="post-title-link" itemprop="url">Intelij maven 3.x & nexus 2.x</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-11 14:42:18" itemprop="dateCreated datePublished" datetime="2018-06-11T14:42:18+08:00">2018-06-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-07 19:15:12" itemprop="dateModified" datetime="2019-06-07T19:15:12+08:00">2019-06-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="install-nexus-2-x-first-need-java-1-7"><a href="#install-nexus-2-x-first-need-java-1-7" class="headerlink" title="install nexus 2.x first , need java 1.7+"></a>install nexus 2.x first , need java 1.7+</h3><p><a href="https://www.sonatype.com/download-oss-sonatype" target="_blank" rel="noopener">https://www.sonatype.com/download-oss-sonatype</a></p>
+<h3 id="config-nexus"><a href="#config-nexus" class="headerlink" title="config nexus"></a>config nexus</h3><p>Add a user <code>user</code> pass <code>pass</code>, grant privilege<br>For example a project named <code>InitialD</code><br>Add a repository <code>InitialD-release</code><br>Add a repository <code>InitialD-snapshot</code></p>
+<h3 id="install-maven-3-x"><a href="#install-maven-3-x" class="headerlink" title="install maven 3.x"></a>install maven 3.x</h3><p>Add environment variable <code>MAVEN_HOME</code> to the maven dirctory.<br>Modify environment variable <code>path</code> add <code>;%M2_HOME%\bin</code><br><a href="http://maven.apache.org/download.cgi" target="_blank" rel="noopener">http://maven.apache.org/download.cgi</a></p>
+<h3 id="config-maven"><a href="#config-maven" class="headerlink" title="config maven"></a>config maven</h3><p>Modify <code>%MAVEN_HOME%/conf/settings.xml</code> add servers-server / profile-repositories-repository</p>
+<p>server:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>InitialD-release<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span>user<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>pass<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>InitialD-snapshot<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span>user<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>pass<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>repositorie:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>InitialD-release<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">url</span>&gt;</span>http://127.0.0.1:8081/nexus/content/repositories/InitialD-release<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>InitialD-snapshot<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">url</span>&gt;</span>http://127.0.0.1:8081:8081/nexus/content/repositories/InitialD-snapshot<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Intelij-config"><a href="#Intelij-config" class="headerlink" title="Intelij config"></a>Intelij config</h3><p>change maven to self define package/ configure:<br><img src="/2018/06/11/Intelij-maven-3-x-nexus-2-x/m-setting.png" alt></p>
+<p>modify pom.xml in intelij project:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>dms-release<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Team Nexus Release Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://127.0.0.1:8081/nexus/content/repositories/InitialD-release<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>dms-snapshots<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Team Nexus Snapshot Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://127.0.0.1:8081/nexus/content/repositories/InitialD-snapshot<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">uniqueVersion</span>&gt;</span>false<span class="tag">&lt;/<span class="name">uniqueVersion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>use maven plugin deploy package:<br><img src="/2018/06/11/Intelij-maven-3-x-nexus-2-x/d-setting.png" alt></p>
+<p><a href="https://www.cnblogs.com/lyy-2016/p/5747631.html" target="_blank" rel="noopener">https://www.cnblogs.com/lyy-2016/p/5747631.html</a><br><a href="https://blog.csdn.net/win7system/article/details/51252275" target="_blank" rel="noopener">https://blog.csdn.net/win7system/article/details/51252275</a><br><a href="https://www.cnblogs.com/mfrbuaa/p/5408185.html" target="_blank" rel="noopener">https://www.cnblogs.com/mfrbuaa/p/5408185.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/31/WebSocket-protocol/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/31/WebSocket-protocol/" class="post-title-link" itemprop="url">WebSocket protocol</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-31 17:44:33" itemprop="dateCreated datePublished" datetime="2018-05-31T17:44:33+08:00">2018-05-31</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Origin"><a href="#Origin" class="headerlink" title="Origin"></a>Origin</h2><p>WebSocket is design for intercommuncation[full duplex].<br>The <code>http</code> protocol is build in TCP[Transfer level], only one side can send or recevie.<br>When job is done, request will close the TCP connection.</p>
+<p>If we want a long time alive connection.</p>
+<ol>
+<li>Http’s <code>keep-alive</code> head property is not design for long connection.<br>It’s design for increase effciency, in avoid 3 times <code>handclasp</code>.<br>When out of time, server will still close it.</li>
+<li>Http loop request. it’s very common strategy, but very low effciency.</li>
+<li>Make a <code>TCP</code> like connection, and keep it not be break.</li>
+</ol>
+<p><code>WebSocket</code> is just like <code>TCP</code> <code>UDP</code> work in <code>Transfer level</code>, a <code>socket</code> in origin.</p>
+<p><img src="/2018/05/31/WebSocket-protocol/websocket-architecture.jpg" alt></p>
+<h2 id="Connection"><a href="#Connection" class="headerlink" title="Connection"></a>Connection</h2><p>Create a server service<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</span><br><span class="line"><span class="keyword">const</span> hostname = <span class="string">"127.0.0.1"</span>;</span><br><span class="line"><span class="keyword">const</span> port = <span class="string">"9090"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a service</span></span><br><span class="line"><span class="keyword">let</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"recv request"</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(req.headers);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a listener</span></span><br><span class="line">server.listen(port, hostname, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Server running at <span class="subst">$&#123;hostname&#125;</span>:<span class="subst">$&#123;port&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>Ceate a broser client<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCType html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">!<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> socket = <span class="keyword">new</span> WebSocket(<span class="string">'ws://127.0.0.1:9090'</span>);</span></span><br><span class="line"><span class="javascript">    socket.onopen = <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">'opened'</span>);</span></span><br><span class="line"><span class="javascript">        socket.send(<span class="string">'hello, this is from client tiger'</span>);</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;();</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><p>Nodejs do not execute the recall function. Because another <code>upgrade</code> event.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server.on(<span class="string">"upgrade"</span>, (request, socket, head) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(request.headers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>If make no response then connection closed before recevie headshake:<br><img src="/2018/05/31/WebSocket-protocol/error_1.png" alt></li>
+</ul>
+<p>In request header, <code>sec-websocket-key</code> is used to verify server is legal.<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">socket.write(<span class="string">'HTTP/1.1 101 Web Socket Protocol Handshake\r\n'</span> +</span><br><span class="line">        <span class="string">'Upgrade: WebSocket\r\n'</span> +</span><br><span class="line">        <span class="string">'Connection: Upgrade\r\n'</span> +</span><br><span class="line">        <span class="string">`Sec-WebSocket-Accept: \r\n`</span> +</span><br><span class="line">        <span class="string">'\r\n'</span>);</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>If the server response <code>sec-websocket-key</code> is not right, then data is dirty:<br><img src="/2018/05/31/WebSocket-protocol/error_2.png" alt></li>
+</ul>
+<hr>
+<h3 id="Calculate"><a href="#Calculate" class="headerlink" title="Calculate"></a>Calculate</h3><p><code>Sec-WebSocket-Accept = base64(sha1(Sec-Websocket-key + GUID))</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># command</span><br><span class="line">npm init</span><br><span class="line">npm install sha1 --save</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> sha1 = <span class="built_in">require</span>(<span class="string">'sha1'</span>);</span><br><span class="line">server.on(<span class="string">"upgrade"</span>, (request, socket, head) =&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> secKey = request.headers[<span class="string">'sec-websocket-key'</span>];</span><br><span class="line">    <span class="comment">// RFC 6455 (GUID)</span></span><br><span class="line">    <span class="keyword">const</span> UNIQUE_IDENTIFIER = <span class="string">'258EAFA5-E914-47DA-95CA-C5AB0DC85B11'</span>;</span><br><span class="line">    <span class="comment">// calc sha1 base64</span></span><br><span class="line">    <span class="keyword">let</span> shaValue = sha1(secKey + UNIQUE_IDENTIFIER),</span><br><span class="line">        base64Value = Buffer.from(shaValue, <span class="string">'hex'</span>).toString(<span class="string">'base64'</span>);</span><br><span class="line">    socket.write(<span class="string">'HTTP/1.1 101 Web Socket Protocol Handshake\r\n'</span> +</span><br><span class="line">        <span class="string">'Upgrade: WebSocket\r\n'</span> +</span><br><span class="line">        <span class="string">'Connection: Upgrade\r\n'</span> +</span><br><span class="line">        <span class="string">`Sec-WebSocket-Accept: <span class="subst">$&#123;base64Value&#125;</span>\r\n`</span> +</span><br><span class="line">        <span class="string">'\r\n'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>ps. Look at the eyes and meet the right person :)</p>
+<h2 id="Recevie"><a href="#Recevie" class="headerlink" title="Recevie"></a>Recevie</h2><p>Frame in documents is like this :<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">0               1               2               3              </span><br><span class="line">0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7</span><br><span class="line">+-+-+-+-+-------+-+-------------+-------------------------------+</span><br><span class="line">|F|R|R|R| opcode|M| Payload len |    Extended payload length    |</span><br><span class="line">|I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |</span><br><span class="line">|N|V|V|V|       |S|             |   (if payload len==126/127)   |</span><br><span class="line">| |1|2|3|       |K|             |                               |</span><br><span class="line">+-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +</span><br><span class="line">|     Extended payload length continued, if payload len == 127  |</span><br><span class="line">+ - - - - - - - - - - - - - - - +-------------------------------+</span><br><span class="line">|                               |Masking-key, if MASK set to 1  |</span><br><span class="line">+-------------------------------+-------------------------------+</span><br><span class="line">| Masking-key (continued)       |          Payload Data         |</span><br><span class="line">+-------------------------------- - - - - - - - - - - - - - - - +</span><br><span class="line">:                     Payload Data continued ...                :</span><br><span class="line">+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +</span><br><span class="line">|                     Payload Data continued ...                |</span><br><span class="line">+---------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>first level is the frame’s head<ul>
+<li><code>FIN</code> finish if the bit is <code>1</code></li>
+<li><code>RSV1</code> <code>RSV2</code> <code>RSV3</code> reserve bit some application use it to show wheather data is compressed.</li>
+<li><code>opcode</code> operation code <code>0001</code> is text</li>
+<li><code>MASK</code> mask the data space if the bit is <code>1</code></li>
+<li><code>Payload len</code> data’s byte length</li>
+<li><code>Extended ...</code> if the length cross 2^7[127], use other 8 bytes to store length.</li>
+</ul>
+</li>
+<li>second level is masking-key space 4 bytes</li>
+<li>third lecel is data space ? bytes</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">|Opcode  | Meaning                             | Reference |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 0      | Continuation Frame                  | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 1      | Text Frame                          | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 2      | Binary Frame                        | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 8      | Connection Close Frame              | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 9      | Ping Frame                          | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br><span class="line">| 10     | Pong Frame                          | RFC 6455  |</span><br><span class="line">-+--------+-------------------------------------+-----------|</span><br></pre></td></tr></table></figure>
+<p>In browser if refresh the window, websocket will send the close frame:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">buffer len =  8</span><br><span class="line">&lt;Buffer 88 82 34 b3 e3 25 37 5a&gt;</span><br><span class="line">maskFlag = 1</span><br><span class="line">pLength = 2</span><br><span class="line">maskKey = 52,179,227,37[34 B3 E3 25]</span><br><span class="line">payloadHex  = 03 E9</span><br><span class="line">payloadText = ╚é</span><br></pre></td></tr></table></figure></p>
+<h3 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">socket.on(<span class="string">'data'</span>, buffer =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'buffer len = '</span>, buffer.length);</span><br><span class="line">    <span class="built_in">console</span>.log(buffer);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> bitBuffer = <span class="keyword">new</span> BitBuffer(buffer);</span><br><span class="line">    <span class="keyword">let</span> maskFlag = bitBuffer._getBit(<span class="number">8</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'maskFlag = '</span> + maskFlag);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> payloadLen = bitBuffer.getBit(<span class="number">9</span>, <span class="number">7</span>),</span><br><span class="line">        maskKeys = bitBuffer.getMaskingKey(<span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'pLength = '</span> + payloadLen);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'maskKey = '</span> + maskKeys +</span><br><span class="line">    <span class="string">'['</span> + bitBuffer.bytesToHexString(maskKeys[<span class="number">0</span>]) + <span class="string">' '</span> +</span><br><span class="line">    bitBuffer.bytesToHexString(maskKeys[<span class="number">1</span>]) + <span class="string">' '</span> +</span><br><span class="line">    bitBuffer.bytesToHexString(maskKeys[<span class="number">2</span>]) + <span class="string">' '</span> +</span><br><span class="line">    bitBuffer.bytesToHexString(maskKeys[<span class="number">3</span>]) + <span class="string">']'</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> payloadText = bitBuffer.getXorString(<span class="number">48</span> / <span class="number">8</span>, payloadLen, maskKeys);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'payloadText = '</span> + payloadText);</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BitBuffer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">constructor</span> (buffer) &#123;</span><br><span class="line">        <span class="keyword">this</span>.buffer = buffer;</span><br><span class="line">        <span class="keyword">this</span>.hexChar = [<span class="string">'0'</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>,</span><br><span class="line">            <span class="string">'6'</span>, <span class="string">'7'</span>, <span class="string">'8'</span>, <span class="string">'9'</span>, <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>, <span class="string">'F'</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// fetch xth bit content</span></span><br><span class="line">    _getBit (offset) &#123;</span><br><span class="line">        <span class="keyword">let</span> byteIndex = offset / <span class="number">8</span> &gt;&gt; <span class="number">0</span>,  <span class="comment">// target utf-8 character</span></span><br><span class="line">            byteOffset = offset % <span class="number">8</span>;      <span class="comment">// target bit offset in character</span></span><br><span class="line">        <span class="comment">// readUInt8 read the nth character data</span></span><br><span class="line">        <span class="keyword">let</span> num = <span class="keyword">this</span>.buffer.readUInt8(byteIndex) &amp; (<span class="number">1</span> &lt;&lt; (<span class="number">7</span> - byteOffset));</span><br><span class="line">        <span class="keyword">return</span> num &gt;&gt; (<span class="number">7</span> - byteOffset);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// [from, length]</span></span><br><span class="line">    getBit (offset, len = <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; len; i++)</span><br><span class="line">            result += <span class="keyword">this</span>._getBit(offset + i) &lt;&lt; (len - i - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// masking-key</span></span><br><span class="line">    getMaskingKey (offset) &#123;</span><br><span class="line">        <span class="keyword">const</span> BYTE_COUNT = <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">let</span> masks = [];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; BYTE_COUNT; i++)</span><br><span class="line">            masks.push(<span class="keyword">this</span>.getBit(offset + i * <span class="number">8</span>, <span class="number">8</span>));</span><br><span class="line">        <span class="keyword">return</span> masks;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// get plaintext</span></span><br><span class="line">    getXorString (byteOffset, byteCount, maskingKeys) &#123;</span><br><span class="line">        <span class="keyword">let</span> text = <span class="string">''</span>;</span><br><span class="line">        <span class="keyword">let</span> hex  = <span class="string">''</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; byteCount; i++) &#123;</span><br><span class="line">            <span class="keyword">let</span> j = i % <span class="number">4</span>;</span><br><span class="line">            <span class="comment">// get origin utf-8 encoded data though exclusive or</span></span><br><span class="line">            <span class="keyword">let</span> transformedByte = <span class="keyword">this</span>.buffer.readUInt8(byteOffset + i)</span><br><span class="line">                                      ^ maskingKeys[j];</span><br><span class="line">            <span class="comment">// put utf-8 bytes to ascii char</span></span><br><span class="line">            text += <span class="built_in">String</span>.fromCharCode(transformedByte);</span><br><span class="line">            hex += <span class="keyword">this</span>.bytesToHexString(transformedByte) + <span class="string">' '</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'payloadHex  = '</span> + hex);</span><br><span class="line">        <span class="keyword">return</span> text;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// char to 2-hex String</span></span><br><span class="line">    bytesToHexString(num) &#123;</span><br><span class="line">        <span class="keyword">let</span> text = <span class="string">''</span>;</span><br><span class="line">        text += <span class="keyword">this</span>.hexChar[num &gt;&gt;&gt; <span class="number">4</span> &amp; <span class="number">0xf</span>];</span><br><span class="line">        text += <span class="keyword">this</span>.hexChar[num &amp; <span class="number">0xf</span>];</span><br><span class="line">        <span class="keyword">return</span> text;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>socket.send(‘hello, this is from client tiger’);</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">buffer len =  38</span><br><span class="line">&lt;Buffer 81 a0 f1 3d 90 39 99 58 fc 55 9e 11 b0 4d 99 54 e3 19 9</span><br><span class="line">8 4e b0 5f 83 52 fd 19 92 51 f9 5c 9f 49 b0 4d 98 5a f5 4b&gt;</span><br><span class="line">maskFlag = 1</span><br><span class="line">pLength = 32</span><br><span class="line">maskKey = 241,61,144,57[F1 3D 90 39]</span><br><span class="line">payloadHex  = 68 65 6C 6C 6F 2C 20 74 68 69 73 20 69 73 20 66 7</span><br><span class="line">2 6F 6D 20 63 6C 69 65 6E 74 20 74 69 67 65 72</span><br><span class="line">payloadText = hello, this is from client tiger</span><br></pre></td></tr></table></figure>
+<p>Toke last 4 bytes for example:<br>origin data is <code>98 5a f5 4b</code>, masking key is <code>F1 3D 90 39</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">98 5a f5 4b XOR F1 3D 90 39 = 69 67 65 72</span><br><span class="line">69 = &apos;i&apos;</span><br><span class="line">67 = &apos;g&apos;</span><br><span class="line">65 = &apos;e&apos;</span><br><span class="line">72 = &apos;r&apos;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Last-issue"><a href="#Last-issue" class="headerlink" title="Last issue"></a>Last issue</h3><p>In application websocket implements ping/pong[9/10] is used to make sure connection alive.<br>Client ping server every 30s, server response pong message frame.<br>If server not recevie client’s ping frame in 1 minute, it will close the connnection.</p>
+<p>Broser websocket modual not implemented this mechanism.<br>If long connection is needed, you need loop ping frame by yourself.</p>
+<p><a href="https://www.w3.org/TR/websockets/" target="_blank" rel="noopener">https://www.w3.org/TR/websockets/</a><br><a href="https://www.w3.org/TR/2011/WD-websockets-20110419/" target="_blank" rel="noopener">https://www.w3.org/TR/2011/WD-websockets-20110419/</a><br><a href="https://tools.ietf.org/html/rfc6455" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc6455</a></p>
+<p><a href="http://www.open-open.com/lib/view/open1527469228211.html" target="_blank" rel="noopener">http://www.open-open.com/lib/view/open1527469228211.html</a><br><a href="https://www.yinchengli.com/2018/05/27/chrome-websocket/" target="_blank" rel="noopener">https://www.yinchengli.com/2018/05/27/chrome-websocket/</a><br><a href="https://blog.jcoglan.com/2015/03/30/websocket-extensions-as-plugins/" target="_blank" rel="noopener">https://blog.jcoglan.com/2015/03/30/websocket-extensions-as-plugins/</a></p>
+<p><a href="https://docs.spring.io/spring-framework/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/html/websocket.html" target="_blank" rel="noopener">https://docs.spring.io/spring-framework/docs/5.0.0.BUILD-SNAPSHOT/spring-framework-reference/html/websocket.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/24/Mondrian-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/24/Mondrian-architecture/" class="post-title-link" itemprop="url">Mondrian architecture</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-24 14:56:13" itemprop="dateCreated datePublished" datetime="2018-05-24T14:56:13+08:00">2018-05-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Mondrian系统的图层"><a href="#Mondrian系统的图层" class="headerlink" title="Mondrian系统的图层"></a>Mondrian系统的图层</h2><p>OLAP: OnlineAnalytical Processing<br>Mondrian OLAP系统由四层组成; 从最终用户的眼睛到数据中心的核心，有如下：表示层，维度层，星层和存储层。</p>
+<p>表示层决定最终用户在他或她的监视器上看到的内容，以及他或她如何交互以提出新问题。有多种方式可以呈现多维数据集，<br>包括数据透视表（上面显示的表格的交互式版本），饼图，线条和条形图以及高级可视化工具，如可点击的地图和动态图形。<br>这些可以用Swing或JSP编写，以JPEG或GIF格式呈现的图表或通过XML传输到远程应用程序。所有这些表示形式的共同之处在于<br>表示层提出问题的维度，度量和单元的多维“语法”，并且OLAP服务器返回答案。</p>
+<p>第二层是维度层。维度层解析，验证并执行MDX查询。查询分多个阶段进行评估。首先计算坐标轴，然后计算坐标轴内单元格的值。<br>为了提高效率，维度层将批量请求发送给汇聚层。查询转换器允许应用程序操纵现有查询，而不是从头开始为每个请求构建MDX语句。<br>元数据描述了维度模型，以及它如何映射到关系模型。</p>
+<p>第三层是星级层，负责维护聚合缓存。聚合是内存中的一组度量值’单元’[cells]，由一组维度列值限定。维度层发送单元组请求。<br>如果请求的单元格不在高速缓存中，或者通过在高速缓存中汇总聚合进行派生，则聚合管理器会向存储层发送请求。</p>
+<p>存储层是一个RDBMS。它负责提供聚合的单元格数据，以及维度表中的成员。<br>我在下面描述为什么我决定使用RDBMS的功能，而不是开发针对多维数据优化的存储系统。</p>
+<p>这些组件可以全部存在于同一台机器上，也可以分布在机器之间。构成Mondrian服务器的第2层和第3层必须位于同一台计算机上。<br>存储层可以在另一台机器上，通过远程JDBC连接访问。在多用户系统中，表示层将存在于每个最终用户的机器上（除了在服务器上生成的JSP页面的情况）。</p>
+<p><img src="/2018/05/24/Mondrian-architecture/arch_mondrian_v1_lrg.png" alt><br><img src="/2018/05/24/Mondrian-architecture/architecture2_big.png" alt></p>
+<h2 id="存储和聚合策略"><a href="#存储和聚合策略" class="headerlink" title="存储和聚合策略"></a>存储和聚合策略</h2><p>OLAP服务器通常根据其存储数据的方式进行分类：</p>
+<ul>
+<li>MOLAP（multidimensional  OLAP）服务器将其所有数据存储在磁盘中，并针对多维访问进行优化。<br>通常，数据以密集阵列存储，每个单元值只需要4或8个字节。</li>
+<li>ROLAP（relational OLAP）服务器将其数据存储在关系数据库中。事实表中的每一行都有一个用于每个维度和度量的列。<br>需要存储三种数据：事实表数据（事务记录），聚合和维度。</li>
+</ul>
+<p>MOLAP数据库以多维格式存储事实数据，但如果维度不止一个维度，则这些数据将会很稀疏，并且多维格式表现不佳。<br>HOLAP（混合OLAP）系统通过在关系数据库中保留最细粒度的数据来解决此问题，但将聚合以多维格式存储。</p>
+<p>预先计算的聚合对于大型数据集是必需的，否则某些查询在未读取事实表的全部内容的情况下不能被回答。<br>MOLAP聚合通常是内存数据结构的图像，分解成页面并存储在磁盘上。ROLAP聚合被存储在表中。<br>在一些ROLAP系统中，这些由OLAP服务器显式管理; 在其他系统中，这些表被声明为物化视图[materialized views]，<br>并且当OLAP服务器使用 group by子句中列的正确组合发出查询时，它们将被隐式使用。</p>
+<p>聚合策略的最后组件是缓存。高速缓存将预先计算的聚合保存在内存中，以便后续查询可以访问单元值而不必访问磁盘。<br>如果缓存将所需数据集保留在较低级别的聚合中，则它可以通过<strong>卷起来</strong>计算所需的数据集。</p>
+<p>缓存可以说是聚合策略中最重要的部分，因为它是自适应的。很难选择一组聚合来预先计算在不使用大量磁盘的情况下加速系统的速度，<br>特别是那些维度较高或用户提交不可预知查询的系统。在数据实时变化的系统中，维护预先计算的聚合是不切实际的。<br>合理大小的缓存可以允许系统在面对不可预知的查询时充分执行，而预先计算的聚合很少或没有。</p>
+<p><code>蒙德里安</code>的汇总策略如下：</p>
+<ul>
+<li>事实数据存储在RDBMS中。RDBMS已经有一个存储管理器，为什么还要开发一个？</li>
+<li>通过查询提交分组，将聚合数据读入缓存。同样，RDBMS有一个聚合器，为什么还要开发一个？</li>
+<li>如果RDBMS支持实体化视图，并且数据库管理员选择为特定聚合创建实体化视图，则Mondrian将隐式使用它们。<br>理想情况下，<code>蒙德里安</code>的聚合管理者应该意识到存在这些物化视图，并且这些特定的聚合计算起来很便宜。<br>它甚至应该向数据库管理员提供调优建议。</li>
+</ul>
+<p>总体思路是将数据库的内容委托给数据库。<br>这给数据库带来了额外的负担，但是一旦将这些功能添加到数据库中，数据库的所有客户端都将从中受益。<br>多维存储可以减少I / O，并在某些情况下可以加快操作速度，但我认为这不足以保证现阶段的复杂性。</p>
+<p>一个奇妙的副作用是因为Mondrian自己不需要存储空间，所以可以通过将JAR文件添加到类路径中并立即启动并运行来安装它。<br>由于没有冗余数据集进行管理，数据加载过程更容易，<strong>Mondrian非常适合在实时更改的数据集上执行OLAP。</strong></p>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><p>Mondrian为客户端应用程序提供执行查询的API。</p>
+<p>由于没有普遍接受的用于执行OLAP查询的API，Mondrian的主要API是专有的; 然而，任何使用过JDBC的人都会发现它很熟悉。<br>主要区别在于查询语言：Mondrian使用称为MDX的语言(M ulti- D dimension e X pressions)来指定查询，其中JDBC将使用SQL。<br>下面更详细地描述MDX。</p>
+<p>连接 经由创建 的DriverManager，以类似的方式来JDBC。<br>一个 查询是类似于JDBC 声明，并且通过解析MDX字符串创建。<br>甲 结果是类似于JDBC 结果集 ; 因为我们正在处理多维数据，所以它由轴和单元组成，而不是行和列。<br>由于OLAP旨在用于数据挖掘，因此可以通过 drillDown和 sort等操作修改查询中包含的分析树 ，然后重新执行查询。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mondrian.olap.*;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line">Connection connection = DriverManager.getConnection(</span><br><span class="line">    <span class="string">"Provider=mondrian;"</span> +</span><br><span class="line">    <span class="string">"Jdbc=jdbc:odbc:MondrianFoodMart;"</span> +</span><br><span class="line">    <span class="string">"Catalog=/WEB-INF/FoodMart.xml;"</span>,</span><br><span class="line">    <span class="keyword">null</span>,</span><br><span class="line">    <span class="keyword">false</span>);</span><br><span class="line">Query query = connection.parseQuery(</span><br><span class="line">    <span class="string">"SELECT &#123;[Measures].[Unit Sales], [Measures].[Store Sales]&#125; on columns,"</span> +</span><br><span class="line">    <span class="string">"&#123;[Product].children&#125; on rows "</span> +</span><br><span class="line">    <span class="string">"FROM [Sales] "</span> +</span><br><span class="line">    <span class="string">"WHERE ([Time].[1997].[Q1], [Store].[CA].[San Francisco])"</span>);</span><br><span class="line">Result result = connection.execute(query);</span><br><span class="line">result.print(<span class="keyword">new</span> PrintWriter(System.out));</span><br></pre></td></tr></table></figure>
+<p>API还将数据库模式呈现为一组对象： 模式， 多维数据集， 维度， 层次结构， 级别， 成员。<br>有关Mondrian API的更多信息，请参阅 javadoc。</p>
+<p>用于分析的XML是通过SOAP（简单对象访问协议）访问OLAP服务器的标准。<br>这允许Microsoft Excel等非Java组件针对Mondrian运行查询。</p>
+<p><code>蒙德里安</code>包括对 JSR-069(‘JOLAP’)提议标准的支持，<br>但是在明确标准永远不会被批准的情况下，这一支持在mondrian-2.3中被删除。</p>
+<p><a href="https://mondrian.pentaho.com/documentation/architecture.php#Figure_1:_Mondrian_architecture" target="_blank" rel="noopener">https://mondrian.pentaho.com/documentation/architecture.php#Figure_1:_Mondrian_architecture</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/22/python-encode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/22/python-encode/" class="post-title-link" itemprop="url">python encode</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-22 16:10:13" itemprop="dateCreated datePublished" datetime="2018-05-22T16:10:13+08:00">2018-05-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Declare"><a href="#Declare" class="headerlink" title="Declare"></a>Declare</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br></pre></td></tr></table></figure>
+<p>make clare that the origin code context use utf-8 encoding.</p>
+<p>if not declate when unioncode sign appare in origin text, python throw exception:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SyntaxError: Non-ASCII character &apos;\xe4&apos; in file code_test.py on line 6,</span><br><span class="line">but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details</span><br></pre></td></tr></table></figure>
+<h2 id="Setting-default-encoding"><a href="#Setting-default-encoding" class="headerlink" title="Setting default encoding"></a>Setting default encoding</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br></pre></td></tr></table></figure>
+<p>told python use <code>utf8</code> as the default encoding to deal symbols<br>python’s type <code>str</code> use <code>ascii</code> as the default encoding ps. v2.7</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode character u&apos;\u4e07&apos; in position 0:</span><br><span class="line">ordinal not in range(128)</span><br></pre></td></tr></table></figure>
+<h2 id="Exception-in-db"><a href="#Exception-in-db" class="headerlink" title="Exception in db"></a>Exception in db</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError:&apos;latin-1&apos; codec can&apos;t encode character ...</span><br></pre></td></tr></table></figure>
+<p>declare the connection and the cursor’s encoding:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db = pymysql.connect(&quot;localhost&quot;, &quot;use&quot;, &quot;passwd&quot;, &quot;db_name&quot; , use_unicode=True,  charset=&quot;utf8&quot;)</span><br><span class="line">db = MySQLdb.connect(host=&quot;localhost&quot;, user = &quot;root&quot;, passwd = &quot;&quot;, db = &quot;testdb&quot;, use_unicode=True, charset=&quot;utf8&quot;)</span><br><span class="line">cursor.execute(&apos;SET NAMES utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET CHARACTER SET utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET character_set_connection=utf8;&apos;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="Exception-in-wb"><a href="#Exception-in-wb" class="headerlink" title="Exception in wb"></a>Exception in wb</h2><p>If the web is encoded in <code>gbk</code> or <code>gb2312</code>, use <code>utf8</code> to show will case messy encoding</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">html = unicode(html, &quot;gbk&quot;).encode(&quot;utf8&quot;)</span><br></pre></td></tr></table></figure>
+<p>turn the bytes stream to unicode first in <code>gbk</code> decoding, then encoding in <code>utf8</code></p>
+<h2 id="Encoding-transform"><a href="#Encoding-transform" class="headerlink" title="Encoding transform"></a>Encoding transform</h2><ol>
+<li>if in origin code <code>str</code> delcare has the prfix <code>u</code> then it is unicde encoding</li>
+<li>if origin code <code>str</code> has no prefix <code>u</code> then it use it’s text encoding</li>
+<li>use <code>unicode(str, codec)</code> to transform <code>str</code> to unicode</li>
+<li>most times use <code>str.decode(codec)</code> to decode to bytes stream</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(<span class="string">'utf8'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># u'\u4e07'</span></span><br><span class="line">a = <span class="string">u"万"</span></span><br><span class="line"><span class="keyword">print</span> a</span><br><span class="line"><span class="keyword">print</span> ord(a)</span><br><span class="line"><span class="keyword">print</span> unichr(ord(a))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"----------------"</span></span><br><span class="line"></span><br><span class="line">b = a.encode(<span class="string">'utf8'</span>)</span><br><span class="line"><span class="keyword">print</span> b</span><br><span class="line">c = a.encode(<span class="string">'gbk'</span>)</span><br><span class="line"><span class="keyword">print</span> c</span><br></pre></td></tr></table></figure>
+<p>in windows bash termianl’s encode is <code>utf8</code> , <code>gbk</code> is messy encoding<br><img src="/2018/05/22/python-encode/bash.png" alt="bash"><br>in windows dos terminal’s encode is <code>gbk</code> , <code>utf8</code> is messy encoding<br><img src="/2018/05/22/python-encode/dos.png" alt="dos"></p>
+<h2 id="Encoding-in-json"><a href="#Encoding-in-json" class="headerlink" title="Encoding in json"></a>Encoding in json</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">json.dumps # turn json object -&gt; string</span><br><span class="line">json.loads # turn json string -&gt; object</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># add encoding parameter</span><br><span class="line">json.loads(jStr, encoding=&quot;GB2312&quot;);</span><br><span class="line"># restrict the string in unicode encoding</span><br><span class="line">json.dumps(js, ensure_ascii=False)</span><br></pre></td></tr></table></figure>
+<p><a href="https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character" target="_blank" rel="noopener">https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character</a></p>
+<p><a href="https://blog.csdn.net/learn_tech/article/details/52982679" target="_blank" rel="noopener">https://blog.csdn.net/learn_tech/article/details/52982679</a></p>
+<p><a href="https://blog.csdn.net/xfyangle/article/details/60969522" target="_blank" rel="noopener">https://blog.csdn.net/xfyangle/article/details/60969522</a></p>
+<p><a href="https://blog.csdn.net/ran337287/article/details/56298949" target="_blank" rel="noopener">https://blog.csdn.net/ran337287/article/details/56298949</a></p>
+<p><a href="https://blog.csdn.net/chenzy945/article/details/18267905" target="_blank" rel="noopener">https://blog.csdn.net/chenzy945/article/details/18267905</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/20/Servlet-request/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1693,861 +2502,11 @@ x_1 &amp;+ x_2 + \lambda x_3 = \lambda^2
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/02/28/Elementary-transformation-Linear-equations-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/02/28/Elementary-transformation-Linear-equations-1/" class="post-title-link" itemprop="url">Elementary transformation & Linear equations (1)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-02-28 14:55:36" itemprop="dateCreated datePublished" datetime="2018-02-28T14:55:36+08:00">2018-02-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ul>
-<li>如果矩阵A经过有限次<strong>行初等变换</strong>变为矩阵B，称矩阵A与矩阵B行等价记作<span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mi>r</mi><mi>t</mi><mi>o</mi><mi>p</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A r top \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mord mathit">t</span><span class="mord mathit">o</span><span class="mord mathit">p</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span></span></li>
-<li>如果矩阵A经过有限次<strong>列初等变换</strong>变为矩阵B，称矩阵A与矩阵B列等价记作<span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mi>c</mi><mi>t</mi><mi>o</mi><mi>p</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A c top \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit">A</span><span class="mord mathit">c</span><span class="mord mathit">t</span><span class="mord mathit">o</span><span class="mord mathit">p</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span></span></li>
-<li>如果矩阵A经过有限次<strong>初等变换</strong>变为矩阵B，称矩阵A与矩阵B等价记作<span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit">A</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span></span>
-</li>
-</ul>
-<p>变换后的<strong>阶梯形线性方程组</strong>系数+增广组成矩阵，称为<strong>行最简形矩阵</strong><br>把<strong>行最简形矩阵</strong>再施以初等变换可以得到更简单的矩阵称为<strong>标准形</strong></p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mo>−</mo><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>4</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mo>−</mo><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>3</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mo>−</mo><mn>3</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow><mrow><mo fence="true">{</mo><mtable><mtr><mtd><mrow><msub><mi>c</mi><mn>3</mn></msub><mo>↔</mo><msub><mi>c</mi><mn>4</mn></msub></mrow></mtd></mtr><mtr><mtd><mrow><mo>∼</mo></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>c</mi><mn>4</mn></msub><mo>+</mo><msub><mi>c</mi><mn>1</mn></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>c</mi><mn>5</mn></msub><mo>−</mo><mn>4</mn><msub><mi>c</mi><mn>1</mn></msub><mo>−</mo><mn>3</mn><msub><mi>c</mi><mn>2</mn></msub><mo>+</mo><mn>3</mn><msub><mi>c</mi><mn>3</mn></msub></mrow></mtd></mtr></mtable></mrow><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>1</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{pmatrix}
-   1 &amp; 0 &amp; -1 &amp; 0 &amp; 4 \\
-   0 &amp; 1 &amp; -1 &amp; 0 &amp; 3 \\
-   0 &amp; 0 &amp; 0 &amp; 1 &amp; -3 \\
-   0 &amp; 0 &amp; 0 &amp; 0 &amp; 0
-\end{pmatrix}
-\begin{cases}
-   c_3 \leftrightarrow c_4 \\
-   \thicksim \\
-   c_4 + c_1 + c_2 \\
-   c_5 - 4c_1 - 3c_2 + 3c_3
-\end{cases}
-\begin{pmatrix}
-   1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-   0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
-   0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
-   0 &amp; 0 &amp; 0 &amp; 0 &amp; 0
-\end{pmatrix}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:3.1300000000000003em;"></span><span class="strut bottom" style="height:5.76em;vertical-align:-2.63em;"></span><span class="base displaystyle textstyle uncramped"><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:1.50501em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎝</span></span></span><span style="top:0.35000000000000014em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-0.2500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-1.4950299999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎛</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord">−</span><span class="mord mathrm">1</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord">−</span><span class="mord mathrm">1</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">4</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">3</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord">−</span><span class="mord mathrm">3</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:1.50501em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎠</span></span></span><span style="top:0.35000000000000014em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-0.2500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-1.4950299999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎞</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:1.5500099999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎩</span></span></span><span style="top:1.5500099999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:1.2500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:0.9500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:-0.000010000000000287557em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎨</span></span></span><span style="top:-1.1500100000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:-1.4500100000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:-1.7500100000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎪</span></span></span><span style="top:-2.0500200000000004em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎧</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-l"><span class="vlist"><span style="top:-2.1220000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">3</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">↔</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">4</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.6820000000000005em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mrel amsrm">∼</span></span></span><span style="top:0.7579999999999995em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">4</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:2.198em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">5</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathrm">4</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathrm">3</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord mathrm">3</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">3</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:1.50501em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎝</span></span></span><span style="top:0.35000000000000014em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-0.2500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-1.4950299999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎛</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">1</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.8100000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.6100000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:0.5900000000000001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.7900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:1.50501em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎠</span></span></span><span style="top:0.35000000000000014em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-0.2500099999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-1.4950299999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎞</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span></span></span>
-<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><ul>
-<li>有三种形式的初等变换<ol>
-<li>对调两行</li>
-<li>某个数k(非0)乘以某行的所有元素</li>
-<li>某个数k(非0)乘以某行的所有元素， 加到另一行对应元素上</li>
-</ol>
-</li>
-<li>由单位矩阵经过一次初等变换得到的矩阵称为<strong>初等矩阵</strong></li>
-<li>在 m x n的矩阵A中取k行k列，其交叉处元素组成的行列式，称为A的<strong>k阶子式</strong></li>
-<li>在矩阵A中如果有r阶非零子式D，而r+1阶为零，称D为A的<strong>最高阶非零子式</strong>，r称为A的秩，记作R(A)</li>
-</ul>
-<h2 id="定理一"><a href="#定理一" class="headerlink" title="定理一"></a>定理一</h2><ol>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mi>r</mi><mi>t</mi><mi>o</mi><mi>p</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A r top \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mord mathit">t</span><span class="mord mathit">o</span><span class="mord mathit">p</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span>的充分必要条件是存在m阶可逆矩阵P，使PA = B;</li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mi>c</mi><mi>t</mi><mi>o</mi><mi>p</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A c top \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mord mathit">c</span><span class="mord mathit">t</span><span class="mord mathit">o</span><span class="mord mathit">p</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span>的充分必要条件是存在m阶可逆矩阵Q，使AQ = B;</li>
-<li><p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span>的充分必要条件是存在m阶可逆矩阵P, n阶可逆矩阵Q，使PAQ = B;</p>
-</li>
-<li><p>性质一: 对矩阵A进行一次初等变换相当于左乘或右乘初等矩阵</p>
-</li>
-<li>性质二: 方阵A可逆的充分必要条件是存在有限个初等矩阵P1 P2 … pn, 使 A = P1 P2 … pn</li>
-<li>推论:   方阵A可逆的充分必要条件是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mi>r</mi><mi>t</mi><mi>o</mi><mi>p</mi><mo>∼</mo><mi>E</mi></mrow><annotation encoding="application/x-tex">A r top \thicksim E</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mord mathit">t</span><span class="mord mathit">o</span><span class="mord mathit">p</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05764em;">E</span></span></span></span></li>
-</ol>
-<h2 id="定理二"><a href="#定理二" class="headerlink" title="定理二"></a>定理二</h2><p>若 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mo>∼</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A \thicksim B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span></span>，则 R(A) = R(B)<br>推论： 如果可逆矩阵P、Q，可使 PAQ = B， 则R(A) = R(B)</p>
-<ol>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>0</mn><mo>⩽</mo><mi>R</mi><mo>(</mo><msub><mi>A</mi><mrow><mi>m</mi><mo>∗</mo><mi>n</mi></mrow></msub><mo>)</mo><mo>⩽</mo><mi>m</mi><mi>i</mi><mi>n</mi><mo>{</mo><mi>m</mi><mo separator="true">,</mo><mi>n</mi><mo>}</mo></mrow><annotation encoding="application/x-tex">0 \leqslant R(A_{m*n}) \leqslant min\{m, n\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathrm">0</span><span class="mrel amsrm">⩽</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">A</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">m</span><span class="mbin">∗</span><span class="mord mathit">n</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span><span class="mrel amsrm">⩽</span><span class="mord mathit">m</span><span class="mord mathit">i</span><span class="mord mathit">n</span><span class="mopen">{</span><span class="mord mathit">m</span><span class="mpunct">,</span><span class="mord mathit">n</span><span class="mclose">}</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi><mo>(</mo><msup><mi>A</mi><mi>T</mi></msup><mo>)</mo><mo>=</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">R(A^T) = R(A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8413309999999999em;"></span><span class="strut bottom" style="height:1.0913309999999998em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">A</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">T</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mi>F</mi><mspace width="1em"></mspace><mi>A</mi><mo>∼</mo><mi>B</mi><mspace width="1em"></mspace><mi>T</mi><mi>H</mi><mi>A</mi><mi>N</mi><mspace width="1em"></mspace><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>=</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">IF \quad A \thicksim B \quad THAN \quad  R(A) = R(B)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.07847em;">I</span><span class="mord mathit" style="margin-right:0.13889em;">F</span><span class="mord mspace quad"></span><span class="mord mathit">A</span><span class="mrel amsrm">∼</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.13889em;">T</span><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span></li>
-<li>如果 P、Q可逆，则：R(PAQ) = R(A)</li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>a</mi><mi>x</mi><mo>{</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo separator="true">,</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>}</mo><mo>⩽</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo separator="true">,</mo><mi>B</mi><mo>)</mo><mo>⩽</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>+</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">max\{R(A), R(B)\} \leqslant R(A, B) \leqslant R(A) + R(B)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mord mathit">a</span><span class="mord mathit">x</span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mclose">}</span><span class="mrel amsrm">⩽</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel amsrm">⩽</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi><mo>(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo>)</mo><mo>⩽</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>+</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">R(A+B) \leqslant R(A) + R(B)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel amsrm">⩽</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>R</mi><mo>(</mo><mi>A</mi><mi>B</mi><mo>)</mo><mo>⩽</mo><mi>m</mi><mi>i</mi><mi>n</mi><mo>{</mo><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo separator="true">,</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>}</mo></mrow><annotation encoding="application/x-tex">R(AB) \leqslant min\{R(A), R(B)\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel amsrm">⩽</span><span class="mord mathit">m</span><span class="mord mathit">i</span><span class="mord mathit">n</span><span class="mopen">{</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mclose">}</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mi>F</mi><mspace width="1em"></mspace><msub><mi>A</mi><mrow><mi>m</mi><mo>∗</mo><mi>n</mi></mrow></msub><msub><mi>B</mi><mrow><mi>n</mi><mo>∗</mo><mi>l</mi></mrow></msub><mo>=</mo><mi>O</mi><mspace width="1em"></mspace><mi>T</mi><mi>H</mi><mi>A</mi><mi>N</mi><mspace width="1em"></mspace><mi>R</mi><mo>(</mo><mi>A</mi><mo>)</mo><mo>+</mo><mi>R</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>⩽</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">IF \quad A_{m*n}B_{n*l} = O \quad THAN \quad R(A) + R(B) \leqslant n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.07847em;">I</span><span class="mord mathit" style="margin-right:0.13889em;">F</span><span class="mord mspace quad"></span><span class="mord"><span class="mord mathit">A</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">m</span><span class="mbin">∗</span><span class="mord mathit">n</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord"><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.05017em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">∗</span><span class="mord mathit" style="margin-right:0.01968em;">l</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.02778em;">O</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.13889em;">T</span><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel amsrm">⩽</span><span class="mord mathit">n</span></span></span></span>
-</li>
-</ol>
-<h2 id="定理三"><a href="#定理三" class="headerlink" title="定理三"></a>定理三</h2><p>对于n元线性方程组Ax = b</p>
-<ol>
-<li>无解的充分必要条件是 R(A) &lt; R(A, b), 系数矩阵的秩小于增广矩阵的秩</li>
-<li>有唯一解的充分必要条件是 R(A) = R(A, b) = n, 标准形等于行数</li>
-<li>有无限解的充分必要条件是 R(A) = R(A, b) &lt; n, 标准形低于行数</li>
-</ol>
-<h2 id="定理四"><a href="#定理四" class="headerlink" title="定理四"></a>定理四</h2><p>n元齐次线性方程组 Ax = 0 有非零解的充分必要条件是 R(A) &lt; n (3.3)</p>
-<h2 id="定理五"><a href="#定理五" class="headerlink" title="定理五"></a>定理五</h2><p>线性方程组 Ax = b 有解的充分必要条件是 R(A) = R(A, b) (3.2)</p>
-<h2 id="定理六"><a href="#定理六" class="headerlink" title="定理六"></a>定理六</h2><p>线性方程组 Ax = B 有解的充分必要条件是 R(A) = R(A, B) (3.2)</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/02/13/cpu-time/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/02/13/cpu-time/" class="post-title-link" itemprop="url">cpu time</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-02-13 19:30:37" itemprop="dateCreated datePublished" datetime="2018-02-13T19:30:37+08:00">2018-02-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>1s -&gt; 10^3ms -&gt; 10^6us -&gt; 10^9ns</p>
-<ol>
-<li><code>cpu&#39;s speed</code> depend on frequency, one 3Gz core can execute 3x10^9 command<br>convert to time, one command need about <strong>0.33ns</strong>. To human like <strong>a blink 0.4s</strong>.</li>
-<li><code>level-1 cache</code> read once need <strong>0.5ns</strong>, to human like <strong>a heart beat 1.3s</strong></li>
-<li><code>branch predict</code> need <strong>5ns</strong>, about <strong>13s</strong> to human</li>
-<li><code>level-2 cache</code> read once need <strong>7ns</strong>, about <strong>18.3s</strong> to human</li>
-<li><code>mutex-lock</code> lock or unlock need <strong>25ns</strong>, about <strong>a minute</strong> to human</li>
-<li><code>memory address searching</code> need <strong>100ns</strong>, about <strong>4 minute</strong> to human</li>
-<li><code>cpu switch context</code> need <strong>1500ns</strong> (1.5us), about <strong>a hour</strong> to human</li>
-<li><code>transfer data</code> in a 1Gpbs web <code>2kb</code> need <strong>20us</strong>, about <strong>14.4h</strong> to human</li>
-<li><code>SSD random read</code> need <strong>120us</strong>, about <strong>4.5d</strong> to human</li>
-<li><code>read data from meory</code> a sequencial <code>2mb</code> data need <strong>250us</strong>, about <strong>7.5d</strong> to human</li>
-<li><code>SSD read data</code> a sequencial <code>1mb</code> data need <strong>1ms</strong>, about <strong>a month</strong> to human</li>
-<li><code>hard disk</code> read a sequencial <code>1mb</code> data need <strong>20ms</strong>, about <strong>20 month</strong> to human</li>
-<li><code>different world web</code> a ping need <strong>120ms</strong>, about <strong>12.5 year</strong> to human</li>
-<li><code>reboot vm</code> need <strong>4s</strong>, about <strong>300y</strong> to human</li>
-<li><code>reboot machine</code> need <strong>5minute</strong>, about <strong>25000y</strong>……</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/01/31/Suurballe-s-algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/01/31/Suurballe-s-algorithm/" class="post-title-link" itemprop="url">Suurballe's algorithm</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-01-31 14:33:58" itemprop="dateCreated datePublished" datetime="2018-01-31T14:33:58+08:00">2018-01-31</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Definitions"><a href="#Definitions" class="headerlink" title="Definitions"></a>Definitions</h2><ul>
-<li><code>G</code> represent a graph</li>
-<li><code>P</code> represent a path</li>
-<li><code>s</code> represent source start vertex</li>
-<li><code>w(u, v)</code> mean edge weight from vertex <code>u</code> to <code>v</code></li>
-<li><code>d(u, v)</code> mean short path cost from vertex <code>u</code> to <code>v</code></li>
-</ul>
-<h2 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h2><ol>
-<li>Find shortest path P1</li>
-<li>Recalculate the edge weith by <code>w′(u,v) = w(u,v) − d(s,v) + d(s,u)</code></li>
-<li>Create a residual graph Gt formed from G by removing the edges of G on path P1 (leave a reserve zero path)</li>
-<li>Find the shortest path P2 in the residual graph Gt</li>
-<li>Discard the reversed edges of P2 from both paths</li>
-</ol>
-<p>The remaining edges of P1 and P2 form a subgraph have no common edges.<br>Return the two disjoint paths from the subgraph.</p>
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2018/01/31/Suurballe-s-algorithm/First_graph.jpg" alt></p>
-<ul>
-<li>Figure <strong>A</strong> illustrates a weighted graph G.</li>
-<li>Figure <strong>B</strong> calculates the shortest path P1 from A to F (A–B–D–F).</li>
-<li>Figure <strong>C</strong> illustrates the shortest path tree T rooted at A, and the computed distances from A to every vertex (u).</li>
-<li>Figure <strong>D</strong> shows the residual graph Gt with the updated cost of each edge and the edges of path ‘P1 reversed.</li>
-<li>Figure <strong>E</strong> calculates path P2 in the residual graph Gt (A–C–D–B–E–F).</li>
-<li>Figure <strong>F</strong> illustrates both path P1 and path P2.</li>
-<li>Figure <strong>G</strong> finds the shortest pair of disjoint paths<br>Combining the edges of paths P1 and P2 and then <em>discarding the common reversed edges</em> between both paths (B–D).<br>As a result, we get the two shortest pair of disjoint paths (A–B–E–F) and (A–C–D–F).</li>
-</ul>
-<p><a href="https://en.wikipedia.org/wiki/Suurballe%27s_algorithm" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Suurballe%27s_algorithm</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/01/30/Yen-s-algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/01/30/Yen-s-algorithm/" class="post-title-link" itemprop="url">Yen's algorithm</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-01-30 16:15:07" itemprop="dateCreated datePublished" datetime="2018-01-30T16:15:07+08:00">2018-01-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>K shortest path problem have three ideas:</p>
-<ul>
-<li>recurrence method<br>based on P(i), recurrent resolve the P(i+1) shortest path.</li>
-<li>direct method<br>direct find the shortest path, like delete method.</li>
-<li>synthetic method<br>i have no idea yet.</li>
-</ul>
-<p>Yen’s algorithm computes single-source K-shortest loopless paths for a graph with non-negative edge cost.<br>The algorithm was published by Jin Y. Yen in 1971 and employs any shortest path algorithm to find the best path,<br>then proceeds to find K − 1 deviations of the best path.</p>
-<ol>
-<li><img src="/2018/01/30/Yen-s-algorithm/1.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/2.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/3.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/4.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/5.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/6.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/7.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/8.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/9.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/10.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/11.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/12.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/13.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/14.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/15.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/16.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/17.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/18.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/19.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/20.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/21.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/22.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/23.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/24.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/25.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/26.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/27.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/28.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/29.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/30.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/31.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/32.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/33.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/34.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/35.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/36.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/37.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/38.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/39.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/40.jpg" alt></li>
-<li><img src="/2018/01/30/Yen-s-algorithm/41.jpg" alt></li>
-</ol>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="http://www.coolee.me/yen-k-shortest-path.html" target="_blank" rel="noopener">http://www.coolee.me/yen-k-shortest-path.html</a><br><a href="https://en.wikipedia.org/wiki/Yen%27s_algorithm" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Yen%27s_algorithm</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2589,7 +2548,7 @@ x_1 &amp;+ x_2 + \lambda x_3 = \lambda^2
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">197</span>
+                    <span class="site-state-item-count">201</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2646,7 +2605,9 @@ x_1 &amp;+ x_2 + \lambda x_3 = \lambda^2
                     
                       
                     
-                    <span class="site-state-item-count">20</span>
+                      
+                    
+                    <span class="site-state-item-count">21</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
