@@ -320,6 +320,408 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/understand-lagrange-multiplier/" class="post-title-link" itemprop="url">拉格朗日乘子法(一)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-04 11:12:41" itemprop="dateCreated datePublished" datetime="2019-06-04T11:12:41+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-08 19:21:35" itemprop="dateModified" datetime="2019-06-08T19:21:35+08:00">2019-06-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2019/06/04/understand-lagrange-multiplier/Lagrange_portrait.jpg" alt="Lagrange_portrait.jpg"><br>Joseph Louis Lagrange</p>
+<p>definition on Wikipedia:</p>
+<blockquote>
+<p>In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equality constraints. (Wikipedia)</p>
+</blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Lagrange_multiplier" target="_blank" rel="noopener">拉格朗日乘子法</a> 是一种在一个或多个约束条件下，局部最小化或最大化函数的方法。<br>例如：对变量 $x$ 和 $y$ 使 $x^2 + y^2$ 尽可能小，同时满足约束$xy = 1$。<br>以下是如何使用拉格朗日乘子法及其工作原理的解释：<br>这个解释（尤其是为什么它们的工作）只有一个约束要简单得多，所以我们将从一个直观的论证开始，然后在多个约束的情况下转向一个更严格的论证。这两种情况都需要熟悉<a href="https://en.wikipedia.org/wiki/Partial_derivative" target="_blank" rel="noopener">偏导数</a>和<a href="https://en.wikipedia.org/wiki/Euclidean_vector" target="_blank" rel="noopener">向量</a></p>
+<h3 id="一个约束条件"><a href="#一个约束条件" class="headerlink" title="一个约束条件"></a>一个约束条件</h3><p>假设我们想要根据约束 $g(x, y) = 0$， 最小化函数 $f(x, y)$ 。<br>(现在我们将最小化两个变量的函数，但是该方法将自然地扩展到更多变量的函数，并且最大化的过程完全相同。)<br>对于上面的例子，$f(x, y) = x^2 + y^2$ 和 $g(x, y)=xy-1$ (因为 $xy - 1 = 0$ 等价 $xy = 1$ )。<br>为了解决这个问题，我们创建了一个 $L(x, y, \lambda)$ 名为 <strong>Lagrangian</strong> 的新函数。<br>它被定义为 $L(x, y, \lambda)= f(x，y) -  \lambda g(x, y)$ ，其中 $\lambda$ 是一个称为<code>拉格朗日乘子</code>的新变量。<br>(有些人用 $+$，而不是 $-$ ，但这并没有改变定义，除了$\lambda$的符号发生变化。)<br>然后，我们取原始变量$x$ 、 $y$、 $\lambda$ 相对于 $L$ 的偏导数，将所有这些部分设置为零，并求解 $x$ 和 $y$ 。<br>对于上面给出的例子，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rcl} L(x, y, \lambda) & = & x^2 + y^2 - \lambda (xy - 1) \\
+\partial L / \partial x & = & 2x - \lambda y \\
+\partial L / \partial y & = & 2y - \lambda x \\
+\partial L / \partial \lambda & = & -(xy - 1) \end{array}</script><p>将所有部分设置为零并求解，我们得到它 $\lambda = 2$ 并且(x, y)是(1, 1)或者(-1, -1)。<br>实际上，这些点是受制于约束 $g(x, y) = 0$的 $f(x, y)$ 局部最小值。（在这种情况下，它们也是全局极小值，虽然通常不能保证。）</p>
+<h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>为什么拉格朗日乘子法有效？<br>人们很容易认为我们可以通过找到一个不受约束 $L$ 的最小值, 来找到一个受约束的 $f$ 的最小值; 毕竟，我们将所有 $L$ 的分量设置为等于零。但这是错误的。解决方案 $(x, y, \lambda)$ 实际上，从来不是局部最小值或最大值，总是会有一个<code>马鞍点</code>对应到 $L$。那么为什么拉格朗日乘子法有效呢？答案与<a href="https://en.wikipedia.org/wiki/Level_set" target="_blank" rel="noopener">等高曲线</a>和<a href="https://en.wikipedia.org/wiki/Gradient" target="_blank" rel="noopener">梯度</a>有关。</p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/lagrange1.png" alt="lagrange1.png"></p>
+<h4 id="等值曲线"><a href="#等值曲线" class="headerlink" title="等值曲线"></a>等值曲线</h4><p>函数的<code>等值曲线</code>[等高线]是函数等于常数值的点集。<br>（在三个维度中，它们被称为等值面，更一般地说，等值集合。）<br>在上面的图片中，红色圆是一些等值曲线 $f(x, y) = x^2 + y^2$（较大的圆对应于 $f$中更高的值）。<br>蓝色曲线是满足约束 $g(x, y) = 0$ 的点集，使其成为 $ g(x, y)$ 的一条等值曲线。</p>
+<h4 id="几何分析"><a href="#几何分析" class="headerlink" title="几何分析"></a>几何分析</h4><p>约束最小化就是寻找蓝色曲线上红色谷中最低的点：每个红色曲线代表不同高度的谷。<br>事实证明，这极值点总是红色和蓝色等值曲线的相切点，例如上图中的黑点。<br>要了解原因，有必要查看曲线不相切的点，例如橙色点。由于红色和蓝色等值曲线在橙色点彼此不相切，它们彼此交叉。由于它们交叉，当沿着蓝色曲线在红色谷中向一个方向上移动时，红谷值向另一个方向移动向下移动。<br><strong>换句话说，存在局部变化 $(x, y)$，在保持约束 $g(x, y) = 0$ 的情况下，导致目标函数$f(x, y)$减少，而相反的变化导致它增加。</strong> 因此交叉点不可能是受限制的最小值或最大值。由于最小值不能在等值曲线交叉的点处，因此它必须在它们相切的点处。<strong>在切点，当你沿着曲线 $g(x, y) = 0$ 移动时, $f(x, y)$ 是近似不变的一阶导数</strong>，因此它可能是最小值或最大值。（它可能也不是，但至少它可能是。）</p>
+<h4 id="数学分析"><a href="#数学分析" class="headerlink" title="数学分析"></a>数学分析</h4><p>我们如何在数学上表达等值曲线 $f$ 和 $g$ 相切？这是梯度的来源。函数的梯度 $f$ 被写为 $ \nabla f$ 并定义为向量，其中每个分量是 $f$ 相对于相应变量的偏导数：$\nabla f = (\partial f / \partial x, \partial f / \partial y)$。梯度具有对我们非常有用的属性：$f$ 的梯度总是垂直于 $f$ 给定的等值曲线$(x, y)$。要探究这个问题，我们定义 $(\Delta x, \Delta y)$ 是改变$(x, y)$的微元[small amount]。它将如何改变f$(x, y)$？首先，答案是：</p>
+<script type="math/tex; mode=display">f(x + \Delta x, y + \Delta y) \approx f(x, y) + \frac{\partial f}{\partial x} \Delta x + \frac{\partial f}{\partial y} \Delta y</script><p>如果$(\Delta x, \Delta y)$是在等值曲线的方向，我们将拥有 $ f(x + \Delta x, y + \Delta y) \approx f(x, y)$，这意味着 $\frac{\partial f}{\partial x}\Delta x + \frac{\partial f}{\partial y} \Delta y = 0 $ 。换句话说，$\nabla f$ 和 $(\Delta x, \Delta y)$ 的点积为零。由于  $(\Delta x, \Delta y)$在等值曲线的方向上，这意味着 <strong>等值曲线和梯度彼此垂直</strong>。</p>
+<p>由于我们希望的等值曲线 $f$ 和 $g$ 为彼此相切，并且每个函数的梯度是垂直于它的等值曲线中，我们希望梯度以在相同的方向（或沿相反方向）指向。<strong>如果一个是另一个的标量倍数，则两个向量指向相同的方向。</strong> 这个标量将成为<code>拉格朗日乘子</code>，我们称之为$ \lambda: \nabla f = \lambda \nabla g$。该向量方程扩展为每个 $x$ 和的一个方程 $y$。将约束本身添加到我们的方程组中，我们得到：</p>
+<p>\begin{array}{rcl}\frac{\partial f}{\partial x}&amp;=&amp;\lambda \frac{\partial g}{\partial x}\\ \frac{\partial f}{\partial y}&amp;=&amp;\lambda \frac{\partial g}{\partial y} \\ g(x, y) &amp; = &amp; 0 \end{array}</p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p><code>Lagrange multipliers</code>方法就是产生这些方程并求解它们。然而它通常用拉格朗日函数来描述 $ L(x, y, \lambda) = f(x, y) - \lambda g(x, y)$。将 $x$, $y$, $\lambda$ 关于<code>Lagrangian</code>的偏导数，写成以上例子的形式。例如，$ \partial L / \partial x = \partial f / \partial x - \lambda \partial g / \partial x$。 将这个值设为零就可以得到例子中的第一个方程。最后还有一个等式，$ \partial L / \partial \lambda = -g(x, y)$。如果你愿意，你根本就不需要担心<code>Lagrangian</code>，你只需要找到一个点$(x, y)$ 和标量 $\lambda$，使$ \nabla f = \lambda \nabla g$ 满足约束条件。这些点将是约束最小值（或最大值）的候选值。</p>
+<p>总之，约束极小值和极大值出现在<code>约束函数的等值曲线</code> $g$与 <code>目标函数的等值曲线</code> $f$的相切的点处。<br>当 $ \nabla f = \lambda \nabla g$ 时，有以上例子中的方程式成立。拉格朗日函数$L$用一个函数的偏导数将这些方程统一起来。</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>在切点位置两等值曲线方向平行，考虑到梯度和等值曲线垂直，那么可以用梯度平行来求切点位置。</p>
+<p>切点 -&gt; 变量偏导比例相等 -&gt; 梯度方向相同 -&gt; 梯度模成比例 -&gt; 候选极值</p>
+<hr>
+<script type="math/tex; mode=display">
+f(x, y) = x^2 + y^2  \\
+g(x, y) = x*y - 1 \\
+x*y -1 = 0 \\
+t(x) = 1/x</script><p><img src="/2019/06/04/understand-lagrange-multiplier/20190605171448.png" alt="20190605171448.png"></p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/20190605181854.png" alt="20190605181854.png"></p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/20190605172014.png" alt="20190605172014.png"></p>
+<p><a href="https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/" target="_blank" rel="noopener">https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/</a><br><a href="https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/" target="_blank" rel="noopener">https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/</a><br><a href="https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/" target="_blank" rel="noopener">https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/29/Mathjax-in-hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/29/Mathjax-in-hexo/" class="post-title-link" itemprop="url">Mathjax in hexo</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-29 13:45:57" itemprop="dateCreated datePublished" datetime="2019-05-29T13:45:57+08:00">2019-05-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-06 22:19:14" itemprop="dateModified" datetime="2019-06-06T22:19:14+08:00">2019-06-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+<p>
+When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
+$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+</p>
+
+
+<p>Simple inline $a = b + c$.<br>Block:</p>
+<script type="math/tex; mode=display">\frac{\partial u}{\partial t}
+= h^2 \left( \frac{\partial^2 u}{\partial x^2} +
+\frac{\partial^2 u}{\partial y^2} +
+\frac{\partial^2 u}{\partial z^2}\right)</script><script type="math/tex; mode=display">
+\frac{\partial f}{\partial x}= \lambda \frac{\partial g}{\partial x} \\\\
+\frac{\partial f}{\partial y}=\lambda \frac{\partial g}{\partial y}   \\\\
+g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="add ejs"></a>add ejs</h3><p><code>themes/xxx/layout/_partial/mathjax.ejs</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- MathJax配置，可通过单美元符号书写行内公式等 --&gt;</span><br><span class="line">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;</span><br><span class="line">    MathJax.Hub.Config(&#123;</span><br><span class="line">    &quot;HTML-CSS&quot;: &#123;</span><br><span class="line">        preferredFont: &quot;TeX&quot;,</span><br><span class="line">        availableFonts: [&quot;STIX&quot;,&quot;TeX&quot;],</span><br><span class="line">        linebreaks: &#123; automatic:true &#125;,</span><br><span class="line">        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)</span><br><span class="line">    &#125;,</span><br><span class="line">    tex2jax: &#123;</span><br><span class="line">        inlineMath: [ [&quot;$&quot;, &quot;$&quot;], [&quot;\\(&quot;,&quot;\\)&quot;] ],</span><br><span class="line">        processEscapes: true,</span><br><span class="line">        ignoreClass: &quot;tex2jax_ignore|dno&quot;,</span><br><span class="line">        skipTags: [&apos;script&apos;, &apos;noscript&apos;, &apos;style&apos;, &apos;textarea&apos;, &apos;pre&apos;, &apos;code&apos;]</span><br><span class="line">    &#125;,</span><br><span class="line">    TeX: &#123;  </span><br><span class="line">        equationNumbers: &#123; autoNumber: &quot;AMS&quot; &#125;,</span><br><span class="line">        noUndefined: &#123; attributes: &#123; mathcolor: &quot;red&quot;, mathbackground: &quot;#FFEEEE&quot;, mathsize: &quot;90%&quot; &#125; &#125;,</span><br><span class="line">        Macros: &#123; href: &quot;&#123;&#125;&quot; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    messageStyle: &quot;none&quot;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;!-- 给MathJax元素添加has-jax class --&gt;</span><br><span class="line">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;</span><br><span class="line">    MathJax.Hub.Queue(function() &#123;</span><br><span class="line">        var all = MathJax.Hub.getAllJax(), i;</span><br><span class="line">        for(i=0; i &lt; all.length; i += 1) &#123;</span><br><span class="line">            all[i].SourceElement().parentNode.className += &apos; has-jax&apos;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;!-- 通过连接CDN加载MathJax的js代码 --&gt;</span><br><span class="line">&lt;script type=&quot;text/javascript&quot; async</span><br><span class="line">  src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="add-judge"><a href="#add-judge" class="headerlink" title="add judge"></a>add judge</h3><p><code>themes/free2mind/layout/_partial/footer.ejs</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 根据页面mathjax变量决定是否加载MathJax数学公式js --&gt;</span><br><span class="line">&lt;% if (page.mathjax)&#123; %&gt;</span><br><span class="line">&lt;%- partial(&apos;mathjax&apos;) %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="Use-NexT"><a href="#Use-NexT" class="headerlink" title="Use NexT"></a>Use NexT</h3><p>clone <a href="https://github.com/theme-next/hexo-theme-next" target="_blank" rel="noopener">https://github.com/theme-next/hexo-theme-next</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
+<p>modify <code>node_modules\kramed\lib\rules\inline.js</code><br>line: 11<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line"> escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br></pre></td></tr></table></figure></p>
+<p>line: 20<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">  em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure></p>
+<p>open switch in theme config<br>switch theme in blog config</p>
+<p>done</p>
+<p><a href="https://docs.mathjax.org/en/latest/start.html" target="_blank" rel="noopener">https://docs.mathjax.org/en/latest/start.html</a><br><a href="http://www.mamicode.com/info-detail-2145077.html" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-2145077.html</a><br><a href="https://blog.csdn.net/wgshun616/article/details/81019687" target="_blank" rel="noopener">https://blog.csdn.net/wgshun616/article/details/81019687</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/20/Throttling-pattern/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1825,366 +2227,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/21/download-outside-GFW/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/21/download-outside-GFW/" class="post-title-link" itemprop="url">download outside GFW</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-02-21 10:38:53" itemprop="dateCreated datePublished" datetime="2019-02-21T10:38:53+08:00">2019-02-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-03-09 13:33:26" itemprop="dateModified" datetime="2019-03-09T13:33:26+08:00">2019-03-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Download-file-in-outsea-server"><a href="#Download-file-in-outsea-server" class="headerlink" title="Download file in outsea server"></a>Download file in outsea server</h2><p><a href="https://www.katacoda.com/" target="_blank" rel="noopener">https://www.katacoda.com/</a><br><a href="https://www.katacoda.com/courses/ubuntu/playground" target="_blank" rel="noopener">https://www.katacoda.com/courses/ubuntu/playground</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://iterm2.com/downloads/stable/iTerm2-3_2_7.zip</span><br></pre></td></tr></table></figure>
-<h2 id="Make-channel-through-local-NAT-or-firewall"><a href="#Make-channel-through-local-NAT-or-firewall" class="headerlink" title="Make channel through local NAT or firewall"></a>Make channel through local NAT or firewall</h2><p><a href="https://ngrok.com/" target="_blank" rel="noopener">https://ngrok.com/</a><br>Expose local machine to internet<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ngrok http 80</span><br></pre></td></tr></table></figure></p>
-<h2 id="Run-a-upload-service"><a href="#Run-a-upload-service" class="headerlink" title="Run a upload service"></a>Run a upload service</h2><p>run a local server by python</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install bottle</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> bottle <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">base_path = os.path.dirname(os.path.realpath(__file__))  <span class="comment"># get script path</span></span><br><span class="line"></span><br><span class="line">upload_path = os.path.join(base_path, <span class="string">'upload'</span>)   <span class="comment"># upload file directory</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(upload_path):</span><br><span class="line">    os.makedirs(upload_path)</span><br><span class="line"></span><br><span class="line"><span class="meta">@route('/upload', method='POST')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">do_upload</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="string">"""processing uploaded file"""</span></span><br><span class="line">    filedata = request.files.get(<span class="string">'fileField'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> filedata.file:</span><br><span class="line">        file_name = os.path.join(upload_path, filedata.filename)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            filedata.save(file_name)  <span class="comment"># write file</span></span><br><span class="line">        <span class="keyword">except</span> IOError:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">'upload failed'</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'success, file name: &#123;&#125;'</span>.format(file_name)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'upload failed'</span></span><br><span class="line"></span><br><span class="line">run(port=<span class="number">80</span>, reloader=<span class="literal">False</span>) <span class="comment"># reloader=True auto-reloading code</span></span><br></pre></td></tr></table></figure>
-<h2 id="Upload-file-from-remote-to-local"><a href="#Upload-file-from-remote-to-local" class="headerlink" title="Upload file from remote to local"></a>Upload file from remote to local</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">man curl</span><br><span class="line">curl -F fileField=@iTerm2-3_2_7.zip https://83bc4ec8.ngrok.io/upload -v</span><br></pre></td></tr></table></figure>
-<h2 id="PS"><a href="#PS" class="headerlink" title="PS"></a>PS</h2><p>use ngrok tcp mode may much simpler<br>install ngrok client in remote machine may channel through</p>
-<p><a href="https://bbs.csdn.net/topics/392190705" target="_blank" rel="noopener">https://bbs.csdn.net/topics/392190705</a><br><a href="https://blog.csdn.net/u011884440/article/details/70504653?utm_source=blogxgwz6" target="_blank" rel="noopener">https://blog.csdn.net/u011884440/article/details/70504653?utm_source=blogxgwz6</a><br><a href="https://blog.csdn.net/fungleo/article/details/80703365" target="_blank" rel="noopener">https://blog.csdn.net/fungleo/article/details/80703365</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/11/Nginx-https-in-aws/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/11/Nginx-https-in-aws/" class="post-title-link" itemprop="url">Nginx https in aws</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-02-11 15:30:21" itemprop="dateCreated datePublished" datetime="2019-02-11T15:30:21+08:00">2019-02-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-03-09 13:33:26" itemprop="dateModified" datetime="2019-03-09T13:33:26+08:00">2019-03-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="install-nginx-in-aws-linux"><a href="#install-nginx-in-aws-linux" class="headerlink" title="install nginx in aws linux"></a>install nginx in aws linux</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo amazon-linux-extras install nginx1.12</span><br></pre></td></tr></table></figure>
-<h2 id="apply-certificate"><a href="#apply-certificate" class="headerlink" title="apply certificate"></a>apply certificate</h2><p>apply in wanwang.aliyun.com<br>wait a few minutes, download nginx version certificate package</p>
-<h2 id="config-nginx"><a href="#config-nginx" class="headerlink" title="config nginx"></a>config nginx</h2><p>in <code>/etc/nginx/nginx.conf</code><br>add server configuration</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443;</span><br><span class="line">    server_name abc.com; // your domain</span><br><span class="line">    ssl on;</span><br><span class="line">    root  /home/ec2-user/www/abc.com; // page file</span><br><span class="line">    index index.html index.htm;      // index</span><br><span class="line">    ssl_certificate     cert/214292799730473.pem; // certificate name</span><br><span class="line">    ssl_certificate_key cert/214292799730473.key; // certificate name</span><br><span class="line">    ssl_session_timeout 5m;</span><br><span class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</span><br><span class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line">    location / &#123;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name bjubi.com; // your domain</span><br><span class="line">    rewrite ^(.*)$ https://$host$1 permanent; // turn http to https</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="start-nginx"><a href="#start-nginx" class="headerlink" title="start nginx"></a>start nginx</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// check config file</span><br><span class="line">sudo /usr/sbin/nginx -t</span><br><span class="line"></span><br><span class="line">// reload nginx</span><br><span class="line">sudo /usr/sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
-<p>some useful command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// start in manual</span><br><span class="line">sudo /usr/sbin/nginx -c /etc/nginx/nginx.conf</span><br><span class="line">sudo service nginx stop    // stop</span><br><span class="line">sudo service nginx start   // start</span><br><span class="line">sudo service nginx restart // restart</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://www.cnblogs.com/tianhei/p/7726505.html" target="_blank" rel="noopener">https://www.cnblogs.com/tianhei/p/7726505.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2231,7 +2273,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">201</span>
+                    <span class="site-state-item-count">203</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2698,6 +2740,8 @@
   
     
       
+        
+      
     
       
     
@@ -2719,6 +2763,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

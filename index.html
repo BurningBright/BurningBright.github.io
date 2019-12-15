@@ -320,6 +320,369 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/12/15/Deploy-php-in-docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/12/15/Deploy-php-in-docker/" class="post-title-link" itemprop="url">Deploy php in docker</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-12-15 18:12:04 / Modified: 19:43:18" itemprop="dateCreated datePublished" datetime="2019-12-15T18:12:04+08:00">2019-12-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Clone-project"><a href="#Clone-project" class="headerlink" title="Clone project"></a>Clone project</h2><p><code>git clone https://github.com/BurningBright/minishowcase</code><br><a href="https://github.com/BurningBright/minishowcase" target="_blank" rel="noopener">https://github.com/BurningBright/minishowcase</a></p>
+<h2 id="Pull-images"><a href="#Pull-images" class="headerlink" title="Pull images"></a>Pull images</h2><p><a href="https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6" target="_blank" rel="noopener">https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6</a><br>pick version you like in docker<br><code>docker pull php:5.6.40-fpm-alpine</code></p>
+<p>alpine release is not popular as the ‘apk’ command install software is not as usual as <code>debian</code> <code>fedora</code>.<br>so it’s better to pull other version php image like<br><code>docker pull php:5.6.40-fpm-jessie</code></p>
+<p>pull stable version nginx version image.<br><code>docker pull nginx:stable</code></p>
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><h3 id="Copy-nginx-configuration"><a href="#Copy-nginx-configuration" class="headerlink" title="Copy nginx configuration"></a>Copy nginx configuration</h3><p>start nginx container first<br><code>docker run --name nginx-tmp -d nginx:stable</code><br>copy default.conf<br><code>docker cp nginx-tmp:/etc/nginx/confi.d nginx-tmp/</code><br>delete tmp container<br><code>docker rm nginx-tmp</code></p>
+<h3 id="Start-php-container"><a href="#Start-php-container" class="headerlink" title="Start php container"></a>Start php container</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run --name php-mini \</span><br><span class="line">-p 9000:9000 -v /Users/root/minishowcase:/var/www \</span><br><span class="line">-d php:5.6.40-fpm-alpine</span><br></pre></td></tr></table></figure>
+<p>run image mapping container port 9000 to host port 9000, mapping host project file to container.</p>
+<p>check php inner ip<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect --format=&apos;&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;&apos; php-mini</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://www.runoob.com/docker/docker-install-php.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-install-php.html</a></p>
+<h3 id="Start-nginx-container"><a href="#Start-nginx-container" class="headerlink" title="Start nginx container"></a>Start nginx container</h3><p>modify <code>conf.d/default.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">user  nginx;</span><br><span class="line">worker_processes  1;</span><br><span class="line">worker_rlimit_nofile 65535;</span><br><span class="line">error_log  /var/log/nginx/error.log warn;</span><br><span class="line">pid        /var/run/nginx.pid;</span><br><span class="line">events &#123;</span><br><span class="line">    use epoll;</span><br><span class="line">    worker_connections  65535;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       /etc/nginx/mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line">    access_log  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line">    server_tokens off;</span><br><span class="line">    gzip on;</span><br><span class="line">    gzip_disable &quot;msie6&quot;;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen    80;       </span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        root   /var/www;</span><br><span class="line">        index  index.html index.htm index.php;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            try_files $uri $uri/ /index.php?$args;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location ~ \.php$ &#123;</span><br><span class="line">            fastcgi_pass   172.17.0.2:9000;</span><br><span class="line">            fastcgi_index  index.php;</span><br><span class="line">            fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;</span><br><span class="line">            fastcgi_param SCRIPT_NAME $fastcgi_script_name;</span><br><span class="line">            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">            fastcgi_param PATH_INFO $fastcgi_path_info;</span><br><span class="line">            fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;</span><br><span class="line">            include        fastcgi_params;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location ~ /\.ht &#123;</span><br><span class="line">            deny  all;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://www.jianshu.com/p/5edfbb2af389" target="_blank" rel="noopener">https://www.jianshu.com/p/5edfbb2af389</a></p>
+<p><code>fastcgi_pass   172.17.0.2:9000;</code> this line is php’s inner address.</p>
+<p>start nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx-mini \</span><br><span class="line">-p 80:80 -v /Users/root/minishowcase:/var/www \</span><br><span class="line">-v /Users/root/nginx-mini/conf.d:/etc/nginx/conf.d \</span><br><span class="line">-d nginx:stable</span><br></pre></td></tr></table></figure></p>
+<h3 id="check-php-status"><a href="#check-php-status" class="headerlink" title="check php status"></a>check php status</h3><p>add <code>info.php</code> check php status <a href="http://127.0.0.1/info.php" target="_blank" rel="noopener">http://127.0.0.1/info.php</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">echo</span> phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Install-php-extenstion"><a href="#Install-php-extenstion" class="headerlink" title="Install php extenstion"></a>Install php extenstion</h2><p>minishowcase needs php ‘gd’ extenstion, it be used to make thumbnail picture.</p>
+<p>cause i use apline version php image, it wasted alot of time to insatll.</p>
+<p>firt <code>apt</code> <code>yum</code> is not command to install dependency in apline, <code>apk</code> is the key.</p>
+<p><a href="https://blog.csdn.net/flame1980/article/details/98851803" target="_blank" rel="noopener">https://blog.csdn.net/flame1980/article/details/98851803</a></p>
+<p>get into php container<br><code>docker exec -it php-mini bash</code></p>
+<p>install gd and it’s dependencies<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">apk upgrade --update &amp;&amp; apk add \</span><br><span class="line">  coreutils \</span><br><span class="line">  freetype-dev \</span><br><span class="line">  libjpeg-turbo-dev \</span><br><span class="line">  libltdl \</span><br><span class="line">  libmcrypt-dev \</span><br><span class="line">  libpng-dev \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) iconv mcrypt \</span><br><span class="line">&amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br></pre></td></tr></table></figure></p>
+<p>it’s better to write a <code>Dockerfile</code> to build a integrated image</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM php:5.6.40-fpm-alpine</span><br><span class="line">RUN docker-php-ext-install mysqli</span><br><span class="line">RUN apk upgrade --update &amp;&amp; apk add \</span><br><span class="line">  coreutils \</span><br><span class="line">  freetype-dev \</span><br><span class="line">  libjpeg-turbo-dev \</span><br><span class="line">  libltdl \</span><br><span class="line">  libmcrypt-dev \</span><br><span class="line">  libpng-dev \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) iconv mcrypt \</span><br><span class="line">&amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br></pre></td></tr></table></figure>
+<p>check gd status<br>add <code>gd.php</code> to checkout gd extenstion.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">  if(extension_loaded(&apos;gd&apos;)) &#123;</span><br><span class="line">    echo &apos;gd ready&apos;;</span><br><span class="line">    foreach(gd_info() as $cate=&gt;$value)</span><br><span class="line">      echo &quot;$cate: $value&quot;;</span><br><span class="line">  &#125; else</span><br><span class="line">    echo &apos;no gd&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://blog.csdn.net/wt1286331074/article/details/91425518" target="_blank" rel="noopener">https://blog.csdn.net/wt1286331074/article/details/91425518</a><br><a href="https://www.jb51.cc/php/139142.html" target="_blank" rel="noopener">https://www.jb51.cc/php/139142.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/12/02/KafkaListener-annotation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/12/02/KafkaListener-annotation/" class="post-title-link" itemprop="url">KafkaListener annotation</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-12-02 13:54:08" itemprop="dateCreated datePublished" datetime="2019-12-02T13:54:08+08:00">2019-12-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-12-15 18:11:31" itemprop="dateModified" datetime="2019-12-15T18:11:31+08:00">2019-12-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Listener-container-factory"><a href="#Listener-container-factory" class="headerlink" title="Listener container factory"></a>Listener container factory</h2><h3 id="Define-a-config-loader-function-fist"><a href="#Define-a-config-loader-function-fist" class="headerlink" title="Define a config loader function fist"></a>Define a config loader function fist</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, Object&gt; <span class="title">consumerConfigs</span><span class="params">(String groupId)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, Object&gt; consumerConfig = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    initKafkaClientConfiguration(consumerConfig);</span><br><span class="line">    consumerConfig.put(<span class="string">"group.id"</span>, groupId);</span><br><span class="line">    consumerConfig.put(..., ...);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> consumerConfig;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-factory-bean"><a href="#Create-factory-bean" class="headerlink" title="Create factory bean"></a>Create factory bean</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-one"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-two"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Point-factory-in-KafkaListener"><a href="#Point-factory-in-KafkaListener" class="headerlink" title="Point factory in @KafkaListener"></a>Point factory in <code>@KafkaListener</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@KafkaListener(topics = &quot;Topic-1&quot; , containerFactory = &quot;kafkaListenerContainerFactoryOne&quot;)</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">@KafkaListener(topics = &quot;Topic-2&quot; , containerFactory = &quot;kafkaListenerContainerFactoryTwo&quot;)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="Get-header-body-by-annotation"><a href="#Get-header-body-by-annotation" class="headerlink" title="Get header body by annotation"></a>Get header body by annotation</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(id = <span class="string">"anno"</span>, topics = <span class="string">"topic-3"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">annoListener</span><span class="params">(@Payload String data,</span></span></span><br><span class="line"><span class="function"><span class="params">                         @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY)</span> Integer key,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_PARTITION_ID)</span> <span class="keyword">int</span> partition,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TOPIC)</span> String topic,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TIMESTAMP)</span> <span class="keyword">long</span> ts) </span>&#123;</span><br><span class="line">    log.info(<span class="string">"topic.quick.anno receive : \n"</span>+</span><br><span class="line">        <span class="string">"data : "</span>        + data +      <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"key : "</span>         + key +       <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"partitionId : "</span> + partition + <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"topic : "</span>       + topic +     <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"timestamp : "</span>   + ts +        <span class="string">"\n"</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/my_momo_csdn/article/details/89366205" target="_blank" rel="noopener">https://blog.csdn.net/my_momo_csdn/article/details/89366205</a><br><a href="https://www.jianshu.com/p/a64defb44a23" target="_blank" rel="noopener">https://www.jianshu.com/p/a64defb44a23</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/11/07/Introducing-Serverless/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1930,376 +2293,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/27/proxy-in-linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/27/proxy-in-linux/" class="post-title-link" itemprop="url">proxy in linux</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-27 23:49:27" itemprop="dateCreated datePublished" datetime="2019-08-27T23:49:27+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h2><p>in file <code>/etc/profile</code> set<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export proxy=&quot;http://user:pwd1@192.168.3.1:8848&quot;</span><br><span class="line">export http_proxy=$proxy</span><br><span class="line">export https_proxy=$proxy</span><br><span class="line">export ftp_proxy=$proxy</span><br><span class="line">export no_proxy=&quot;localhost, 127.0.0.1, ::1&quot;</span><br></pre></td></tr></table></figure></p>
-<p>unset command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">unset http_proxy</span><br><span class="line">unset https_proxy</span><br><span class="line">unset ftp_proxy</span><br><span class="line">unset no_proxy</span><br></pre></td></tr></table></figure></p>
-<p>load variables<br><code>source /etc/profile</code></p>
-<h2 id="yum-proxy"><a href="#yum-proxy" class="headerlink" title="yum proxy"></a>yum proxy</h2><p>in file <code>/etc/yum.conf</code> set</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy=http://192.168.3.1:8848</span><br><span class="line">proxy_username=user</span><br><span class="line">proxy_password=pwd</span><br></pre></td></tr></table></figure>
-<h2 id="npm-proxy"><a href="#npm-proxy" class="headerlink" title="npm proxy"></a>npm proxy</h2><p>set command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config set proxy http://user:pwd@192.168.3.1:8848</span><br><span class="line">npm confit set https-proxy http://user:pwd@192.168.3.1:8848</span><br></pre></td></tr></table></figure></p>
-<p>unset command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config delete proxy</span><br><span class="line">npm config delete https-proxy</span><br></pre></td></tr></table></figure></p>
-<p>npm setting<br><a href="https://segmentfault.com/a/1190000002589144" target="_blank" rel="noopener">https://segmentfault.com/a/1190000002589144</a></p>
-<h2 id="maven-proxy"><a href="#maven-proxy" class="headerlink" title="maven proxy"></a>maven proxy</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;proxy&gt;</span><br><span class="line">    &lt;id&gt;optional&lt;/id&gt;</span><br><span class="line">    &lt;active&gt;true&lt;/active&gt;</span><br><span class="line">    &lt;protocol&gt;http&lt;/protocol&gt;</span><br><span class="line">    &lt;username&gt;user&lt;/username&gt;</span><br><span class="line">    &lt;password&gt;pwd&lt;/password&gt;</span><br><span class="line">    &lt;host&gt;192.168.3.1&lt;/host&gt;</span><br><span class="line">    &lt;port&gt;8080&lt;/port&gt;</span><br><span class="line">    &lt;nonProxyHosts&gt;localhost|127.0.0.1&lt;/nonProxyHosts&gt;</span><br><span class="line">  &lt;/proxy&gt;</span><br><span class="line">&lt;/proxies&gt;</span><br></pre></td></tr></table></figure>
-<p><a href="https://www.cnblogs.com/EasonJim/p/9826681.html" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/9826681.html</a><br><a href="https://blog.csdn.net/yanzi1225627/article/details/80247758" target="_blank" rel="noopener">https://blog.csdn.net/yanzi1225627/article/details/80247758</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/23/Hello-jenkins/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/23/Hello-jenkins/" class="post-title-link" itemprop="url">Hello jenkins</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-23 11:27:14" itemprop="dateCreated datePublished" datetime="2019-08-23T11:27:14+08:00">2019-08-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="install-jenkins"><a href="#install-jenkins" class="headerlink" title="install jenkins"></a>install jenkins</h2><p>Download jenkins.war, tomcat 8<br>if install suggested plugins report error like this<br>“No such plugin: cloudbees-folder”</p>
-<p>install <code>cloudbees-folder.hpi</code> first</p>
-<h2 id="install-plugins"><a href="#install-plugins" class="headerlink" title="install plugins"></a>install plugins</h2><p>install <code>Maven Integration</code>, if error then in plugin management<br>upload plugin package manually.</p>
-<h2 id="proxy-server"><a href="#proxy-server" class="headerlink" title="proxy server"></a>proxy server</h2><p>if jenkins server can’t visit internet then use proxy, and have a try again.<br><a href="https://github.com/adamfisk/LittleProxy" target="_blank" rel="noopener">https://github.com/adamfisk/LittleProxy</a><br>username:user1<br>password:user2</p>
-<h2 id="maven-setting"><a href="#maven-setting" class="headerlink" title="maven setting"></a>maven setting</h2><p>maven can set proxy too, modify <code>setting.xml</code>, add proxy setting<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;proxy&gt;</span><br><span class="line">    &lt;id&gt;optional&lt;/id&gt;</span><br><span class="line">    &lt;active&gt;true&lt;/active&gt;</span><br><span class="line">    &lt;protocol&gt;http&lt;/protocol&gt;</span><br><span class="line">    &lt;username&gt;user1&lt;/username&gt;</span><br><span class="line">    &lt;password&gt;user2&lt;/password&gt;</span><br><span class="line">    &lt;host&gt;192.168.1.2&lt;/host&gt;</span><br><span class="line">    &lt;port&gt;8080&lt;/port&gt;</span><br><span class="line">    &lt;nonProxyHosts&gt;localhost|127.0.0.1&lt;/nonProxyHosts&gt;</span><br><span class="line">  &lt;/proxy&gt;</span><br><span class="line">&lt;/proxies&gt;</span><br></pre></td></tr></table></figure></p>
-<h2 id="git-setting"><a href="#git-setting" class="headerlink" title="git setting"></a>git setting</h2><p>save git account in linux server<br><code>vim .git-credentials</code><br>add <code>http(s)://{username}:{password}@serverAddress</code><br>add setting<br><code>git config --global credential.helper store</code></p>
-<h2 id="prevent-preocess-be-killed"><a href="#prevent-preocess-be-killed" class="headerlink" title="prevent preocess be killed"></a>prevent preocess be killed</h2><ol>
-<li>add command <code>BUILD_ID=DONTKILLME</code> in every shell input</li>
-<li>add param <code>-Dhudson.util.ProcessTree.disable=true</code> in java command</li>
-<li>add setting <code>JAVA_OPTS=&quot;$JAVA_OPTS -Dhudson.util.ProcessTree.disable=true&quot;</code> in <code>catalina.sh</code></li>
-</ol>
-<h3 id="install-jenkins-1"><a href="#install-jenkins-1" class="headerlink" title="install jenkins"></a>install jenkins</h3><p><a href="https://blog.csdn.net/utopiaofartoria/article/details/79612754" target="_blank" rel="noopener">https://blog.csdn.net/utopiaofartoria/article/details/79612754</a><br><a href="https://blog.csdn.net/ming19951224/article/details/80958761" target="_blank" rel="noopener">https://blog.csdn.net/ming19951224/article/details/80958761</a></p>
-<h3 id="jenkins-experience"><a href="#jenkins-experience" class="headerlink" title="jenkins experience"></a>jenkins experience</h3><p><a href="https://www.jianshu.com/p/06d2c7fda227" target="_blank" rel="noopener">https://www.jianshu.com/p/06d2c7fda227</a></p>
-<h3 id="setting-of-tools"><a href="#setting-of-tools" class="headerlink" title="setting of tools"></a>setting of tools</h3><p><a href="https://www.cnblogs.com/wkrbky/p/6351243.html" target="_blank" rel="noopener">https://www.cnblogs.com/wkrbky/p/6351243.html</a><br><a href="https://www.cnblogs.com/zhuiluoyu/p/7723949.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhuiluoyu/p/7723949.html</a></p>
-<h3 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h3><p><a href="https://www.cnblogs.com/EasonJim/p/9826681.html" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/9826681.html</a></p>
-<h2 id="resources"><a href="#resources" class="headerlink" title="resources"></a>resources</h2><p><a href="http://ftp.icm.edu.pl/packages/jenkins/plugins" target="_blank" rel="noopener">http://ftp.icm.edu.pl/packages/jenkins/plugins</a><br><a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2346,7 +2339,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">201</span>
+                    <span class="site-state-item-count">203</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

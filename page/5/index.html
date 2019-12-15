@@ -320,6 +320,390 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/10/14/Hello-solr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/10/14/Hello-solr/" class="post-title-link" itemprop="url">Hello solr</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-14 20:35:35" itemprop="dateCreated datePublished" datetime="2018-10-14T20:35:35+08:00">2018-10-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2018/10/14/Hello-solr/20180410191304255.png" alt="20180410191304255.png"></p>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><ol>
+<li>install jdk1.8, source profile</li>
+<li>install solr7.5, tar -zxvf package</li>
+<li>try to start solr <code>./bin/solr start</code><br> if using root user try <code>./bin/solr start -force</code></li>
+</ol>
+<p>then ip + port can used to visit solr’s administration user interface.</p>
+<h2 id="Add-core"><a href="#Add-core" class="headerlink" title="Add core"></a>Add core</h2><p>in administration user interface create a core will warning create error.</p>
+<p>copy official config file into new core, create core in interface again.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/solr-7.5.0/server/solr</span><br><span class="line">mkdir demo</span><br><span class="line">cp -r configsets/_default/conf/ demo</span><br></pre></td></tr></table></figure></p>
+<p>or use command create:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/solr create -c demo</span><br></pre></td></tr></table></figure></p>
+<h2 id="Data-import"><a href="#Data-import" class="headerlink" title="Data import"></a>Data import</h2><h3 id="db-configuration"><a href="#db-configuration" class="headerlink" title="db configuration"></a>db configuration</h3><p>Create file <code>data.xml</code> in <code>solr-7.5.0/server/solr/demo/conf</code><br><code>column</code> in field represent filed in DB<br><code>name</code> in field represent unique filed in solr<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataConfig</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">dataSource</span> <span class="attr">type</span>=<span class="string">"JdbcDataSource"</span></span></span><br><span class="line"><span class="tag">             <span class="attr">driver</span>=<span class="string">"com.mysql.jdbc.Driver"</span></span></span><br><span class="line"><span class="tag">             <span class="attr">url</span>=<span class="string">"jdbc:mysql://127.0.0.1:3306/demo"</span></span></span><br><span class="line"><span class="tag">             <span class="attr">user</span>=<span class="string">"demo"</span></span></span><br><span class="line"><span class="tag">             <span class="attr">password</span>=<span class="string">"demo"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">document</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">entity</span> <span class="attr">name</span>=<span class="string">"demo"</span> <span class="attr">query</span>=<span class="string">"select * from demo"</span> &gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">field</span> <span class="attr">column</span>=<span class="string">"Name"</span> <span class="attr">name</span>=<span class="string">"Name"</span>/&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">field</span> <span class="attr">column</span>=<span class="string">"Age"</span> <span class="attr">name</span>=<span class="string">"Age"</span>/&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">field</span> <span class="attr">column</span>=<span class="string">"Price"</span> <span class="attr">name</span>=<span class="string">"Price"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">entity</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">document</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dataConfig</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="modfiy-solrconfig"><a href="#modfiy-solrconfig" class="headerlink" title="modfiy solrconfig"></a>modfiy solrconfig</h3><p>modify <code>solrconfig.xml</code> add datasource option<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">requestHandler</span> <span class="attr">name</span>=<span class="string">"/dataimport"</span> <span class="attr">class</span>=<span class="string">"solr.DataImportHandler"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">lst</span> <span class="attr">name</span>=<span class="string">"defaults"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">str</span> <span class="attr">name</span>=<span class="string">"config"</span>&gt;</span>data.xml<span class="tag">&lt;/<span class="name">str</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">lst</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">requestHandler</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="modify-managed-schema"><a href="#modify-managed-schema" class="headerlink" title="modify managed-schema"></a>modify managed-schema</h3><p>modify <code>managed-schema</code> add data field in searching<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">"Name"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="attr">indexed</span>=<span class="string">"true"</span> <span class="attr">stored</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">"Age"</span> <span class="attr">type</span>=<span class="string">"pint"</span> <span class="attr">indexed</span>=<span class="string">"false"</span> <span class="attr">stored</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">"Price"</span> <span class="attr">type</span>=<span class="string">"pdouble"</span> <span class="attr">indexed</span>=<span class="string">"false"</span> <span class="attr">stored</span>=<span class="string">"true"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="add-jar"><a href="#add-jar" class="headerlink" title="add jar"></a>add jar</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/solr-7.5.0</span><br><span class="line">cp -r dist/solr-dataimporthandler-* server/solr-webapp/webapp/WEB-INF/lib/</span><br><span class="line">cd server/solr-webapp/webapp/WEB-INF/lib/</span><br><span class="line">curl -O http://central.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar</span><br></pre></td></tr></table></figure>
+<p>restart solr <code>./bin/solr restart -force</code><br>in admin interface import data</p>
+<h2 id="chinese-word-segmentation"><a href="#chinese-word-segmentation" class="headerlink" title="chinese word segmentation"></a>chinese word segmentation</h2><p><a href="https://search.maven.org/search?q=g:com.github.magese" target="_blank" rel="noopener">https://search.maven.org/search?q=g:com.github.magese</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://search.maven.org/remotecontent?filepath=com/github/magese/ik-analyzer/7.5.0/ik-analyzer-7.5.0.jar</span><br><span class="line">cd /usr/solr-7.5.0/server/solr/demo/conf</span><br></pre></td></tr></table></figure></p>
+<p>modify <code>managed-schema</code> again<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">+++++++++++++</span><br><span class="line"><span class="tag">&lt;<span class="name">fieldType</span> <span class="attr">name</span>=<span class="string">"text_ik"</span> <span class="attr">class</span>=<span class="string">"solr.TextField"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">analyzer</span> <span class="attr">type</span>=<span class="string">"index"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tokenizer</span> <span class="attr">class</span>=<span class="string">"org.wltea.analyzer.lucene.IKTokenizerFactory"</span> <span class="attr">useSmart</span>=<span class="string">"false"</span> <span class="attr">conf</span>=<span class="string">"ik.conf"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter</span> <span class="attr">class</span>=<span class="string">"solr.LowerCaseFilterFactory"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">analyzer</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">analyzer</span> <span class="attr">type</span>=<span class="string">"query"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">tokenizer</span> <span class="attr">class</span>=<span class="string">"org.wltea.analyzer.lucene.IKTokenizerFactory"</span> <span class="attr">useSmart</span>=<span class="string">"true"</span> <span class="attr">conf</span>=<span class="string">"ik.conf"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">filter</span> <span class="attr">class</span>=<span class="string">"solr.LowerCaseFilterFactory"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">analyzer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">fieldType</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">"Name"</span> <span class="attr">type</span>=<span class="string">"text_ik"</span> <span class="attr">indexed</span>=<span class="string">"true"</span> <span class="attr">stored</span>=<span class="string">"true"</span> <span class="attr">multiValued</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">+++++++++++++</span><br><span class="line"></span><br><span class="line">-------------</span><br><span class="line"><span class="tag">&lt;<span class="name">field</span> <span class="attr">name</span>=<span class="string">"Name"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="attr">indexed</span>=<span class="string">"true"</span> <span class="attr">stored</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">-------------</span><br></pre></td></tr></table></figure></p>
+<p>restart solr , then name field can be splited.</p>
+<h2 id="Delete-data"><a href="#Delete-data" class="headerlink" title="Delete data"></a>Delete data</h2><h3 id="delete-in-interface"><a href="#delete-in-interface" class="headerlink" title="delete in interface"></a>delete in interface</h3><p>In admin interface core’s document, use xml document type<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">delete</span>&gt;</span><span class="tag">&lt;<span class="name">query</span>&gt;</span>id:1<span class="tag">&lt;/<span class="name">query</span>&gt;</span><span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">delete</span>&gt;</span><span class="tag">&lt;<span class="name">query</span>&gt;</span>*:*<span class="tag">&lt;/<span class="name">query</span>&gt;</span><span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">commit</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="delete-in-get"><a href="#delete-in-get" class="headerlink" title="delete in get"></a>delete in get</h3><p><a href="http://localhost:8080/solr/update/?stream.body=" target="_blank" rel="noopener">http://localhost:8080/solr/update/?stream.body=</a><delete><id>1</id></delete>&amp;stream.contentType=text/xml;charset=utf-8&amp;commit=true<br><a href="http://localhost:8080/solr/update/?stream.body=" target="_blank" rel="noopener">http://localhost:8080/solr/update/?stream.body=</a><delete><query>Name:Turbo</query></delete>&amp;stream.contentType=text/xml;charset=utf-8&amp;commit=true</p>
+<h3 id="delete-in-post"><a href="#delete-in-post" class="headerlink" title="delete in post"></a>delete in post</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl  http://localhost:8080/update --data-binary  &quot;&lt;delete&gt;&lt;query&gt;title:abc&lt;/query&gt;&lt;/delete&gt;&quot;  -H &apos;Content- type :text/xml; charset=utf-8&apos;</span><br><span class="line">curl  http://localhost:8080/update --data-binary  &quot;&lt;commit/&gt;&quot;  -H &apos;Content- type:text/xml; charset=utf-8&apos;</span><br></pre></td></tr></table></figure>
+<h2 id="Operation-in-java"><a href="#Operation-in-java" class="headerlink" title="Operation in java"></a>Operation in java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SolrUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String serverUrl = <span class="string">"http://localhost:8983/solr/articles"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Add</span><span class="params">(DemoDTO dto)</span> <span class="keyword">throws</span> IOException, SolrServerException </span>&#123;</span><br><span class="line">        HttpSolrClient client = <span class="keyword">new</span> HttpSolrClient(serverUrl);</span><br><span class="line">        SolrInputDocument document = <span class="keyword">new</span> SolrInputDocument();</span><br><span class="line">        client.addBean(dto);</span><br><span class="line">        client.commit();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;DemoDTO&gt; <span class="title">search</span><span class="params">(String keywords, Integer page, Integer rows)</span> <span class="keyword">throws</span> SolrServerException, IOException </span>&#123;</span><br><span class="line">        HttpSolrClient client = <span class="keyword">new</span> HttpSolrClient(serverUrl);</span><br><span class="line">        SolrQuery solrQuery = <span class="keyword">new</span> SolrQuery();</span><br><span class="line">        <span class="comment">// key words</span></span><br><span class="line">        solrQuery.set(<span class="string">"q"</span>, <span class="string">"title:"</span> + keywords);</span><br><span class="line">        <span class="comment">// setting page start from 0, rows is page's size</span></span><br><span class="line">        solrQuery.setStart((Math.max(page, <span class="number">1</span>) - <span class="number">1</span>) * rows);</span><br><span class="line">        solrQuery.setRows(rows);</span><br><span class="line"></span><br><span class="line">        QueryResponse queryResponse = client.query(solrQuery);</span><br><span class="line">        SolrDocumentList results = queryResponse.getResults();</span><br><span class="line">        <span class="keyword">long</span> numFound = results.getNumFound();</span><br><span class="line"></span><br><span class="line">        List&lt;DemoDTO&gt; dataDTOs = <span class="keyword">new</span> ArrayList&lt;DemoDTO&gt;();</span><br><span class="line">        <span class="keyword">for</span> (SolrDocument solrDocument : results) &#123;</span><br><span class="line">            DemoDTO dto = <span class="keyword">new</span> DemoDTO();</span><br><span class="line">            dto.setName(solrDocument.get(<span class="string">"Name"</span>).toString());</span><br><span class="line">            dto.setPrice(Double.valueOf(solrDocument.get(<span class="string">"Price"</span>).toString()));</span><br><span class="line">            dto.setAge(Integer.valueOf(solrDocument.get(<span class="string">"Age"</span>).toString()));</span><br><span class="line">            dataDTOs.add(dto);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// List&lt;DemoDTO&gt; dataDTOs=queryResponse.getBeans(DemoDTO.class);</span></span><br><span class="line">        <span class="comment">// System.out.println("sum:" + numFound);</span></span><br><span class="line">        <span class="keyword">return</span> dataDTOs;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">del</span><span class="params">()</span> <span class="keyword">throws</span> SolrServerException, IOException </span>&#123;</span><br><span class="line">        HttpSolrClient client = <span class="keyword">new</span> HttpSolrClient(serverUrl);</span><br><span class="line">        List&lt;String&gt; names = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line">        ids.add(<span class="string">"david"</span>);</span><br><span class="line">        ids.add(<span class="string">"pam"</span>);</span><br><span class="line">        ids.add(<span class="string">"margot"</span>);</span><br><span class="line">        client.deleteById(ids);</span><br><span class="line">        client.commit();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/bljbljbljbljblj/article/details/83023125" target="_blank" rel="noopener">https://blog.csdn.net/bljbljbljbljblj/article/details/83023125</a><br><a href="https://blog.csdn.net/yuanlaijike/article/details/79886025" target="_blank" rel="noopener">https://blog.csdn.net/yuanlaijike/article/details/79886025</a><br><a href="https://blog.csdn.net/m0_37595732/article/details/72830122" target="_blank" rel="noopener">https://blog.csdn.net/m0_37595732/article/details/72830122</a><br><a href="https://blog.csdn.net/long530439142/article/details/79353845" target="_blank" rel="noopener">https://blog.csdn.net/long530439142/article/details/79353845</a><br><a href="http://lucene.apache.org/solr/guide/7_5/query-screen.html" target="_blank" rel="noopener">http://lucene.apache.org/solr/guide/7_5/query-screen.html</a><br><a href="http://lucene.apache.org/solr/guide/7_5/the-standard-query-parser.html#the-standard-query-parser" target="_blank" rel="noopener">http://lucene.apache.org/solr/guide/7_5/the-standard-query-parser.html#the-standard-query-parser</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/10/05/RedisTemplate-pipline/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/10/05/RedisTemplate-pipline/" class="post-title-link" itemprop="url">RedisTemplate pipline</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-10-05 14:36:35" itemprop="dateCreated datePublished" datetime="2018-10-05T14:36:35+08:00">2018-10-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
+<p>when a job need to update alot redis k/v<br>use normal command loop is low efficiency plan<br>that cause tcp connection time-wait exceed several ten thousand.<br>so we use redis pipline operation merge command connection.</p>
+</blockquote>
+<h2 id="Use-RedisTemplate-read-obj"><a href="#Use-RedisTemplate-read-obj" class="headerlink" title="Use RedisTemplate read obj"></a>Use <code>RedisTemplate</code> read obj</h2><p>Set <code>User</code> class deserializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User.class);</span><br><span class="line">redisTemplate.setValueSerializer(userSerializer);</span><br></pre></td></tr></table></figure></p>
+<p>pip execute multi get command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; result = redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&lt;User&gt;&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Object obj: keys)</span><br><span class="line">            connection.get((RedisConstant.USER + obj).getBytes());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, redisTemplate.getValueSerializer());</span><br></pre></td></tr></table></figure></p>
+<h2 id="Use-RedisTemplate-write-obj"><a href="#Use-RedisTemplate-write-obj" class="headerlink" title="Use RedisTemplate write obj"></a>Use <code>RedisTemplate</code> write obj</h2><p>Same as above use <code>User</code> class serializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User.class);</span><br><span class="line">userSerializer.serialize(user);</span><br></pre></td></tr></table></figure></p>
+<p>pip execute multi set command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], <span class="keyword">byte</span>[]&gt; entry : map.entrySet())</span><br><span class="line">            connection.set(entry.getKey(), entry.getValue());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="Caution"><a href="#Caution" class="headerlink" title="Caution"></a>Caution</h2><ol>
+<li><code>connection</code> return is byte array, it need deserializer method.</li>
+<li><p><code>doInRedis</code> return must be null, the return value has been take over by <code>executePipelined</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (result != <span class="keyword">null</span>)</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> InvalidDataAccessApiUsageException(</span><br><span class="line">    <span class="string">"Callback cannot return a non-null value as it gets overwritten by the pipeline"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>don’t call <code>connection.closePipeline()</code>, it will return result and no deserialize.</p>
+</li>
+<li>Deserialize need deserializer object. like these<br><img src="/2018/10/05/RedisTemplate-pipline/QQ20181006095747.png" alt="QQ20181006095747.png"></li>
+</ol>
+<p><a href="https://blog.csdn.net/xiaoliu598906167/article/details/82218525" target="_blank" rel="noopener">https://blog.csdn.net/xiaoliu598906167/article/details/82218525</a><br><a href="https://blog.csdn.net/huilixiang/article/details/19484921" target="_blank" rel="noopener">https://blog.csdn.net/huilixiang/article/details/19484921</a><br><a href="https://blog.csdn.net/xiaolyuh123/article/details/78682200" target="_blank" rel="noopener">https://blog.csdn.net/xiaolyuh123/article/details/78682200</a><br><a href="https://my.oschina.net/yuyidi/blog/499951" target="_blank" rel="noopener">https://my.oschina.net/yuyidi/blog/499951</a><br><a href="https://www.cnblogs.com/EasonJim/p/7803067.html#autoid-2-6-0" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/7803067.html#autoid-2-6-0</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/09/24/Install-mysql-windows-5-7-23/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1780,365 +2164,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/15/Convert-picture-to-customized-size/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/15/Convert-picture-to-customized-size/" class="post-title-link" itemprop="url">Convert picture to customized size</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-06-15 10:04:55" itemprop="dateCreated datePublished" datetime="2018-06-15T10:04:55+08:00">2018-06-15</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Main-method"><a href="#Main-method" class="headerlink" title="Main method"></a>Main method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageConvert</span><span class="params">(InputStream inputStream, Integer limit)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (inputStream == <span class="keyword">null</span> || limit == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    BufferedImage inputImage = ImageIO.read(inputStream);</span><br><span class="line">    <span class="keyword">int</span> size = getImageSize(inputImage);</span><br><span class="line">    <span class="keyword">if</span> (size &lt;= <span class="number">0</span> || inputImage == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// loop reduce pixel</span></span><br><span class="line">    <span class="keyword">while</span> (size &gt; imgLimit) &#123;</span><br><span class="line">        <span class="comment">// calculate edge shrink propotion</span></span><br><span class="line">        <span class="comment">// minus .05 improve convert speed</span></span><br><span class="line">        <span class="keyword">double</span> rate = (<span class="keyword">double</span>)imgLimit/size - .<span class="number">05</span>;</span><br><span class="line">        <span class="comment">// if origin is 20 times than limit, rate may little than 0</span></span><br><span class="line">        <span class="comment">// set ten times smaller than origin as default</span></span><br><span class="line">        <span class="keyword">if</span> (rate &lt; <span class="number">0</span>) rate = .<span class="number">1</span>;</span><br><span class="line">        rate = Math.sqrt(rate);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> width = (<span class="keyword">int</span>)(inputImage.getWidth(<span class="keyword">null</span>) * rate);</span><br><span class="line">        <span class="keyword">int</span> height = (<span class="keyword">int</span>)(inputImage.getHeight(<span class="keyword">null</span>) * rate);</span><br><span class="line">        BufferedImage outputImage = imageCompress(inputImage, width, height);</span><br><span class="line">        inputImage = outputImage;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// recalculate</span></span><br><span class="line">        size = getImageSize(inputImage);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inputImage;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Assistant-method"><a href="#Assistant-method" class="headerlink" title="Assistant method"></a>Assistant method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getImageSize</span><span class="params">(BufferedImage img)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    ImageIO.write(img, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    <span class="keyword">int</span> size = byteOS.size();</span><br><span class="line">    byteOS.close();</span><br><span class="line">    <span class="keyword">return</span> size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageCompress</span><span class="params">(Image img, <span class="keyword">int</span> w, <span class="keyword">int</span> h)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    BufferedImage image = <span class="keyword">new</span> BufferedImage(w, h, BufferedImage.TYPE_INT_RGB );</span><br><span class="line">    <span class="comment">// redraw converted graph</span></span><br><span class="line">    image.getGraphics().drawImage(img, <span class="number">0</span>, <span class="number">0</span>, w, h, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">256</span>);</span><br><span class="line">    ImageIO.write(image, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    ByteArrayInputStream byteIS = <span class="keyword">new</span> ByteArrayInputStream(byteOS.toByteArray());</span><br><span class="line">    BufferedImage product = ImageIO.read(byteIS);</span><br><span class="line">    byteOS.close();</span><br><span class="line">    byteIS.close();</span><br><span class="line">    <span class="keyword">return</span> product;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>Use memory to loop picture may cause leak problem.<br>Use 3th part software maybe a better choice? like ffmpeg.</p>
-<p><a href="https://www.cnblogs.com/shoufengwei/p/8526105.html" target="_blank" rel="noopener">https://www.cnblogs.com/shoufengwei/p/8526105.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/12/Install-mysql-linux-5-7-22/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/06/12/Install-mysql-linux-5-7-22/" class="post-title-link" itemprop="url">Install mysql linux 5.7.22</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-06-12 14:53:48" itemprop="dateCreated datePublished" datetime="2018-06-12T14:53:48+08:00">2018-06-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Decompress-package"><a href="#Decompress-package" class="headerlink" title="Decompress package"></a>Decompress package</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local</span><br><span class="line">tar -xzvf mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz</span><br><span class="line">rm -f mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz</span><br><span class="line">mv mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz mysql</span><br></pre></td></tr></table></figure>
-<h3 id="Group-amp-User"><a href="#Group-amp-User" class="headerlink" title="Group &amp; User"></a>Group &amp; User</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># linux account</span><br><span class="line">groupadd mysql</span><br><span class="line">useradd -r -g mysql mysql</span><br><span class="line"></span><br><span class="line"># dataspace</span><br><span class="line">cd /usr/local/mysql</span><br><span class="line">mkdir data</span><br><span class="line"></span><br><span class="line"># privilege</span><br><span class="line">cd /usr/local</span><br><span class="line">chown -R mysql mysql/</span><br><span class="line">chgrp -R mysql mysql/</span><br></pre></td></tr></table></figure>
-<h3 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line"></span><br><span class="line">./mysqld --initialize</span><br><span class="line">--user=mysql</span><br><span class="line">--basedir=/usr/local/mysql/</span><br><span class="line">--datadir=/usr/local/mysql/data/</span><br><span class="line">--lc_messages_dir=/usr/local/mysql/share</span><br><span class="line">--lc_messages=en_US</span><br></pre></td></tr></table></figure>
-<p>remember the init root password</p>
-<h3 id="Setting"><a href="#Setting" class="headerlink" title="Setting"></a>Setting</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/my.cnf</span><br><span class="line"># modify</span><br><span class="line"></span><br><span class="line">basedir=/usr/local/mysql/</span><br><span class="line">datadir=/usr/local/mysql/data</span><br><span class="line">port=3306</span><br><span class="line">character-set-server=utf8</span><br><span class="line">explicit_defaults_for_timestamp=true</span><br><span class="line"></span><br><span class="line">#datadir=/var/lib/mysql</span><br><span class="line">#socket=/usr/local/mysql/data/mysql.sock</span><br><span class="line">user=mysql</span><br></pre></td></tr></table></figure>
-<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/support-files/</span><br><span class="line">cp mysql.server /etc/init.d/mysql</span><br><span class="line">vi /etc/init.d/mysql</span><br><span class="line"></span><br><span class="line"># add setting</span><br><span class="line">basedir=/usr/local/mysql/</span><br><span class="line">datadir=/usr/local/mysql/data/</span><br><span class="line"></span><br><span class="line">chmod +x /etc/init.d/mysql</span><br><span class="line">chkconfig --add mysql</span><br></pre></td></tr></table></figure>
-<h3 id="privilege"><a href="#privilege" class="headerlink" title="privilege"></a>privilege</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">./mysql -u root -p</span><br><span class="line">set password=password(&quot;root&quot;);</span><br><span class="line">grant all privileges on *.* to&apos;root&apos; @&apos;%&apos; identified by &apos;root&apos;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
-<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld: Can&apos;t create/write to file &apos;/tmp/ibgXpx9Y&apos; (Errcode: 13 - Permission denied)</span><br></pre></td></tr></table></figure>
-<p>if the /tmp dirctory have no permission:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 /tmp</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://blog.csdn.net/NB6063/article/details/80417319" target="_blank" rel="noopener">https://blog.csdn.net/NB6063/article/details/80417319</a><br><a href="https://blog.csdn.net/shaochenshuo/article/details/51375905" target="_blank" rel="noopener">https://blog.csdn.net/shaochenshuo/article/details/51375905</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2185,7 +2210,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">201</span>
+                    <span class="site-state-item-count">203</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
