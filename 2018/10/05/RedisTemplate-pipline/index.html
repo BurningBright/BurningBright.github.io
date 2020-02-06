@@ -15,7 +15,7 @@
 
 
 <html class="theme-next muse use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -441,9 +441,9 @@
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
 <p>when a job need to update alot redis k/v<br>use normal command loop is low efficiency plan<br>that cause tcp connection time-wait exceed several ten thousand.<br>so we use redis pipline operation merge command connection.</p>
 </blockquote>
-<h2 id="Use-RedisTemplate-read-obj"><a href="#Use-RedisTemplate-read-obj" class="headerlink" title="Use RedisTemplate read obj"></a>Use <code>RedisTemplate</code> read obj</h2><p>Set <code>User</code> class deserializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User.class);</span><br><span class="line">redisTemplate.setValueSerializer(userSerializer);</span><br></pre></td></tr></table></figure></p>
+<h2 id="Use-RedisTemplate-read-obj"><a href="#Use-RedisTemplate-read-obj" class="headerlink" title="Use RedisTemplate read obj"></a>Use <code>RedisTemplate</code> read obj</h2><p>Set <code>User</code> class deserializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">redisTemplate.setValueSerializer(userSerializer);</span><br></pre></td></tr></table></figure></p>
 <p>pip execute multi get command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; result = redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&lt;User&gt;&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Object obj: keys)</span><br><span class="line">            connection.get((RedisConstant.USER + obj).getBytes());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, redisTemplate.getValueSerializer());</span><br></pre></td></tr></table></figure></p>
-<h2 id="Use-RedisTemplate-write-obj"><a href="#Use-RedisTemplate-write-obj" class="headerlink" title="Use RedisTemplate write obj"></a>Use <code>RedisTemplate</code> write obj</h2><p>Same as above use <code>User</code> class serializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User.class);</span><br><span class="line">userSerializer.serialize(user);</span><br></pre></td></tr></table></figure></p>
+<h2 id="Use-RedisTemplate-write-obj"><a href="#Use-RedisTemplate-write-obj" class="headerlink" title="Use RedisTemplate write obj"></a>Use <code>RedisTemplate</code> write obj</h2><p>Same as above use <code>User</code> class serializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">userSerializer.serialize(user);</span><br></pre></td></tr></table></figure></p>
 <p>pip execute multi set command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], <span class="keyword">byte</span>[]&gt; entry : map.entrySet())</span><br><span class="line">            connection.set(entry.getKey(), entry.getValue());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
 <h2 id="Caution"><a href="#Caution" class="headerlink" title="Caution"></a>Caution</h2><ol>
 <li><code>connection</code> return is byte array, it need deserializer method.</li>
@@ -572,7 +572,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">203</span>
+                    <span class="site-state-item-count">205</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -794,7 +794,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">73</span>
+                      
+                    
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -910,7 +912,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -922,7 +924,7 @@
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
 
 
 

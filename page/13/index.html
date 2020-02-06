@@ -15,7 +15,7 @@
 
 
 <html class="theme-next muse use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -304,6 +304,375 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/15/Java-ClassLoader-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/15/Java-ClassLoader-1/" class="post-title-link" itemprop="url">Java ClassLoader 1</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-15 22:44:29" itemprop="dateCreated datePublished" datetime="2017-05-15T22:44:29+08:00">2017-05-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> Class&lt;?&gt; defineClass(String name, <span class="keyword">byte</span>[] b, <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) &#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> ClassLoader <span class="title">getParent</span><span class="params">()</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> URL <span class="title">getResource</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Enumeration&lt;URL&gt; <span class="title">getResources</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Most important method is <code>loadClass(arg)</code> ,<br>it accept a class’s <strong>full name</strong>, and return it’s instance.</p>
+</li>
+<li><p><code>defineClass(arg)</code> accept a byte array, turn it into instance.<br>Usually, it <strong>load a file</strong> from disk, then pass file byte into JVM.<br>Instantiate Class into a instance through JVM’s(<strong>native method</strong>) define to Class.</p>
+</li>
+<li><code>getResource()</code> and <code>getResources</code> search URL from repository.<br>They have agent mechanism as well as loadClass, like:<br><code>defineClass(getResource(name).getBytes())</code></li>
+</ul>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><p>Because Java <strong>late binding</strong> and <strong>explain</strong> character,<br>Classes’ will be load when it needed like<br>static method/ construct method or direct allocate in field.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">xxx</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    B b = <span class="keyword">new</span> B();</span><br><span class="line">    b.xxoo();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>They are same when <code>B</code> have default constructor.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">B b = <span class="keyword">new</span> B();</span><br><span class="line"></span><br><span class="line">B b = Class.forName(<span class="string">"B"</span>, <span class="keyword">false</span>,</span><br><span class="line">    A<span class="class">.<span class="keyword">class</span>.<span class="title">getClassLoader</span>()).<span class="title">newInstance</span>()</span>;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/14/How-to-close-port-in-windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/14/How-to-close-port-in-windows/" class="post-title-link" itemprop="url">How to close port in windows</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-14 22:51:52" itemprop="dateCreated datePublished" datetime="2017-05-14T22:51:52+08:00">2017-05-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Control-port-in-linux"><a href="#Control-port-in-linux" class="headerlink" title="Control port in linux"></a>Control port in linux</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -anp</span><br><span class="line"></span><br><span class="line"># close</span><br><span class="line">iptables -A INPUT -p tcp --drop 8080 -j DROP</span><br><span class="line">iptables -A OUTPUT -p tcp --dport 8080 -j DROP</span><br><span class="line"></span><br><span class="line"># open</span><br><span class="line">iptables -A INPUT -ptcp --dport 8080 -j ACCEPT</span><br></pre></td></tr></table></figure>
+<h3 id="Control-port-in-windows"><a href="#Control-port-in-windows" class="headerlink" title="Control port in windows"></a>Control port in windows</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -ano</span><br><span class="line"></span><br><span class="line"># find program name</span><br><span class="line">tasklist|findstr &quot;3624&quot;</span><br><span class="line"></span><br><span class="line"># kill it</span><br><span class="line">taskkill /f /t /im Dandelion.exe</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>open <code>control-panel -&gt; manage-tool</code> open <code>local safety policy</code><br>choose <code>Ip safety policy</code> to create a new ip policy.</p>
+</li>
+<li><p>remove <code>use add guide</code>, click <code>add new rule</code>, then add a new filter.</p>
+</li>
+<li><p>edit filter properties, src is <code>any ip address</code>, target is <code>my id address</code>.<br>in <code>protocol</code> tab, <code>protocol type</code> choose <code>TCP</code>, <code>to this port</code> input <code>135</code>.</p>
+</li>
+<li>repeat <code>UDP</code> port in [135, 139, 445]<br><code>TCP</code> port in [135, 137, 139, 445, 593, 1025, 2745, 3127, 6129, 3389]</li>
+<li>in new <code>rule</code> dialog, the <code>filter operation</code> choose <strong>forbidden</strong>.</li>
+<li>confirm new <code>rule</code>, in <code>ip policy</code> right click <code>rule</code> choose <code>dispatch</code>.</li>
+<li>restart computer.</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1011,7 +1380,7 @@
 <ol>
 <li>Create a function</li>
 </ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> <span class="keyword">REPLACE</span></span><br><span class="line"><span class="keyword">FUNCTION</span> FIND_IN_SET(piv_str1 varchar2, piv_str2 varchar2, p_sep varchar2 := <span class="string">','</span>)</span><br><span class="line"><span class="keyword">RETURN</span> <span class="built_in">NUMBER</span> <span class="keyword">IS</span></span><br><span class="line">  l_idx       <span class="built_in">number</span>:=<span class="number">0</span>;      <span class="comment">-- 用于计算piv_str2中分隔符的位置</span></span><br><span class="line">  str         varchar2(500);  <span class="comment">-- 根据分隔符截取的子字符串</span></span><br><span class="line">  piv_str     varchar2(500) := piv_str2; <span class="comment">-- 将piv_str2赋值给piv_str</span></span><br><span class="line">  res         number:=0;      <span class="comment">-- 返回结果</span></span><br><span class="line">  res_place   number:=0;      <span class="comment">-- 原字符串在目标字符串中的位置</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="comment">-- 如果piv_str中没有分割符，直接判断piv_str1和piv_str是否相等，相等 res_place=1</span></span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">instr</span>(piv_str, p_sep, <span class="number">1</span>) = <span class="number">0</span><span class="keyword">THEN</span></span><br><span class="line">   <span class="keyword">IF</span> piv_str = piv_str1 <span class="keyword">THEN</span></span><br><span class="line">      res_place:=<span class="number">1</span>;</span><br><span class="line">   <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">ELSE</span><br><span class="line"> <span class="comment">-- 循环按分隔符截取piv_str</span></span><br><span class="line">LOOP</span><br><span class="line">    l_idx := instr(piv_str,p_sep);</span><br><span class="line">    <span class="comment">--</span></span><br><span class="line">    res_place := res_place + 1;</span><br><span class="line">    <span class="comment">-- 当piv_str中还有分隔符时</span></span><br><span class="line">      IF l_idx &gt; 0THEN</span><br><span class="line">      <span class="comment">-- 截取第一个分隔符前的字段str</span></span><br><span class="line">         str:= substr(piv_str,1,l_idx-1);</span><br><span class="line">         <span class="comment">-- 判断 str 和piv_str1 是否相等，相等则结束循环判断</span></span><br><span class="line">         IF str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">           EXIT;</span><br><span class="line">         <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        piv_str := substr(piv_str,l_idx+length(p_sep));</span><br><span class="line">      ELSE</span><br><span class="line">      <span class="comment">-- 当截取后的piv_str 中不存在分割符时，判断piv_str和piv_str1是否相等，相等 res=res_path</span></span><br><span class="line">        IF piv_str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        <span class="comment">-- no matter what jump out</span></span><br><span class="line">        EXIT;</span><br><span class="line">      <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line"> <span class="comment">-- stoped</span></span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> res := res_place;</span><br><span class="line"> <span class="comment">-- return</span></span><br><span class="line"> RETURN res;</span><br><span class="line"><span class="keyword">END</span> FIND_IN_SET;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> <span class="keyword">REPLACE</span></span><br><span class="line"><span class="keyword">FUNCTION</span> FIND_IN_SET(piv_str1 <span class="built_in">varchar2</span>, piv_str2 <span class="built_in">varchar2</span>, p_sep <span class="built_in">varchar2</span> := <span class="string">','</span>)</span><br><span class="line"><span class="keyword">RETURN</span> <span class="built_in">NUMBER</span> <span class="keyword">IS</span></span><br><span class="line">  l_idx       <span class="built_in">number</span>:=<span class="number">0</span>;      <span class="comment">-- 用于计算piv_str2中分隔符的位置</span></span><br><span class="line">  str         varchar2(500);  <span class="comment">-- 根据分隔符截取的子字符串</span></span><br><span class="line">  piv_str     varchar2(500) := piv_str2; <span class="comment">-- 将piv_str2赋值给piv_str</span></span><br><span class="line">  res         number:=0;      <span class="comment">-- 返回结果</span></span><br><span class="line">  res_place   number:=0;      <span class="comment">-- 原字符串在目标字符串中的位置</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="comment">-- 如果piv_str中没有分割符，直接判断piv_str1和piv_str是否相等，相等 res_place=1</span></span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">instr</span>(piv_str, p_sep, <span class="number">1</span>) = <span class="number">0</span><span class="keyword">THEN</span></span><br><span class="line">   <span class="keyword">IF</span> piv_str = piv_str1 <span class="keyword">THEN</span></span><br><span class="line">      res_place:=<span class="number">1</span>;</span><br><span class="line">   <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">ELSE</span><br><span class="line"> <span class="comment">-- 循环按分隔符截取piv_str</span></span><br><span class="line">LOOP</span><br><span class="line">    l_idx := instr(piv_str,p_sep);</span><br><span class="line">    <span class="comment">--</span></span><br><span class="line">    res_place := res_place + 1;</span><br><span class="line">    <span class="comment">-- 当piv_str中还有分隔符时</span></span><br><span class="line">      IF l_idx &gt; 0THEN</span><br><span class="line">      <span class="comment">-- 截取第一个分隔符前的字段str</span></span><br><span class="line">         str:= substr(piv_str,1,l_idx-1);</span><br><span class="line">         <span class="comment">-- 判断 str 和piv_str1 是否相等，相等则结束循环判断</span></span><br><span class="line">         IF str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">           EXIT;</span><br><span class="line">         <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        piv_str := substr(piv_str,l_idx+length(p_sep));</span><br><span class="line">      ELSE</span><br><span class="line">      <span class="comment">-- 当截取后的piv_str 中不存在分割符时，判断piv_str和piv_str1是否相等，相等 res=res_path</span></span><br><span class="line">        IF piv_str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        <span class="comment">-- no matter what jump out</span></span><br><span class="line">        EXIT;</span><br><span class="line">      <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line"> <span class="comment">-- stoped</span></span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> res := res_place;</span><br><span class="line"> <span class="comment">-- return</span></span><br><span class="line"> RETURN res;</span><br><span class="line"><span class="keyword">END</span> FIND_IN_SET;</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1820,409 +2189,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/07/Difference-between-redis-and-memcached/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/07/Difference-between-redis-and-memcached/" class="post-title-link" itemprop="url">Difference between redis and memcached</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-07 20:59:01" itemprop="dateCreated datePublished" datetime="2017-05-07T20:59:01+08:00">2017-05-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="IO-Model"><a href="#IO-Model" class="headerlink" title="IO Model"></a>IO Model</h2><p>Memcached is <strong>multi-thread</strong>, not block reuse IO net model.<br>it has main listen thread main worker sub thread.<br>‘leader’ listened net connnect, dispatch to worker thread.<br>In network layer, memcached use libevent package event.<br>But this bring concurrency and lock problem, like <code>stats</code> command.</p>
-<p>Redis reuse <strong>single thread</strong> IO model, it’s self package a AeEvent event framework.<br>It implements <code>epoll</code> <code>kqueue</code> <code>select</code> event,<br>for simple IO operation, single thread can reach the top speed.<br>But for some calc operation, this affect global throughput alot.</p>
-<h2 id="Memory-manage"><a href="#Memory-manage" class="headerlink" title="Memory manage"></a>Memory manage</h2><p>Memcached use prepare way to manage memory.<br>In this way memory pool can avoid the cost in apply and release memory.</p>
-<p>Redis use real-time way to manage memory.</p>
-<h2 id="Data-consistency"><a href="#Data-consistency" class="headerlink" title="Data consistency"></a>Data consistency</h2><p>Memcached provide <code>cas</code> command, it can make sure data consistency.</p>
-<p>Redis has no <code>cas</code> command, but it provide transaction function.<br>It make sure series of commands’ <strong>atomicity</strong>, it wouldn’t be interrupted.</p>
-<h2 id="Storage-way"><a href="#Storage-way" class="headerlink" title="Storage way"></a>Storage way</h2><p>Memcached only support <code>key-value</code> storage,<br>not support enumerate / persistence/ copy and so on function.</p>
-<p>Redis support except <code>key-value</code> way, but <code>list</code> <code>set</code> <code>sorted</code> <code>set</code> <code>hash</code>.<br>In other hand, redis support data persistence, copy and so on function.</p>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><ol>
-<li><p>When data in-memory use Redis is better.</p>
-</li>
-<li><p>Redis in alot of place play a role in replace Memcached.</p>
-</li>
-<li><p>When need other data structure, Redis is better.</p>
-</li>
-<li><p>When storage data can’t be remove, Redis is better.</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/03/How-to-leak-memory-in-java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/03/How-to-leak-memory-in-java/" class="post-title-link" itemprop="url">How to leak memory in java</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-03 18:46:10" itemprop="dateCreated datePublished" datetime="2017-05-03T18:46:10+08:00">2017-05-03</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Create-some-ghost-memory"><a href="#Create-some-ghost-memory" class="headerlink" title="Create some ghost memory"></a>Create some ghost memory</h2><ol>
-<li>Create a long exist thread or thread pool.</li>
-<li>Load a class through <code>ClassLoader</code>.</li>
-<li>Distribute a <strong>big block memory</strong> to a static strong reference.<br>Then use <code>ThreadLocal</code> storage [thread reference?] or [object reference?]</li>
-<li>Thread clean selfdefine class or <strong>load this class’s loader</strong>.</li>
-<li>repeat these steps.</li>
-</ol>
-<h2 id="Some-mistake"><a href="#Some-mistake" class="headerlink" title="Some mistake"></a>Some mistake</h2><ol>
-<li><p>static reference hold container.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Holder &#123;</span><br><span class="line">    static final List list = new ArrayList(100);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>call long String’s <code>intern()</code> method</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String src = &quot;......&quot;;</span><br><span class="line">str.intern();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>forgot release resource</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    BufferedReader br = new BufferedReader(new FileReader(&quot;...&quot;));</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>forgot close door</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Connection conn = ConnectionFactory.getConnection();</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>GC can’t reach like <code>native</code> true memory</p>
-</li>
-<li><p>Web container in application context<br><code>getServletContext().setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> and not <strong>remove rubbish</strong>.</p>
-</li>
-<li><p>Web container in session context<br><code>session.setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> / not <strong>invalid</strong> and not <strong>remove rubbish</strong>.</p>
-</li>
-<li><p>Not right JVM option<br><strong>IBM JDK</strong> <code>noclassgc</code> option, it stop no use class’s garbage collect.</p>
-</li>
-</ol>
-<h2 id="Bean-not-define-properly"><a href="#Bean-not-define-properly" class="headerlink" title="Bean not define properly"></a>Bean not define properly</h2><p>If HashSet’s element object have <strong>no standard implement</strong><br>  or no implement of <code>equals()</code> and <code>hashCode()</code>.<br>Collection can’t <strong>ignore repeated element</strong>.</p>
-<h2 id="Thread-relevant"><a href="#Thread-relevant" class="headerlink" title="Thread relevant"></a>Thread relevant</h2><ol>
-<li>Create but not start thread.</li>
-<li><p>Thread inherited <code>ContextClassLoader</code> or <code>ccessControlContext</code>,<br>and use <code>ThreadGroup</code> or <code>InheritedThreadLocal</code>.<br>They affect <code>java.util.concurrent.Executor</code></p>
-</li>
-<li><p>Not use <code>ThreadLocal</code> <strong>as cache</strong> unless truly necessary.<br>If thread not in it’s life cycle, load <code>ContextClassLoader</code>, gc can’t reach it.</p>
-</li>
-<li><p>When <code>ThreadGroup</code> have no subThread<br>but have <code>sub ThreadGroup</code> call <code>ThreadGroup.destroy()</code>.<br>It lead to this <code>sub ThreadGroup</code> <strong>can’t remove</strong> from it’s <code>parent ThreadGroup</code>.</p>
-</li>
-<li><p>use WeakHashMap, value hold key reference..</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2269,7 +2235,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">203</span>
+                    <span class="site-state-item-count">205</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2491,7 +2457,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">73</span>
+                      
+                    
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2590,7 +2558,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2602,7 +2570,7 @@
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
 
 
 

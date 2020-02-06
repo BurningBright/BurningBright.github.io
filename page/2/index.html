@@ -15,7 +15,7 @@
 
 
 <html class="theme-next muse use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -304,6 +304,384 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/09/11/Learning-jackson/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/09/11/Learning-jackson/" class="post-title-link" itemprop="url">Learning jackson</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-09-11 19:41:49" itemprop="dateCreated datePublished" datetime="2019-09-11T19:41:49+08:00">2019-09-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="JS-number-type-accuracy-problem"><a href="#JS-number-type-accuracy-problem" class="headerlink" title="JS number type accuracy problem"></a>JS number type accuracy problem</h2><p>In js number type is 53 bit, if backgroud response 64 bit long type,<br>js will lose accuracy, number will not be the origin number.</p>
+<p>53 bit in decimal system length is about 16(2^52),but in java long type is about 20(2^64).<br>So backgroud return type in string is a better choice to void accuracy problem.</p>
+<h2 id="JsonSerializer-JsonDeserializer"><a href="#JsonSerializer-JsonDeserializer" class="headerlink" title="JsonSerializer JsonDeserializer"></a>JsonSerializer JsonDeserializer</h2><p>Avoiding JS loss of accuracy<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String text = (value == <span class="keyword">null</span> ? <span class="keyword">null</span> : String.valueOf(value));</span><br><span class="line">        <span class="keyword">if</span> (text != <span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeString(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Deserialize input model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">deserialize</span><span class="params">(JsonParser jsonParser, DeserializationContext deserializationContext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String value = jsonParser.getText();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : Long.parseLong(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">            log.error(<span class="string">"Deserialize long type error: &#123;&#125;"</span>, value);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Annotate the target property<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using = LongJsonSerializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">JsonDeserialize</span>(<span class="title">using</span> </span>= LongJsonDeserializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">private</span> <span class="title">Long</span> <span class="title">id</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Data-Binding-Commonly-used"><a href="#Data-Binding-Commonly-used" class="headerlink" title="Data Binding [Commonly used]"></a>Data Binding [Commonly used]</h2><h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--jackson--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Country</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String countryName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Province&gt; provinces;</span><br><span class="line">    <span class="keyword">private</span> String[] lakes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Province</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String provinceName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;City&gt; cities;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String cityName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Bean2JsonStr"><a href="#Bean2JsonStr" class="headerlink" title="Bean2JsonStr"></a>Bean2JsonStr</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Bean2JsonStr</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">// Convert the object to Json</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    <span class="comment">// set format</span></span><br><span class="line">    SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);</span><br><span class="line">    mapper.setDateFormat(dateFormat);</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    Province province = <span class="keyword">new</span> Province();</span><br><span class="line">    province.setId(<span class="number">1</span>);</span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;City&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line">    province.setCities(cities);</span><br><span class="line"></span><br><span class="line">    Country country = <span class="keyword">new</span> Country();</span><br><span class="line">    country.setCountryName(<span class="string">"China"</span>);</span><br><span class="line">    country.setId(<span class="number">1</span>);</span><br><span class="line">    country.setLakes(<span class="keyword">new</span> String[]&#123;<span class="string">"Qinghai Lake"</span>, <span class="string">"Poyang Lake"</span>, <span class="string">"Dongting Lake"</span>, <span class="string">"Taihu Lake"</span>&#125;);</span><br><span class="line">    List&lt;Province&gt; provinces = <span class="keyword">new</span> ArrayList&lt;Province&gt;();</span><br><span class="line">    provinces.add(province);</span><br><span class="line">    country.setProvinces(provinces);</span><br><span class="line">    <span class="comment">// set true make json readable, no need in produce environment</span></span><br><span class="line">    mapper.configure(SerializationFeature.INDENT_OUTPUT, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// ignore null property</span></span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    <span class="comment">// java property as key in default, customize key name in @JsonProperty annotation</span></span><br><span class="line">    mapper.writeValue(<span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>), country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;id&quot; : 1,</span><br><span class="line">  &quot;countryName&quot; : &quot;China&quot;,</span><br><span class="line">  &quot;provinces&quot; : [ &#123;</span><br><span class="line">    &quot;id&quot; : 1,</span><br><span class="line">    &quot;cities&quot; : [ &#123;</span><br><span class="line">      &quot;id&quot; : 1,</span><br><span class="line">      &quot;cityName&quot; : &quot;hangzhou&quot;</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      &quot;id&quot; : 2,</span><br><span class="line">      &quot;cityName&quot; : &quot;taizhou&quot;</span><br><span class="line">    &#125; ]</span><br><span class="line">  &#125; ],</span><br><span class="line">  &quot;lakes&quot; : [ &quot;Qinghai Lake&quot;, &quot;Poyang Lake&quot;, &quot;Dongting Lake&quot;, &quot;Taihu Lake&quot; ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JsonStr2Bean"><a href="#JsonStr2Bean" class="headerlink" title="JsonStr2Bean"></a>JsonStr2Bean</h3><p>string -&gt; object<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2Bean</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    File jsonFile = <span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>);</span><br><span class="line">    <span class="comment">// not interrupt unknown properties</span></span><br><span class="line">    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);</span><br><span class="line">    Country country = mapper.readValue(jsonFile, Country<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    log.info(country.getCountryName());</span><br><span class="line">    List&lt;Province&gt; provinces = country.getProvinces();</span><br><span class="line">    <span class="keyword">for</span> (Province province : provinces) &#123;</span><br><span class="line">        <span class="keyword">for</span> (City city : province.getCities()) &#123;</span><br><span class="line">            log.info(city.getId() + <span class="string">" "</span> + city.getCityName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:05.570 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:05.574 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:05.575 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
+<h3 id="JsonStr2List"><a href="#JsonStr2List" class="headerlink" title="JsonStr2List"></a>JsonStr2List</h3><p>string -&gt; list<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line">    List&lt;City&gt; list = mapper.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:15.610 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:15.612 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:15.613 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
+<h2 id="Streaming-API-high-performence"><a href="#Streaming-API-high-performence" class="headerlink" title="Streaming API [high performence]"></a>Streaming API [high performence]</h2><p>self define paser</p>
+<h3 id="JsonSerializer"><a href="#JsonSerializer" class="headerlink" title="JsonSerializer"></a>JsonSerializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">City</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(City city, JsonGenerator jsonGenerator, SerializerProvider arg2)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        jsonGenerator.writeStartObject();</span><br><span class="line">        <span class="keyword">if</span> ( city.getId()!=<span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeNumberField(<span class="string">"id"</span>, city.getId());</span><br><span class="line">        jsonGenerator.writeStringField(<span class="string">"cityName"</span>, city.getCityName());</span><br><span class="line">        jsonGenerator.writeEndObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JsonDeserializer"><a href="#JsonDeserializer" class="headerlink" title="JsonDeserializer"></a>JsonDeserializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">List</span>&lt;<span class="title">City</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;City&gt; <span class="title">deserialize</span><span class="params">(JsonParser parser, DeserializationContext deserializationcontext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        List&lt;City&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">// deserialize array, fist token must be JsonToken.START_ARRAY '['</span></span><br><span class="line">        <span class="keyword">if</span> (!JsonToken.START_ARRAY.equals(parser.getCurrentToken())) &#123;</span><br><span class="line">            log.info(parser.getCurrentToken().asString());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// until the EOF</span></span><br><span class="line">        <span class="keyword">while</span> (!parser.isClosed()) &#123;</span><br><span class="line">            <span class="comment">// loop until the target token</span></span><br><span class="line">            JsonToken token = parser.nextToken();</span><br><span class="line">            <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">// every element in array is object, so the nect JsonToken is JsonToken.START_OBJECT '&#123;'</span></span><br><span class="line">            <span class="keyword">if</span> (!JsonToken.START_OBJECT.equals(token)) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            City city = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.START_OBJECT.equals(token))</span><br><span class="line">                    city = <span class="keyword">new</span> City();</span><br><span class="line"></span><br><span class="line">                token = parser.nextToken();</span><br><span class="line">                <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (JsonToken.FIELD_NAME.equals(token)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"id"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setId(parser.getIntValue());</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"cityName"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setCityName(parser.getText());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.END_OBJECT.equals(token))</span><br><span class="line">                    list.add(city);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="StreamJsonStr2List"><a href="#StreamJsonStr2List" class="headerlink" title="StreamJsonStr2List"></a>StreamJsonStr2List</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">StreamJsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City();</span><br><span class="line">    city1.setCityName(<span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule <span class="keyword">module</span> = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    <span class="keyword">module</span>.addSerializer(City<span class="class">.<span class="keyword">class</span>, <span class="title">new</span> <span class="title">CityJsonSerializer</span>())</span>;</span><br><span class="line">    mapper.registerModule(<span class="keyword">module</span>);</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line"></span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper2 = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule module2 = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    module2.addDeserializer(List<span class="class">.<span class="keyword">class</span>, <span class="title">new</span> <span class="title">CityJsonDeserializer</span>())</span>;</span><br><span class="line">    mapper2.registerModule(module2);</span><br><span class="line">    List&lt;City&gt; list = mapper2.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10:15:03.874 [main] INFO jackson.JacksonDemoTester - [&#123;&quot;cityName&quot;:&quot;hangzhou&quot;&#125;,&#123;&quot;id&quot;:2,&quot;cityName&quot;:&quot;taizhou&quot;&#125;]</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:null cityName:hangzhou</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:2 cityName:taizhou</span><br></pre></td></tr></table></figure>
+<p>use annotation to avoid module in code<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using=CityJsonSerializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Tree-Model-flexible"><a href="#Tree-Model-flexible" class="headerlink" title="Tree Model [flexible]"></a>Tree Model [flexible]</h2><h3 id="TreeMode2Json"><a href="#TreeMode2Json" class="headerlink" title="TreeMode2Json"></a>TreeMode2Json</h3><p>no java class/ pojo, create model by tree model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeMode2Json</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create a factory provide node</span></span><br><span class="line">    JsonNodeFactory factory = <span class="keyword">new</span> JsonNodeFactory(<span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// create a factory to convert tree model to json</span></span><br><span class="line">    JsonFactory jsonFactory = <span class="keyword">new</span> JsonFactory();</span><br><span class="line">    <span class="comment">//create a json generator</span></span><br><span class="line">    JsonGenerator generator = jsonFactory.createGenerator(<span class="keyword">new</span> FileWriter(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>)));</span><br><span class="line"></span><br><span class="line">    ArrayNode cities = factory.arrayNode();</span><br><span class="line">    cities.add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"cityName"</span>, <span class="string">"hangzhou"</span>))</span><br><span class="line">            .add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">2</span>).put(<span class="string">"cityName"</span>, <span class="string">"taizhou"</span>));</span><br><span class="line"></span><br><span class="line">    ArrayNode provinces = factory.arrayNode();</span><br><span class="line">    ObjectNode province = factory.objectNode();</span><br><span class="line">    province.put(<span class="string">"cities"</span>, cities);</span><br><span class="line">    province.put(<span class="string">"provinceName"</span>, <span class="string">"zhejiang"</span>);</span><br><span class="line">    provinces.add(province);</span><br><span class="line"></span><br><span class="line">    ObjectNode country = factory.objectNode();</span><br><span class="line">    country.put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"countryName"</span>, <span class="string">"China"</span>);</span><br><span class="line">    country.put(<span class="string">"provinces"</span>, provinces);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// caution! in default mapper not set root node</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    mapper.writeTree(generator, country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="TreeModeReadJson"><a href="#TreeModeReadJson" class="headerlink" title="TreeModeReadJson"></a>TreeModeReadJson</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeModeReadJson</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    JsonNode node = mapper.readTree(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>));</span><br><span class="line">    <span class="comment">// show node type</span></span><br><span class="line">    log.info(<span class="string">"node JsonNodeType:"</span>+node.getNodeType());</span><br><span class="line">    log.info(<span class="string">"----------------sub node name----------------------"</span>);</span><br><span class="line">    Iterator&lt;String&gt; fieldNames = node.fieldNames();</span><br><span class="line">    <span class="keyword">while</span> (fieldNames.hasNext()) &#123;</span><br><span class="line">        String fieldName = fieldNames.next();</span><br><span class="line">        log.info(fieldName+<span class="string">" "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    log.info(<span class="string">"---------------------------------------------------"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">10:58:44.995 [main] INFO jackson.JacksonDemoTester - node JsonNodeType:OBJECT</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - ----------------sub node name----------------------</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - id</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - countryName</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - provinces</span><br><span class="line">10:58:45.000 [main] INFO jackson.JacksonDemoTester - ---------------------------------------------------</span><br></pre></td></tr></table></figure>
+<p><a href="https://www.cnblogs.com/lvgg/p/7475140.html" target="_blank" rel="noopener">https://www.cnblogs.com/lvgg/p/7475140.html</a><br><a href="https://www.cnblogs.com/williamjie/p/9242451.html" target="_blank" rel="noopener">https://www.cnblogs.com/williamjie/p/9242451.html</a><br><a href="https://blog.csdn.net/gjb724332682/article/details/51586701" target="_blank" rel="noopener">https://blog.csdn.net/gjb724332682/article/details/51586701</a><br><a href="https://blog.csdn.net/java_huashan/article/details/46375857" target="_blank" rel="noopener">https://blog.csdn.net/java_huashan/article/details/46375857</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/28/docker-in-centeros7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/28/docker-in-centeros7/" class="post-title-link" itemprop="url">docker in centeros7</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-28 18:39:27" itemprop="dateCreated datePublished" datetime="2019-08-28T18:39:27+08:00">2019-08-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>update yum package first<br><code>yum update</code></p>
+<p>remove old version<br><code>yum remove docker  docker-common docker-selinux docker-engine</code></p>
+<p>install dependency and <code>yum-config-manager</code> in <code>yum-utils</code></p>
+<p><code>yum install -y yum-utils device-mapper-persistent-data lvm2</code></p>
+<p>set yum repository<br><code>yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</code></p>
+<p>install<br><code>yum install docker-ce docker-ce-cli containerd.io</code></p>
+<h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p>Requires: container-selinux &gt;= 2.7.4</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br><span class="line">yum install epel-release</span><br><span class="line">yum install container-selinux</span><br></pre></td></tr></table></figure>
+<p><a href="https://docs.docker.com/install/linux/docker-ce/centos/" target="_blank" rel="noopener">https://docs.docker.com/install/linux/docker-ce/centos/</a><br><a href="https://blog.csdn.net/cai454692590/article/details/83479000" target="_blank" rel="noopener">https://blog.csdn.net/cai454692590/article/details/83479000</a><br><a href="https://blog.csdn.net/renzhixin1314/article/details/88604096" target="_blank" rel="noopener">https://blog.csdn.net/renzhixin1314/article/details/88604096</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1158,7 +1536,7 @@
         
           
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="phenomenon"><a href="#phenomenon" class="headerlink" title="phenomenon"></a>phenomenon</h2><p>Spring Cloud Feign component not support file upload between micron service.<br>it may throw exception like this:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feign.codec.EncodeException: class [Lorg.springframework.web.multipart.MultipartFile; is not a type supported by this encoder.</span><br><span class="line">    at feign.codec.Encoder$Default.encode(Encoder.java:<span class="number">90</span>) ~[feign-core-<span class="number">9.5</span>.1.jar:na]</span><br><span class="line">    at feign.form.FormEncoder.encode(FormEncoder.java:<span class="number">87</span>) ~[feign-form-<span class="number">3.3</span>.0.jar:<span class="number">3.3</span>.0]</span><br><span class="line">    at feign.form.spring.SpringFormEncoder.encode(SpringFormEncoder.java:<span class="number">64</span>) ~[feign-form-spring-<span class="number">3.3</span>.0.jar:<span class="number">3.3</span>.0]</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feign.codec.EncodeException: class [Lorg.springframework.web.multipart.MultipartFile; is not a type supported by this encoder.</span><br><span class="line">    at feign.codec.Encoder$Default.encode(Encoder.java:<span class="number">90</span>) ~[feign-core-<span class="number">9.5</span><span class="number">.1</span>.jar:na]</span><br><span class="line">    at feign.form.FormEncoder.encode(FormEncoder.java:<span class="number">87</span>) ~[feign-form-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br><span class="line">    at feign.form.spring.SpringFormEncoder.encode(SpringFormEncoder.java:<span class="number">64</span>) ~[feign-form-spring-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br></pre></td></tr></table></figure>
 <h2 id="add-dependencies"><a href="#add-dependencies" class="headerlink" title="add dependencies"></a>add dependencies</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><a href="https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring" target="_blank" rel="noopener">https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring</a></p>
 <p>be careful the <code>feign-form-spring</code> depend on <code>spring-web</code> it may have conflict with your project.<br>for example in  <code>spring-boot:2.0.5.RELEASE</code> <code>spring-cloud:Finchley.SR1</code> project has already import<br><code>spring-web:5.0.9.RELEASE</code>, if import <code>feign-form-spring:3.3.0</code> it will import <code>spring-web:4.3.18.RELEASE</code> too,<br>it cause spring bean creation exception.</p>
@@ -1172,10 +1550,10 @@
 <li><code>FeignSpringFormEncoder</code> support file array upload.</li>
 <li><code>SpringEncoder</code> avoid project make <code>RequestBody</code> encoding error.</li>
 </ul>
-<h3 id="add-form-encoder"><a href="#add-form-encoder" class="headerlink" title="add form encoder"></a>add form encoder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignSpringFormEncoder</span> <span class="keyword">extends</span> <span class="title">FormEncoder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with the default Feign's encoder as a delegate.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Default());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with specified delegate encoder.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delegate delegate encoder, if this encoder couldn't encode object.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">(Encoder delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">        MultipartFormContentProcessor processor = (MultipartFormContentProcessor) getContentProcessor(ContentType.MULTIPART);</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringSingleMultipartFileWriter());</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringManyMultipartFilesWriter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(Object object, Type bodyType, RequestTemplate template)</span> <span class="keyword">throws</span> EncodeException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bodyType.equals(MultipartFile.class)) &#123;</span><br><span class="line">            MultipartFile file = (MultipartFile) object;</span><br><span class="line">            Map data = Collections.singletonMap(file.getName(), object);</span><br><span class="line">            <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bodyType.equals(MultipartFile[].class)) &#123;</span><br><span class="line">            MultipartFile[] file = (MultipartFile[]) object;</span><br><span class="line">            <span class="keyword">if</span>(file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Map data = Collections.singletonMap(file.length == <span class="number">0</span> ? <span class="string">""</span> : file[<span class="number">0</span>].getName(), object);</span><br><span class="line">                <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.encode(object, bodyType, template);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="add-interface"><a href="#add-interface" class="headerlink" title="add interface:"></a>add interface:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"upload-example"</span>, configuration = MultipartSupportConfig.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CloudUploadService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiOperation</span>(<span class="string">"文件上传"</span>)</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line">    <span class="function">List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                    MultipartFile[] files,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    Long userId,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    String userName)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="add-form-encoder"><a href="#add-form-encoder" class="headerlink" title="add form encoder"></a>add form encoder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignSpringFormEncoder</span> <span class="keyword">extends</span> <span class="title">FormEncoder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with the default Feign's encoder as a delegate.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Default());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with specified delegate encoder.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delegate delegate encoder, if this encoder couldn't encode object.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">(Encoder delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">        MultipartFormContentProcessor processor = (MultipartFormContentProcessor) getContentProcessor(ContentType.MULTIPART);</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringSingleMultipartFileWriter());</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringManyMultipartFilesWriter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(Object object, Type bodyType, RequestTemplate template)</span> <span class="keyword">throws</span> EncodeException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bodyType.equals(MultipartFile<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile file = (MultipartFile) object;</span><br><span class="line">            Map data = Collections.singletonMap(file.getName(), object);</span><br><span class="line">            <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bodyType.equals(MultipartFile[]<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile[] file = (MultipartFile[]) object;</span><br><span class="line">            <span class="keyword">if</span>(file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Map data = Collections.singletonMap(file.length == <span class="number">0</span> ? <span class="string">""</span> : file[<span class="number">0</span>].getName(), object);</span><br><span class="line">                <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.encode(object, bodyType, template);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="add-interface"><a href="#add-interface" class="headerlink" title="add interface:"></a>add interface:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"upload-example"</span>, configuration = MultipartSupportConfig<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">CloudUploadService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiOperation</span>(<span class="string">"文件上传"</span>)</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line">    <span class="function">List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                    MultipartFile[] files,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    Long userId,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    String userName)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>in annotation <code>FeignClient</code> add configuration property, point to the encoding support class.</p>
-<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UploadTester</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CloudUploadService uploadService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testHandleFileUpload</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"upload.txt"</span>);</span><br><span class="line">        DiskFileItem fileItem = (DiskFileItem) <span class="keyword">new</span> DiskFileItemFactory().createItem(<span class="string">"file"</span>,</span><br><span class="line">                MediaType.TEXT_PLAIN_VALUE, <span class="keyword">true</span>, file.getName());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (InputStream input = <span class="keyword">new</span> FileInputStream(file); OutputStream os = fileItem.getOutputStream()) &#123;</span><br><span class="line">            IOUtils.copy(input, os);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid file: "</span> + e, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultipartFile multi = <span class="keyword">new</span> CommonsMultipartFile(fileItem);</span><br><span class="line"></span><br><span class="line">        log.info(uploadService.handleFileUpload(<span class="keyword">new</span> MultipartFile[]&#123;multi&#125;, <span class="number">1L</span>, <span class="string">"tester"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">UploadTester</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CloudUploadService uploadService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testHandleFileUpload</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"upload.txt"</span>);</span><br><span class="line">        DiskFileItem fileItem = (DiskFileItem) <span class="keyword">new</span> DiskFileItemFactory().createItem(<span class="string">"file"</span>,</span><br><span class="line">                MediaType.TEXT_PLAIN_VALUE, <span class="keyword">true</span>, file.getName());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (InputStream input = <span class="keyword">new</span> FileInputStream(file); OutputStream os = fileItem.getOutputStream()) &#123;</span><br><span class="line">            IOUtils.copy(input, os);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid file: "</span> + e, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultipartFile multi = <span class="keyword">new</span> CommonsMultipartFile(fileItem);</span><br><span class="line"></span><br><span class="line">        log.info(uploadService.handleFileUpload(<span class="keyword">new</span> MultipartFile[]&#123;multi&#125;, <span class="number">1L</span>, <span class="string">"tester"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><a href="https://github.com/OpenFeign/feign-form" target="_blank" rel="noopener">https://github.com/OpenFeign/feign-form</a><br><a href="https://www.jianshu.com/p/4f4d9d084b1d" target="_blank" rel="noopener">https://www.jianshu.com/p/4f4d9d084b1d</a><br><a href="http://blog.didispace.com/spring-cloud-starter-dalston-2-4/" target="_blank" rel="noopener">http://blog.didispace.com/spring-cloud-starter-dalston-2-4/</a><br><a href="https://blog.csdn.net/gududedabai/article/details/79895893" target="_blank" rel="noopener">https://blog.csdn.net/gududedabai/article/details/79895893</a></p>
 
           
@@ -1820,463 +2198,6 @@ x = \frac{C}{2}(2\theta - \sin 2\theta) + C_1</script><hr>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/07/functional-variation-and-Euler-Lagrange-equation/" class="post-title-link" itemprop="url">泛函、变分和欧拉-拉格朗日方程</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-06-07 17:19:58" itemprop="dateCreated datePublished" datetime="2019-06-07T17:19:58+08:00">2019-06-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-06-08 16:15:17" itemprop="dateModified" datetime="2019-06-08T16:15:17+08:00">2019-06-08</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="泛函"><a href="#泛函" class="headerlink" title="泛函"></a>泛函</h3><p>又被称为<code>函数的函数</code>，是将函数映射成数的方法。<br>传统的函数将数映射成数 $x -&gt; f(x) -&gt; y$;<br>泛函将 <strong>函数映射成数</strong> $f(x) -&gt; g(f) -&gt; y$;</p>
-<p>丢一些数进函数，得到一个数<br>丢一些方程进泛函，得到一个数</p>
-<h3 id="变分"><a href="#变分" class="headerlink" title="变分"></a>变分</h3><p>用于分析一个泛函被扰动时的变化<br>相当于对一个泛函做微积分<br>变分法的关键定理是<code>欧拉－拉格朗日方程</code>。它对应于泛函的临界点。</p>
-<p>变分的框架通常这样表示：</p>
-<script type="math/tex; mode=display">
-T = \int L(f(x), f(x)', x)dx</script><p>例如在最速降线问题中：<br><img src="/2019/06/07/functional-variation-and-Euler-Lagrange-equation/20190607082634.png" alt="20190607082634.png"></p>
-<p>$f(x)$是小球的下落轨道<br>$f(x)’$是小球下落轨道的导数<br>$x$是小球的横向坐标<br>$T$代表从A落到B点所需时间</p>
-<p>需要找到能使小球从A滚落B所需时间$T$最短的$f$</p>
-<p>其中时间的表达式可以写成</p>
-<script type="math/tex; mode=display">
-\begin{array}{rcl}
-T &=& \int dt \\
-&=& \int dL/V \\
-&=& \int \frac{ \sqrt {dx^2+df^2})}{g\sqrt {\frac{2f}{g}}}dx \\
-&=& \int \frac{ \sqrt {1+f^{'2}})}{\sqrt {2gf}}dx
-\end{array}</script><p>也就是距离微元除以当前速度的积分，将问题变为一个关于$f$, $f’$的积分问题。<br>在最速降线问题中仅涉及$f$, $f’$</p>
-<h3 id="E-L方程"><a href="#E-L方程" class="headerlink" title="E-L方程"></a>E-L方程</h3><p>欧拉-拉格朗日方程 用于求泛函极值</p>
-<h4 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h4><p>在函数中，我们可以通过求函数导数等于零，求出局部极值。这意味着在该变量附近做微小的扰动，会出现函数值达不到极值的现象。</p>
-<p>同样的，假设在泛函中的极值处，$f_0(x)$是最理想的解，如果对$f_0(x)$做微小的扰动$f_0(x)+\eta (x)$，会出现泛函数值达不到极值的现象。<br>表示为：</p>
-<script type="math/tex; mode=display">\int L(f_0(x) + \eta(x))dx \geqslant \int L(f_0(x))dx</script><h4 id="构建"><a href="#构建" class="headerlink" title="构建"></a>构建</h4><p>我们用 $\epsilon k(x)$ 来代替 $\eta (x)$，其中 $\epsilon$ 代表一个很小的标量，$k(x)$代表任意函数。<br>可以得到：</p>
-<script type="math/tex; mode=display">A(\epsilon) = \int L(f_0(x) + \epsilon k(x)) dx</script><p>将其转化为关于$\epsilon$的函数问题，我们需要证明：<br>在对于任意$k(x)$，导数$A(\epsilon)’ = 0$ 在 $\epsilon = 0$上取到。<br>其中扰动$k(x)$的两端同$f(x)$重叠不移动。<br>表示为：</p>
-<script type="math/tex; mode=display">
-A(\epsilon)' \vert_{\epsilon=0} \forall k(x)</script><p>这是经典的单值函数求极值问题</p>
-<h4 id="推导"><a href="#推导" class="headerlink" title="推导"></a>推导</h4><p>$f_1(x) = f_0(x) + \epsilon k(x)$，用$f_1$来表示</p>
-<p>由于是在这里积分求导是线性的，将其互换转入积分的内部:</p>
-<script type="math/tex; mode=display">
-A(\epsilon)' = \int \frac{dL(f_1(x), f_1(x)', x)}{d\epsilon} dx</script><p>根据积分链式求导，求关于$\epsilon$的偏导有：</p>
-<script type="math/tex; mode=display">
-\begin{array}{rcl}
-
-A(\epsilon)' &=& \int_{x_1}^{x_2}
-(\frac{\partial L}{\partial f_1} \frac{\partial f_1}{\partial \epsilon} +
-\frac{\partial L}{\partial f_1'} \frac{\partial f_1'}{\partial \epsilon}) dx \\
-
-&=& \int_{x_1}^{x_2}
-(\frac{\partial L}{\partial f_1} k(x) +
-\frac{\partial L}{\partial f_1'} k(x)') dx
-\end{array}</script><p>根据积分分部求导 $(ab)’= ab’ + b’a$：</p>
-<script type="math/tex; mode=display">
-A(\epsilon)' = \int_{x_1}^{x_2}
-[\frac{\partial L}{\partial f_1} k(x) +
-(\frac{\partial L}{\partial f_1'}) k(x) \vert_{x_1}^{x_2} -
-(\frac{\partial L}{\partial f_1'})' k(x)] dx</script><p>由于在端点 $x_1$，$x_2$处，有约束所以$k(x_1) = k(x_2) = 0$：</p>
-<script type="math/tex; mode=display">
-A(\epsilon)' = \int_{x_1}^{x_2}
-[\frac{\partial L}{\partial f_1} - \frac{d}{dx} (\frac{\partial L}{\partial f_1'})] * k(x) dx = 0</script><p>可以得出E-L方程：</p>
-<script type="math/tex; mode=display">
-\frac{\partial L}{\partial f_1} - \frac{d}{dx} (\frac{\partial L}{\partial f_1'}) = 0</script><p>在满足该方程的条件下 $f_1(x)$ 是泛函极值函数<br>即：解函数相对于表达式的偏导 = 解函数导数相对于表达式的偏导变化率</p>
-<h4 id="引理"><a href="#引理" class="headerlink" title="引理"></a>引理</h4><blockquote>
-<p>如果$F(f, f’, x) = F(f, f’)$ E-L 方程可以写成：</p>
-<script type="math/tex; mode=display">
-\frac{\partial L}{\partial f'}f' - L = C</script></blockquote>
-<script type="math/tex; mode=display">
-\frac{d}{dx}(\frac{\partial L}{\partial f'}f') =  \frac{d}{dx}(\frac{\partial L}{\partial f'}) + \frac{\partial L}{\partial f'}f''</script><script type="math/tex; mode=display">
-\frac{d}{dx}(L) = \frac{\partial L}{\partial f}  \partial f' + \frac{\partial L}{\partial f'}  \partial f''</script><script type="math/tex; mode=display">
-\frac {d}{dx}(\frac{\partial L}{\partial f'}f' - L) =
-f'[\frac{d}{dx} (\frac{\partial L}{\partial f'}) - \frac{\partial L}{\partial f}] = 0</script><p>可以看出方程的导数在极值处为零，方程等于常数。<br>即：解函数导数相对于表达式的偏导 * 解函数导数 - 表达式 = 常数</p>
-<p><a href="https://www.zybuluo.com/zsh-o/note/1090046" target="_blank" rel="noopener">最速降线 与 第一次接触泛函</a><br><a href="http://open.163.com/movie/2017/12/S/Q/MD51CSAIT_MD55OEBSQ.html" target="_blank" rel="noopener">2.3．Euler-lagrange方程的推导</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/05/understand-lagrange-multiplier/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/05/understand-lagrange-multiplier/" class="post-title-link" itemprop="url">拉格朗日乘子法（二）</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-06-05 18:54:13" itemprop="dateCreated datePublished" datetime="2019-06-05T18:54:13+08:00">2019-06-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-06-07 11:50:41" itemprop="dateModified" datetime="2019-06-07T11:50:41+08:00">2019-06-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2019/06/04/understand-lagrange-multiplier/Lagrange_portrait.jpg" alt="Lagrange_portrait.jpg"><br>Joseph Louis Lagrange</p>
-<h3 id="多个约束条件"><a href="#多个约束条件" class="headerlink" title="多个约束条件"></a>多个约束条件</h3><h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>现在我们来看看，在一般情况下，当我们在 k个约束条件下：$g_i(x_1, …, x_n) = 0$，其中 $i$ 从 $1$到$k$ ，求最小化 $n$个变量的函数$f(x_1, …, x_n)$。<code>拉格朗日函数</code>和前文一样，除了每个约束有不同的$\lambda$。<br>约束：</p>
-<script type="math/tex; mode=display">
-L(x_1, ..., x_n, \lambda_1, ..., \lambda_k) = f(x_1, ..., x_n) - \sum_{j=1}^k \lambda_j g_j(x_1, ..., x_n)</script><p>(我们将$j$用于$k$作为约束索引，将$i$用于$n$作为变量的索引$x_i$。)约束最小值出现在所有变量对$L$的偏导数为零的点上。</p>
-<h4 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h4><p>我们将使用一个相对简单的例子来说明方法：我们试图最小化 $x_1^2 + x_2^2 + x_3^2$<br>有两个约束条件：$x_1 = 1$ 和 $x_2 = 1$<br><code>Lagrangian</code>:  $x_1^2 + x_2^2 + x_3^2 - \lambda_1 (x_1 - 1) - \lambda_2 (x_2 - 1)$<br>它的偏导数是：</p>
-<script type="math/tex; mode=display">
-\begin{array}{rcl} \partial L / \partial x_1 &=& 2 x_1 - \lambda_1 \\ \partial L / \partial x_2 &=& 2 x_2 - \lambda_2 \\ \partial L / \partial x_3 &=& 2 x_3 \\ \partial L / \partial \lambda_1 &=& -(x_1 - 1) \\ \partial L / \partial \lambda_2 &=& -(x_2 - 1) \end{array}</script><h4 id="解"><a href="#解" class="headerlink" title="解"></a>解</h4><p>将它们全部设置为零得到答案：$(x_1, x_2, x_3) = (1, 1, 0)$ 和 $\lambda_1 = \lambda_2 = 2$.</p>
-<p>在一个约束情形中，<code>拉格朗日乘子方程</code>等价于矢量方程 $\nabla f = \lambda \nabla g$<br>对于多个约束，相应的向量方程是：</p>
-<script type="math/tex; mode=display">
-\nabla f = \sum_{j = 1}^k \lambda_j \nabla g_j</script><h4 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h4><p>上述等式将得出以下事实：对于变量$i$，当 $\partial L / \partial x_i = \partial f / \partial x_i - \sum_{j=1}^k \lambda_j \partial g_j / \partial x_i$成立时有$\partial f / \partial x_i = \sum_{j=1}^k \lambda_j \partial g_j / \partial x_i$ ，因此把$\partial L / \partial x_i$($i$从$1$到$n$)偏导数置为零等效于上述向量方程。注意，将偏导数$\partial L / \partial \lambda_j$等于零只会强化$g_j(x_1, …, x_n) = 0$的约束。</p>
-<h4 id="如何相切"><a href="#如何相切" class="headerlink" title="如何相切"></a>如何相切</h4><p>在一个约束情形中，找到点是有用的，  $\nabla f = \lambda \nabla g$因为这意味着水平曲线$f$ 与水平曲线$g$相切。在多重约束的情况下，它并不那么简单。<strong>单个约束$g_i$的水平表面不一定与$f$约束最小值处的水平表面相切</strong>。（在上面的示例中，约束平面$x_1 = 1$与$f$球体的水平面$x_1^2 + x_2^2 + x_3^2 = 2$在最佳点处相交$(1, 1, 0)$。）相反，事实证明，所有$g_i$水平面的交点都与$f$水平面的相切。</p>
-<p>为了更好的理解，让我们直接看$x$的小扰动对 $f$和约束方程$g_j$的影响，有$x = (x_1, …, x_n)$，同时使$\Delta x = (\Delta x_1, …, \Delta x_n)$我们有：</p>
-<script type="math/tex; mode=display">
-f(x + \Delta x) - f(x) \approx \sum_{i=1}^n \Delta x_i \frac{\partial f}{\partial x_i}</script><h4 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h4><p>如果更改$x$，有扰动$\Delta x$ 能保持所有$g_j$约束方程有相同的（一阶导），同时引起$f(x)$的非零变化，则$x$不可能是受约束的局部最小值。因为在某些方向上沿的交点移动所有的水平曲线$g_j$都会导致$f$减少（或增加）。所以我们想要的条件是：</p>
-<ol>
-<li>对于所有可能使 $\nabla g_j(x) \perp \Delta x$ ,($j$从$1$到$k$) 成立的 $\Delta x$， 有$\nabla f(x) \perp \Delta x\textrm{.}$</li>
-</ol>
-<p>对每个$j$有$\nabla g_j(x) \perp \Delta x$, $\Delta x$在与$g_j$水平面相切的方向上。如果$\Delta x$在与所有的$g_j$水平面交点相切的方向上，那么每一个$j$都成立。条件一表示任何此类$\Delta x$也与水平面相切$f$。另一方面，<code>拉格朗日乘子法</code>强制执行的条件是：</p>
-<ol>
-<li>存在 $\lambda_1$ 到 $\lambda_k$ 使得 $\nabla f = \sum_{j = 1}^k \lambda_j \nabla g_j$.</li>
-</ol>
-<p>令人高兴的是，事实证明条件1和2等价。</p>
-<p>定理：条件1和2等价</p>
-<h4 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h4><p>证明:(为什么现在我们一整天挥手都有严格的证据？有时最直观的论证就是证明;也许就是这种情况。）首先我们将证明2、1等价.假设对于每一个$j$从$1$到$k$，有 $\nabla f = \sum_{j = 1}^k \lambda_j \nabla g_j$, $ \nabla g_j(x) \perp \Delta x$ 。因为$\nabla g_j(x) \perp \Delta x$, $\nabla g_j(x) \cdot \Delta x = 0$。所以$\nabla f \cdot \Delta x = (\sum_{j = 1}^k \lambda_j \nabla g_j) \cdot \Delta x = \sum_{j = 1}^k \lambda_j \nabla g_j \cdot \Delta x = 0. $。这意味着 $ \nabla f \perp \Delta x$。</p>
-<p>接下来我们将证明1意味着2，或等效地，不是2意味着不是1.否定2表示$\nabla f$不在向量的<a href="https://en.wikipedia.org/wiki/Linear_span" target="_blank" rel="noopener">跨度</a>内。让我们用$z$来表示 $\nabla f$ 在 $\nabla g_j$ 跨度内的投影，并设置$\Delta x = \nabla f - z$。我们将证明这是建立否定条件1的反例。</p>
-<h4 id="证否"><a href="#证否" class="headerlink" title="证否"></a>证否</h4><p>我们知道 $\nabla f \neq z$ 所以有 $\Delta x \neq 0$，通过投影的定义，对每个$j$有$\Delta x \perp g_j$。此外，$\nabla f \cdot \Delta x = (z + \Delta x) \cdot \Delta x = z \cdot \Delta x + \Delta x \cdot \Delta x$，因为 $z$ 是在$g_j$域上垂直于$\Delta x$，同样的有$z \perp \Delta x$。<br>新增$z \cdot \Delta x = 0$ 和$\Delta x \cdot \Delta x \neq 0$ ，我们得到 $(z + \Delta x) \cdot \Delta x \neq 0$。 也就是说$\nabla f \cdot \Delta x \neq 0$，所以$\nabla f$不垂直$\Delta x$。由于$\Delta x$垂直于所有$\nabla g_j$，但不垂直$\nabla f$，所以条件一也被证否。我们假设条件2的否定，因此这表明不是2意味着不是1，或者等效地，1意味着2。</p>
-<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>现在我们已经看到<code>拉格朗日乘子法</code>通过找到 $x$  一组 $\lambda_j$ 这样 $\nabla f = \sum_{j = 1}^k \lambda_j \nabla g_j$ 的东西而发挥作用。这个等式意味着不存在局部变化 ，使一阶导数，符合所有约束但改变目标函数 $f$ 的值。因此满足该等式的值$x$是受约束的局部最小值或最大值的候选值。求解该向量方程等效于将<code>拉格朗日函数</code>的偏导数设置为零。</p>
-<p>我希望能够说明<code>拉格朗日乘子法</code>的工作方式和原因，并稍使它们看起来不这么像魔术。</p>
-<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>感觉原文作者描述的非常严谨，有很多地方我没法跟上作者的思路。<br>就我个人较感性的理解</p>
-<h4 id="单约束的表达式中："><a href="#单约束的表达式中：" class="headerlink" title="单约束的表达式中："></a>单约束的表达式中：</h4><script type="math/tex; mode=display">L(x, y, \lambda)= f(x，y) -  \lambda g(x, y)</script><p><code>拉格朗日函数</code>偏导为零，表明梯度$\nabla f=(\frac{\partial f}{\partial x}, \frac{\partial f}{ \partial y}) $ ，和梯度 $\nabla g=(\frac{\partial g}{\partial x}, \frac{\partial g}{ \partial y}) $ 成比例。<br>只有在切点处才有梯度重叠，才可以向量互相线性表示；<br>在切点处是局部的极值点，任何符合$g$的微小扰动$(\Delta x, \Delta y)$ 会导致函数$f$的增大或减小。<br>所以解$L$偏导等于零的方程组(2+1)，可以得到候选极值点。</p>
-<h4 id="在多约束表达式中："><a href="#在多约束表达式中：" class="headerlink" title="在多约束表达式中："></a>在多约束表达式中：</h4><script type="math/tex; mode=display">
-L(x_1, ..., x_n, \lambda_1, ..., \lambda_k) = f(x_1, ..., x_n) - \sum_{j=1}^k \lambda_j g_j(x_1, ..., x_n)</script><p>有多变量，多约束条件；可以认为是求解极值向量的问题<br>多约束的条件下，单条件相切并不一定是局部极值；<br>需要做到$f$与所有$g_i$的相交处相切，即在约束面上各方向目标函数偏导数为零处。<br>梯度的原理同单约束，梯度向量在各方向上成比例。</p>
-<script type="math/tex; mode=display">
-\begin{pmatrix}
-  \lambda_1 \\
-  \lambda_2 \\
-...\\
-  \lambda_k \\
-  \end{pmatrix}^T
-.\begin{pmatrix}
-  \nabla g_1\\
-  \nabla g_2 \\
-...\\
-  \nabla g_k \\
-  \end{pmatrix}=\nabla y</script><p>在局部最优解的向量上，符合所有约束$g$的微小扰动向量$(\Delta x_1, \Delta x_2, …\Delta x_n)$都会导致函数$f$的增大或减小。<br>所以解$L$偏导等于零的方程组(n+1)，可以得到候选极值向量。</p>
-<hr>
-<script type="math/tex; mode=display">
-g(x_1, x_2, z_3) = x_1^2 + x_2^2 + x_3^2 \\
-x_1^2 + x_2^2 + x_3^2 = 2 \\
-x_1 = 1 \\
-x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606145608.png" alt="20190606145608.png"></p>
-<p>将目标函数约束到三维空间，超平面中的球体半径为所求目标函数的值。</p>
-<p><img src="/2019/06/05/understand-lagrange-multiplier/20190606145519.png" alt="20190606145519.png"></p>
-<p>在$(1, 1, 0)$处球体与约束平面相切，取到极值2。</p>
-<p><a href="https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/" target="_blank" rel="noopener">https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/</a><br><a href="https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/" target="_blank" rel="noopener">https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/</a><br><a href="https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/" target="_blank" rel="noopener">https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2323,7 +2244,7 @@ x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">203</span>
+                    <span class="site-state-item-count">205</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2545,7 +2466,9 @@ x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606
                     
                       
                     
-                    <span class="site-state-item-count">73</span>
+                      
+                    
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2644,7 +2567,7 @@ x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2656,7 +2579,7 @@ x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
 
 
 
@@ -2802,11 +2725,11 @@ x_2 = 1</script><p><img src="/2019/06/05/understand-lagrange-multiplier/20190606
       
     
       
+    
+      
+    
+      
         
-      
-    
-      
-    
       
     
       

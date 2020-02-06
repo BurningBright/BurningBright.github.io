@@ -15,7 +15,7 @@
 
 
 <html class="theme-next muse use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -304,6 +304,409 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/26/Java-dynamic-proxy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/26/Java-dynamic-proxy/" class="post-title-link" itemprop="url">Java dynamic proxy</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-26 18:00:10" itemprop="dateCreated datePublished" datetime="2017-03-26T18:00:10+08:00">2017-03-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Use-scope"><a href="#Use-scope" class="headerlink" title="Use scope"></a>Use scope</h3><ul>
+<li>Java AOP is base on dynamic proxy</li>
+<li>Plug in, for increasing function of package already exists.</li>
+<li>Framework, for some abstract programming level.</li>
+</ul>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><h3 id="1-an-Interface"><a href="#1-an-Interface" class="headerlink" title="1. an Interface"></a>1. an Interface</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Interface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">hi</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">String <span class="title">sayHello</span><span class="params">(String arg)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>first interface used to call a method<br>  that has <strong>no arguments and return</strong></li>
+<li>second interface used to call a method<br>  that has <strong>a argument and return string</strong></li>
+</ul>
+<h3 id="2-an-implements-class"><a href="#2-an-implements-class" class="headerlink" title="2. an implements class"></a>2. an implements class</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloProxy</span> <span class="keyword">implements</span> <span class="title">Interface</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hi</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello world"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String arg)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello "</span> + arg);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello "</span> + arg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Geet to world</li>
+<li>Geet to the input argument and return</li>
+</ul>
+<h3 id="3-an-InvocationHandler"><a href="#3-an-InvocationHandler" class="headerlink" title="3. an InvocationHandler"></a>3. an InvocationHandler</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Object proxied;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DynamicProxyHandler</span><span class="params">(Object proxied)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.proxied = proxied;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>] != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"Invoke "</span> + method.invoke(proxied, args);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>The handler implements InvocationHandler is the key<br>  to dynamic call the target methods or fields.</p>
+</li>
+<li><p>All the call in handler would be redirect to a <code>call processor</code>.</p>
+</li>
+<li><p><em>The first argument</em> in method invoke is used to deal the<br>  <strong>manual call</strong> object.</p>
+</li>
+<li><p><em>The second argument</em> is the method you call in a<br>  <strong>uppper reference</strong> or a <strong>maunal call</strong> method.</p>
+</li>
+<li><p><em>The third argument</em> is the arguments you want to input,<br>  the processor would distinguish the method sign may be -_-.<br>  <strong>uppper input</strong> or <strong>maunal input</strong> arguments.</p>
+</li>
+</ul>
+<h3 id="4-have-a-try"><a href="#4-have-a-try" class="headerlink" title="4. have a try"></a>4. have a try</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Interface hello = (Interface) Proxy.newProxyInstance(</span><br><span class="line">                HelloProxy<span class="class">.<span class="keyword">class</span>.<span class="title">getClassLoader</span>(),</span></span><br><span class="line">                new Class[] &#123; Interface.class &#125;,</span><br><span class="line">                <span class="keyword">new</span> DynamicProxyHandler(<span class="keyword">new</span> HelloProxy()));</span><br><span class="line"></span><br><span class="line">        hello.hi();</span><br><span class="line">        System.out.println(hello.sayHello(<span class="string">"proxy"</span>));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>The <code>newProxyInstance</code> will create a subClass of the second argument<br>  so the <code>$proxy0</code> can be transform to the <code>Interface</code>.</p>
+</li>
+<li><p>The first argument <code>classLoader</code> is to point which class is agent.</p>
+</li>
+<li><p>The third argument is the handler we created in <strong>step 3</strong><br>  take a <strong>proxied hello interface implement</strong> into it’s constructor.</p>
+</li>
+<li><p>The result in <code>sayHello</code> has been deal by handler.</p>
+</li>
+</ul>
+<p>Result:</p>
+<blockquote>
+<p>Hello world<br>Hello proxy<br>Invoke Hello proxy</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/25/Latex-source-file-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/25/Latex-source-file-1/" class="post-title-link" itemprop="url">Latex source file</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-25 22:44:14" itemprop="dateCreated datePublished" datetime="2017-03-25T22:44:14+08:00">2017-03-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/latex/" itemprop="url" rel="index"><span itemprop="name">latex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Latex’s-reserved-characters"><a href="#Latex’s-reserved-characters" class="headerlink" title="Latex’s reserved characters"></a>Latex’s reserved characters</h3><p><code># $ % ^ &amp; _ { } \</code></p>
+<p>They have specal meaning in latex.<br>Use backslash to output them</p>
+<p><code>\# \$ \% \^{} \&amp; \_ \{ \} \ {}</code></p>
+<p>The backslash it’s self can’t be output by add another backslash.<br>Have a try <script type="math/tex">\backslash</script>.</p>
+<p>The <code>\\</code> is used to take a newline.</p>
+<h3 id="Commands"><a href="#Commands" class="headerlink" title="Commands"></a>Commands</h3><p>Command start with <code>\</code> backslash</p>
+<p>You can \textsl{lean} on me!<br>-&gt;<br>You can <em>lean</em> on me!</p>
+<hr>
+<p>Please, start a new line right here!\newline Thank you!<br>Please, start a new line right here!\ Thank you!<br>-&gt;<br>Please, start a new line right here!<br>Thank you!</p>
+<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>If Latex meet a ‘%’ percent sign, it will ignore words behind it.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">This is an % stupid</span><br><span class="line">% Better: instructive &lt;----</span><br><span class="line">example: Supercal%</span><br><span class="line">ifragilist%</span><br><span class="line">icexpialidocious</span><br></pre></td></tr></table></figure>
+<p>This is an example: Supercalifragilisticexpialidocious</p>
+<hr>
+<p>If comment content is very long, try verbatim macro package’s comment environment.<br>In document’s guid space declare <code>\usepackage{verbatim}</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">This is another</span><br><span class="line">\begin&#123;comment&#125;</span><br><span class="line">rather stupid,</span><br><span class="line">but helpful</span><br><span class="line">\end&#123;comment&#125;</span><br><span class="line">example for embedding</span><br><span class="line">comments in your document.</span><br></pre></td></tr></table></figure>
+<p>This is another example for embedding comments in your document.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1808,394 +2211,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/09/Euclidean-algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/09/Euclidean-algorithm/" class="post-title-link" itemprop="url">Euclidean algorithm</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-09 22:23:12" itemprop="dateCreated datePublished" datetime="2017-03-09T22:23:12+08:00">2017-03-09</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">gcd</span><span class="params">(<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(b==<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> a;</span><br><span class="line">    <span class="keyword">return</span> gcd(b,a%b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="1-Make"><a href="#1-Make" class="headerlink" title="1. Make"></a>1. Make</h3><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mo>=</mo><mi>g</mi><mi>c</mi><mi>d</mi><mo>(</mo><mi>a</mi><mo separator="true">,</mo><mi>b</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">c=gcd(a,b)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">c</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mord mathit">c</span><span class="mord mathit">d</span><span class="mopen">(</span><span class="mord mathit">a</span><span class="mpunct">,</span><span class="mord mathit">b</span><span class="mclose">)</span></span></span></span>
-<p>-<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mo>=</mo><mi>m</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">a=mc</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">a</span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mord mathit">c</span></span></span></span><br>-<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>b</mi><mo>=</mo><mi>n</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">b=nc</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">b</span><span class="mrel">=</span><span class="mord mathit">n</span><span class="mord mathit">c</span></span></span></span><br><code>c</code> is the biggest divisor</p>
-<h3 id="2-Got"><a href="#2-Got" class="headerlink" title="2. Got"></a>2. Got</h3><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>r</mi><mo>=</mo><mi>a</mi><mo>−</mo><mi>k</mi><mi>b</mi><mo>=</mo><mi>m</mi><mi>c</mi><mo>−</mo><mi>k</mi><mi>n</mi><mi>c</mi><mo>=</mo><mo>(</mo><mi>m</mi><mo>−</mo><mi>k</mi><mi>n</mi><mo>)</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">r=a-kb=mc-knc=(m-kn)c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mrel">=</span><span class="mord mathit">a</span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">b</span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mord mathit">c</span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span><span class="mord mathit">c</span><span class="mrel">=</span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mord mathit">c</span></span></span></span>
-<h3 id="3-c-is-a-divisor-of-r-as-well"><a href="#3-c-is-a-divisor-of-r-as-well" class="headerlink" title="3. c is a divisor of r as well."></a>3. <code>c</code> is a divisor of <code>r</code> as well.</h3><h3 id="4-m-kn-and-n-definitely-has-coprime-relation"><a href="#4-m-kn-and-n-definitely-has-coprime-relation" class="headerlink" title="4. m-kn and n definitely has coprime relation"></a>4. <code>m-kn</code> and <code>n</code> definitely has coprime relation</h3><h4 id="proof-by-contradiction"><a href="#proof-by-contradiction" class="headerlink" title="proof by contradiction"></a>proof by contradiction</h4><ol>
-<li><p>setting they are no coprime relation</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mo>−</mo><mi>k</mi><mi>n</mi><mo>=</mo><mi>x</mi><mi>d</mi></mrow><annotation encoding="application/x-tex">m-kn=xd</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span><span class="mrel">=</span><span class="mord mathit">x</span><span class="mord mathit">d</span></span></span></span>
-<p>-<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>=</mo><mi>y</mi><mi>d</mi></mrow><annotation encoding="application/x-tex">n=yd</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mord mathit">d</span></span></span></span> (d&gt;1)</p>
-</li>
-<li><p>then</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mo>=</mo><mi>k</mi><mi>n</mi><mo>+</mo><mi>x</mi><mi>d</mi><mo>=</mo><mi>k</mi><mi>y</mi><mi>d</mi><mo>+</mo><mi>x</mi><mi>d</mi><mo>=</mo><mo>(</mo><mi>k</mi><mi>y</mi><mo>+</mo><mi>x</mi><mo>)</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">m=kn+xd=kyd+xd=(ky+x)d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mord mathit">d</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mord mathit">d</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mord mathit">d</span><span class="mrel">=</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mclose">)</span><span class="mord mathit">d</span></span></span></span>
-<p>-</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>a</mi><mo>=</mo><mi>m</mi><mi>c</mi><mo>=</mo><mo>(</mo><mi>k</mi><mi>y</mi><mo>+</mo><mi>x</mi><mo>)</mo><mi>d</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">a=mc=(ky+x)dc</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">a</span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mord mathit">c</span><span class="mrel">=</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mclose">)</span><span class="mord mathit">d</span><span class="mord mathit">c</span></span></span></span>
-<p>-</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>b</mi><mo>=</mo><mi>n</mi><mi>c</mi><mo>=</mo><mi>y</mi><mi>d</mi><mi>c</mi></mrow><annotation encoding="application/x-tex">b=nc=ydc</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">b</span><span class="mrel">=</span><span class="mord mathit">n</span><span class="mord mathit">c</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mord mathit">d</span><span class="mord mathit">c</span></span></span></span></li>
-<li><code>a</code> and <code>b</code> ‘s biggest divisor is not <code>c</code>. so step 4 proved.</li>
-</ol>
-<h3 id="5-c-is-biggest-divisor-in-b-and-r-as-well"><a href="#5-c-is-biggest-divisor-in-b-and-r-as-well" class="headerlink" title="5. c is biggest divisor in b and r as well."></a>5. <code>c</code> is biggest divisor in <code>b</code> and <code>r</code> as well.</h3><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mi>c</mi><mi>d</mi><mo>(</mo><mi>b</mi><mo separator="true">,</mo><mi>r</mi><mo>)</mo><mo>=</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">gcd(b, r)=c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mord mathit">c</span><span class="mord mathit">d</span><span class="mopen">(</span><span class="mord mathit">b</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit">c</span></span></span></span>
-<p>-<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mi>c</mi><mi>d</mi><mo>(</mo><mi>a</mi><mo separator="true">,</mo><mi>b</mi><mo>)</mo><mo>=</mo><mi>g</mi><mi>c</mi><mi>d</mi><mo>(</mo><mi>b</mi><mo separator="true">,</mo><mi>r</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">gcd(a, b)=gcd(b, r)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mord mathit">c</span><span class="mord mathit">d</span><span class="mopen">(</span><span class="mord mathit">a</span><span class="mpunct">,</span><span class="mord mathit">b</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mord mathit">c</span><span class="mord mathit">d</span><span class="mopen">(</span><span class="mord mathit">b</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mclose">)</span></span></span></span></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/05/RSA-Principle-5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/05/RSA-Principle-5/" class="post-title-link" itemprop="url">RSA Principle 5</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-05 21:37:22" itemprop="dateCreated datePublished" datetime="2017-03-05T21:37:22+08:00">2017-03-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/cryptograpy/" itemprop="url" rel="index"><span itemprop="name">cryptograpy</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Proving"><a href="#Proving" class="headerlink" title="Proving"></a>Proving</h2><p>Why?<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>c</mi><mi>d</mi></msup><mo>≡</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">c^d \equiv m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">d</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>Base on encrypt rule:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>m</mi><mi>e</mi></msup><mo>≡</mo><mi>c</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">m^e \equiv c \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">e</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit">c</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span><br>-&gt;<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mo>=</mo><msup><mi>m</mi><mi>e</mi></msup><mo>−</mo><mi>k</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">c = m^e - kn</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">c</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">e</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span></span></span></span></p>
-<p>Put it into the target<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><msup><mi>m</mi><mi>e</mi></msup><mo>−</mo><mi>k</mi><mi>n</mi><msup><mo>)</mo><mi>d</mi></msup><mo>≡</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">(m^e - kn)^d \equiv m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">e</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">n</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">d</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>The <strong>n in left part</strong> of equal could all be divided by n. So it’s same as this:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>m</mi><mrow><mi>e</mi><mi>d</mi></mrow></msup><mo>≡</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">m^{ed} \equiv m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>Bacause<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mi>d</mi><mo>≡</mo><mn>1</mn><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo><mo>)</mo></mrow><annotation encoding="application/x-tex">ed \equiv 1 \quad(mod \quad\phi(n))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span><span class="mrel">≡</span><span class="mord mathrm">1</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span><br>-&gt;<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mi>d</mi><mo>=</mo><mi>h</mi><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">ed = h\phi(n) + 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span><span class="mrel">=</span><span class="mord mathit">h</span><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span></p>
-<p>Put it into above, <strong>prove this work</strong><br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>m</mi><mrow><mi>h</mi><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo><mo>+</mo><mn>1</mn></mrow></msup><mo>≡</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">m^{h\phi(n) + 1} \equiv m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:1.138em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">h</span><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>Then divide into two condition</p>
-<h3 id="m-and-n-has-coprime-relation"><a href="#m-and-n-has-coprime-relation" class="headerlink" title="m and n has coprime relation"></a><code>m</code> and <code>n</code> has coprime relation</h3><p>In this condition base on euler theorem<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>m</mi><mrow><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow></msup><mo>≡</mo><mn>1</mn><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">m^{\phi(n)} \equiv 1 \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:1.138em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathrm">1</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>Put it into above:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><msup><mi>m</mi><mrow><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo></mrow></msup><msup><mo>)</mo><mi>h</mi></msup><mo>×</mo><mi>m</mi><mo>≡</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">(m^{\phi(n)})^h \times m \equiv m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:1.138em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathit">h</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord mathit">m</span><span class="mrel">≡</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span></p>
-<p>Proved</p>
-<h3 id="m-and-n-has-no-coprime-relation"><a href="#m-and-n-has-no-coprime-relation" class="headerlink" title="m and n has no coprime relation"></a><code>m</code> and <code>n</code> has no coprime relation</h3><p>In this condition, bacause <code>m</code> and <code>n</code> has no coprime relation, so <code>m</code> and <code>n</code> must have <strong>common factor</strong> that is not <code>1</code>.<br><code>n</code> come from two coprime factor <code>p</code> and <code>q</code>, so <code>m</code> must <strong>multiply with</strong> <code>p</code> or <code>q</code>.<br><code>m = kp</code> or <code>m = kq</code></p>
-<p>Choose <code>m = kp</code> for example<br>Because <code>q</code> is a <strong>coprime number</strong>, and <code>k</code> has <strong>no possible</strong> multiply <code>q</code>[or will cross <code>m</code>], so <code>k</code> and <code>q</code> has coprime relation.<br>Base on euler theorem:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>φ</mi><mo>(</mo><mi>q</mi><mo>)</mo><mo>=</mo><mi>q</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\varphi(q) = q-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">φ</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span></p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>q</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>≡</mo><mn>1</mn><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>q</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">(kp)^{q-1} \equiv 1 \quad (mod \quad q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8141079999999999em;"></span><span class="strut bottom" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathrm">1</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span>
-<p>Further</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>q</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mo>]</mo><mrow><mi>h</mi><mo>(</mo><mi>q</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow></msup><mo>×</mo><mi>k</mi><mi>p</mi><mo>≡</mo><mi>k</mi><mi>p</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>q</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">[(kp)^{q-1}]^{h(q-1)} \times kp \equiv kp \quad (mod \quad q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:1.138em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">[</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose"><span class="mclose">]</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">h</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mbin">−</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mrel">≡</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span>
-<p>Bascause <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mi>d</mi><mo>=</mo><mi>h</mi><mi>ϕ</mi><mo>(</mo><mi>n</mi><mo>)</mo><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">ed = h\phi(n) + 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span><span class="mrel">=</span><span class="mord mathit">h</span><span class="mord mathit">ϕ</span><span class="mopen">(</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span> so:</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>e</mi><mi>d</mi></mrow></msup><mo>≡</mo><mi>k</mi><mi>p</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>q</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">(kp)^{ed} \equiv kp \quad (mod \quad q)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">≡</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit" style="margin-right:0.03588em;">q</span><span class="mclose">)</span></span></span></span>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>e</mi><mi>d</mi></mrow></msup><mo>=</mo><mi>k</mi><mi>p</mi><mo>+</mo><mi>t</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">(kp)^{ed} = kp + tq</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mbin">+</span><span class="mord mathit">t</span><span class="mord mathit" style="margin-right:0.03588em;">q</span></span></span></span>
-<p>This time <code>t</code> definitely could be divided be <code>p</code>. Why?<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>p</mi><mo>(</mo><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>e</mi><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mi>k</mi><mo>)</mo><mo>=</mo><mi>t</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">p((kp)^{ed-1}-k) = tq</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">p</span><span class="mopen">(</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit">t</span><span class="mord mathit" style="margin-right:0.03588em;">q</span></span></span></span></p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>e</mi><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><mi>k</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">((kp)^{ed-1}-k)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mclose">)</span></span></span></span> is an integer and `p` `q` has coprime relation
-So definitely has integer <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>t</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mi>t</mi><mi mathvariant="normal">/</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">t&#x27; = t/p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.001892em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">t</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">t</span><span class="mord mathrm">/</span><span class="mord mathit">p</span></span></span></span>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mi>p</mi><msup><mo>)</mo><mrow><mi>e</mi><mi>d</mi></mrow></msup><mo>=</mo><mi>k</mi><mi>p</mi><mo>+</mo><msup><mi>t</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi>p</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">(kp)^{ed} = kp + t&#x27;pq</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathit">p</span><span class="mbin">+</span><span class="mord"><span class="mord mathit">t</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathit">p</span><span class="mord mathit" style="margin-right:0.03588em;">q</span></span></span></span>
-<p><code>m=kp</code>, <code>n=pq</code> then:</p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>m</mi><mrow><mi>e</mi><mi>d</mi></mrow></msup><mo>=</mo><mi>m</mi><mspace width="1em"></mspace><mo>(</mo><mi>m</mi><mi>o</mi><mi>d</mi><mspace width="1em"></mspace><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">m^{ed} = m \quad (mod \quad n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">m</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">d</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mord mspace quad"></span><span class="mopen">(</span><span class="mord mathit">m</span><span class="mord mathit">o</span><span class="mord mathit">d</span><span class="mord mspace quad"></span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span>
-<p>Proved</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2242,7 +2257,7 @@ So definitely has integer <span class="katex"><span class="katex-mathml"><math><
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">203</span>
+                    <span class="site-state-item-count">205</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2464,7 +2479,9 @@ So definitely has integer <span class="katex"><span class="katex-mathml"><math><
                     
                       
                     
-                    <span class="site-state-item-count">73</span>
+                      
+                    
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2563,7 +2580,7 @@ So definitely has integer <span class="katex"><span class="katex-mathml"><math><
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2575,7 +2592,7 @@ So definitely has integer <span class="katex"><span class="katex-mathml"><math><
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
 
 
 

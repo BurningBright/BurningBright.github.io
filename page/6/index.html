@@ -15,7 +15,7 @@
 
 
 <html class="theme-next muse use-motion" lang="en">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -304,6 +304,392 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/25/Springboot-Schedule/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/25/Springboot-Schedule/" class="post-title-link" itemprop="url">Springboot Schedule</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-25 14:59:21" itemprop="dateCreated datePublished" datetime="2018-07-25T14:59:21+08:00">2018-07-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Maven-config"><a href="#Maven-config" class="headerlink" title="Maven config"></a>Maven config</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+<p>Add <code>@EnableScheduling</code> annotation in application main or configuration class</p>
+<h2 id="Thread-pool"><a href="#Thread-pool" class="headerlink" title="Thread pool"></a>Thread pool</h2><p>In <code>org.springframework.scheduling.config.ScheduledTaskRegistrar</code><br>after the after properties set, spring set a default single thread excutor.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">scheduleTasks</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.taskScheduler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.localExecutor = Executors.newSingleThreadScheduledExecutor();</span><br><span class="line">        <span class="keyword">this</span>.taskScheduler = <span class="keyword">new</span> ConcurrentTaskScheduler(<span class="keyword">this</span>.localExecutor);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>When the program’s schedules need time to deal with the job.<br>Single Thread excutor may cause job be blocked, then the job’s excuted time might be wrong.</p>
+<p>So when the single node have hard works need be done precisely, we need a selfdefine threadpool.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScheduleConfig</span> <span class="keyword">implements</span> <span class="title">SchedulingConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureTasks</span><span class="params">(ScheduledTaskRegistrar taskRegistrar)</span> </span>&#123;</span><br><span class="line">        taskRegistrar.setScheduler(taskExecutor());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(destroyMethod=<span class="string">"shutdown"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">taskExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newScheduledThreadPool(<span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Close"><a href="#Close" class="headerlink" title="Close"></a>Close</h2><p>When the web application closed, the threadpool is still alive, we need actively close it.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class MyTask implements DisposableBean&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void destroy() throws Exception &#123;</span><br><span class="line">        ThreadPoolTaskScheduler scheduler =</span><br><span class="line">            (ThreadPoolTaskScheduler)applicationContext.getBean(&quot;scheduler&quot;);</span><br><span class="line">        scheduler.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h2><p>If the schedule needs enterprise level structure, a schedule cluster is needed.<br>Use consistency middle ware/[DB]/[Cache] control the schedule node’s behaviour.<br>Use Message queue control the job’s status/ corn, even add/ remove jobs.<br>Spring schedule not support the persistency feature, but through mechanism it still can be resolved.<br>If the requirement is that level, use spring schedule may not be a good choice.</p>
+<p><a href="https://www.cnblogs.com/skychenjiajun/p/9057379.html" target="_blank" rel="noopener">https://www.cnblogs.com/skychenjiajun/p/9057379.html</a><br><a href="https://blog.csdn.net/qq_34125349/article/details/77430956" target="_blank" rel="noopener">https://blog.csdn.net/qq_34125349/article/details/77430956</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/11/Kafka-quickstart-in-windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/11/Kafka-quickstart-in-windows/" class="post-title-link" itemprop="url">Kafka quickstart in windows</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-11 10:23:10" itemprop="dateCreated datePublished" datetime="2018-07-11T10:23:10+08:00">2018-07-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h2><p>download kafka package from <a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">http://kafka.apache.org/downloads</a></p>
+<p>un-tar package <code>kafka_2.11-1.1.0.tgz</code></p>
+<h2 id="Start"><a href="#Start" class="headerlink" title="Start"></a>Start</h2><p>copy config file in <code>bin\windows</code><br>Start zookeeper first, because kafka is a cluster type middleware.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zookeeper-server-start.bat config/zookeeper.properties</span><br></pre></td></tr></table></figure></p>
+<p>If alert <code>Error: can&#39;t find or can&#39;t load main class ...</code>,<br>modify <code>bin\windows\kafka-run-class.bat</code></p>
+<p>add Double quotation mark to <code>%CLASSPATH%</code> like this : <code>&quot;%CLASSPATH%&quot;</code></p>
+<p>Now start the Kafka server:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-server-start.sh config/server.properties</span><br></pre></td></tr></table></figure></p>
+<h2 id="Create-topic"><a href="#Create-topic" class="headerlink" title="Create topic"></a>Create topic</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line">kafka-topics.bat --list --zookeeper localhost:2181</span><br></pre></td></tr></table></figure>
+<h2 id="Send-messages-Producer"><a href="#Send-messages-Producer" class="headerlink" title="Send messages[Producer]"></a>Send messages[Producer]</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-producer.bat --broker-list localhost:9092 --topic test</span><br><span class="line">&gt; Hello world</span><br><span class="line">&gt; Hello topic</span><br></pre></td></tr></table></figure>
+<h2 id="Start-a-consumer"><a href="#Start-a-consumer" class="headerlink" title="Start a consumer"></a>Start a consumer</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line">Hello world</span><br><span class="line">Hello topic</span><br><span class="line">_</span><br></pre></td></tr></table></figure>
+<h2 id="Multi-broker-cluster"><a href="#Multi-broker-cluster" class="headerlink" title="Multi-broker cluster"></a>Multi-broker cluster</h2><p>copy <code>server.properties</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copy config/server.properties config/server-1.properties</span><br><span class="line">copy config/server.properties config/server-2.properties</span><br></pre></td></tr></table></figure></p>
+<p>modify configuration:<br>In same machine, node’s id/ port must be unique, log file should be seperated.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">config/server-1.properties:</span><br><span class="line">    broker.id=1</span><br><span class="line">    listeners=PLAINTEXT://:9093</span><br><span class="line">    log.dir=/tmp/kafka-logs-1</span><br><span class="line"></span><br><span class="line">config/server-2.properties:</span><br><span class="line">    broker.id=2</span><br><span class="line">    listeners=PLAINTEXT://:9094</span><br><span class="line">    log.dir=/tmp/kafka-logs-2</span><br></pre></td></tr></table></figure></p>
+<p>Now start other two broker<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kafka-server-start.sh config/server-1.properties</span><br><span class="line">kafka-server-start.sh config/server-2.properties</span><br></pre></td></tr></table></figure></p>
+<p>Create new topic<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic</span><br></pre></td></tr></table></figure></p>
+<p>Show detail<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br><span class="line">Topic:my-replicated-topic       PartitionCount:1        ReplicationFactor:3 Configs:</span><br><span class="line">        Topic: my-replicated-topic      Partition: 0    Leader: 2       Replicas: 2,0,1 Isr: 2,0,1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>“leader” is the node responsible for all reads and writes for the given partition.<br>Each node will be the leader for a randomly selected portion of the partitions.</li>
+<li>“replicas” is the list of nodes that replicate the log for this partition<br>regardless of whether they are the leader or even if they are currently alive.</li>
+<li>“isr” is the set of “in-sync” replicas. This is the subset of the replicas list<br>that is currently alive and caught-up to the leader.</li>
+</ul>
+<p>send some message<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-producer.bat --broker-list localhost:9092 --topic my-replicated-topic</span><br><span class="line">&gt; test message 1</span><br><span class="line">&gt; test message 2</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+<p>consume these messages<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic</span><br><span class="line">test message 1</span><br><span class="line">test message 2</span><br><span class="line">_</span><br></pre></td></tr></table></figure></p>
+<p>now the leader broker id is <code>2</code>, kill it[ ctrl+c ]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; wmic process where &quot;caption = &apos;java.exe&apos; and commandline like &apos;%server-2.properties%&apos;&quot; get processid</span><br><span class="line">ProcessId</span><br><span class="line">6016</span><br><span class="line">&gt; taskkill /pid 6016 /f</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br><span class="line">Topic:my-replicated-topic       PartitionCount:1        ReplicationFactor:3 Configs:</span><br><span class="line">        Topic: my-replicated-topic      Partition: 0    Leader: 0       Replicas: 2,0,1 Isr: 0,1</span><br></pre></td></tr></table></figure>
+<p>now only 0,1 broker ‘in-sync’, the leader is ‘0’ broker<br>send message still available.</p>
+<h2 id="import-export-data"><a href="#import-export-data" class="headerlink" title="import / export data"></a>import / export data</h2><p>make a test file<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; echo foo&gt; test.txt</span><br><span class="line">&gt; echo bar&gt;&gt; test.txt</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connect-standalone.bat config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; type test.sink.txt</span><br><span class="line">foo</span><br><span class="line">bar</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic connect-test --from-beginning</span><br><span class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;foo&quot;&#125;</span><br><span class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;bar&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>If add more string append to <code>test.txt</code>, topic will load more data, and <code>test.sink.txt</code> will in-sync too.</p>
+<p><a href="http://kafka.apache.org/quickstart" target="_blank" rel="noopener">http://kafka.apache.org/quickstart</a><br><a href="https://blog.csdn.net/cx2932350/article/details/78870135" target="_blank" rel="noopener">https://blog.csdn.net/cx2932350/article/details/78870135</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -987,7 +1373,7 @@
 <p><code>WebSocket</code> is just like <code>TCP</code> <code>UDP</code> work in <code>Transfer level</code>, a <code>socket</code> in origin.</p>
 <p><img src="/2018/05/31/WebSocket-protocol/websocket-architecture.jpg" alt></p>
 <h2 id="Connection"><a href="#Connection" class="headerlink" title="Connection"></a>Connection</h2><p>Create a server service<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> http = <span class="built_in">require</span>(<span class="string">"http"</span>);</span><br><span class="line"><span class="keyword">const</span> hostname = <span class="string">"127.0.0.1"</span>;</span><br><span class="line"><span class="keyword">const</span> port = <span class="string">"9090"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a service</span></span><br><span class="line"><span class="keyword">let</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"recv request"</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(req.headers);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// create a listener</span></span><br><span class="line">server.listen(port, hostname, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Server running at <span class="subst">$&#123;hostname&#125;</span>:<span class="subst">$&#123;port&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<p>Ceate a broser client<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCType html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">!<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> socket = <span class="keyword">new</span> WebSocket(<span class="string">'ws://127.0.0.1:9090'</span>);</span></span><br><span class="line"><span class="javascript">    socket.onopen = <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">'opened'</span>);</span></span><br><span class="line"><span class="javascript">        socket.send(<span class="string">'hello, this is from client tiger'</span>);</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;();</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>Ceate a broser client<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCType <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">!<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">const</span> socket = <span class="keyword">new</span> WebSocket(<span class="string">'ws://127.0.0.1:9090'</span>);</span></span><br><span class="line"><span class="javascript">    socket.onopen = <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">console</span>.log(<span class="string">'opened'</span>);</span></span><br><span class="line"><span class="javascript">        socket.send(<span class="string">'hello, this is from client tiger'</span>);</span></span><br><span class="line">    &#125;;</span><br><span class="line">&#125;();</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <hr>
 <h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><p>Nodejs do not execute the recall function. Because another <code>upgrade</code> event.</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">server.on(<span class="string">"upgrade"</span>, (request, socket, head) =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(request.headers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1865,383 +2251,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/20/Java-exec/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/04/20/Java-exec/" class="post-title-link" itemprop="url">Java exec</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-04-20 16:53:42" itemprop="dateCreated datePublished" datetime="2018-04-20T16:53:42+08:00">2018-04-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h2><ol>
-<li><code>Runtime.getRuntime()</code> is the only method can get jvm runing environment</li>
-<li>Most method in Runtime is implements method</li>
-<li>Runtime.exit() is the only method exit current jvm. <code>System.exit()</code></li>
-<li><code>0</code> represent normal execute, !<code>0</code> represent exception</li>
-<li><code>Runtime.addShutdownHook()</code> can recieve a thread object as a handle</li>
-<li><code>public Process exec(String[] cmdarray, String[] envp, File dir)</code><br>when sub process use current process environment variable, envp is null.</li>
-</ol>
-<h2 id="Call"><a href="#Call" class="headerlink" title="Call"></a>Call</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.exitValue();</span><br></pre></td></tr></table></figure>
-<p>Process call exitValue is not block, if needed add a loop call</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>correct call process need set process’s stream setting, make sure thread will not block.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello &gt; hi"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>in command line can’t execute bash sign like <code>&gt;</code> <code>&gt;&gt;</code> <code>&lt;</code> <code>&amp;</code>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"/bin/bash"</span>, <span class="string">"-c"</span>, <span class="string">"java hello &gt; hi"</span>&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>if need these local operation, you can write these in a shell script, or load bash in java.</p>
-<h2 id="Call-in-windows"><a href="#Call-in-windows" class="headerlink" title="Call in windows"></a>Call in windows</h2><p>if you want call in windows you need install bash first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p>if jvm execute path is not the <code>exec</code> path, you need add specific path<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">new</span> File(workPath));</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p>ps. <code>-c</code> mean read parameter in string format, not directly %0 %1</p>
-<h2 id="Another-way"><a href="#Another-way" class="headerlink" title="Another way"></a>Another way</h2><p>If you want jvm do standard in /out, use another thread read or write data<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello"</span>);</span><br><span class="line"><span class="comment">// add pip stream thread setting</span></span><br><span class="line">StreamThread director = <span class="keyword">new</span> StreamThread(proc.getInputStream()，proc.getOutputStream());</span><br><span class="line">director.start();</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://blog.csdn.net/mengxingyuanlove/article/details/50707746" target="_blank" rel="noopener">https://blog.csdn.net/mengxingyuanlove/article/details/50707746</a><br><a href="https://blog.csdn.net/timo1160139211/article/details/75006938" target="_blank" rel="noopener">https://blog.csdn.net/timo1160139211/article/details/75006938</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/05/Gif-camera/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/04/05/Gif-camera/" class="post-title-link" itemprop="url">Gif camera</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-04-05 17:28:52" itemprop="dateCreated datePublished" datetime="2018-04-05T17:28:52+08:00">2018-04-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2018/04/05/Gif-camera/prototype.jpg" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"># Optional</span><br><span class="line">sudo apt-get upgrade</span><br><span class="line"></span><br><span class="line"># Used to control camera</span><br><span class="line">sudo apt-get install python-picamera python3-picamera</span><br><span class="line"># Used to convert jpg to gif</span><br><span class="line">sudo apt-get install graphicsmagick</span><br><span class="line"></span><br><span class="line">sudo apt-get install git-core</span><br><span class="line"># This script is used in &apos;PIX-E Gif Camera&apos; project</span><br><span class="line">sudo git clone https://github.com/nickbrewer/gifcam.git</span><br></pre></td></tr></table></figure>
-<h3>If we just want raspberry pi camera can take gif picture, we can just remove
- `GPIO` and `Twitter` module, no need led notification/ real time upload ro so.</h3>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import module first</span></span><br><span class="line"><span class="keyword">import</span> picamera</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> system</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> random, string</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set options</span></span><br><span class="line">um_frame = <span class="number">8</span>       <span class="comment"># Number of frames in Gif</span></span><br><span class="line">gif_delay = <span class="number">15</span>      <span class="comment"># Frame delay [ms]</span></span><br><span class="line">rebound = <span class="literal">True</span>      <span class="comment"># Create a video that loops start &lt;=&gt; end</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set camera parameters</span></span><br><span class="line">camera = picamera.PiCamera()</span><br><span class="line">camera.resolution = (<span class="number">540</span>, <span class="number">405</span>)</span><br><span class="line">camera.rotation = <span class="number">90</span></span><br><span class="line"><span class="comment">#camera.brightness = 70</span></span><br><span class="line">camera.image_effect = <span class="string">'none'</span></span><br></pre></td></tr></table></figure>
-<h2 id="Take-jpg-pictures"><a href="#Take-jpg-pictures" class="headerlink" title="Take jpg pictures"></a>Take jpg pictures</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'Gif Started'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### PREVENT DARK INIT IMAGE ###</span></span><br><span class="line">camera.led = <span class="literal">False</span></span><br><span class="line">camera.start_preview()</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">camera.led = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame):</span><br><span class="line">    camera.capture(<span class="string">'&#123;0:04d&#125;.jpg'</span>.format(i))</span><br></pre></td></tr></table></figure>
-<h2 id="If-rebound-is-True-then-make-picture-loop"><a href="#If-rebound-is-True-then-make-picture-loop" class="headerlink" title="If rebound is True then make picture loop"></a>If <code>rebound</code> is <code>True</code> then make picture loop</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### PROCESSING GIF ###</span></span><br><span class="line"><span class="keyword">if</span> rebound == <span class="literal">True</span>: <span class="comment"># make copy of images in reverse order</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame - <span class="number">1</span>):</span><br><span class="line">        source = str(num_frame - i - <span class="number">1</span>) + <span class="string">".jpg"</span></span><br><span class="line">        source = source.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        dest = str(num_frame + i) + <span class="string">".jpg"</span></span><br><span class="line">        dest = dest.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        copyCommand = <span class="string">"cp "</span> + source + <span class="string">" "</span> + dest</span><br><span class="line">        os.system(copyCommand)</span><br></pre></td></tr></table></figure>
-<h2 id="Convert-picture-to-gif-and-cleanup"><a href="#Convert-picture-to-gif-and-cleanup" class="headerlink" title="Convert picture to gif and cleanup"></a>Convert picture to gif and cleanup</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Correction of time difference</span></span><br><span class="line">now = datetime.datetime.now() + datetime.timedelta(hours=<span class="number">8</span>)</span><br><span class="line">filename = <span class="string">'/home/pi/gifcam/gifs'</span> + now.strftime(<span class="string">'%Y%m%d%H%M%S'</span>)</span><br><span class="line">print(<span class="string">'Processing'</span>)</span><br><span class="line"><span class="comment"># Convert command</span></span><br><span class="line">graphicsmagick = <span class="string">"gm convert -delay "</span> + str(gif_delay) + <span class="string">" "</span> + <span class="string">"*.jpg "</span> + filename + <span class="string">".gif"</span></span><br><span class="line">os.system(graphicsmagick)</span><br><span class="line">os.system(<span class="string">"rm ./*.jpg"</span>) <span class="comment"># cleanup source images</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line">print(<span class="string">'System Ready'</span>)</span><br></pre></td></tr></table></figure>
-<p><a href="http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html" target="_blank" rel="noopener">http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html</a><br><a href="https://hackaday.io/project/16358-pix-e-gif-camera" target="_blank" rel="noopener">https://hackaday.io/project/16358-pix-e-gif-camera</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2288,7 +2297,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">203</span>
+                    <span class="site-state-item-count">205</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2510,7 +2519,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">73</span>
+                      
+                    
+                    <span class="site-state-item-count">74</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2609,7 +2620,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2621,7 +2632,7 @@
 </div>
 
 
-  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
 
 
 
