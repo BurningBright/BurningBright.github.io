@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Install software first    Env/Componet Description Description     System CentOS 7.3 http://archive.kernel.org/centos-vault/7.3.1611/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso   Go 1.11.4 https://promet">
+<meta name="keywords" content="hello,maintenance">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Monitor jar by prometheus">
+<meta property="og:url" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="Install software first    Env/Componet Description Description     System CentOS 7.3 http://archive.kernel.org/centos-vault/7.3.1611/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso   Go 1.11.4 https://promet">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/20200227162128.jpg">
+<meta property="og:image" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/20200227162827.jpg">
+<meta property="og:image" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/20200227164011.jpg">
+<meta property="og:image" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/20200227164204.jpg">
+<meta property="og:updated_time" content="2020-02-27T09:14:40.781Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Monitor jar by prometheus">
+<meta name="twitter:description" content="Install software first    Env/Componet Description Description     System CentOS 7.3 http://archive.kernel.org/centos-vault/7.3.1611/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso   Go 1.11.4 https://promet">
+<meta name="twitter:image" content="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/20200227162128.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Monitor jar by prometheus | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Monitor jar by prometheus
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-02-27 15:26:05 / Modified: 17:14:40" itemprop="dateCreated datePublished" datetime="2020-02-27T15:26:05+08:00">2020-02-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-software-first"><a href="#Install-software-first" class="headerlink" title="Install software first"></a>Install software first</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Env/Componet</th>
+<th style="text-align:right">Description</th>
+<th style="text-align:right">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System</td>
+<td style="text-align:right">CentOS 7.3</td>
+<td style="text-align:right"><a href="http://archive.kernel.org/centos-vault/7.3.1611/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso" target="_blank" rel="noopener">http://archive.kernel.org/centos-vault/7.3.1611/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso</a></td>
+</tr>
+<tr>
+<td>Go</td>
+<td style="text-align:right">1.11.4</td>
+<td style="text-align:right"><a href="https://prometheus.io/download/#prometheus" target="_blank" rel="noopener">https://prometheus.io/download/#prometheus</a></td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td style="text-align:right">2.6.0</td>
+<td style="text-align:right"><a href="https://golang.org/dl/" target="_blank" rel="noopener">https://golang.org/dl/</a></td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td style="text-align:right">5.4.2</td>
+<td style="text-align:right"><a href="https://dl.grafana.com/oss/release/grafana-5.4.2-1.x86_64.rpm" target="_blank" rel="noopener">https://dl.grafana.com/oss/release/grafana-5.4.2-1.x86_64.rpm</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="Install-Go"><a href="#Install-Go" class="headerlink" title="Install Go"></a>Install Go</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf go1.11.4.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line">vim /etc/profile</span><br><span class="line">export PATH=$PATH:/usr/local/go/bin</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line">go version</span><br></pre></td></tr></table></figure>
+<h3 id="Install-prometheus"><a href="#Install-prometheus" class="headerlink" title="Install prometheus"></a>Install prometheus</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf prometheus-2.6.0.linux-amd64.tar.gz</span><br><span class="line">ln -sv /usr/local/prometheus-2.6.0.linux-amd64/ /usr/local/Prometheus</span><br></pre></td></tr></table></figure>
+<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
+<p>check on browser <code>127.0.0.1:9090</code></p>
+<h3 id="Install-grafana"><a href="#Install-grafana" class="headerlink" title="Install grafana"></a>Install grafana</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh --nodeps grafana-5.4.2-1.x86_64.rpm</span><br><span class="line">sudo /bin/systemctl daemon-reload</span><br><span class="line">sudo /bin/systemctl enable grafana-server.service</span><br><span class="line">sudo /bin/systemctl start grafana-server.service</span><br></pre></td></tr></table></figure>
+<p>check on browser <code>127.0.0.1:3000</code></p>
+<p><a href="https://blog.csdn.net/ywd1992/article/details/85989259" target="_blank" rel="noopener">https://blog.csdn.net/ywd1992/article/details/85989259</a></p>
+<h2 id="jar-exporter"><a href="#jar-exporter" class="headerlink" title="jar exporter"></a>jar exporter</h2><ol>
+<li>for mointor jar, we need dispatch unique jmx port to every jar process.</li>
+<li>download prometheus jar exporter and jmx_exporter tomcat config file.</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># target package</span><br><span class="line">/usr/local/Demo.jar</span><br><span class="line"></span><br><span class="line"># download https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.3.1/jmx_prometheus_javaagent-0.3.1.jar</span><br><span class="line">/usr/local/jmx_prometheus_javaagent-0.3.1.jar</span><br><span class="line"></span><br><span class="line"># download jmx_exporter tomcat https://github.com/prometheus/jmx_exporter/tree/master/example_configs</span><br><span class="line">/usr/local/tomcat.yaml</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>config jmx exporter<br>replace <code>Catalina</code> to <code>Tomcat</code><br>name with <code>jar_config.yaml</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">---   </span><br><span class="line">lowercaseOutputLabelNames: true</span><br><span class="line">lowercaseOutputName: true</span><br><span class="line">rules:</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=GlobalRequestProcessor, name=\&quot;(\w+-\w+)-(\d+)\&quot;&gt;&lt;&gt;(\w+):&apos;</span><br><span class="line">  name: tomcat_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    port: &quot;$2&quot;</span><br><span class="line">    protocol: &quot;$1&quot;</span><br><span class="line">  help: Tomcat global $3</span><br><span class="line">  type: COUNTER</span><br><span class="line">- pattern: &apos;Tomcat&lt;j2eeType=Servlet, WebModule=//([-a-zA-Z0-9+&amp;@#/%?=~_|!:.,;]*[-a-zA-Z0-9+&amp;@#/%=~_|]), name=([-a-zA-Z0-9+/$%~_-|!.]*), J2EEApplication=none, J2EEServer=none&gt;&lt;&gt;(requestCount|maxTime|processingTime|errorCount):&apos;</span><br><span class="line">  name: tomcat_servlet_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    module: &quot;$1&quot;</span><br><span class="line">    servlet: &quot;$2&quot;</span><br><span class="line">  help: Tomcat servlet $3 total</span><br><span class="line">  type: COUNTER</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=ThreadPool, name=&quot;(\w+-\w+)-(\d+)&quot;&gt;&lt;&gt;(currentThreadCount|currentThreadsBusy|keepAliveCount|pollerThreadCount|connectionCount):&apos;</span><br><span class="line">  name: tomcat_threadpool_$3</span><br><span class="line">  labels:</span><br><span class="line">    port: &quot;$2&quot;</span><br><span class="line">    protocol: &quot;$1&quot;</span><br><span class="line">  help: Tomcat threadpool $3</span><br><span class="line">  type: GAUGE</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=Manager, host=([-a-zA-Z0-9+&amp;@#/%?=~_|!:.,;]*[-a-zA-Z0-9+&amp;@#/%=~_|]), context=([-a-zA-Z0-9+/$%~_-|!.]*)&gt;&lt;&gt;(processingTime|sessionCounter|rejectedSessions|expiredSessions):&apos;</span><br><span class="line">  name: tomcat_session_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    context: &quot;$2&quot;</span><br><span class="line">    host: &quot;$1&quot;</span><br><span class="line">  help: Tomcat session $3 total</span><br><span class="line">  type: COUNTER</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>start jar with exporter</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>add prometheus config</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;tomcat&apos;</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets: [&apos;10.86.86.100:30015&apos;]</span><br><span class="line">    labels:</span><br><span class="line">      appname: &apos;demo&apos;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>add grafana dashboard<br>add jar dashboard <code>https://grafana.com/dashboards/8563</code></li>
+</ol>
+<p><a href="https://www.jianshu.com/p/8a5e681b18ce" target="_blank" rel="noopener">https://www.jianshu.com/p/8a5e681b18ce</a></p>
+<h2 id="to-config-alert-on-grafana"><a href="#to-config-alert-on-grafana" class="headerlink" title="to config alert on grafana"></a>to config alert on grafana</h2><p>First i want add email channel, but the smtp inside is restricted,<br>and <code>go</code> not support none ssl unencrypted connection.</p>
+<p>I even install a email server software <code>hmailserver</code>, but still not work.<br>So i give up, and use <code>dingding</code> notice robot instead.</p>
+<p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227162128.jpg" alt="20200227162128.jpg"></p>
+<h3 id="Add-grafana-alert-channel"><a href="#Add-grafana-alert-channel" class="headerlink" title="Add grafana alert channel"></a>Add grafana alert channel</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227162827.jpg" alt="20200227162827.jpg"></p>
+<h3 id="Add-query-panel"><a href="#Add-query-panel" class="headerlink" title="Add query panel"></a>Add query panel</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227164011.jpg" alt="20200227164011.jpg"></p>
+<p>If the <code>min step</code> format not correct like <code>60</code>, the alert rule may throw error.<br><code>parse error at char 88: missing unit character in duration</code></p>
+<h3 id="Add-alert-rule"><a href="#Add-alert-rule" class="headerlink" title="Add alert rule"></a>Add alert rule</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227164204.jpg" alt="20200227164204.jpg"></p>
+<p>The <code>8563</code> dashboard’s panel can’t be used to mointor target directly.<br>Exception will be throw when you edit panel and add alert directly.<br>Make sure the panel query has point the target instance, then add alert.</p>
+<p><a href="https://grafana.com/docs/grafana/latest/alerting/rules/" target="_blank" rel="noopener">https://grafana.com/docs/grafana/latest/alerting/rules/</a><br><a href="https://www.jianshu.com/p/2b230390f37e" target="_blank" rel="noopener">https://www.jianshu.com/p/2b230390f37e</a><br><a href="https://github.com/FUSAKLA/alertmanager-grafana-dashboard/issues/1" target="_blank" rel="noopener">https://github.com/FUSAKLA/alertmanager-grafana-dashboard/issues/1</a><br><a href="https://yq.aliyun.com/articles/250063" target="_blank" rel="noopener">https://yq.aliyun.com/articles/250063</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hello/" rel="tag"># hello</a>
+          
+            <a href="/tags/maintenance/" rel="tag"># maintenance</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/07/Switch-python-version-in-centos/" rel="next" title="Switch python version in centos">
+                <i class="fa fa-chevron-left"></i> Switch python version in centos
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Install-software-first"><span class="nav-number">1.</span> <span class="nav-text">Install software first</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-Go"><span class="nav-number">1.1.</span> <span class="nav-text">Install Go</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-prometheus"><span class="nav-number">1.2.</span> <span class="nav-text">Install prometheus</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-grafana"><span class="nav-number">1.3.</span> <span class="nav-text">Install grafana</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jar-exporter"><span class="nav-number">2.</span> <span class="nav-text">jar exporter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#to-config-alert-on-grafana"><span class="nav-number">3.</span> <span class="nav-text">to config alert on grafana</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Add-grafana-alert-channel"><span class="nav-number">3.1.</span> <span class="nav-text">Add grafana alert channel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Add-query-panel"><span class="nav-number">3.2.</span> <span class="nav-text">Add query panel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Add-alert-rule"><span class="nav-number">3.3.</span> <span class="nav-text">Add alert rule</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
