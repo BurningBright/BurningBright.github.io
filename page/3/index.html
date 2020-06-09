@@ -320,6 +320,731 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/12/mysql-5-7-json-type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/12/mysql-5-7-json-type/" class="post-title-link" itemprop="url">mysql 5.7 json type</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-12 19:21:15" itemprop="dateCreated datePublished" datetime="2019-08-12T19:21:15+08:00">2019-08-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="none-structure-data-in-mysql"><a href="#none-structure-data-in-mysql" class="headerlink" title="none structure data in mysql"></a>none structure data in mysql</h2><p>in mysql 5.7 , support store data in json type.</p>
+<h3 id="create-table-with-virtual-column"><a href="#create-table-with-virtual-column" class="headerlink" title="create table with virtual column."></a>create table with virtual column.</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> players (  </span><br><span class="line">   <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> primary <span class="keyword">key</span> auto_increment,</span><br><span class="line">   player <span class="keyword">JSON</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">   <span class="comment">-- name virtual column</span></span><br><span class="line">   vname <span class="built_in">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">GENERATED</span> <span class="keyword">ALWAYS</span> <span class="keyword">AS</span> (<span class="string">`player`</span> -&gt;&gt; <span class="string">'$.name'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">COLUMNS</span> <span class="keyword">FROM</span> <span class="string">`players`</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="prepare-save-progress"><a href="#prepare-save-progress" class="headerlink" title="prepare save progress"></a>prepare save progress</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- check whether store procedure open</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'log_bin_trust_function_creators'</span>;</span><br><span class="line"><span class="comment">-- open store procedure in mysql</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_bin_trust_function_creators=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">delimiter $$</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> insert_player(<span class="keyword">in</span> max_num <span class="built_in">int</span>(<span class="number">10</span>))</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line"> <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line"> <span class="keyword">declare</span> json_data <span class="built_in">varchar</span>(<span class="number">2000</span>) <span class="keyword">default</span> <span class="string">'1'</span>;</span><br><span class="line"> <span class="keyword">set</span> autocommit= <span class="number">0</span>;</span><br><span class="line"> repeat</span><br><span class="line"> <span class="keyword">set</span> i=i+<span class="number">1</span>;</span><br><span class="line"> <span class="keyword">set</span> json_data = <span class="keyword">concat</span>(<span class="keyword">concat</span>(<span class="string">'&#123;"name":"xxx-'</span>,i),<span class="string">'","age":34&#125;'</span>);</span><br><span class="line"> <span class="keyword">insert</span> <span class="keyword">into</span> players (<span class="keyword">id</span>,player) <span class="keyword">values</span>(<span class="literal">null</span>,json_data);</span><br><span class="line"> until i=max_num <span class="keyword">end</span> <span class="keyword">repeat</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="keyword">end</span> $$</span><br></pre></td></tr></table></figure>
+<h3 id="test-data-and-try"><a href="#test-data-and-try" class="headerlink" title="test data, and try"></a>test data, and try</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> insert_player(<span class="number">2000000</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="string">`name_idx`</span> <span class="keyword">ON</span> <span class="string">`players`</span>(<span class="string">`vname`</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/bugs4j/article/details/79932538" target="_blank" rel="noopener">https://blog.csdn.net/bugs4j/article/details/79932538</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/10/Hello-rabbit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/10/Hello-rabbit/" class="post-title-link" itemprop="url">Hello rabbit</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-10 16:44:45 / Modified: 16:58:08" itemprop="dateCreated datePublished" datetime="2019-08-10T16:44:45+08:00">2019-08-10</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-rabbitmq-in-ubuntu-16-04-1"><a href="#Install-rabbitmq-in-ubuntu-16-04-1" class="headerlink" title="Install rabbitmq in ubuntu 16.04.1"></a>Install rabbitmq in ubuntu 16.04.1</h2><p>prepare Ubuntu Server 16.04.1 LTS 64 first</p>
+<p><code>apt-get install rabbitmq-server</code></p>
+<p>check service status<br><code>systemctl status rabbitmq-server</code></p>
+<p>daily command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service rabbitmq-server start</span><br><span class="line">service rabbitmq-server stop</span><br><span class="line">service rabbitmq-server restart</span><br></pre></td></tr></table></figure></p>
+<h2 id="manage-interface"><a href="#manage-interface" class="headerlink" title="manage interface"></a>manage interface</h2><p>enable management interface<br><code>rabbitmq-plugins enable rabbitmq_management</code></p>
+<p><code>127.0.0.1:15672</code> is the default address, <code>guest/guest</code> is the default account.</p>
+<h2 id="out-account"><a href="#out-account" class="headerlink" title="out account"></a>out account</h2><p>add user<br><code>rabbitmqctl add_user root yourpassword</code><br>add role<br><code>rabbitmqctl set_user_tags root administrator</code><br>add permission<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl  set_permissions  -p  VHostPath  User  ConfP  WriteP  ReadP</span><br><span class="line">rabbitmqctl  set_permissions  -p  &quot;/&quot; root &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="enjoy-route"><a href="#enjoy-route" class="headerlink" title="enjoy route :)"></a>enjoy route :)</h2><p><code>exchange</code> bind <code>queue</code> route by <code>key</code> in same <code>arguments</code></p>
+<p><a href="https://blog.csdn.net/qq_22638399/article/details/81704372" target="_blank" rel="noopener">https://blog.csdn.net/qq_22638399/article/details/81704372</a><br><a href="https://www.cnblogs.com/feixiablog/articles/8317605.html" target="_blank" rel="noopener">https://www.cnblogs.com/feixiablog/articles/8317605.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/30/spring-cloud-feign-support-file-upload/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/30/spring-cloud-feign-support-file-upload/" class="post-title-link" itemprop="url">spring cloud feign support file upload</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-30 10:53:23" itemprop="dateCreated datePublished" datetime="2019-07-30T10:53:23+08:00">2019-07-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-10 16:41:37" itemprop="dateModified" datetime="2019-08-10T16:41:37+08:00">2019-08-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="phenomenon"><a href="#phenomenon" class="headerlink" title="phenomenon"></a>phenomenon</h2><p>Spring Cloud Feign component not support file upload between micron service.<br>it may throw exception like this:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feign.codec.EncodeException: class [Lorg.springframework.web.multipart.MultipartFile; is not a type supported by this encoder.</span><br><span class="line">    at feign.codec.Encoder$Default.encode(Encoder.java:<span class="number">90</span>) ~[feign-core-<span class="number">9.5</span><span class="number">.1</span>.jar:na]</span><br><span class="line">    at feign.form.FormEncoder.encode(FormEncoder.java:<span class="number">87</span>) ~[feign-form-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br><span class="line">    at feign.form.spring.SpringFormEncoder.encode(SpringFormEncoder.java:<span class="number">64</span>) ~[feign-form-spring-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="add-dependencies"><a href="#add-dependencies" class="headerlink" title="add dependencies"></a>add dependencies</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring" target="_blank" rel="noopener">https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring</a></p>
+<p>be careful the <code>feign-form-spring</code> depend on <code>spring-web</code> it may have conflict with your project.<br>for example in  <code>spring-boot:2.0.5.RELEASE</code> <code>spring-cloud:Finchley.SR1</code> project has already import<br><code>spring-web:5.0.9.RELEASE</code>, if import <code>feign-form-spring:3.3.0</code> it will import <code>spring-web:4.3.18.RELEASE</code> too,<br>it cause spring bean creation exception.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="file-receive-part"><a href="#file-receive-part" class="headerlink" title="file receive part"></a>file receive part</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation</span>(<span class="string">"file upload receive part"</span>)</span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                MultipartFile[] files,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                Long userId,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                String userName)</span>&#123;</span><br><span class="line">                ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>be careful <code>consumes</code> property must add to the annotation <code>RequestMapping</code><br><code>method</code> property must be <code>POST</code>, <code>RequestPart</code> is working.</p>
+<h2 id="feign-client-part"><a href="#feign-client-part" class="headerlink" title="feign client part"></a>feign client part</h2><p>client part is a little complex.</p>
+<h3 id="add-configuration-class"><a href="#add-configuration-class" class="headerlink" title="add configuration class:"></a>add configuration class:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MultipartSupportConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ObjectFactory&lt;HttpMessageConverters&gt; messageConverters;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Scope</span>(<span class="string">"prototype"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Encoder <span class="title">feignEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//        return new SpringFormEncoder();</span></span><br><span class="line"><span class="comment">//        return new SpringFormEncoder(new SpringEncoder(messageConverters));</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FeignSpringFormEncoder(<span class="keyword">new</span> SpringEncoder(messageConverters));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> feign.Logger.<span class="function">Level <span class="title">multipartLoggerLevel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> feign.Logger.Level.FULL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>SpringFormEncoder</code> support single file upload.</li>
+<li><code>FeignSpringFormEncoder</code> support file array upload.</li>
+<li><code>SpringEncoder</code> avoid project make <code>RequestBody</code> encoding error.</li>
+</ul>
+<h3 id="add-form-encoder"><a href="#add-form-encoder" class="headerlink" title="add form encoder"></a>add form encoder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignSpringFormEncoder</span> <span class="keyword">extends</span> <span class="title">FormEncoder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with the default Feign's encoder as a delegate.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Default());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with specified delegate encoder.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delegate delegate encoder, if this encoder couldn't encode object.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">(Encoder delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">        MultipartFormContentProcessor processor = (MultipartFormContentProcessor) getContentProcessor(ContentType.MULTIPART);</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringSingleMultipartFileWriter());</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringManyMultipartFilesWriter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(Object object, Type bodyType, RequestTemplate template)</span> <span class="keyword">throws</span> EncodeException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bodyType.equals(MultipartFile<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile file = (MultipartFile) object;</span><br><span class="line">            Map data = Collections.singletonMap(file.getName(), object);</span><br><span class="line">            <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bodyType.equals(MultipartFile[]<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile[] file = (MultipartFile[]) object;</span><br><span class="line">            <span class="keyword">if</span>(file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Map data = Collections.singletonMap(file.length == <span class="number">0</span> ? <span class="string">""</span> : file[<span class="number">0</span>].getName(), object);</span><br><span class="line">                <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.encode(object, bodyType, template);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="add-interface"><a href="#add-interface" class="headerlink" title="add interface:"></a>add interface:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"upload-example"</span>, configuration = MultipartSupportConfig<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">CloudUploadService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiOperation</span>(<span class="string">"文件上传"</span>)</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line">    <span class="function">List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                    MultipartFile[] files,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    Long userId,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    String userName)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>in annotation <code>FeignClient</code> add configuration property, point to the encoding support class.</p>
+<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">UploadTester</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CloudUploadService uploadService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testHandleFileUpload</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"upload.txt"</span>);</span><br><span class="line">        DiskFileItem fileItem = (DiskFileItem) <span class="keyword">new</span> DiskFileItemFactory().createItem(<span class="string">"file"</span>,</span><br><span class="line">                MediaType.TEXT_PLAIN_VALUE, <span class="keyword">true</span>, file.getName());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (InputStream input = <span class="keyword">new</span> FileInputStream(file); OutputStream os = fileItem.getOutputStream()) &#123;</span><br><span class="line">            IOUtils.copy(input, os);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid file: "</span> + e, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultipartFile multi = <span class="keyword">new</span> CommonsMultipartFile(fileItem);</span><br><span class="line"></span><br><span class="line">        log.info(uploadService.handleFileUpload(<span class="keyword">new</span> MultipartFile[]&#123;multi&#125;, <span class="number">1L</span>, <span class="string">"tester"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/OpenFeign/feign-form" target="_blank" rel="noopener">https://github.com/OpenFeign/feign-form</a><br><a href="https://www.jianshu.com/p/4f4d9d084b1d" target="_blank" rel="noopener">https://www.jianshu.com/p/4f4d9d084b1d</a><br><a href="http://blog.didispace.com/spring-cloud-starter-dalston-2-4/" target="_blank" rel="noopener">http://blog.didispace.com/spring-cloud-starter-dalston-2-4/</a><br><a href="https://blog.csdn.net/gududedabai/article/details/79895893" target="_blank" rel="noopener">https://blog.csdn.net/gududedabai/article/details/79895893</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/05/maintain-log-files-by-shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/maintain-log-files-by-shell/" class="post-title-link" itemprop="url">maintain log files by shell</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-05 10:19:28" itemprop="dateCreated datePublished" datetime="2019-07-05T10:19:28+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="move-log-file-to-another-device"><a href="#move-log-file-to-another-device" class="headerlink" title="move log file to another device"></a>move log file to another device</h3><p>scheduled move specific file to target directory<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># move log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># file name</span></span><br><span class="line">default=<span class="string">"/logs/common-default.log."</span><span class="variable">$&#123;date&#125;</span><span class="string">".log"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$default</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$date</span><span class="string">' move '</span><span class="variable">$default</span><span class="string">' to /data0/backup'</span> &gt;&gt; /logs/backup.log</span><br><span class="line">    `mv <span class="variable">$default</span> /data0/backup`</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
+<p><code>crontab -e</code> add schedule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 0 * * * sh /move.sh</span><br></pre></td></tr></table></figure></p>
+<h3 id="delete-log-file-by-function"><a href="#delete-log-file-by-function" class="headerlink" title="delete log file by function"></a>delete log file by function</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># delete log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># find files modify 1 month ago</span></span><br><span class="line">files=find /data0/backup -<span class="built_in">type</span> f -not -newermt <span class="variable">$date</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> delete_log_files</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">test</span> <span class="variable">$#</span> -gt 0</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        `rm -f <span class="variable">$1</span>`</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">'$date clean $1'</span> &gt;&gt; /logs/cleanup.log</span><br><span class="line">        <span class="built_in">shift</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete_log_files <span class="variable">$files</span></span><br></pre></td></tr></table></figure>
+<h3 id="delete-log-file-by-command"><a href="#delete-log-file-by-command" class="headerlink" title="delete log file by command"></a>delete log file by command</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">find /logs/ -<span class="built_in">type</span> f -mtime +30 -name <span class="string">'*.log'</span> -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<p><code>{}</code> is placeholder of the file be found<br><code>\;</code> mean exec command finish</p>
+<hr>
+<p>process every line in a multi-line variable<br><a href="https://cloud.tencent.com/developer/ask/46222" target="_blank" rel="noopener">https://cloud.tencent.com/developer/ask/46222</a></p>
+<p>‘crontab’ schedule<br><a href="https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="noopener">https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a></p>
+<p>‘find’ command -exec<br><a href="https://blog.csdn.net/u010900754/article/details/83020378" target="_blank" rel="noopener">https://blog.csdn.net/u010900754/article/details/83020378</a></p>
+<p>‘find’ command useage<br><a href="https://blog.csdn.net/h106140873/article/details/72874455" target="_blank" rel="noopener">https://blog.csdn.net/h106140873/article/details/72874455</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/30/linear-logistic-regression/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1584,758 +2309,11 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/20/Throttling-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/Throttling-pattern/" class="post-title-link" itemprop="url">Throttling pattern</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-20 10:39:47 / Modified: 22:14:20" itemprop="dateCreated datePublished" datetime="2019-05-20T10:39:47+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2019/05/20/Throttling-pattern/throttling-pattern.png" alt="throttling-pattern.png"></p>
-<h2 id="Interface-Throttler"><a href="#Interface-Throttler" class="headerlink" title="Interface Throttler"></a>Interface Throttler</h2><p> <code>Throttler</code> defined a simple method used to call throttler implementaton.</p>
-<p><code>public void start()</code></p>
-<h2 id="Implementaton"><a href="#Implementaton" class="headerlink" title="Implementaton"></a>Implementaton</h2><p><code>ThrottleTimerImpl</code> implement <code>Throttler</code> used to cyclical reset service visit counter.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Timer(<span class="keyword">true</span>).schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        callsCount.reset();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, <span class="number">0</span>, throttlePeriod);</span><br></pre></td></tr></table></figure>
-<h2 id="Counter"><a href="#Counter" class="headerlink" title="Counter"></a>Counter</h2><p><code>CallsCount</code> use <code>ConcurrentHashMap</code> to implement multi thread save counter.</p>
-<p><code>private Map&lt;String, AtomicLong&gt; tenantCallsCount = new ConcurrentHashMap&lt;&gt;();</code></p>
-<h2 id="POJO"><a href="#POJO" class="headerlink" title="POJO"></a>POJO</h2><p><code>Tenant</code> represent a kind of business.<br>have properties <code>name</code> and <code>allowedCallsPerSecond</code></p>
-<h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><p><code>XXXService</code> call <code>Throttler</code> to start reset thread.<br><code>XXXService</code> call counter to check whether ths visit under threshold.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String tenantName = tenant.getName();</span><br><span class="line"><span class="keyword">long</span> count = callsCount.getCount(tenantName);</span><br><span class="line"><span class="keyword">if</span> (count &gt;= tenant.getAllowedCallsPerSecond()) &#123;</span><br><span class="line">    <span class="comment">// TODO throw excepton or return error code</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line">callsCount.incrementCount(tenantName);</span><br></pre></td></tr></table></figure>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Throttling is used to limit client visit frequency, so we need:<br>a <code>overall situation counter</code><br>a <code>daemonize thread resetor</code><br>a <code>business represent pojo</code><br>a <code>limited flow service</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/10/bayes-formula-comprehend/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/10/bayes-formula-comprehend/" class="post-title-link" itemprop="url">bayes' formula comprehend</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-10 17:20:04" itemprop="dateCreated datePublished" datetime="2019-05-10T17:20:04+08:00">2019-05-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-05-20 22:14:20" itemprop="dateModified" datetime="2019-05-20T22:14:20+08:00">2019-05-20</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Ideology"><a href="#Ideology" class="headerlink" title="Ideology"></a>Ideology</h2><p>Old day people study probability forcus on sample distribute. [fix parameters]<br>Bayes probability study forcus on parameters.[fix samples]</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prior distribution + sample info -&gt; Posterior distribution</span><br></pre></td></tr></table></figure>
-<p>the new experiment result will refresh people cognition on old things.<br>It’s fit people cognition law on nation explor method.</p>
-<h2 id="formula"><a href="#formula" class="headerlink" title="formula"></a>formula</h2><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(B|A) = \frac{P(B)P(A|B)}{P(A)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.01em;"></span><span class="strut bottom" style="height:1.53em;vertical-align:-0.52em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.34500000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span></span></span></span>
-<p>First:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi>B</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">P(AB) = P(B)P(A|B) = P(A)P(B|A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span></p>
-<p>the probability event A, event B happen at the <strong>same time</strong><br>, equals the probability <strong>A happen</strong> multiply with the probability<br><strong>B happen when A happen</strong>.</p>
-<p>So we have:<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(B|A) = \frac{P(B)P(A|B)}{P(A)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.01em;"></span><span class="strut bottom" style="height:1.53em;vertical-align:-0.52em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.34500000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span></span></span></span></p>
-<p>=&gt;<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>l</mi><mi>a</mi><mi>w</mi><mi mathvariant="normal">∣</mi><mi>p</mi><mi>h</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>n</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>l</mi><mi>a</mi><mi>w</mi><mo>)</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>p</mi><mi>h</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>n</mi><mi mathvariant="normal">∣</mi><mi>l</mi><mi>a</mi><mi>w</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>p</mi><mi>h</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>m</mi><mi>e</mi><mi>n</mi><mi>o</mi><mi>n</mi><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(law|phenomenon) = P(law)\frac{P(phenomenon|law)}{P(phenomenon)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.01em;"></span><span class="strut bottom" style="height:1.53em;vertical-align:-0.52em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">a</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mord mathrm">∣</span><span class="mord mathit">p</span><span class="mord mathit">h</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">m</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">n</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">a</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mclose">)</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.34500000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">p</span><span class="mord mathit">h</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">m</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">n</span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">p</span><span class="mord mathit">h</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">m</span><span class="mord mathit">e</span><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit">n</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">a</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span></span></span></span></p>
-<p>=&gt;</p>
-<p>a new knowledge = a priori knowledge * a new factor affect knowledge / a new factor</p>
-<p>We use sample experiment’s phenomenon verify rules.<br>Use <code>adjust factor</code> to adust parameters, make rules more accurate.</p>
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>We need to check a rule:<br>watermelon sugar content &gt; 10, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 25%, sugar content &gt; 10</li>
-<li>exp:good watermelon has probability 99%, sugar content &gt; 10</li>
-</ol>
-<p>so we have :<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow></mfrac><mo>=</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>+</mo><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mover accent="true"><mrow><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover><mo>)</mo><mi>P</mi><mo>(</mo><mover accent="true"><mrow><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.01em;"></span><span class="strut bottom" style="height:1.6733310000000001em;vertical-align:-0.663331em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.34500000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.488331em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="overline mord"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span><span style="top:-0.8547585714285715em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="reset-scriptstyle textstyle uncramped overline-line"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span>​</span></span></span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="overline mord"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span><span style="top:-0.8547585714285715em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="reset-scriptstyle textstyle uncramped overline-line"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span></span></span></span></p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>∗</mo><mo>(</mo><mfrac><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>9</mn><mn>9</mn></mrow><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>9</mn><mn>9</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>+</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mn>5</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>8</mn></mrow></mfrac><mo>)</mo><mo>≈</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>4</mn><mn>9</mn><mn>7</mn></mrow><annotation encoding="application/x-tex">P(B|A) = 0.2 * ( \frac{0.99}{0.99 * 0.2 + 0.25 * 0.8} ) \approx 0.497</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.845108em;"></span><span class="strut bottom" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">∗</span><span class="mopen">(</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">9</span><span class="mord mathrm">9</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">+</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mord mathrm">5</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">8</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">9</span><span class="mord mathrm">9</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mclose">)</span><span class="mrel">≈</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">4</span><span class="mord mathrm">9</span><span class="mord mathrm">7</span></span></span></span>
-<hr>
-<p>Now we found the threshold is not right, base on adjust factor, we change rule:<br>watermelon sugar content &gt; 15, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 15%, sugar content &gt; 15</li>
-<li>exp:good watermelon has probability 90%, sugar content &gt; 15</li>
-</ol>
-<p>so we have :<br><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo></mrow></mfrac><mo>=</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mfrac><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo></mrow><mrow><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mo>)</mo><mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo><mo>+</mo><mi>P</mi><mo>(</mo><mi>A</mi><mi mathvariant="normal">∣</mi><mover accent="true"><mrow><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover><mo>)</mo><mi>P</mi><mo>(</mo><mover accent="true"><mrow><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover><mo>)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.01em;"></span><span class="strut bottom" style="height:1.6733310000000001em;vertical-align:-0.663331em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.34500000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.488331em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="overline mord"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span><span style="top:-0.8547585714285715em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="reset-scriptstyle textstyle uncramped overline-line"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span>​</span></span></span><span class="mclose">)</span><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="overline mord"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05017em;">B</span></span></span><span style="top:-0.8547585714285715em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span><span class="reset-scriptstyle textstyle uncramped overline-line"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1.4285714285714286em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.485em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit">A</span><span class="mord mathrm">∣</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:1em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span></span></span></span></p>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>∗</mo><mo>(</mo><mfrac><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>9</mn></mrow><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>9</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>+</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>1</mn><mn>5</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>8</mn></mrow></mfrac><mo>)</mo><mo>≈</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>6</mn><mn>0</mn><mn>0</mn></mrow><annotation encoding="application/x-tex">P(B|A) = 0.2 * ( \frac{0.9}{0.9 * 0.2 + 0.15 * 0.8} ) \approx 0.600</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.845108em;"></span><span class="strut bottom" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">∗</span><span class="mopen">(</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">9</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">+</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">1</span><span class="mord mathrm">5</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">8</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">9</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mclose">)</span><span class="mrel">≈</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">6</span><span class="mord mathrm">0</span><span class="mord mathrm">0</span></span></span></span>
-<hr>
-<p>Keep on adjust:<br>watermelon sugar content &gt; 20, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 9%, sugar content &gt; 20</li>
-<li>exp:good watermelon has probability 85%, sugar content &gt; 20</li>
-</ol>
-<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo>)</mo><mo>=</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>∗</mo><mo>(</mo><mfrac><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>8</mn><mn>5</mn></mrow><mrow><mn>0</mn><mi mathvariant="normal">.</mi><mn>8</mn><mn>5</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>2</mn><mo>+</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>0</mn><mn>9</mn><mo>∗</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>8</mn></mrow></mfrac><mo>)</mo><mo>≈</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>7</mn><mn>0</mn><mn>2</mn></mrow><annotation encoding="application/x-tex">P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.845108em;"></span><span class="strut bottom" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.05017em;">B</span><span class="mord mathrm">∣</span><span class="mord mathit">A</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">∗</span><span class="mopen">(</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">8</span><span class="mord mathrm">5</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">2</span><span class="mbin">+</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">0</span><span class="mord mathrm">9</span><span class="mbin">∗</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">8</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">8</span><span class="mord mathrm">5</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mclose">)</span><span class="mrel">≈</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">7</span><span class="mord mathrm">0</span><span class="mord mathrm">2</span></span></span></span>
-<p><a href="https://www.cnblogs.com/zhoulujun/p/8893393.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhoulujun/p/8893393.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/07/hide-csdn-ad-in-chrome/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/07/hide-csdn-ad-in-chrome/" class="post-title-link" itemprop="url">hide csdn ad in chrome</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-07 14:58:14" itemprop="dateCreated datePublished" datetime="2019-05-07T14:58:14+08:00">2019-05-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-05-20 22:16:02" itemprop="dateModified" datetime="2019-05-20T22:16:02+08:00">2019-05-20</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Create-manifest-json"><a href="#Create-manifest-json" class="headerlink" title="Create manifest.json"></a>Create manifest.json</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;CSDN Ad Blocker&quot;,</span><br><span class="line">  &quot;version&quot;: &quot;1.0&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;An simple extension to hide the ads from csdn website&quot;,</span><br><span class="line">  &quot;manifest_version&quot;: 2,</span><br><span class="line">  &quot;icons&quot;: &#123;</span><br><span class="line">    &quot;128&quot;: &quot;bb.ico&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;content_scripts&quot;: [&#123;</span><br><span class="line">    &quot;js&quot;: [&quot;content.js&quot;],</span><br><span class="line">    &quot;matches&quot;: [&quot;https://blog.csdn.net/*&quot;]</span><br><span class="line">  &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>choose an icon you like like ‘bb.ico’<br>declare extension function, matches website …</p>
-<h2 id="Create-content-js"><a href="#Create-content-js" class="headerlink" title="Create content.js"></a>Create content.js</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">let adSelectors = [</span><br><span class="line">  &apos;iframe&apos;,</span><br><span class="line">  &apos;aside .csdn-tracking-statistics.mb8.box-shadow&apos;,</span><br><span class="line">  &apos;aside .right_box.footer_box.csdn-tracking-statistics&apos;,</span><br><span class="line">  &apos;.indexSuperise&apos;,</span><br><span class="line">  &apos;#adContent&apos;,</span><br><span class="line">  &apos;#reportContent&apos;,</span><br><span class="line">  &apos;.recommend-box&apos;,</span><br><span class="line">  &apos;.recommend-right&apos;,</span><br><span class="line">  &apos;.pulllog-box&apos;,</span><br><span class="line">  &apos;#article_content a img&apos;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">document.querySelectorAll(adSelectors.join(&apos;,&apos;)).forEach(item =&gt; &#123;</span><br><span class="line">  item.style.display = &apos;none&apos;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var readmore = document.getElementById(&quot;btn-readmore&quot;);</span><br><span class="line">readmore.removeAttribute(&apos;data-track-click&apos;);</span><br><span class="line">readmore.click();</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># ad frame</span><br><span class="line"># left up one</span><br><span class="line"># left down recruit</span><br><span class="line"># right superise</span><br><span class="line"># right vip</span><br><span class="line"># right report</span><br><span class="line"># recommend box</span><br><span class="line"># recommend right</span><br><span class="line"># botton button bar</span><br><span class="line"># login register bar</span><br><span class="line"># article content ad image</span><br></pre></td></tr></table></figure>
-<p>hide target ad dom.<br>if you like, you can adjust the main DOM.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document.getElementsByTagName(&apos;main&apos;)[0].style.width = &apos;75%&apos;</span><br></pre></td></tr></table></figure>
-<p>this line in repository cause aside squeezed underneath the main dom<br>and i don’t like it, so i delete this line.</p>
-<h2 id="Install-extension"><a href="#Install-extension" class="headerlink" title="Install extension"></a>Install extension</h2><p>in chrome open this url <code>chrome://extensions/</code><br>open toggle <code>developer mode</code><br>clike <code>LOAD UNPACKED</code>, choose project folder.</p>
-<p>enjoy :-)</p>
-<p><a href="https://github.com/JerryYuanJ/demos/tree/master/02-simple-csdn-ad-blocker" target="_blank" rel="noopener">https://github.com/JerryYuanJ/demos/tree/master/02-simple-csdn-ad-blocker</a><br><a href="https://blog.csdn.net/qq_25324335/article/details/82595836" target="_blank" rel="noopener">https://blog.csdn.net/qq_25324335/article/details/82595836</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/29/compile-spring-5-x-in-idea/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/29/compile-spring-5-x-in-idea/" class="post-title-link" itemprop="url">compile spring 5.x in idea</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-29 14:16:36 / Modified: 20:18:57" itemprop="dateCreated datePublished" datetime="2019-04-29T14:16:36+08:00">2019-04-29</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><ol>
-<li>source code spring5.x</li>
-<li>gradle 4.9</li>
-<li>jdk1.8_131</li>
-<li>ideaIC-2019.1.1.exe (IntelliJ IDEA Community Edition 2019.1.1 x64)</li>
-</ol>
-<p>Download source code in:<br><a href="https://github.com/spring-projects/spring-framework/tree/5.0.x" target="_blank" rel="noopener">https://github.com/spring-projects/spring-framework/tree/5.0.x</a><br>Download gradle in:<br><a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a><br>Download idea in:<br><a href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">https://www.jetbrains.com/idea/download/</a><br>Download jdk in oracle website</p>
-<p>the versions of these things are important</p>
-<ul>
-<li>gradle version should bigger than 4.2 and no big than 5.0<br>i use 4.6/ 5.1/ 5.4 gradle compile project failed.</li>
-<li>jdk version should in 1.8, and no bigger than 1.8_131<br>the blog of csdn editor has such experience.</li>
-<li>idea version the newer the better, i use idea 2017.1.2 failed in junit test.</li>
-</ul>
-<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>JAVA_HOME: D:\jdk1.8.0_131<br>CLASSPATH: .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;</p>
-<p>GRADLE_HOME: D:\gradle-4.6<br>GRADLE_USER_HOME: D:.gradle</p>
-<p>Add to path</p>
-<p>at setting of idea, set sdk/gradle path.<br>set gradle parameters <code>-XX:MaxPermSize=1024m -Xmx1024m -XX:MaxHeapSize=1024m</code></p>
-<p><img src="/2019/04/29/compile-spring-5-x-in-idea/20190429143526.png" alt="20190429143526.png"></p>
-<h2 id="compile"><a href="#compile" class="headerlink" title="compile"></a>compile</h2><p>import source code of spring5.x, import as a gradle project.<br>wait for gradle solve project sync.</p>
-<p>comment no use depend in <code>spring-beans.gradle</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//compileGroovy.dependsOn = compileGroovy.taskDependencies.values - &quot;compileJava&quot;</span><br></pre></td></tr></table></figure></p>
-<p>if meet dependency problem like this<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Circular dependency between the following tasks:</span><br><span class="line">  ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></p>
-<p>add <code>org.gradle.configureondemand = true</code> in gradle.properties</p>
-<h2 id="test"><a href="#test" class="headerlink" title="test"></a>test</h2><p>project is ready :)</p>
-<p><code>org.springframework.beans.factory.xml.BeanNameGenerationTests</code></p>
-<p><a href="https://blog.csdn.net/baomw/article/details/83956300" target="_blank" rel="noopener">https://blog.csdn.net/baomw/article/details/83956300</a><br><a href="https://www.jianshu.com/p/d6e3ec44f99a" target="_blank" rel="noopener">https://www.jianshu.com/p/d6e3ec44f99a</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2377,7 +2355,7 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-count">211</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2846,15 +2824,15 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
   
     
       
+    
+      
+    
+      
+    
+      
+    
+      
         
-      
-    
-      
-    
-      
-    
-      
-    
       
     
       

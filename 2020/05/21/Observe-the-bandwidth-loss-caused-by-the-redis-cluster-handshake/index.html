@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="被槽吸引why redis-cluster use 16384 slots? #2576【原创】为什么Redis集群有16384个槽看到这位博主的文章，感觉redis作者的考量很有意思。 打开集群的头文件，看了一下数据结构，不出所料是16384个槽https://github.com/antirez/redis/blob/6.0/src/cluster.h 12345678910111213141">
+<meta name="keywords" content="redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="观察redis集群握手造成的带宽损耗">
+<meta property="og:url" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="被槽吸引why redis-cluster use 16384 slots? #2576【原创】为什么Redis集群有16384个槽看到这位博主的文章，感觉redis作者的考量很有意思。 打开集群的头文件，看了一下数据结构，不出所料是16384个槽https://github.com/antirez/redis/blob/6.0/src/cluster.h 12345678910111213141">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png">
+<meta property="og:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/config.png">
+<meta property="og:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/created.png">
+<meta property="og:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/docker-stats.png">
+<meta property="og:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/redis-0-info.png">
+<meta property="og:updated_time" content="2020-05-31T13:24:24.324Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="观察redis集群握手造成的带宽损耗">
+<meta name="twitter:description" content="被槽吸引why redis-cluster use 16384 slots? #2576【原创】为什么Redis集群有16384个槽看到这位博主的文章，感觉redis作者的考量很有意思。 打开集群的头文件，看了一下数据结构，不出所料是16384个槽https://github.com/antirez/redis/blob/6.0/src/cluster.h 12345678910111213141">
+<meta name="twitter:image" content="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>观察redis集群握手造成的带宽损耗 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">观察redis集群握手造成的带宽损耗
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-05-21 09:57:50" itemprop="dateCreated datePublished" datetime="2020-05-21T09:57:50+08:00">2020-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
+<p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*-----------------------------------------------------------------------------</span><br><span class="line"> * Redis cluster data structures, defines, exported API.</span><br><span class="line"> *----------------------------------------------------------------------------*/</span><br><span class="line"></span><br><span class="line">#define CLUSTER_SLOTS 16384</span><br><span class="line"></span><br><span class="line">line:249</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    ...</span><br><span class="line">    uint16_t type;      /* Message type */</span><br><span class="line">    ...</span><br><span class="line">    unsigned char myslots[CLUSTER_SLOTS/8];</span><br><span class="line">    ...</span><br><span class="line">    union clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
+<p>博主解释的很挺清楚的了，说白了就是不会有这么多节点，不需要太多槽。</p>
+<p>issue 里评论区有提到 <code>Compress bitmap to reduce network traffic</code>，<br>我觉得评论区最后的回复是对的，传输中的数据没有被压缩 <code>No compression, just 1 bit for 1 slot</code>。</p>
+<p>追查代码：<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:2444</span><br><span class="line">void clusterSendPing(clusterLink *link, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    clusterBuildMessageHdr(hdr,type);</span><br><span class="line">    ...</span><br><span class="line">    clusterSendMessage(link,buf,totlen);</span><br><span class="line">    zfree(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2340</span><br><span class="line">void clusterBuildMessageHdr(clusterMsg *hdr, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    memcpy(hdr-&gt;myslots,master-&gt;slots,sizeof(hdr-&gt;myslots));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2303</span><br><span class="line">void clusterSendMessage(clusterLink *link, unsigned char *msg, size_t msglen) &#123;</span><br><span class="line">    if (sdslen(link-&gt;sndbuf) == 0 &amp;&amp; msglen != 0)</span><br><span class="line">        connSetWriteHandlerWithBarrier(link-&gt;conn, clusterWriteHandler, 1);</span><br><span class="line"></span><br><span class="line">    link-&gt;sndbuf = sdscatlen(link-&gt;sndbuf, msg, msglen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>并没有发现有压缩的过程，我猜作者想说的是，压缩位图以节省内存空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void clusterInit(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:518</span><br><span class="line">    /* The slots -&gt; keys map is a radix tree. Initialize it here. */</span><br><span class="line">    server.cluster-&gt;slots_to_keys = raxNew();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="评论区老哥"><a href="#评论区老哥" class="headerlink" title="评论区老哥"></a>评论区老哥</h2><p>看完文章，评论区老哥的问题，引起了我的兴趣：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png" alt="20200521111826.png"></p>
+<p>对呀，带宽损耗可不可以算出来？<br>给定节点数量、实例数量、超时时间，估算带宽损耗？<br>嗯，这很酷。。。</p>
+<p>博主已经介绍了ping发送数量的计算公式：<br><code>数量=1+10*num(node.pong_received&gt;cluster_node_timeout/2)</code><br>可对GOSSIP协议不够了解，计算结果和《Redis运维与实现》的例子对不上<br>200节点，20台物理机，15s超时，真的是占25Mb带宽吗？</p>
+<h2 id="跑一个看看"><a href="#跑一个看看" class="headerlink" title="跑一个看看"></a>跑一个看看</h2><p>没那么多物理机，用docker做个测试，创建20个节点，分布在2个桥接的网络上：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/config.png" alt="config.png"><br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/created.png" alt="created.png"></p>
+<p>10分钟后docker的状态<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/docker-stats.png" alt="docker-stats.png"></p>
+<p>10分钟后redis-0的集群信息<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/redis-0-info.png" alt="redis-0-info.png"></p>
+<ol>
+<li>通过容器的网络IO换算一下，带宽损耗1.66Mb，例子的数据是正确的~~~<br><code>((121.93MB / 600s) * 1024 / 1000) * 8 = 1.66Mbps</code></li>
+<li>通过redis-0的网络Output来看，每个消息大约 2.91KB/msg<br><code>6.24MB * 1024 / 2197 = 2.91KB/msg</code></li>
+<li>10分钟发送1114个ping，平均 1.86ping/s，可见公式里的 num(x) 大约是 0.086个</li>
+</ol>
+<h2 id="ping的发送"><a href="#ping的发送" class="headerlink" title="ping的发送"></a>ping的发送</h2><p>如果按本地所有节点都在默默等待超时来算，ping数量、带宽损耗会远高于观察到的结果<br>看源码可以知道，除了每秒固定的ping外，100ms发送ping的条件有3个</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">line:3400</span><br><span class="line">/* -----------------------------------------------------------------------------</span><br><span class="line"> * CLUSTER cron job</span><br><span class="line"> * -------------------------------------------------------------------------- */</span><br><span class="line"></span><br><span class="line">/* This is executed 10 times every second */</span><br><span class="line">void clusterCron(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:3506</span><br><span class="line">    if (!(iteration % 10)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        clusterSendPing(min_pong_node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    line:3589</span><br><span class="line">    if (node-&gt;link &amp;&amp;</span><br><span class="line">        node-&gt;ping_sent == 0 &amp;&amp;</span><br><span class="line">        (now - node-&gt;pong_received) &gt; server.cluster_node_timeout/2)</span><br><span class="line">    &#123;</span><br><span class="line">        clusterSendPing(node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        continue;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>当前节点和目标节点的连接有效</li>
+<li>没有向目标节点发过ping（没收到过目标节点的pong）</li>
+<li>目标节点的本地pong接收时间已经超时</li>
+</ol>
+<p>可见，我忽略了重要的第二点，即博主提到的：</p>
+<blockquote>
+<p>在消息体中，会携带一定数量的其他节点信息用于交换。</p>
+</blockquote>
+<p>也就是说，我向张三打听他是不是还活着，他会顺带着告诉我李四也还活着 :)</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于有GOSSIP协议的信息传播，集群ping数量大幅降低</p>
+<hr>
+<p>集群安装参考<br><a href="https://www.runoob.com/docker/docker-redis-cluster.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-redis-cluster.html</a><br><a href="https://blog.csdn.net/alinyua/article/details/80936940" target="_blank" rel="noopener">https://blog.csdn.net/alinyua/article/details/80936940</a><br><a href="https://blog.csdn.net/u012882163/article/details/100033442" target="_blank" rel="noopener">https://blog.csdn.net/u012882163/article/details/100033442</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/10/Search-content-in-files-under-folder/" rel="next" title="Search content in files under folder">
+                <i class="fa fa-chevron-left"></i> Search content in files under folder
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/" rel="prev" title="基于Redis-Lua脚本的抢购方案">
+                基于Redis-Lua脚本的抢购方案 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">211</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#被槽吸引"><span class="nav-number">1.</span> <span class="nav-text">被槽吸引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#评论区老哥"><span class="nav-number">2.</span> <span class="nav-text">评论区老哥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑一个看看"><span class="nav-number">3.</span> <span class="nav-text">跑一个看看</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ping的发送"><span class="nav-number">4.</span> <span class="nav-text">ping的发送</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

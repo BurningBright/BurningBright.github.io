@@ -320,6 +320,821 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/" class="post-title-link" itemprop="url">基于Redis-Lua脚本的抢购方案</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-06-02 16:05:26" itemprop="dateCreated datePublished" datetime="2020-06-02T16:05:26+08:00">2020-06-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-09 21:54:54" itemprop="dateModified" datetime="2020-06-09T21:54:54+08:00">2020-06-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Lua 脚本功能是 Reids的一大亮点， 通过内嵌对 Lua 环境的支持，<br>Redis 解决了长久以来不能高效地处理 <strong>CAS （check-and-set）</strong> 命令的缺点。<br>并且可以通过组合使用多个命令， 轻松实现以前很难实现或者不能高效实现的模式。</p>
+<p>该抢购方案基于Lua脚本，实际项目中可根据需要扩展命令。</p>
+<h2 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h2><ol>
+<li>是否已抢购(是否达到抢购上限)</li>
+<li>是否还有库存</li>
+<li>如果未抢购、有库存则扣减，否则返回0</li>
+<li>加入已抢购集合</li>
+<li>加入购买处理队列</li>
+<li>返回1</li>
+</ol>
+<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><h3 id="编写脚本"><a href="#编写脚本" class="headerlink" title="编写脚本"></a>编写脚本</h3><p><code>script.lua</code></p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- variable</span></span><br><span class="line"><span class="keyword">local</span> stockKey = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> purchasedKey = KEYS[<span class="number">2</span>]</span><br><span class="line"><span class="keyword">local</span> handlerKey = KEYS[<span class="number">3</span>]</span><br><span class="line"><span class="keyword">local</span> userId = ARGV[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- check purchased set</span></span><br><span class="line"><span class="keyword">if</span> redis.call(<span class="string">"SISMEMBER"</span>, purchasedKey, userId) ~= <span class="number">0</span> <span class="keyword">then</span> <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- check stock</span></span><br><span class="line"><span class="keyword">local</span> stock = redis.call(<span class="string">"GET"</span>, stockKey)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> stock <span class="keyword">or</span> <span class="built_in">tonumber</span>(stock) &lt;= <span class="number">0</span> <span class="keyword">then</span> <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- stock decrease</span></span><br><span class="line">redis.call(<span class="string">"DECR"</span>, stockKey)</span><br><span class="line"><span class="comment">-- add purchased set</span></span><br><span class="line">redis.call(<span class="string">"SADD"</span>, purchasedKey, userId)</span><br><span class="line"><span class="comment">-- add purchased handler queue</span></span><br><span class="line">redis.call(<span class="string">"LPUSH"</span>, handlerKey, userId)</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="调试脚本"><a href="#调试脚本" class="headerlink" title="调试脚本"></a>调试脚本</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602171231.png" alt="20200602171231.png"></p>
+<p>又是个坑：参数的分隔用逗号 <code>,</code> 而且空格不能少</p>
+<p><code>redis-cli --ldb --eval script.lua apple_stock apple_purchased_set apple_purchased_queue , 711</code></p>
+<p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602165535.png" alt="20200602165535.png"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602165550.png" alt="20200602165550.png"></p>
+<h3 id="测试脚本"><a href="#测试脚本" class="headerlink" title="测试脚本"></a>测试脚本</h3><p><code>redis-cli</code></p>
+<p>文本转换为命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">script load &quot;-- variable\nlocal stockKey = KEYS[1]\nlocal purchasedKey = KEYS[2]\nlocal handlerKey = KEYS[3]\nlocal userId = ARGV[1]\n\n-- check purchased set\nif redis.call(\&quot;SISMEMBER\&quot;, purchasedKey, userId) ~= 0 then return 0 end\n\n-- check stock\nlocal stock = redis.call(\&quot;GET\&quot;, stockKey)\nif not stock or tonumber(stock) &lt;= 0 then return 0 end\n\n-- stock decrease\nredis.call(\&quot;DECR\&quot;, stockKey)\n-- add purchased set\nredis.call(\&quot;SADD\&quot;, purchasedKey, userId)\n-- add purchased handler queue\nredis.call(\&quot;LPUSH\&quot;, handlerKey, userId)\nreturn 1&quot;</span><br></pre></td></tr></table></figure>
+<p>得到sha1，执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evalsha a80403df241c6d1823f5c820a4d2b6284995444e 3 apple_stock apple_purchased_set apple_purchased_queue 777</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602171006.png" alt="20200602171006.png"></p>
+<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><p>lua:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195605.png" alt="j-lua-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195817.png" alt="j-lua-20000"><br>lua-cluster:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608193546.png" alt="j-lua-cluster-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608194858.png" alt="j-lua-cluster-20000"><br>watch:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200047.png" alt="j-watch-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200257.png" alt="j-watch-20000"></p>
+<ul>
+<li>lua 方案抢购先到先得，基本不会出现失败。</li>
+<li>lua 3个Master节点集群，性能对比单实例性能低。</li>
+<li>watch 方案里，会出现大概30%的抢购失败，且性能比lua方案低。</li>
+</ul>
+<p>ps. 由于集群版的 Key 批量操作限制，mset、mget、eval，目前只支持具有 <strong>相同slot值的Key</strong> 执行批量操作。<br>所以在集群版的抢购方案中，传入的Key需要带上<code>{}</code>把键值映射入相同的slot，让命令在一个节点执行。<br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evalsha a80403df241c6d1823f5c820a4d2b6284995444e 3 apple_stock&#123;apple&#125; apple_purchased_set&#123;apple&#125; apple_purchased_queue&#123;apple&#125; 777</span><br></pre></td></tr></table></figure></p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><ul>
+<li>可以把有<strong>原子性要求</strong>的操作放入脚本</li>
+<li>监听<code>apple_purchased_queue</code>, 消费消息处理抢购。</li>
+<li>如果架构里有MQ，可以去除脚本里的<code>LPUSH</code>。</li>
+<li>消费者如果处理异常，可以使用延迟队列做”失败重试”、”失效检查”之类操作</li>
+</ul>
+<hr>
+<p>队列&amp;延迟队列：<br><a href="https://www.cnblogs.com/shamo89/p/9873368.html" target="_blank" rel="noopener">https://www.cnblogs.com/shamo89/p/9873368.html</a></p>
+<p>事务&amp;lua&amp;管道：<br><a href="https://blog.csdn.net/u013870094/article/details/82461527" target="_blank" rel="noopener">https://blog.csdn.net/u013870094/article/details/82461527</a></p>
+<p>命令：<br><a href="https://redis.io/commands#" target="_blank" rel="noopener">https://redis.io/commands#</a><br><a href="https://redis.io/topics/ldb" target="_blank" rel="noopener">https://redis.io/topics/ldb</a><br><a href="https://redis.io/commands/script-load" target="_blank" rel="noopener">https://redis.io/commands/script-load</a><br><a href="https://redis.io/commands/evalsha" target="_blank" rel="noopener">https://redis.io/commands/evalsha</a><br><a href="https://www.runoob.com/redis/redis-commands.html" target="_blank" rel="noopener">https://www.runoob.com/redis/redis-commands.html</a></p>
+<p>LUA脚本：<br><a href="https://yq.aliyun.com/articles/645851" target="_blank" rel="noopener">https://yq.aliyun.com/articles/645851</a><br><a href="https://blog.csdn.net/xixingzhe2/article/details/86167859" target="_blank" rel="noopener">https://blog.csdn.net/xixingzhe2/article/details/86167859</a><br><a href="https://www.jianshu.com/p/366d1b4f0d13" target="_blank" rel="noopener">https://www.jianshu.com/p/366d1b4f0d13</a><br><a href="https://www.jianshu.com/p/8028972cf735" target="_blank" rel="noopener">https://www.jianshu.com/p/8028972cf735</a><br><a href="https://www.runoob.com/lua/lua-miscellaneous-operator.html" target="_blank" rel="noopener">https://www.runoob.com/lua/lua-miscellaneous-operator.html</a></p>
+<p>异常：<br>Too many cluster redirections redis:<br><a href="https://segmentfault.com/a/1190000016461888" target="_blank" rel="noopener">https://segmentfault.com/a/1190000016461888</a><br><a href="https://blog.csdn.net/slg1988/article/details/93638501" target="_blank" rel="noopener">https://blog.csdn.net/slg1988/article/details/93638501</a><br><a href="https://blog.kelu.org/tech/2019/04/05/docker-compose-using-net-host.html" target="_blank" rel="noopener">https://blog.kelu.org/tech/2019/04/05/docker-compose-using-net-host.html</a></p>
+<p>Connection reset:<br><a href="https://www.cnblogs.com/liu-ke/p/7090698.html" target="_blank" rel="noopener">https://www.cnblogs.com/liu-ke/p/7090698.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/" class="post-title-link" itemprop="url">观察redis集群握手造成的带宽损耗</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-05-21 09:57:50" itemprop="dateCreated datePublished" datetime="2020-05-21T09:57:50+08:00">2020-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
+<p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*-----------------------------------------------------------------------------</span><br><span class="line"> * Redis cluster data structures, defines, exported API.</span><br><span class="line"> *----------------------------------------------------------------------------*/</span><br><span class="line"></span><br><span class="line">#define CLUSTER_SLOTS 16384</span><br><span class="line"></span><br><span class="line">line:249</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    ...</span><br><span class="line">    uint16_t type;      /* Message type */</span><br><span class="line">    ...</span><br><span class="line">    unsigned char myslots[CLUSTER_SLOTS/8];</span><br><span class="line">    ...</span><br><span class="line">    union clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
+<p>博主解释的很挺清楚的了，说白了就是不会有这么多节点，不需要太多槽。</p>
+<p>issue 里评论区有提到 <code>Compress bitmap to reduce network traffic</code>，<br>我觉得评论区最后的回复是对的，传输中的数据没有被压缩 <code>No compression, just 1 bit for 1 slot</code>。</p>
+<p>追查代码：<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:2444</span><br><span class="line">void clusterSendPing(clusterLink *link, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    clusterBuildMessageHdr(hdr,type);</span><br><span class="line">    ...</span><br><span class="line">    clusterSendMessage(link,buf,totlen);</span><br><span class="line">    zfree(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2340</span><br><span class="line">void clusterBuildMessageHdr(clusterMsg *hdr, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    memcpy(hdr-&gt;myslots,master-&gt;slots,sizeof(hdr-&gt;myslots));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2303</span><br><span class="line">void clusterSendMessage(clusterLink *link, unsigned char *msg, size_t msglen) &#123;</span><br><span class="line">    if (sdslen(link-&gt;sndbuf) == 0 &amp;&amp; msglen != 0)</span><br><span class="line">        connSetWriteHandlerWithBarrier(link-&gt;conn, clusterWriteHandler, 1);</span><br><span class="line"></span><br><span class="line">    link-&gt;sndbuf = sdscatlen(link-&gt;sndbuf, msg, msglen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>并没有发现有压缩的过程，我猜作者想说的是，压缩位图以节省内存空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void clusterInit(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:518</span><br><span class="line">    /* The slots -&gt; keys map is a radix tree. Initialize it here. */</span><br><span class="line">    server.cluster-&gt;slots_to_keys = raxNew();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="评论区老哥"><a href="#评论区老哥" class="headerlink" title="评论区老哥"></a>评论区老哥</h2><p>看完文章，评论区老哥的问题，引起了我的兴趣：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png" alt="20200521111826.png"></p>
+<p>对呀，带宽损耗可不可以算出来？<br>给定节点数量、实例数量、超时时间，估算带宽损耗？<br>嗯，这很酷。。。</p>
+<p>博主已经介绍了ping发送数量的计算公式：<br><code>数量=1+10*num(node.pong_received&gt;cluster_node_timeout/2)</code><br>可对GOSSIP协议不够了解，计算结果和《Redis运维与实现》的例子对不上<br>200节点，20台物理机，15s超时，真的是占25Mb带宽吗？</p>
+<h2 id="跑一个看看"><a href="#跑一个看看" class="headerlink" title="跑一个看看"></a>跑一个看看</h2><p>没那么多物理机，用docker做个测试，创建20个节点，分布在2个桥接的网络上：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/config.png" alt="config.png"><br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/created.png" alt="created.png"></p>
+<p>10分钟后docker的状态<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/docker-stats.png" alt="docker-stats.png"></p>
+<p>10分钟后redis-0的集群信息<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/redis-0-info.png" alt="redis-0-info.png"></p>
+<ol>
+<li>通过容器的网络IO换算一下，带宽损耗1.66Mb，例子的数据是正确的~~~<br><code>((121.93MB / 600s) * 1024 / 1000) * 8 = 1.66Mbps</code></li>
+<li>通过redis-0的网络Output来看，每个消息大约 2.91KB/msg<br><code>6.24MB * 1024 / 2197 = 2.91KB/msg</code></li>
+<li>10分钟发送1114个ping，平均 1.86ping/s，可见公式里的 num(x) 大约是 0.086个</li>
+</ol>
+<h2 id="ping的发送"><a href="#ping的发送" class="headerlink" title="ping的发送"></a>ping的发送</h2><p>如果按本地所有节点都在默默等待超时来算，ping数量、带宽损耗会远高于观察到的结果<br>看源码可以知道，除了每秒固定的ping外，100ms发送ping的条件有3个</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">line:3400</span><br><span class="line">/* -----------------------------------------------------------------------------</span><br><span class="line"> * CLUSTER cron job</span><br><span class="line"> * -------------------------------------------------------------------------- */</span><br><span class="line"></span><br><span class="line">/* This is executed 10 times every second */</span><br><span class="line">void clusterCron(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:3506</span><br><span class="line">    if (!(iteration % 10)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        clusterSendPing(min_pong_node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    line:3589</span><br><span class="line">    if (node-&gt;link &amp;&amp;</span><br><span class="line">        node-&gt;ping_sent == 0 &amp;&amp;</span><br><span class="line">        (now - node-&gt;pong_received) &gt; server.cluster_node_timeout/2)</span><br><span class="line">    &#123;</span><br><span class="line">        clusterSendPing(node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        continue;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>当前节点和目标节点的连接有效</li>
+<li>没有向目标节点发过ping（没收到过目标节点的pong）</li>
+<li>目标节点的本地pong接收时间已经超时</li>
+</ol>
+<p>可见，我忽略了重要的第二点，即博主提到的：</p>
+<blockquote>
+<p>在消息体中，会携带一定数量的其他节点信息用于交换。</p>
+</blockquote>
+<p>也就是说，我向张三打听他是不是还活着，他会顺带着告诉我李四也还活着 :)</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于有GOSSIP协议的信息传播，集群ping数量大幅降低</p>
+<hr>
+<p>集群安装参考<br><a href="https://www.runoob.com/docker/docker-redis-cluster.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-redis-cluster.html</a><br><a href="https://blog.csdn.net/alinyua/article/details/80936940" target="_blank" rel="noopener">https://blog.csdn.net/alinyua/article/details/80936940</a><br><a href="https://blog.csdn.net/u012882163/article/details/100033442" target="_blank" rel="noopener">https://blog.csdn.net/u012882163/article/details/100033442</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/04/10/Search-content-in-files-under-folder/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/10/Search-content-in-files-under-folder/" class="post-title-link" itemprop="url">Search content in files under folder</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-10 14:49:05" itemprop="dateCreated datePublished" datetime="2020-04-10T14:49:05+08:00">2020-04-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="regular-expression"><a href="#regular-expression" class="headerlink" title="regular expression"></a>regular expression</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\bsys_.*?\b/</span><br></pre></td></tr></table></figure>
+<p>match words begin with <code>sys_</code>, as short as possible.</p>
+<h2 id="definite-scope"><a href="#definite-scope" class="headerlink" title="definite scope"></a>definite scope</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find --name &quot;*.xml&quot; .</span><br></pre></td></tr></table></figure>
+<p>If you search directly under a folder<br><code>grep -r</code> —recursive may more suitable.</p>
+<h2 id="turn-lower-to-upper-letter"><a href="#turn-lower-to-upper-letter" class="headerlink" title="turn lower to upper letter"></a>turn lower to upper letter</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tr &quot;[:lower:]&quot; &quot;[:upper:]&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="duplicate-removal"><a href="#duplicate-removal" class="headerlink" title="duplicate removal"></a>duplicate removal</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &apos;!a[$0]++&#123;print&#125;&apos;</span><br></pre></td></tr></table></figure>
+<p>when current line not show in below, print it.</p>
+<h2 id="integration"><a href="#integration" class="headerlink" title="integration"></a>integration</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find -name &quot;*.xml&quot; | xargs grep -iohP &apos;\bsys_.*?\b&apos; | tr &quot;[:lower:]&quot; &quot;[:upper:]&quot; | awk &apos;!a[$0]++&#123;print&#125;&apos;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>find target files</li>
+<li>grep string in files, —ignore-case  —only-matching  —no-filename  —perl-regexp</li>
+<li>turn capitalization</li>
+<li>duplicate removal</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/04/10/Segment-level-locking-in-Oracle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/04/10/Segment-level-locking-in-Oracle/" class="post-title-link" itemprop="url">Segment level locking in Oracle</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-10 14:49:05" itemprop="dateCreated datePublished" datetime="2020-04-10T14:49:05+08:00">2020-04-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Simple demonstration of segment-level locking caused by concurrency in an Oracle database</p>
+<p>reprint:简单演示 Oracle 数据库并发导致段级锁（表级锁）<br><a href="https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html</a></p>
+<h2 id="content"><a href="#content" class="headerlink" title="content"></a>content</h2><ul>
+<li>environment</li>
+<li>demonstration</li>
+</ul>
+<blockquote>
+<p>本文简单演示并发导致的行级锁。并发是两个以上的用户对同样的数据进行修改（包括插入、删除和修改）。锁的产生是因为并发。没有并发，就没有锁。并发的产生是因为系统需要，系统需要是因为用户需要。</p>
+<p>This article briefly demonstrates row-level locking caused by concurrency. Concurrency is when two or more users make changes (including inserts, deletes, and modifications) to the same data. Locks occur because of concurrency. <strong>No concurrency, no locking.</strong> Concurrency occurs because the system needs it, and the system needs it because the user needs it.</p>
+</blockquote>
+<h2 id="environment"><a href="#environment" class="headerlink" title="environment"></a>environment</h2><ul>
+<li>Windows 2003 Server</li>
+<li>Oracle 11g Release 1 (11.1)</li>
+</ul>
+<h2 id="demonstration"><a href="#demonstration" class="headerlink" title="demonstration"></a>demonstration</h2><h3 id="open-the-first-sql-session"><a href="#open-the-first-sql-session" class="headerlink" title="open the first sql session"></a>open the first sql session</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; select distinct sid from v$mystat;</span><br><span class="line"> </span><br><span class="line">       SID</span><br><span class="line">----------</span><br><span class="line">       124</span><br><span class="line"> </span><br><span class="line">SQL&gt; create table t(x int) partition by range(x)(partition p1 values less than(10),partition p2 values less than(maxvalue));</span><br><span class="line"> </span><br><span class="line">表已创建。</span><br><span class="line"> </span><br><span class="line">SQL&gt; insert into t values(1);</span><br><span class="line"> </span><br><span class="line">已创建 1 行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select * from t partition(p1);</span><br><span class="line"> </span><br><span class="line">         X</span><br><span class="line">----------</span><br><span class="line">         1</span><br><span class="line"> </span><br><span class="line">SQL&gt; select sid,type,id1,id2,lmode,request,block</span><br><span class="line">  2  from v$lock where sid=124;</span><br><span class="line"> </span><br><span class="line">       SID TYPE         ID1        ID2      LMODE    REQUEST      BLOCK</span><br><span class="line">---------- ----- ---------- ---------- ---------- ---------- ----------</span><br><span class="line">       124 AE            99          0          4          0          0</span><br><span class="line">       124 TM        128807          0          3          0          0</span><br><span class="line">       124 TM        128808          0          3          0          0</span><br><span class="line">       124 TX        589847      46045          6          0          0</span><br><span class="line"> </span><br><span class="line">SQL&gt; select object_name, subobject_name</span><br><span class="line">  2    from dba_objects</span><br><span class="line">  3   where object_id in (128807, 128808);</span><br><span class="line"> </span><br><span class="line">OBJECT_NAME     SUBOBJECT_NAME</span><br><span class="line">--------------- ---------------</span><br><span class="line">T</span><br><span class="line">T               P1</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>create partition table <code>t</code>, with two partitions, <code>p1</code> and <code>p2</code></li>
+<li>insert a record into <code>p1</code></li>
+<li>find <code>TM</code> share lock in <code>t</code> and <code>p1</code>, by view <code>V$LOCK</code></li>
+<li><code>ID1</code> represents the locked object ID. You can get the object name by looking at the DBA_OBJECTS view. 128807 and 128808 correspond to the <code>p1</code> partition of table t and table t, respectively.</li>
+</ul>
+<h3 id="open-the-second-sql-session"><a href="#open-the-second-sql-session" class="headerlink" title="open the second sql session"></a>open the second sql session</h3><p>At this point, what happens if we do DDL operations on t table, p1 partition of t table, and p2 partition of t table:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; select distinct sid from v$mystat;</span><br><span class="line"> </span><br><span class="line">       SID</span><br><span class="line">----------</span><br><span class="line">       140</span><br><span class="line"> </span><br><span class="line">SQL&gt; truncate table t;</span><br><span class="line">truncate table t</span><br><span class="line">               *</span><br><span class="line">第 1 行出现错误:</span><br><span class="line">ORA-00054: 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">SQL&gt; alter table t truncate partition p1;</span><br><span class="line">alter table t truncate partition p1</span><br><span class="line">            *</span><br><span class="line">第 1 行出现错误:</span><br><span class="line">ORA-00054: 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">SQL&gt; alter table t truncate partition p2;</span><br><span class="line"> </span><br><span class="line">表被截断。</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Only the <code>p2</code> partition is not section-locked, so DDL operations can be performed on <code>p2</code>.</p>
+</li>
+<li><p>A <code>TM</code> lock is a segmental-level lock that allows locks at the same level or lower, but rejects higher-level locks, making the DDL operation significantly higher. Oracle minimizes the scope of the lock as much as possible.</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; insert into t values(11);</span><br><span class="line"> </span><br><span class="line">已创建 1 行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select * from t partition(p2);</span><br><span class="line"> </span><br><span class="line">         X</span><br><span class="line">----------</span><br><span class="line">        11</span><br><span class="line"> </span><br><span class="line">SQL&gt; select sid,type,id1,id2,lmode,request,block</span><br><span class="line">  2  from v$lock where sid in (124,140)</span><br><span class="line">  3  order by sid,type;</span><br><span class="line"> </span><br><span class="line">       SID TY        ID1        ID2      LMODE    REQUEST      BLOCK</span><br><span class="line">---------- -- ---------- ---------- ---------- ---------- ----------</span><br><span class="line">       124 AE         99          0          4          0          0</span><br><span class="line">       124 TM     128808          0          3          0          0</span><br><span class="line">       124 TM     128807          0          3          0          0</span><br><span class="line">       124 TX     327711      45817          6          0          0</span><br><span class="line">       140 AE         99          0          4          0          0</span><br><span class="line">       140 TM     128807          0          3          0          0</span><br><span class="line">       140 TM     128809          0          3          0          0</span><br><span class="line">       140 TX     196611      45960          6          0          0</span><br><span class="line"> </span><br><span class="line">已选择8行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select object_name, subobject_name</span><br><span class="line">  2    from dba_objects</span><br><span class="line">  3   where object_id in (128807, 128808, 128809);</span><br><span class="line"> </span><br><span class="line">OBJECT_NAME     SUBOBJECT_NAME</span><br><span class="line">--------------- ---------------</span><br><span class="line">T</span><br><span class="line">T               P1</span><br><span class="line">T               P2</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>When a piece of data is inserted into a <code>p2</code> partition, a Shared lock is also added to the <code>p2</code> partition, i.e. ID1=128809.</p>
+</li>
+<li><p>A <code>TM lock</code> is a table-level Shared lock. A table is usually viewed as a segment. When a table has several segments, each segment is individually locked.</p>
+</li>
+</ul>
+<h2 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h2><ul>
+<li>segmental-level lock allows locks at the same level or lower, but rejects higher-level locks. so <code>p1</code> reject DDL, but <code>p2</code> truncated.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/02/27/Monitor-jar-by-prometheus/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -459,7 +1274,7 @@
 </div>
 <h3 id="Install-Go"><a href="#Install-Go" class="headerlink" title="Install Go"></a>Install Go</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf go1.11.4.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line">vim /etc/profile</span><br><span class="line">export PATH=$PATH:/usr/local/go/bin</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line">go version</span><br></pre></td></tr></table></figure>
 <h3 id="Install-prometheus"><a href="#Install-prometheus" class="headerlink" title="Install prometheus"></a>Install prometheus</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf prometheus-2.6.0.linux-amd64.tar.gz</span><br><span class="line">ln -sv /usr/local/prometheus-2.6.0.linux-amd64/ /usr/local/Prometheus</span><br></pre></td></tr></table></figure>
-<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
+<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
 <p>check on browser <code>127.0.0.1:9090</code></p>
 <h3 id="Install-grafana"><a href="#Install-grafana" class="headerlink" title="Install grafana"></a>Install grafana</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh --nodeps grafana-5.4.2-1.x86_64.rpm</span><br><span class="line">sudo /bin/systemctl daemon-reload</span><br><span class="line">sudo /bin/systemctl enable grafana-server.service</span><br><span class="line">sudo /bin/systemctl start grafana-server.service</span><br></pre></td></tr></table></figure>
 <p>check on browser <code>127.0.0.1:3000</code></p>
@@ -476,7 +1291,7 @@
 <li><p>start jar with exporter</p>
 </li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 <ol>
 <li>add prometheus config</li>
 </ol>
@@ -1444,854 +2259,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/11/07/Introducing-Serverless/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/11/07/Introducing-Serverless/" class="post-title-link" itemprop="url">Introducing Serverless</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-11-07 17:19:46" itemprop="dateCreated datePublished" datetime="2019-11-07T17:19:46+08:00">2019-11-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-11-30 10:58:27" itemprop="dateModified" datetime="2019-11-30T10:58:27+08:00">2019-11-30</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="第1章无服务器简介"><a href="#第1章无服务器简介" class="headerlink" title="第1章无服务器简介"></a>第1章无服务器简介</h1><p>在本章中，我们首先要上一堂历史课，以了解导致我们走向无服务器的原因。在这种情况下，我们将描述什么是无服务器。最后，我们将通过总结为什么无服务器既是云自然增长的一部分，又是我们如何处理应用交付方式的障碍而总结一下。</p>
-<h1 id="搭建舞台"><a href="#搭建舞台" class="headerlink" title="搭建舞台"></a>搭建舞台</h1><p>为了将像Serverless这样的技术置于适当的环境中，我们必须首先概述其演进路径中的步骤。</p>
-<h2 id="云的诞生"><a href="#云的诞生" class="headerlink" title="云的诞生"></a>云的诞生</h2><p>让我们回到2006年。目前还没有人拥有iPhone，Ruby on Rails是一个炙手可热的新编程环境，并且Twitter也在启动。但是，与该报告更紧密的关系是，许多人将其服务器端应用程序托管在自己拥有的机架式数据中心中。</p>
-<p>2006年8月，发生了一些事情，从根本上改变了这种模式。亚马逊的新IT部门亚马逊网络服务（AWS）宣布推出<code>弹性计算云（EC2）</code>。</p>
-<p>EC2是众多基础架构即服务（IaaS）产品的首批产品之一。IaaS允许公司租用计算能力（即托管运行面向Internet的服务器应用程序的主机），而不用购买自己的计算机。它还允许他们及时配置主机，从请求计算机到可用性的延迟大约为几分钟。</p>
-<p>EC2的五个主要优势是：</p>
-<ul>
-<li><p>降低人工成本<br>在使用基础架构即服务之前，公司需要雇用特定的技术运营人员，他们将在数据中心工作并管理其物理服务器。这意味着一切，从电源和网络到机架和安装，再到修复机器的物理问题（如内存不足）到设置操作系统（OS）。有了IaaS，所有这些都消失了，而是由IaaS服务提供商（在EC2中为AWS）负责。</p>
-</li>
-<li><p>在管理自己的物理服务器时，公司会遇到由于意外事件（如硬件故障）而导致的问题。由于硬件问题通常很少发生，并且可能需要很长时间才能解决，因此这会导致长度波动很大的停机时间。使用IaaS，客户在发生硬件故障时仍然有一些工作要做，而不再需要知道如何修复硬件。取而代之的是，客户只需在几分钟之内请求一个可用的新机器实例，然后重新安装该应用程序，就可以避免此类问题的发生。</p>
-</li>
-<li><p>降低基础设施成本<br>在许多情况下，考虑到电源，网络等因素，连接的EC2实例的成本要比运行自己的硬件便宜。当您只想运行几天或几周而不是几个月的主机时，这尤其有效或数年的时间。同样，按小时租用主机而不是直接购买主机会导致不同的会计处理：EC2机器是运营费用（Opex），而不是物理机器的资本费用（Capex），通常允许更有利的会计灵活性。</p>
-</li>
-<li><p>缩放比例<br>考虑到IaaS带来的扩展优势，基础架构成本将大幅下降。借助IaaS，公司在扩展其运行的服务器的数量和类型方面具有更大的灵活性。您不再需要预先购买10台高端服务器，因为您认为几个月后可能会需要它们。相反，您可以从一个或两个低功耗，便宜的实例开始，然后随时间上下扩展实例的数量和类型，而不会产生任何负面成本影响。</p>
-</li>
-<li><p>交货时间<br>在自托管服务器的糟糕年代，要为新应用程序购买和配置服务器可能要花费数月的时间。如果您想在几周内尝试一下，那太糟糕了。使用IaaS，交货时间从数月缩短至数分钟。在精益创业的思想鼓舞下，这已经进入了快速产品试验的时代。</p>
-</li>
-</ul>
-<h2 id="基础设施外包"><a href="#基础设施外包" class="headerlink" title="基础设施外包"></a>基础设施外包</h2><p>使用IaaS是一种我们可以定义为基础设施外包的技术。当我们开发和操作软件时，我们可以通过两种方式分解工作的需求：针对我们需求的需求，以及与其他以类似方式工作的团队和组织相同的需求。我们可以将第二组需求定义为基础设施，范围从实物商品（例如运行机器的电力）一直到常见的应用程序功能（如用户身份验证）。</p>
-<p>基础设施外包通常可以由服务提供商或供应商提供。例如，电力由电力供应商提供，并且网络由互联网服务提供商（ISP）提供。卖方能够通过两种策略来获利地提供这种服务：我们现在描述的经济和技术策略。</p>
-<h3 id="规模经济"><a href="#规模经济" class="headerlink" title="规模经济"></a>规模经济</h3><p>规模经济的思想至少几乎部分支持了基础设施外包的每种形式-由于可以利用效率，总体上多次做同一件事比独立进行这些事情总和要便宜。</p>
-<p>例如，AWS可以以比小型公司更低的价格购买相同规格的服务器，因为AWS所购买的服务器是数千台而不是单独购买。同样，与拥有少数机器的公司相比，AWS的每台服务器硬件支持成本要低得多。</p>
-<h3 id="技术改进"><a href="#技术改进" class="headerlink" title="技术改进"></a>技术改进</h3><p>基础设施外包通常也部分归因于技术创新。就EC2而言，变化是<code>硬件虚拟化</code>。</p>
-<p>在IaaS出现之前，一些IT供应商已经开始允许公司将物理服务器作为主机租用，通常在一个月之内。尽管有些公司使用了这项服务，但按小时租用主机的替代方案更具吸引力。但是，只有将物理服务器细分为许多小型的，快速启动和关闭的虚拟机（VM）后，这才真正可行。一旦有可能，IaaS就诞生了。</p>
-<h3 id="共同利益"><a href="#共同利益" class="headerlink" title="共同利益"></a>共同利益</h3><p>基础设施外包通常会呼应IaaS的五个好处：</p>
-<ul>
-<li><p>降低了劳动力成本-减少了人员，减少了执行基础设施工作所需的时间</p>
-</li>
-<li><p>降低风险-更少的专业知识专家和更实时的运营支持能力</p>
-</li>
-<li><p>降低资源成本-相同功能的成本更低</p>
-</li>
-<li><p>扩展的灵活性更高-可以访问更多资源和不同类型的相似资源，然后进行处理，而不会造成重大损失或浪费</p>
-</li>
-<li><p>交货时间更短-从概念到生产可用性的上市时间缩短</p>
-</li>
-</ul>
-<p>当然，基础设施外包也有其弊端和局限性，我们将在本报告的后面部分进行介绍。</p>
-<h2 id="云长大"><a href="#云长大" class="headerlink" title="云长大"></a>云长大</h2><p>IaaS与存储（例如AWS <code>Simple Storage Service（S3）</code>）一起是云的第一个关键要素之一。AWS是一个先行者，现在仍然是领先的云提供商，但是还有许多其他供应商，从大型厂商（如Microsoft和Google）到尚未大型的厂商（如DigitalOcean）。</p>
-<p>当我们谈论“云”时，我们通常指的是公共云，即由供应商提供的，与您自己的公司分离并托管在供应商自己的数据中心中的基础结构服务的集合。但是，我们还看到了云产品的相关增长，公司可以使用诸如<code>Open Stack</code>之类的工具在自己的数据中心中使用云产品。这样的自托管系统通常被称为私有云，并利用自己的硬件和物理空间的行为称为内部部署（或只是的预置型。）</p>
-<p>公共云的下一个发展是平台即服务（PaaS）。Heroku是最受欢迎的PaaS提供商之一。PaaS在IaaS之上分层，将操作系统（OS）添加到要外包的基础架构中。使用PaaS，您仅部署应用程序，该平台负责操作系统安装，补丁程序升级，系统级监视，服务发现等。</p>
-<p>PaaS在<code>Cloud Foundry</code>中还具有流行的自托管开源变体。由于PaaS位于现有虚拟化解决方案之上，因此您可以在本地或较低级别的IaaS公共云服务上托管“私有PaaS”。同时使用公共和私有云系统通常被称为混合云 ; 能够在两种环境中实施一个PaaS可能是一项有用的技术。</p>
-<p>在虚拟机之上使用PaaS的另一种方法是使用容器。在过去的几年中，<code>Docker</code>变得越来越受欢迎，因为它可以从操作系统本身的本质上更加清晰地描述应用程序的系统要求。有基于云的服务代表团队托管和管理/协调容器，通常称为容器即服务（CaaS）。一个公共云示例是Google的<code>Container Engine</code>。一些自托管的CaaS是<code>Kubernetes</code>和<code>Mesos</code>，您可以将其私有运行，也可以像PaaS一样在公共IaaS服务之上运行。</p>
-<p>与IaaS一样，由供应商提供的PaaS和CaaS都是基础设施外包的进一步形式。它们与IaaS的主要不同之处在于，它们进一步提高了抽象级别，使我们可以将更多技术转让给他人。因此，PaaS和CaaS的优势与我们前面列出的五种优势相同。</p>
-<p>更具体地说，我们可以将所有这三种（IaaS，PaaS，CaaS）归为“ 计算即服务”；换句话说，可以在其中运行我们自己的专用软件的不同类型的通用环境。我们将很快再次使用此术语。</p>
-<h2 id="进入无服务器阶段右移"><a href="#进入无服务器阶段右移" class="headerlink" title="进入无服务器阶段右移"></a>进入无服务器阶段右移</h2><p>因此，距云诞生已有十多年了。进行此阐述的主要原因是，本报告的主题“无服务器”被最简单地描述为云计算的下一个发展，以及另一种形式的基础设施外包。它具有我们已经看到的相同的五个总体好处，并且能够通过规模经济和技术进步提供这些好处。但是除此之外，无服务器是什么？</p>
-<h1 id="定义无服务器"><a href="#定义无服务器" class="headerlink" title="定义无服务器"></a>定义无服务器</h1><p>一旦我们对Serverless有了任何详细的了解，就会遇到第一个令人困惑的点：Serverless实际上涵盖了一系列技术。我们将这些想法分为两个领域：后端即服务（BaaS）和功能即服务（FaaS）。</p>
-<h2 id="后端即服务"><a href="#后端即服务" class="headerlink" title="后端即服务"></a>后端即服务</h2><p>BaaS就是要用现成的服务替换我们编写和/或管理的服务器端组件。它在概念上更接近软件即服务（SaaS），而不是虚拟实例和容器之类的东西。SaaS通常是将业务流程外包（例如人力资源或销售工具，或者在技术方面，是Github之类的产品），而BaaS则将我们的应用程序分解为较小的部分，并完全通过外部产品来实现其中的一些部分。</p>
-<p>BaaS服务是领域通用的远程组件（即不是进程内库），我们可以将其集成到我们的产品中，其中API是典型的集成范例。</p>
-<p>BaaS在开发移动应用程序或单页Web应用程序的团队中特别受欢迎。许多这样的团队能够极大地依赖第三方服务来执行原本需要自己完成的任务。让我们看几个例子。</p>
-<p>首先，我们拥有Google <code>Firebase</code>之类的服务（在关闭之前，解析是）。Firebase是由供应商（在本例中为Google）完全管理的数据库产品，可以直接从移动或Web应用程序使用，而无需我们自己的中间应用程序服务器。这代表了BaaS的一个方面：代表我们管理数据组件的服务。</p>
-<p>BaaS服务还使我们能够依赖其他人已经实现的应用程序逻辑。一个很好的例子是身份验证-许多应用程序实现自己的代码以执行注册，登录，密码管理等，但是在许多应用程序中，此代码通常非常相似。团队和企业之间的这种重复已经成熟，可以提取到外部服务中了，而这正是<code>Auth0</code>和Amazon的<code>Cognito</code>之类的产品的目标。这两个产品都允许移动应用程序和Web应用程序具有完整的身份验证和用户管理功能，而无需开发团队编写或管理任何代码来实现这些功能。</p>
-<p>随着移动应用程序开发的兴起，后端即服务这一术语变得特别流行。实际上，该术语有时称为移动后端即服务（MBaaS）。但是，在我们的应用程序开发中使用完全外部管理的产品的关键思想并不是移动开发乃至整个前端开发所独有的。例如，我们可能会停止在EC2机器上管理自己的MySQL数据库服务器，而改用Amazon的<code>RDS</code>服务，或者可能会用<code>Kinesis</code>替换我们的自管式Kafka消息总线安装。其他数据基础结构服务包括<code>文件系统</code>/<code>对象存储</code>和<code>数据仓库</code>，而更多面向逻辑的示例包括<code>语音分析</code>以及我们前面提到的身份验证产品，也可以在服务器端组件中使用它们。这些服务中的许多服务都可以被认为是无服务器服务，但并不是全部—我们将在第5章中定义我们认为有区别的无服务器服务。</p>
-<h2 id="充当服务-无服务器计算"><a href="#充当服务-无服务器计算" class="headerlink" title="充当服务/无服务器计算"></a>充当服务/无服务器计算</h2><p>无服务器的另一半是功能即服务（FaaS）。FaaS是“计算即服务”的另一种形式，这是一种通用环境，我们可以在其中运行软件，如前所述。实际上，有些人（尤其是AWS）将FaaS称为无服务器计算。来自AWS的<code>Lambda</code>是当前使用最广泛的FaaS实施。</p>
-<p>FaaS是一种构建和部署服务器端软件的新方法，其重点是部署单个功能或操作。FaaS是有关Serverless的众多话题的来源。实际上，许多人认为Serverless 是 FaaS，但他们并未完全了解。</p>
-<p>在传统上部署服务器端软件时，我们从主机实例开始，通常是虚拟机（VM）实例或容器（请参见图1-1）。然后，我们在主机中部署我们的应用程序。如果我们的主机是VM或容器，则我们的应用程序是操作系统进程。通常，我们的应用程序包含用于几种不同但相关的操作的代码。例如，Web服务可以允许资源的检索和更新。</p>
-<p><img src="/2019/11/07/Introducing-Serverless/wisl_0101.png" alt="图1-1。传统服务器端软件部署"></p>
-<p>FaaS更改了这种部署模型（请参见图1-2）。我们从模型中剥离了主机实例和应用程序过程。相反，我们只专注于表达应用程序逻辑的单个操作或函数。我们将这些功能分别上传到供应商提供的FaaS平台。</p>
-<p><img src="/2019/11/07/Introducing-Serverless/wisl_0102.png" alt="图1-2。FaaS软件部署"></p>
-<p>但是，这些功能在服务器进程中并不是一直处于活动状态，而是闲置直到需要像在传统系统中一样运行之前（图1-3）。而是将FaaS平台配置为侦听每个操作的特定事件。发生该事件时，供应商平台会实例化Lambda函数，然后使用触发事件对其进行调用。</p>
-<p><img src="/2019/11/07/Introducing-Serverless/wisl_0103.png" alt="图1-3。FaaS功能生命周期"></p>
-<p>一旦函数执行完毕，FaaS平台就可以随意拆除它。另外，作为一种优化，它可以将功能保留一小段时间，直到有另一个事件要处理为止。</p>
-<p>FaaS本质上是一种事件驱动的方法。FaaS供应商除了提供托管和执行代码的平台外，还集成了各种同步和异步事件源。同步源的一个示例是HTTP API网关。异步源的一个示例是托管消息总线，对象存储或类似于（cron）的计划事件。</p>
-<p>AWS Lambda于2014年秋季推出，从那时起，它的成熟度和使用率都在增长。虽然Lambda的某些用法很少使用，每天仅执行几次，但有些公司每天使用Lambda处理数十亿个事件。在撰写本文时，Lambda已与15种以上不同类型的<code>事件源</code>集成在一起，使其可用于多种不同的应用程序。</p>
-<p>除AWS Lambda之外，还有Microsoft，IBM，Google和Auth0等较小的提供商提供的其他几种商业FaaS产品。就像我们之前讨论的其他各种“计算即服务”平台（IaaS，PaaS，CaaS）一样，也有一些开源项目，您可以在自己的硬件或公共云上运行。这个私有的FaaS空间目前很忙，没有明确的负责人，并且在撰写本文时，许多选项还处于开发初期。示例包括<code>Galactic Fog</code>，<code>IronFunctions</code>，<code>Fission（使用Kubernetes）</code>以及IBM自己的<code>OpenWhisk</code>。</p>
-<h2 id="无服务器的共同主题"><a href="#无服务器的共同主题" class="headerlink" title="无服务器的共同主题"></a>无服务器的共同主题</h2><p>从表面上看，BaaS和FaaS完全不同：第一个是完全外包应用程序的各个元素，第二个是用于运行自己的代码的新托管环境。那么，为什么我们将它们归为Serverless的一部分呢？</p>
-<p>关键是既不需要您管理自己的服务器主机或服务器进程。使用完全无服务器的应用程序，您不再需要将架构的任何部分视为在主机上运行的资源。您所有的逻辑（无论您是自己编写代码还是与第三方服务集成）都在完全弹性的操作环境中运行。您的状态也以类似的弹性形式存储。无服务器并不意味着服务器已经消失，这意味着您不再需要担心它们。</p>
-<p>因为这个关键主题，巴斯和FAAS有着一些共同的优点和局限性，我们在章节看3和4。无服务器方法还有其他一些区别，这也是FaaS和BaaS的共同点，我们将在第5章中介绍。</p>
-<h1 id="颠簸的进化"><a href="#颠簸的进化" class="headerlink" title="颠簸的进化"></a>颠簸的进化</h1><p>我们在序言中提到Serverless是一种演进。其原因是，在过去的十年中，我们将更多关于应用程序和环境的共同点转移到了外包的商品服务上。我们看到了无服务器的趋势，即将主机管理，操作系统管理，资源分配，扩展甚至应用逻辑的整个组件外包，并考虑这些因素。经济上和运营上都有自然的进步。</p>
-<p>但是，在应用程序体系结构方面，Serverless发生了很大的变化。到目前为止，大多数云服务都没有从根本上改变我们设计应用程序的方式。例如，当使用诸如Docker之类的工具时，我们在应用程序周围放置了一个更薄的“盒子”，但它仍然是盒子，并且我们的逻辑体系结构没有明显改变。在云中托管我们自己的MySQL实例时，我们仍然需要考虑处理负载的虚拟机的功能，并且我们还需要考虑故障转移。</p>
-<p>这种情况随着Serverless的改变而改变，并且不是逐渐的，而是震动。无服务器FaaS通过基本的事件驱动模型，更细化的部署形式以及需要在FaaS组件之外保持状态的方式来驱动非常不同类型的应用程序体系结构（我们将在后面详细介绍）。无服务器BaaS使我们无需编写整个逻辑组件，但需要我们将应用程序与供应商提供的特定接口和模型集成在一起。</p>
-<p>那么，如果无服务器应用程序如此不同，它会是什么样呢？这就是我们接下来将在第2章中探讨的内容。</p>
-<p><a href="https://www.oreilly.com/library/view/what-is-serverless/9781491984178/ch01.html" target="_blank" rel="noopener">https://www.oreilly.com/library/view/what-is-serverless/9781491984178/ch01.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/19/cmake-tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/19/cmake-tutorial/" class="post-title-link" itemprop="url">cmake tutorial</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 09:17:31" itemprop="dateCreated datePublished" datetime="2019-10-19T09:17:31+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-02-27 15:23:52" itemprop="dateModified" datetime="2020-02-27T15:23:52+08:00">2020-02-27</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure>
-<p>main.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello World\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_executable(main main.c)</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# cmake .</span><br><span class="line">-- The C compiler identification is GNU 8.2.1</span><br><span class="line">-- The CXX compiler identification is GNU 8.2.1</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc -- works</span><br><span class="line">-- Detecting C compiler ABI info</span><br><span class="line">-- Detecting C compiler ABI info - done</span><br><span class="line">-- Detecting C compile features</span><br><span class="line">-- Detecting C compile features - done</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - done</span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - done</span><br><span class="line">-- Configuring done</span><br><span class="line">-- Generating done</span><br><span class="line">-- Build files have been written to: /root/labc/demo</span><br></pre></td></tr></table></figure>
-<p>command generated <code>MakeFile</code>, and some auto generate file.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeCache.txt</span><br><span class="line">|-- CMakeFiles</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- Makefile</span><br><span class="line">|-- cmake_install.cmake</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# make</span><br><span class="line">Scanning dependencies of target main</span><br><span class="line">[ 50%] Building C object CMakeFiles/main.dir/main.c.o</span><br><span class="line">[100%] Linking C executable main</span><br><span class="line">[100%] Built target main</span><br></pre></td></tr></table></figure>
-<p>make and execute</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# ./main</span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure>
-<h2 id="Multi-source-filie-under-one-directory"><a href="#Multi-source-filie-under-one-directory" class="headerlink" title="Multi-source filie under one directory"></a>Multi-source filie under one directory</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main.c</span><br><span class="line">|-- testFunc.c</span><br><span class="line">`-- testFunc.h</span><br></pre></td></tr></table></figure>
-<p>testFunc.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * testFunc.c</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">void func(int data)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;data is %d\n&quot;, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>testFunc.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * testFunc.h</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">#ifndef _TEST_FUNC_H_</span><br><span class="line">#define _TEST_FUNC_H_</span><br><span class="line"></span><br><span class="line">void func(int data);</span><br><span class="line"></span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></p>
-<p>main.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    func(100);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_executable(main main.c testFunc.c)</span><br></pre></td></tr></table></figure></p>
-<p>add <code>testFunc.c</code> to executable param</p>
-<p>make and execute</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af multsource]# ./main</span><br><span class="line">data is 100</span><br></pre></td></tr></table></figure>
-<p>if we have a lot of source file, <code>add_executable</code> is troublesome.<br><code>aux_source_directory</code> can take files under directory as a source.</p>
-<p>add another function<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main</span><br><span class="line">|-- main.c</span><br><span class="line">|-- testFunc.c</span><br><span class="line">|-- testFunc.h</span><br><span class="line">|-- testFunc1.c</span><br><span class="line">`-- testFunc1.h</span><br></pre></td></tr></table></figure></p>
-<p>modify CMakeLists<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">aux_source_directory(. SRC_LIST)</span><br><span class="line"></span><br><span class="line">add_executable(main $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure></p>
-<p>make and execute<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af multsource1]# ./main</span><br><span class="line">data is 100</span><br><span class="line">data is 200</span><br></pre></td></tr></table></figure></p>
-<h2 id="Multi-source-filie-under-multi-directory"><a href="#Multi-source-filie-under-multi-directory" class="headerlink" title="Multi-source filie under multi-directory"></a>Multi-source filie under multi-directory</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main</span><br><span class="line">|-- main.c</span><br><span class="line">|-- test_func</span><br><span class="line">|   |-- testFunc.c</span><br><span class="line">|   `-- testFunc.h</span><br><span class="line">`-- test_func1</span><br><span class="line">    |-- testFunc1.c</span><br><span class="line">    `-- testFunc1.h</span><br></pre></td></tr></table></figure>
-<p>group function by two directory <code>test_func</code> <code>test_func1</code></p>
-<p>modify <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">include_directories (test_func test_func1)</span><br><span class="line"></span><br><span class="line">aux_source_directory (test_func SRC_LIST)</span><br><span class="line">aux_source_directory (test_func1 SRC_LIST1)</span><br><span class="line"></span><br><span class="line">add_executable (main main.c $&#123;SRC_LIST&#125; $&#123;SRC_LIST1&#125;)</span><br></pre></td></tr></table></figure></p>
-<p>result is same as above.</p>
-<h2 id="Formal-structure"><a href="#Formal-structure" class="headerlink" title="Formal structure"></a>Formal structure</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">|-- include</span><br><span class="line">|   |-- testFunc.h</span><br><span class="line">|   `-- testFunc1.h</span><br><span class="line">|-- main</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main.c</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc1.c</span><br></pre></td></tr></table></figure>
-<ol>
-<li>put source file to <code>src</code></li>
-<li>put head file to <code>include</code></li>
-<li><code>build</code> used to store middle file</li>
-<li><code>bin</code> used to store executable file</li>
-</ol>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (src)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line">include_directories (../include)</span><br><span class="line"></span><br><span class="line">add_executable (main $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>EXECUTABLE_OUTPUT_PATH</code> : executable file path</li>
-<li><code>PROJECT_SOURCE_DIR</code> : project root</li>
-</ul>
-<p>result is same as above.</p>
-<h2 id="Dynamic-and-static-libraries"><a href="#Dynamic-and-static-libraries" class="headerlink" title="Dynamic and static libraries"></a>Dynamic and static libraries</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- build</span><br><span class="line">|-- lib</span><br><span class="line">`-- lib_testFunc</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc.h</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (lib_testFunc)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line">add_library (testFunc_shared SHARED $&#123;SRC_LIST&#125;)</span><br><span class="line">add_library (testFunc_static STATIC $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">set_target_properties (testFunc_shared PROPERTIES OUTPUT_NAME &quot;testFunc&quot;)</span><br><span class="line">set_target_properties (testFunc_static PROPERTIES OUTPUT_NAME &quot;testFunc&quot;)</span><br><span class="line"></span><br><span class="line">set (LIBRARY_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/lib)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>add_library</code>: generate dynamic or static libraries, (1. libname; 2. dynamic or static, static in default; 3. source file path)</li>
-<li><code>set_target_properties</code>: setting output name, can set other options like lib version</li>
-<li><code>LIBRARY_OUTPUT_PATH</code>: default path of library file</li>
-</ul>
-<p>in <code>build</code> run <code>cmake .</code> and <code>make</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- build</span><br><span class="line">|   |-- CMakeCache.txt</span><br><span class="line">|   |-- CMakeFiles</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- cmake_install.cmake</span><br><span class="line">|   `-- lib_testFunc</span><br><span class="line">|-- lib</span><br><span class="line">|   |-- libtestFunc.a</span><br><span class="line">|   `-- libtestFunc.so</span><br><span class="line">`-- lib_testFunc</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc.h</span><br></pre></td></tr></table></figure></p>
-<h2 id="Link-by-libraries"><a href="#Link-by-libraries" class="headerlink" title="Link by libraries"></a>Link by libraries</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">|-- lib</span><br><span class="line">|   |-- libtestFunc.a</span><br><span class="line">|   `-- libtestFunc.so</span><br><span class="line">|-- lib_testFunc</span><br><span class="line">|   |-- CMakeLists.txt</span><br><span class="line">|   |-- testFunc.c</span><br><span class="line">|   `-- testFunc.h</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    `-- main.c</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (lib_testFunc)</span><br><span class="line"></span><br><span class="line">add_subdirectory (src)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line"># find testFunc.h</span><br><span class="line">include_directories (../lib_testFunc)</span><br><span class="line"></span><br><span class="line">link_directories ($&#123;PROJECT_SOURCE_DIR&#125;/lib)</span><br><span class="line"></span><br><span class="line">add_executable (main $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">target_link_libraries (main testFunc)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>link_directories</code> : Add non-standard shared library search path</li>
-<li><code>target_link_libraries</code> : Link the target file with the library file</li>
-</ul>
-<h2 id="Compile-options"><a href="#Compile-options" class="headerlink" title="Compile options"></a>Compile options</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">`-- main.cpp</span><br></pre></td></tr></table></figure>
-<p>main.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    auto data = 100;</span><br><span class="line">    std::cout &lt;&lt; &quot;data: &quot; &lt;&lt; data &lt;&lt; &quot;\n&quot;;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br><span class="line"></span><br><span class="line">add_compile_options(-std=c++11 -Wall)</span><br><span class="line"></span><br><span class="line">add_executable(main main.cpp)</span><br></pre></td></tr></table></figure></p>
-<h2 id="Compile-control"><a href="#Compile-control" class="headerlink" title="Compile control"></a>Compile control</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main1.c</span><br><span class="line">    `-- main2.c</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project(demo)</span><br><span class="line"></span><br><span class="line">option(MYDEBUG &quot;enable debug compilation&quot; OFF)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br><span class="line"></span><br><span class="line">add_subdirectory(src)</span><br></pre></td></tr></table></figure></p>
-<p>add an option <code>MYDEBUG</code></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">add_executable(main1 main1.c)</span><br><span class="line"></span><br><span class="line">if (MYDEBUG)</span><br><span class="line">    add_executable(main2 main2.c)</span><br><span class="line">else()</span><br><span class="line">    message(STATUS &quot;Currently is not in debug mode&quot;)    </span><br><span class="line">endif()</span><br></pre></td></tr></table></figure></p>
-<p>user <code>MYDEBUG</code> to decide whether or not compile <code>main2</code><br><code>cmake .. -DMYDEBUG=ON &amp;&amp; make</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|   |-- main1</span><br><span class="line">|   `-- main2</span><br><span class="line">|-- build</span><br><span class="line">|   |-- CMakeCache.txt</span><br><span class="line">|   |-- CMakeFiles</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- cmake_install.cmake</span><br><span class="line">|   `-- src</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main1.c</span><br><span class="line">    `-- main2.c</span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/whahu1989/article/details/82078563" target="_blank" rel="noopener">https://blog.csdn.net/whahu1989/article/details/82078563</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/16/delete-docker-image-fail/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/16/delete-docker-image-fail/" class="post-title-link" itemprop="url">delete docker image failed</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-10-16 13:53:37" itemprop="dateCreated datePublished" datetime="2019-10-16T13:53:37+08:00">2019-10-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-11-30 10:58:27" itemprop="dateModified" datetime="2019-11-30T10:58:27+08:00">2019-11-30</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker images -a</span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              72dc10d3deba        22 hours ago        230MB</span><br><span class="line">tdtest              latest              e3ad759bb993        22 hours ago        230MB</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              820bc1802af7        22 hours ago        230MB</span><br><span class="line">...</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              ac8cea40eaa0        22 hours ago        223MB</span><br><span class="line">centos              latest              0f3e07c0138f        2 weeks ago         220MB</span><br><span class="line">redis               latest              01a52b3b5cd1        2 weeks ago         98.2MB</span><br><span class="line">ubuntu              latest              2ca708c1c9cc        3 weeks ago         64.2MB</span><br><span class="line">redis               alpine              ed7d2ff5a623        8 weeks ago         29.3MB</span><br></pre></td></tr></table></figure>
-<p>when put command <code>docker rmi 820bc1802af7</code>, <code>&lt;none&gt;:&lt;none&gt;</code> image delete fail.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: conflict: unable to delete 820bc1802af7 (cannot be forced) - image has dependent child images</span><br></pre></td></tr></table></figure></p>
-<p>this is cause by has other images depend on this image <code>820bc1802af7</code>.<br>use <code>docker image inspect</code>, find current image’s child image, repository tag name.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker image inspect --format=&apos;&#123;&#123;.RepoTags&#125;&#125; &#123;&#123;.Id&#125;&#125; &#123;&#123;.Parent&#125;&#125;&apos; $(docker image ls -q --filter since=820bc1802af7)</span><br><span class="line">[tdtest:latest] sha256:e3ad759bb99351a4951df11113e0ad3914a26d55e99e5243e13ebac19373efae sha256:8abd1595d4dfc922b81825940c0f6d73034eeb10b3e2b12a78b3d0e33d78588e</span><br></pre></td></tr></table></figure></p>
-<h2 id="mechanism"><a href="#mechanism" class="headerlink" title="mechanism"></a>mechanism</h2><h3 id="kind-one"><a href="#kind-one" class="headerlink" title="kind one"></a>kind one</h3><p><code>&lt;none&gt;:&lt;none&gt;</code> images which be related to the image be deleted will be deleted as will.<br>this kind of <code>&lt;none&gt;:&lt;none&gt;</code> is <code>middle image</code>, it won’t occupy space.</p>
-<h3 id="kind-two"><a href="#kind-two" class="headerlink" title="kind two"></a>kind two</h3><p>make a docker image <code>docker build -t hello-world ./</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FROM centos:latest</span><br><span class="line">RUN echo &apos;hello world&apos;</span><br></pre></td></tr></table></figure></p>
-<p>when centos have a new release, build hello-world image again, it will depend on the latest centos.<br>the <code>hello-world</code> depend on older centos, will become <code>&lt;none&gt;:&lt;none&gt;</code> dangling image.<br>this kind of <code>&lt;none&gt;:&lt;none&gt;</code> occupy space, it was originally tag image.</p>
-<p>all docker file store at <code>/var/lib/docker/graph</code> in default, docker be called <code>graph layer database</code>.<br>use command <code>docker rmi $(docker images -f &quot;dangling=true&quot; -q)</code> to delete wandering image layer.</p>
-<h2 id="other-command"><a href="#other-command" class="headerlink" title="other command"></a>other command</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># stop all container</span><br><span class="line">docker ps -a | grep &quot;Exited&quot; | awk &apos;&#123;print $1 &#125;&apos;|xargs docker stop</span><br><span class="line"></span><br><span class="line"># delete all container</span><br><span class="line">docker ps -a | grep &quot;Exited&quot; | awk &apos;&#123;print $1 &#125;&apos;|xargs docker rm</span><br><span class="line"></span><br><span class="line"># delete all none container</span><br><span class="line">docker images|grep none|awk &apos;&#123;print $3 &#125;&apos;|xargs docker rmi</span><br></pre></td></tr></table></figure>
-<p><a href="http://www.ibloger.net/article/3217.html" target="_blank" rel="noopener">http://www.ibloger.net/article/3217.html</a><br><a href="https://segmentfault.com/a/1190000011153919" target="_blank" rel="noopener">https://segmentfault.com/a/1190000011153919</a><br><a href="https://blog.csdn.net/sin_geek/article/details/86736417" target="_blank" rel="noopener">https://blog.csdn.net/sin_geek/article/details/86736417</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/16/change-repository-in-centos-8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/16/change-repository-in-centos-8/" class="post-title-link" itemprop="url">change repository in centos 8</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-10-16 09:13:47" itemprop="dateCreated datePublished" datetime="2019-10-16T09:13:47+08:00">2019-10-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-11-30 10:58:27" itemprop="dateModified" datetime="2019-11-30T10:58:27+08:00">2019-11-30</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="CentOS-Base-repo"><a href="#CentOS-Base-repo" class="headerlink" title="CentOS-Base.repo"></a>CentOS-Base.repo</h2><p>modify /etc/yum.repos.d/CentOS-Base.repo</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[BaseOS]</span><br><span class="line">name=CentOS-$releasever - Base</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=BaseOS&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/BaseOS/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/BaseOS/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
-<h2 id="CentOS-AppStream-repo"><a href="#CentOS-AppStream-repo" class="headerlink" title="CentOS-AppStream.repo"></a>CentOS-AppStream.repo</h2><p>modify /etc/yum.repos.d/CentOS-AppStream.repo</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[AppStream]</span><br><span class="line">name=CentOS-$releasever - AppStream</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=AppStream&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/AppStream/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/AppStream/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
-<h2 id="other"><a href="#other" class="headerlink" title="other"></a>other</h2><p>other file not avaliable in default, can change to ali repository as well.<br><a href="https://mirrors.aliyun.com/centos/8/extras/x86_64/os/" target="_blank" rel="noopener">https://mirrors.aliyun.com/centos/8/extras/x86_64/os/</a></p>
-<p>reload matadata<br><code>yum makecache</code></p>
-<p>when modifying the source on a docker image, use the following description in the <code>Dockerfile</code> to build<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo_bak</span><br><span class="line">COPY CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"></span><br><span class="line">RUN mv /etc/yum.repos.d/CentOS-AppStream.repo /etc/yum.repos.d/CentOS-AppStream.repo_bak</span><br><span class="line">COPY CentOS-AppStream.repo /etc/yum.repos.d/CentOS-AppStream.repo</span><br><span class="line"></span><br><span class="line">RUN yum makecache</span><br></pre></td></tr></table></figure></p>
-<p><a href="http://www.voycn.com/article/centos8-peizhialiyuan-zuixiaohuaanzhuang" target="_blank" rel="noopener">http://www.voycn.com/article/centos8-peizhialiyuan-zuixiaohuaanzhuang</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2333,7 +2305,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">207</span>
+                    <span class="site-state-item-count">211</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
