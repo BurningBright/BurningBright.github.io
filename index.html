@@ -320,6 +320,216 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/" class="post-title-link" itemprop="url">探索redis 键散列过程源码</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-06-10 14:20:09" itemprop="dateCreated datePublished" datetime="2020-06-10T14:20:09+08:00">2020-06-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-14 10:04:15" itemprop="dateModified" datetime="2020-06-14T10:04:15+08:00">2020-06-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
+<p>经查资料，说是要避免 <code>Max redirect exception</code>，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。<br>想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。</p>
+<h2 id="命令的探索"><a href="#命令的探索" class="headerlink" title="命令的探索"></a>命令的探索</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><code>server.c</code>的<code>redisCommandTable</code>定义了每个命令对应的函数，<br>源码中的<code>set</code>命令对应的函数是<code>setCommand</code>函数，这个函数在<code>t_string.c</code>中定义。<br>源码中的<code>cluster</code>命令对应的函数是<code>clusterCommand</code>函数，这个函数在<code>cluster.c</code>中定义。</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">182</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,</span><br><span class="line">     <span class="string">"write use-memory @string"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">     &#123;<span class="string">"cluster"</span>,clusterCommand,<span class="number">-2</span>,</span><br><span class="line">     <span class="string">"admin ok-stale random"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="set命令追踪"><a href="#set命令追踪" class="headerlink" title="set命令追踪"></a><code>set</code>命令追踪</h3><p>打开文件 <code>t_string.c</code> 查看调用过程<br><code>setCommand</code> -&gt; <code>setGenericCommand</code> -&gt; <code>genericSetKey</code>，函数<code>genericSetKey</code>在<code>db.c</code>中定义。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/t_string.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/t_string.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">96</span></span><br><span class="line"><span class="comment">/* SET key value [NX] [XX] [KEEPTTL] [EX &lt;seconds&gt;] [PX &lt;milliseconds&gt;] */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    setGenericCommand(c,flags,c-&gt;argv[<span class="number">1</span>],c-&gt;argv[<span class="number">2</span>],expire,unit,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">68</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> flags, robj *key, robj *val, robj *expire, <span class="keyword">int</span> unit, robj *ok_reply, robj *abort_reply)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    genericSetKey(c,c-&gt;db,key,val,flags &amp; OBJ_SET_KEEPTTL,<span class="number">1</span>);</span><br><span class="line">    ...</span><br><span class="line">    addReply(c, ok_reply ? ok_reply : shared.ok);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>打开文件 <code>db.c</code> 查看调用过程<br><code>genericSetKey</code> -&gt; <code>dbAdd</code> -&gt; <code>slotToKeyAdd</code> -&gt; <code>slotToKeyUpdateKey</code> -&gt; <code>keyHashSlot</code><br>终于看到散列计算的函数了，<code>keyHashSlot</code>在<code>cluster.c</code>中定义<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/db.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/db.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">244</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genericSetKey</span><span class="params">(client *c, redisDb *db, robj *key, robj *val, <span class="keyword">int</span> keepttl, <span class="keyword">int</span> signal)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lookupKeyWrite(db,key) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        dbAdd(db,key,val);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dbOverwrite(db,key,val);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">179</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dbAdd</span><span class="params">(redisDb *db, robj *key, robj *val)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (server.cluster_enabled) slotToKeyAdd(key-&gt;ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1691</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyAdd</span><span class="params">(sds key)</span> </span>&#123;</span><br><span class="line">    slotToKeyUpdateKey(key,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1672</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyUpdateKey</span><span class="params">(sds key, <span class="keyword">int</span> add)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> hashslot = keyHashSlot(key,keylen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="cluster-keyslot命令追踪"><a href="#cluster-keyslot命令追踪" class="headerlink" title="cluster keyslot命令追踪"></a><code>cluster keyslot</code>命令追踪</h3><p><code>cluster keyslot</code> 该命令能获取集群中key的slot值，可以看到调用的也是<code>keyHashSlot</code>函数<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">4251</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!strcasecmp(c-&gt;argv[<span class="number">1</span>]-&gt;ptr,<span class="string">"keyslot"</span>) &amp;&amp; c-&gt;argc == <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">/* CLUSTER KEYSLOT &lt;key&gt; */</span></span><br><span class="line">        sds key = c-&gt;argv[<span class="number">2</span>]-&gt;ptr;</span><br><span class="line"></span><br><span class="line">        addReplyLongLong(c,keyHashSlot(key,sdslen(key)));</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h2><p>打开文件 <code>cluster.c</code>，可以看到散列计算过程<br>看函数、函数注释可知，当有花括号<code>{}</code> 时，仅计算括号内内容的散列<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">line：<span class="number">694</span></span><br><span class="line"><span class="comment">/* -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Key space handling</span></span><br><span class="line"><span class="comment"> * -------------------------------------------------------------------------- */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* We have 16384 hash slots. The hash slot of a given key is obtained</span></span><br><span class="line"><span class="comment"> * as the least significant 14 bits of the crc16 of the key.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * However if the key contains the &#123;...&#125; pattern, only the part between</span></span><br><span class="line"><span class="comment"> * &#123; and &#125; is hashed. This may be useful in the future to force certain</span></span><br><span class="line"><span class="comment"> * keys to be in the same node (assuming no resharding is in progress). */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">keyHashSlot</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">int</span> keylen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s, e; <span class="comment">/* start-end indexes of &#123; and &#125; */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (s = <span class="number">0</span>; s &lt; keylen; s++)</span><br><span class="line">        <span class="keyword">if</span> (key[s] == <span class="string">'&#123;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#123;' ? Hash the whole key. This is the base case. */</span></span><br><span class="line">    <span class="keyword">if</span> (s == keylen) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* '&#123;' found? Check if we have the corresponding '&#125;'. */</span></span><br><span class="line">    <span class="keyword">for</span> (e = s+<span class="number">1</span>; e &lt; keylen; e++)</span><br><span class="line">        <span class="keyword">if</span> (key[e] == <span class="string">'&#125;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#125;' or nothing between &#123;&#125; ? Hash the whole key. */</span></span><br><span class="line">    <span class="keyword">if</span> (e == keylen || e == s+<span class="number">1</span>) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* If we are here there is both a &#123; and a &#125; on its right. Hash</span></span><br><span class="line"><span class="comment">     * what is in the middle between &#123; and &#125;. */</span></span><br><span class="line">    <span class="keyword">return</span> crc16(key+s+<span class="number">1</span>,e-s<span class="number">-1</span>) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="异常追踪"><a href="#异常追踪" class="headerlink" title="异常追踪"></a>异常追踪</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;mset a 1 b 2</span><br><span class="line">CROSSSLOT Keys in request don&apos;t hash to the same slot</span><br></pre></td></tr></table></figure>
+<p>倒查异常的触发链：</p>
+<h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>异常定义在 <code>cluster.c</code><br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5711</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterRedirectClient</span><span class="params">(client *c, clusterNode *n, <span class="keyword">int</span> hashslot, <span class="keyword">int</span> error_code)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (error_code == CLUSTER_REDIR_CROSS_SLOT) &#123;</span><br><span class="line">        addReplySds(c,sdsnew(<span class="string">"-CROSSSLOT Keys in request don't hash to the same slot\r\n"</span>));</span><br><span class="line">    &#125; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="触发"><a href="#触发" class="headerlink" title="触发"></a>触发</h3><p>触发点在<code>clusterNode *getNodeByQuery</code>函数中<br>外层循环遍历多指令，内层循环遍历多键，确保同一命令的所有键落在一个槽里。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5515</span></span><br><span class="line"><span class="function">clusterNode *<span class="title">getNodeByQuery</span><span class="params">(client *c, struct redisCommand *cmd, robj **argv, <span class="keyword">int</span> argc, <span class="keyword">int</span> *hashslot, <span class="keyword">int</span> *error_code)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Check that all the keys are in the same hash slot, and obtain this</span></span><br><span class="line"><span class="comment">     * slot and the node associated. */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; ms-&gt;count; i++) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; numkeys; j++) &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">if</span> (firstkey == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                ...</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">/* If it is not the first key, make sure it is exactly</span></span><br><span class="line"><span class="comment">                 * the same key as the first we saw. */</span></span><br><span class="line">                <span class="keyword">if</span> (!equalStringObjects(firstkey,thiskey)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (slot != thisslot) &#123;</span><br><span class="line">                        <span class="comment">/* Error: multiple keys from different slots. */</span></span><br><span class="line">                        getKeysFreeResult(keyindex);</span><br><span class="line">                        <span class="keyword">if</span> (error_code)</span><br><span class="line">                            *error_code = CLUSTER_REDIR_CROSS_SLOT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">/* Flag this request as one with multiple different</span></span><br><span class="line"><span class="comment">                         * keys. */</span></span><br><span class="line">                        multiple_keys = <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>继续向上寻找，函数被多个地方调用，这里主要看<code>server.c</code><br>在集群模式下处理命令会在此重定向，如果<code>getNodeByQuery</code>发现错误，会在<code>clusterRedirectClient</code>中应答<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                        &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3456</span></span><br><span class="line">    clusterRedirectClient(c,n,hashslot,error_code);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><p>继续向上寻找，函数仅在<code>networking.c</code>中被调用<br>这里让人下意识感觉有点不一样，从命名上看函数更偏向底层。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">1757</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommandAndResetClient</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (processCommand(c) == C_OK) &#123;</span><br><span class="line">        commandProcessed(c);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1775</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">processInputBuffer</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* Keep processing while there is something in the input buffer */</span></span><br><span class="line">    <span class="keyword">while</span>(c-&gt;qb_pos &lt; sdslen(c-&gt;querybuf)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">/* Multibulk processing could see a &lt;= 0 length. */</span></span><br><span class="line">        <span class="keyword">if</span> (c-&gt;argc == <span class="number">0</span>) &#123;</span><br><span class="line">            resetClient(c);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="comment">/* We are finally ready to execute the command. */</span></span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid exiting this</span></span><br><span class="line"><span class="comment">                 * loop and trimming the client buffer later. So we return</span></span><br><span class="line"><span class="comment">                 * ASAP in that case. */</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1858</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* There is more data in the client input buffer, continue parsing it</span></span><br><span class="line"><span class="comment">     * in case to check if there is a full command to execute. */</span></span><br><span class="line">     processInputBuffer(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">3091</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">handleClientsWithPendingReadsUsingThreads</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">while</span>((ln = listNext(&amp;li))) &#123;</span><br><span class="line">        client *c = listNodeValue(ln);</span><br><span class="line">        readQueryFromClient(c-&gt;conn);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Run the list of clients again to process the new buffers. */</span></span><br><span class="line">    <span class="keyword">while</span>(listLength(server.clients_pending_read)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_PENDING_COMMAND) &#123;</span><br><span class="line">            c-&gt;flags &amp;= ~CLIENT_PENDING_COMMAND;</span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid</span></span><br><span class="line"><span class="comment">                 * processing the client later. So we just go</span></span><br><span class="line"><span class="comment">                 * to the next. */</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        processInputBuffer(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> processed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="看不下去了"><a href="#看不下去了" class="headerlink" title="看不下去了"></a>看不下去了</h3><p>好吧，看到这已经没有方向了。继续查找调用，都是线程、IO相关的函数，实在不明白其中机制。<br>开始在网上搜索相关资料，一开始搜”get/set源码解析”，一直找不到想要的内容，异常的源头在哪？正常的命令从哪执行？</p>
+<p>直到在一篇文章中，发现自己错过了命令调用的地方<code>int processCommand(client *c)</code>。<br>而且追踪的思路是错的，之前一直以为异常是在命令函数执行之后报的，事实是<strong>异常检查在命令函数之前执行</strong>。</p>
+<p><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3381</span></span><br><span class="line">    <span class="comment">/* Now lookup the command and check ASAP about trivial error conditions</span></span><br><span class="line"><span class="comment">     * such as wrong arity, bad command name and so forth. */</span></span><br><span class="line">    c-&gt;cmd = c-&gt;lastcmd = lookupCommand(c-&gt;argv[<span class="number">0</span>]-&gt;ptr);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                            &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3601</span></span><br><span class="line">    <span class="comment">/* Exec the command */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_MULTI &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != execCommand &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != multiCommand &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand)</span><br><span class="line">    &#123;</span><br><span class="line">        queueMultiCommand(c);</span><br><span class="line">        addReply(c,shared.queued);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> C_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">line:<span class="number">3200</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(client *c, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    c-&gt;cmd-&gt;proc(c);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>proc</code> 即是文章开头提到的命令对应的函数</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>命令：</p>
+<blockquote>
+<p>redis-cli -&gt; network -&gt; acceptTcpHandler -&gt; anetTcpAccept -&gt; acceptCommonHandler -&gt; createClient -&gt; readQueryFromClient</p>
+</blockquote>
+<p>异常：</p>
+<blockquote>
+<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; getNodeByQuery -&gt; clusterRedirectClient</p>
+</blockquote>
+<p>执行：</p>
+<blockquote>
+<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; lookupCommand -&gt; call</p>
+</blockquote>
+<p>散列：</p>
+<blockquote>
+<p>proc(c) -&gt; setCommand -&gt; setGenericCommand -&gt; genericSetKey -&gt; dbAdd -&gt; slotToKeyAdd -&gt; slotToKeyUpdateKey -&gt; keyHashSlot</p>
+</blockquote>
+<p>至此基本可以知道，Key中花括号的散列在哪计算，跨slot异常在哪抛出，命令定义函数在哪执行。</p>
+<hr>
+<p><a href="https://www.jianshu.com/p/220b8d2c41c3" target="_blank" rel="noopener">Redis集群的5种使用方式，各自优缺点分析</a><br><a href="https://www.cnblogs.com/jessema/p/6065855.html" target="_blank" rel="noopener">redis中set命令的源码分析</a><br><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -382,7 +592,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-09 21:54:54" itemprop="dateModified" datetime="2020-06-09T21:54:54+08:00">2020-06-09</time>
+                <time title="Modified: 2020-06-14 09:36:52" itemprop="dateModified" datetime="2020-06-14T09:36:52+08:00">2020-06-14</time>
               
             
           </span>
@@ -436,7 +646,9 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Lua 脚本功能是 Reids的一大亮点， 通过内嵌对 Lua 环境的支持，<br>Redis 解决了长久以来不能高效地处理 <strong>CAS （check-and-set）</strong> 命令的缺点。<br>并且可以通过组合使用多个命令， 轻松实现以前很难实现或者不能高效实现的模式。</p>
+            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
+<p>Lua 脚本功能是 Reids的一大亮点， 通过内嵌对 Lua 环境的支持，<br>Redis 解决了长久以来不能高效地处理 <strong>CAS （check-and-set）</strong> 命令的缺点。<br>并且可以通过组合使用多个命令， 轻松实现以前很难实现或者不能高效实现的模式。</p>
+</blockquote>
 <p>该抢购方案基于Lua脚本，实际项目中可根据需要扩展命令。</p>
 <h2 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h2><ol>
 <li>是否已抢购(是否达到抢购上限)</li>
@@ -457,7 +669,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">script load &quot;-- variable\nlocal stockKey = KEYS[1]\nlocal purchasedKey = KEYS[2]\nlocal handlerKey = KEYS[3]\nlocal userId = ARGV[1]\n\n-- check purchased set\nif redis.call(\&quot;SISMEMBER\&quot;, purchasedKey, userId) ~= 0 then return 0 end\n\n-- check stock\nlocal stock = redis.call(\&quot;GET\&quot;, stockKey)\nif not stock or tonumber(stock) &lt;= 0 then return 0 end\n\n-- stock decrease\nredis.call(\&quot;DECR\&quot;, stockKey)\n-- add purchased set\nredis.call(\&quot;SADD\&quot;, purchasedKey, userId)\n-- add purchased handler queue\nredis.call(\&quot;LPUSH\&quot;, handlerKey, userId)\nreturn 1&quot;</span><br></pre></td></tr></table></figure>
 <p>得到sha1，执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evalsha a80403df241c6d1823f5c820a4d2b6284995444e 3 apple_stock apple_purchased_set apple_purchased_queue 777</span><br></pre></td></tr></table></figure></p>
 <p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602171006.png" alt="20200602171006.png"></p>
-<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><p>lua:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195605.png" alt="j-lua-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195817.png" alt="j-lua-20000"><br>lua-cluster:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608193546.png" alt="j-lua-cluster-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608194858.png" alt="j-lua-cluster-20000"><br>watch:<br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200047.png" alt="j-watch-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200257.png" alt="j-watch-20000"></p>
+<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><h3 id="lua"><a href="#lua" class="headerlink" title="lua"></a>lua</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195605.png" alt="j-lua-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195817.png" alt="j-lua-20000"></p>
+<h3 id="lua-cluster"><a href="#lua-cluster" class="headerlink" title="lua-cluster"></a>lua-cluster</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608193546.png" alt="j-lua-cluster-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608194858.png" alt="j-lua-cluster-20000"></p>
+<h3 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200047.png" alt="j-watch-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200257.png" alt="j-watch-20000"></p>
 <ul>
 <li>lua 方案抢购先到先得，基本不会出现失败。</li>
 <li>lua 3个Master节点集群，性能对比单实例性能低。</li>
@@ -595,7 +809,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+                <time title="Modified: 2020-06-14 09:36:52" itemprop="dateModified" datetime="2020-06-14T09:36:52+08:00">2020-06-14</time>
               
             
           </span>
@@ -650,12 +864,12 @@
         
           
             <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
-<p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.h</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*-----------------------------------------------------------------------------</span><br><span class="line"> * Redis cluster data structures, defines, exported API.</span><br><span class="line"> *----------------------------------------------------------------------------*/</span><br><span class="line"></span><br><span class="line">#define CLUSTER_SLOTS 16384</span><br><span class="line"></span><br><span class="line">line:249</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    ...</span><br><span class="line">    uint16_t type;      /* Message type */</span><br><span class="line">    ...</span><br><span class="line">    unsigned char myslots[CLUSTER_SLOTS/8];</span><br><span class="line">    ...</span><br><span class="line">    union clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
+<p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.h</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*-----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Redis cluster data structures, defines, exported API.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLUSTER_SLOTS 16384</span></span><br><span class="line"></span><br><span class="line">line:<span class="number">248</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">uint16_t</span> type;      <span class="comment">/* Message type */</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> myslots[CLUSTER_SLOTS/<span class="number">8</span>];</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">union</span> clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
 <p>博主解释的很挺清楚的了，说白了就是不会有这么多节点，不需要太多槽。</p>
 <p>issue 里评论区有提到 <code>Compress bitmap to reduce network traffic</code>，<br>我觉得评论区最后的回复是对的，传输中的数据没有被压缩 <code>No compression, just 1 bit for 1 slot</code>。</p>
-<p>追查代码：<br><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:2444</span><br><span class="line">void clusterSendPing(clusterLink *link, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    clusterBuildMessageHdr(hdr,type);</span><br><span class="line">    ...</span><br><span class="line">    clusterSendMessage(link,buf,totlen);</span><br><span class="line">    zfree(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2340</span><br><span class="line">void clusterBuildMessageHdr(clusterMsg *hdr, int type) &#123;</span><br><span class="line">    ...</span><br><span class="line">    memcpy(hdr-&gt;myslots,master-&gt;slots,sizeof(hdr-&gt;myslots));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:2303</span><br><span class="line">void clusterSendMessage(clusterLink *link, unsigned char *msg, size_t msglen) &#123;</span><br><span class="line">    if (sdslen(link-&gt;sndbuf) == 0 &amp;&amp; msglen != 0)</span><br><span class="line">        connSetWriteHandlerWithBarrier(link-&gt;conn, clusterWriteHandler, 1);</span><br><span class="line"></span><br><span class="line">    link-&gt;sndbuf = sdscatlen(link-&gt;sndbuf, msg, msglen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>并没有发现有压缩的过程，我猜作者想说的是，压缩位图以节省内存空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void clusterInit(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:518</span><br><span class="line">    /* The slots -&gt; keys map is a radix tree. Initialize it here. */</span><br><span class="line">    server.cluster-&gt;slots_to_keys = raxNew();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>追查代码：<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">2433</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterSendPing</span><span class="params">(clusterLink *link, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    clusterBuildMessageHdr(hdr,type);</span><br><span class="line">    ...</span><br><span class="line">    clusterSendMessage(link,buf,totlen);</span><br><span class="line">    zfree(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">2329</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterBuildMessageHdr</span><span class="params">(clusterMsg *hdr, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">memcpy</span>(hdr-&gt;myslots,master-&gt;slots,<span class="keyword">sizeof</span>(hdr-&gt;myslots));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">2292</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterSendMessage</span><span class="params">(clusterLink *link, <span class="keyword">unsigned</span> <span class="keyword">char</span> *msg, <span class="keyword">size_t</span> msglen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sdslen(link-&gt;sndbuf) == <span class="number">0</span> &amp;&amp; msglen != <span class="number">0</span>)</span><br><span class="line">        connSetWriteHandlerWithBarrier(link-&gt;conn, clusterWriteHandler, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    link-&gt;sndbuf = sdscatlen(link-&gt;sndbuf, msg, msglen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>并没有发现有压缩的过程，我猜作者想说的是，压缩位图以节省内存空间<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterInit</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">518</span></span><br><span class="line">    <span class="comment">/* The slots -&gt; keys map is a radix tree. Initialize it here. */</span></span><br><span class="line">    server.cluster-&gt;slots_to_keys = raxNew();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="评论区老哥"><a href="#评论区老哥" class="headerlink" title="评论区老哥"></a>评论区老哥</h2><p>看完文章，评论区老哥的问题，引起了我的兴趣：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png" alt="20200521111826.png"></p>
 <p>对呀，带宽损耗可不可以算出来？<br>给定节点数量、实例数量、超时时间，估算带宽损耗？<br>嗯，这很酷。。。</p>
 <p>博主已经介绍了ping发送数量的计算公式：<br><code>数量=1+10*num(node.pong_received&gt;cluster_node_timeout/2)</code><br>可对GOSSIP协议不够了解，计算结果和《Redis运维与实现》的例子对不上<br>200节点，20台物理机，15s超时，真的是占25Mb带宽吗？</p>
@@ -668,7 +882,7 @@
 <li>10分钟发送1114个ping，平均 1.86ping/s，可见公式里的 num(x) 大约是 0.086个</li>
 </ol>
 <h2 id="ping的发送"><a href="#ping的发送" class="headerlink" title="ping的发送"></a>ping的发送</h2><p>如果按本地所有节点都在默默等待超时来算，ping数量、带宽损耗会远高于观察到的结果<br>看源码可以知道，除了每秒固定的ping外，100ms发送ping的条件有3个</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0/src/cluster.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">line:3400</span><br><span class="line">/* -----------------------------------------------------------------------------</span><br><span class="line"> * CLUSTER cron job</span><br><span class="line"> * -------------------------------------------------------------------------- */</span><br><span class="line"></span><br><span class="line">/* This is executed 10 times every second */</span><br><span class="line">void clusterCron(void) &#123;</span><br><span class="line">    ...</span><br><span class="line">    line:3506</span><br><span class="line">    if (!(iteration % 10)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        clusterSendPing(min_pong_node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    line:3589</span><br><span class="line">    if (node-&gt;link &amp;&amp;</span><br><span class="line">        node-&gt;ping_sent == 0 &amp;&amp;</span><br><span class="line">        (now - node-&gt;pong_received) &gt; server.cluster_node_timeout/2)</span><br><span class="line">    &#123;</span><br><span class="line">        clusterSendPing(node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        continue;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3389</span></span><br><span class="line"><span class="comment">/* -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * CLUSTER cron job</span></span><br><span class="line"><span class="comment"> * -------------------------------------------------------------------------- */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* This is executed 10 times every second */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterCron</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3495</span></span><br><span class="line">    <span class="keyword">if</span> (!(iteration % <span class="number">10</span>)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        clusterSendPing(min_pong_node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3575</span></span><br><span class="line">    <span class="keyword">if</span> (node-&gt;link &amp;&amp;</span><br><span class="line">        node-&gt;ping_sent == <span class="number">0</span> &amp;&amp;</span><br><span class="line">        (now - node-&gt;pong_received) &gt; server.cluster_node_timeout/<span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        clusterSendPing(node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ol>
 <li>当前节点和目标节点的连接有效</li>
 <li>没有向目标节点发过ping（没收到过目标节点的pong）</li>
@@ -2082,183 +2296,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/12/02/KafkaListener-annotation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/12/02/KafkaListener-annotation/" class="post-title-link" itemprop="url">KafkaListener annotation</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-12-02 13:54:08" itemprop="dateCreated datePublished" datetime="2019-12-02T13:54:08+08:00">2019-12-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-12-15 18:11:31" itemprop="dateModified" datetime="2019-12-15T18:11:31+08:00">2019-12-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Listener-container-factory"><a href="#Listener-container-factory" class="headerlink" title="Listener container factory"></a>Listener container factory</h2><h3 id="Define-a-config-loader-function-fist"><a href="#Define-a-config-loader-function-fist" class="headerlink" title="Define a config loader function fist"></a>Define a config loader function fist</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, Object&gt; <span class="title">consumerConfigs</span><span class="params">(String groupId)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, Object&gt; consumerConfig = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    initKafkaClientConfiguration(consumerConfig);</span><br><span class="line">    consumerConfig.put(<span class="string">"group.id"</span>, groupId);</span><br><span class="line">    consumerConfig.put(..., ...);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> consumerConfig;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Create-factory-bean"><a href="#Create-factory-bean" class="headerlink" title="Create factory bean"></a>Create factory bean</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-one"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-two"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Point-factory-in-KafkaListener"><a href="#Point-factory-in-KafkaListener" class="headerlink" title="Point factory in @KafkaListener"></a>Point factory in <code>@KafkaListener</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@KafkaListener(topics = &quot;Topic-1&quot; , containerFactory = &quot;kafkaListenerContainerFactoryOne&quot;)</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">@KafkaListener(topics = &quot;Topic-2&quot; , containerFactory = &quot;kafkaListenerContainerFactoryTwo&quot;)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-<h2 id="Get-header-body-by-annotation"><a href="#Get-header-body-by-annotation" class="headerlink" title="Get header body by annotation"></a>Get header body by annotation</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(id = <span class="string">"anno"</span>, topics = <span class="string">"topic-3"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">annoListener</span><span class="params">(@Payload String data,</span></span></span><br><span class="line"><span class="function"><span class="params">                         @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY)</span> Integer key,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_PARTITION_ID)</span> <span class="keyword">int</span> partition,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TOPIC)</span> String topic,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TIMESTAMP)</span> <span class="keyword">long</span> ts) </span>&#123;</span><br><span class="line">    log.info(<span class="string">"topic.quick.anno receive : \n"</span>+</span><br><span class="line">        <span class="string">"data : "</span>        + data +      <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"key : "</span>         + key +       <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"partitionId : "</span> + partition + <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"topic : "</span>       + topic +     <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"timestamp : "</span>   + ts +        <span class="string">"\n"</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/my_momo_csdn/article/details/89366205" target="_blank" rel="noopener">https://blog.csdn.net/my_momo_csdn/article/details/89366205</a><br><a href="https://www.jianshu.com/p/a64defb44a23" target="_blank" rel="noopener">https://www.jianshu.com/p/a64defb44a23</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2305,7 +2342,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">211</span>
+                    <span class="site-state-item-count">212</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

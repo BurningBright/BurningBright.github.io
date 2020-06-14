@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+<meta name="keywords" content="redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索redis 键散列过程源码">
+<meta property="og:url" content="http://linchenguang.com/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-06-14T02:04:15.981Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="探索redis 键散列过程源码">
+<meta name="twitter:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>探索redis 键散列过程源码 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">探索redis 键散列过程源码
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-06-10 14:20:09" itemprop="dateCreated datePublished" datetime="2020-06-10T14:20:09+08:00">2020-06-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-14 10:04:15" itemprop="dateModified" datetime="2020-06-14T10:04:15+08:00">2020-06-14</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
+<p>经查资料，说是要避免 <code>Max redirect exception</code>，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。<br>想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。</p>
+<h2 id="命令的探索"><a href="#命令的探索" class="headerlink" title="命令的探索"></a>命令的探索</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><code>server.c</code>的<code>redisCommandTable</code>定义了每个命令对应的函数，<br>源码中的<code>set</code>命令对应的函数是<code>setCommand</code>函数，这个函数在<code>t_string.c</code>中定义。<br>源码中的<code>cluster</code>命令对应的函数是<code>clusterCommand</code>函数，这个函数在<code>cluster.c</code>中定义。</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">182</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,</span><br><span class="line">     <span class="string">"write use-memory @string"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">     &#123;<span class="string">"cluster"</span>,clusterCommand,<span class="number">-2</span>,</span><br><span class="line">     <span class="string">"admin ok-stale random"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="set命令追踪"><a href="#set命令追踪" class="headerlink" title="set命令追踪"></a><code>set</code>命令追踪</h3><p>打开文件 <code>t_string.c</code> 查看调用过程<br><code>setCommand</code> -&gt; <code>setGenericCommand</code> -&gt; <code>genericSetKey</code>，函数<code>genericSetKey</code>在<code>db.c</code>中定义。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/t_string.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/t_string.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">96</span></span><br><span class="line"><span class="comment">/* SET key value [NX] [XX] [KEEPTTL] [EX &lt;seconds&gt;] [PX &lt;milliseconds&gt;] */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    setGenericCommand(c,flags,c-&gt;argv[<span class="number">1</span>],c-&gt;argv[<span class="number">2</span>],expire,unit,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">68</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> flags, robj *key, robj *val, robj *expire, <span class="keyword">int</span> unit, robj *ok_reply, robj *abort_reply)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    genericSetKey(c,c-&gt;db,key,val,flags &amp; OBJ_SET_KEEPTTL,<span class="number">1</span>);</span><br><span class="line">    ...</span><br><span class="line">    addReply(c, ok_reply ? ok_reply : shared.ok);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>打开文件 <code>db.c</code> 查看调用过程<br><code>genericSetKey</code> -&gt; <code>dbAdd</code> -&gt; <code>slotToKeyAdd</code> -&gt; <code>slotToKeyUpdateKey</code> -&gt; <code>keyHashSlot</code><br>终于看到散列计算的函数了，<code>keyHashSlot</code>在<code>cluster.c</code>中定义<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/db.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/db.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">244</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genericSetKey</span><span class="params">(client *c, redisDb *db, robj *key, robj *val, <span class="keyword">int</span> keepttl, <span class="keyword">int</span> signal)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lookupKeyWrite(db,key) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        dbAdd(db,key,val);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dbOverwrite(db,key,val);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">179</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dbAdd</span><span class="params">(redisDb *db, robj *key, robj *val)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (server.cluster_enabled) slotToKeyAdd(key-&gt;ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1691</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyAdd</span><span class="params">(sds key)</span> </span>&#123;</span><br><span class="line">    slotToKeyUpdateKey(key,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1672</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyUpdateKey</span><span class="params">(sds key, <span class="keyword">int</span> add)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> hashslot = keyHashSlot(key,keylen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="cluster-keyslot命令追踪"><a href="#cluster-keyslot命令追踪" class="headerlink" title="cluster keyslot命令追踪"></a><code>cluster keyslot</code>命令追踪</h3><p><code>cluster keyslot</code> 该命令能获取集群中key的slot值，可以看到调用的也是<code>keyHashSlot</code>函数<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">4251</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!strcasecmp(c-&gt;argv[<span class="number">1</span>]-&gt;ptr,<span class="string">"keyslot"</span>) &amp;&amp; c-&gt;argc == <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">/* CLUSTER KEYSLOT &lt;key&gt; */</span></span><br><span class="line">        sds key = c-&gt;argv[<span class="number">2</span>]-&gt;ptr;</span><br><span class="line"></span><br><span class="line">        addReplyLongLong(c,keyHashSlot(key,sdslen(key)));</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h2><p>打开文件 <code>cluster.c</code>，可以看到散列计算过程<br>看函数、函数注释可知，当有花括号<code>{}</code> 时，仅计算括号内内容的散列<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">line：<span class="number">694</span></span><br><span class="line"><span class="comment">/* -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Key space handling</span></span><br><span class="line"><span class="comment"> * -------------------------------------------------------------------------- */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* We have 16384 hash slots. The hash slot of a given key is obtained</span></span><br><span class="line"><span class="comment"> * as the least significant 14 bits of the crc16 of the key.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * However if the key contains the &#123;...&#125; pattern, only the part between</span></span><br><span class="line"><span class="comment"> * &#123; and &#125; is hashed. This may be useful in the future to force certain</span></span><br><span class="line"><span class="comment"> * keys to be in the same node (assuming no resharding is in progress). */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">keyHashSlot</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">int</span> keylen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s, e; <span class="comment">/* start-end indexes of &#123; and &#125; */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (s = <span class="number">0</span>; s &lt; keylen; s++)</span><br><span class="line">        <span class="keyword">if</span> (key[s] == <span class="string">'&#123;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#123;' ? Hash the whole key. This is the base case. */</span></span><br><span class="line">    <span class="keyword">if</span> (s == keylen) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* '&#123;' found? Check if we have the corresponding '&#125;'. */</span></span><br><span class="line">    <span class="keyword">for</span> (e = s+<span class="number">1</span>; e &lt; keylen; e++)</span><br><span class="line">        <span class="keyword">if</span> (key[e] == <span class="string">'&#125;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#125;' or nothing between &#123;&#125; ? Hash the whole key. */</span></span><br><span class="line">    <span class="keyword">if</span> (e == keylen || e == s+<span class="number">1</span>) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* If we are here there is both a &#123; and a &#125; on its right. Hash</span></span><br><span class="line"><span class="comment">     * what is in the middle between &#123; and &#125;. */</span></span><br><span class="line">    <span class="keyword">return</span> crc16(key+s+<span class="number">1</span>,e-s<span class="number">-1</span>) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="异常追踪"><a href="#异常追踪" class="headerlink" title="异常追踪"></a>异常追踪</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;mset a 1 b 2</span><br><span class="line">CROSSSLOT Keys in request don&apos;t hash to the same slot</span><br></pre></td></tr></table></figure>
+<p>倒查异常的触发链：</p>
+<h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>异常定义在 <code>cluster.c</code><br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5711</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterRedirectClient</span><span class="params">(client *c, clusterNode *n, <span class="keyword">int</span> hashslot, <span class="keyword">int</span> error_code)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (error_code == CLUSTER_REDIR_CROSS_SLOT) &#123;</span><br><span class="line">        addReplySds(c,sdsnew(<span class="string">"-CROSSSLOT Keys in request don't hash to the same slot\r\n"</span>));</span><br><span class="line">    &#125; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="触发"><a href="#触发" class="headerlink" title="触发"></a>触发</h3><p>触发点在<code>clusterNode *getNodeByQuery</code>函数中<br>外层循环遍历多指令，内层循环遍历多键，确保同一命令的所有键落在一个槽里。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5515</span></span><br><span class="line"><span class="function">clusterNode *<span class="title">getNodeByQuery</span><span class="params">(client *c, struct redisCommand *cmd, robj **argv, <span class="keyword">int</span> argc, <span class="keyword">int</span> *hashslot, <span class="keyword">int</span> *error_code)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Check that all the keys are in the same hash slot, and obtain this</span></span><br><span class="line"><span class="comment">     * slot and the node associated. */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; ms-&gt;count; i++) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; numkeys; j++) &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">if</span> (firstkey == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                ...</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">/* If it is not the first key, make sure it is exactly</span></span><br><span class="line"><span class="comment">                 * the same key as the first we saw. */</span></span><br><span class="line">                <span class="keyword">if</span> (!equalStringObjects(firstkey,thiskey)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (slot != thisslot) &#123;</span><br><span class="line">                        <span class="comment">/* Error: multiple keys from different slots. */</span></span><br><span class="line">                        getKeysFreeResult(keyindex);</span><br><span class="line">                        <span class="keyword">if</span> (error_code)</span><br><span class="line">                            *error_code = CLUSTER_REDIR_CROSS_SLOT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">/* Flag this request as one with multiple different</span></span><br><span class="line"><span class="comment">                         * keys. */</span></span><br><span class="line">                        multiple_keys = <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>继续向上寻找，函数被多个地方调用，这里主要看<code>server.c</code><br>在集群模式下处理命令会在此重定向，如果<code>getNodeByQuery</code>发现错误，会在<code>clusterRedirectClient</code>中应答<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                        &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3456</span></span><br><span class="line">    clusterRedirectClient(c,n,hashslot,error_code);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><p>继续向上寻找，函数仅在<code>networking.c</code>中被调用<br>这里让人下意识感觉有点不一样，从命名上看函数更偏向底层。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">1757</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommandAndResetClient</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (processCommand(c) == C_OK) &#123;</span><br><span class="line">        commandProcessed(c);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1775</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">processInputBuffer</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* Keep processing while there is something in the input buffer */</span></span><br><span class="line">    <span class="keyword">while</span>(c-&gt;qb_pos &lt; sdslen(c-&gt;querybuf)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">/* Multibulk processing could see a &lt;= 0 length. */</span></span><br><span class="line">        <span class="keyword">if</span> (c-&gt;argc == <span class="number">0</span>) &#123;</span><br><span class="line">            resetClient(c);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="comment">/* We are finally ready to execute the command. */</span></span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid exiting this</span></span><br><span class="line"><span class="comment">                 * loop and trimming the client buffer later. So we return</span></span><br><span class="line"><span class="comment">                 * ASAP in that case. */</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1858</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* There is more data in the client input buffer, continue parsing it</span></span><br><span class="line"><span class="comment">     * in case to check if there is a full command to execute. */</span></span><br><span class="line">     processInputBuffer(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">3091</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">handleClientsWithPendingReadsUsingThreads</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">while</span>((ln = listNext(&amp;li))) &#123;</span><br><span class="line">        client *c = listNodeValue(ln);</span><br><span class="line">        readQueryFromClient(c-&gt;conn);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Run the list of clients again to process the new buffers. */</span></span><br><span class="line">    <span class="keyword">while</span>(listLength(server.clients_pending_read)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_PENDING_COMMAND) &#123;</span><br><span class="line">            c-&gt;flags &amp;= ~CLIENT_PENDING_COMMAND;</span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid</span></span><br><span class="line"><span class="comment">                 * processing the client later. So we just go</span></span><br><span class="line"><span class="comment">                 * to the next. */</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        processInputBuffer(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> processed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="看不下去了"><a href="#看不下去了" class="headerlink" title="看不下去了"></a>看不下去了</h3><p>好吧，看到这已经没有方向了。继续查找调用，都是线程、IO相关的函数，实在不明白其中机制。<br>开始在网上搜索相关资料，一开始搜”get/set源码解析”，一直找不到想要的内容，异常的源头在哪？正常的命令从哪执行？</p>
+<p>直到在一篇文章中，发现自己错过了命令调用的地方<code>int processCommand(client *c)</code>。<br>而且追踪的思路是错的，之前一直以为异常是在命令函数执行之后报的，事实是<strong>异常检查在命令函数之前执行</strong>。</p>
+<p><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3381</span></span><br><span class="line">    <span class="comment">/* Now lookup the command and check ASAP about trivial error conditions</span></span><br><span class="line"><span class="comment">     * such as wrong arity, bad command name and so forth. */</span></span><br><span class="line">    c-&gt;cmd = c-&gt;lastcmd = lookupCommand(c-&gt;argv[<span class="number">0</span>]-&gt;ptr);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                            &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3601</span></span><br><span class="line">    <span class="comment">/* Exec the command */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_MULTI &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != execCommand &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != multiCommand &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand)</span><br><span class="line">    &#123;</span><br><span class="line">        queueMultiCommand(c);</span><br><span class="line">        addReply(c,shared.queued);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> C_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">line:<span class="number">3200</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(client *c, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    c-&gt;cmd-&gt;proc(c);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>proc</code> 即是文章开头提到的命令对应的函数</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>命令：</p>
+<blockquote>
+<p>redis-cli -&gt; network -&gt; acceptTcpHandler -&gt; anetTcpAccept -&gt; acceptCommonHandler -&gt; createClient -&gt; readQueryFromClient</p>
+</blockquote>
+<p>异常：</p>
+<blockquote>
+<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; getNodeByQuery -&gt; clusterRedirectClient</p>
+</blockquote>
+<p>执行：</p>
+<blockquote>
+<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; lookupCommand -&gt; call</p>
+</blockquote>
+<p>散列：</p>
+<blockquote>
+<p>proc(c) -&gt; setCommand -&gt; setGenericCommand -&gt; genericSetKey -&gt; dbAdd -&gt; slotToKeyAdd -&gt; slotToKeyUpdateKey -&gt; keyHashSlot</p>
+</blockquote>
+<p>至此基本可以知道，Key中花括号的散列在哪计算，跨slot异常在哪抛出，命令定义函数在哪执行。</p>
+<hr>
+<p><a href="https://www.jianshu.com/p/220b8d2c41c3" target="_blank" rel="noopener">Redis集群的5种使用方式，各自优缺点分析</a><br><a href="https://www.cnblogs.com/jessema/p/6065855.html" target="_blank" rel="noopener">redis中set命令的源码分析</a><br><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/" rel="next" title="基于Redis-Lua脚本的抢购方案">
+                <i class="fa fa-chevron-left"></i> 基于Redis-Lua脚本的抢购方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">212</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">75</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令的探索"><span class="nav-number">1.</span> <span class="nav-text">命令的探索</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set命令追踪"><span class="nav-number">1.2.</span> <span class="nav-text">set命令追踪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cluster-keyslot命令追踪"><span class="nav-number">1.3.</span> <span class="nav-text">cluster keyslot命令追踪</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散列函数"><span class="nav-number">2.</span> <span class="nav-text">散列函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异常追踪"><span class="nav-number">3.</span> <span class="nav-text">异常追踪</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义-1"><span class="nav-number">3.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#触发"><span class="nav-number">3.2.</span> <span class="nav-text">触发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络"><span class="nav-number">3.3.</span> <span class="nav-text">网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#看不下去了"><span class="nav-number">3.4.</span> <span class="nav-text">看不下去了</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
