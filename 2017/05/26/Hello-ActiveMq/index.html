@@ -437,7 +437,7 @@
       
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Common"><a href="#Common" class="headerlink" title="Common"></a>Common</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// connection's factory[modle]</span></span><br><span class="line">ConnectionFactory connectionFactory = <span class="keyword">new</span> ActiveMQConnectionFactory(</span><br><span class="line">JMSProducer.USERNAME,</span><br><span class="line">JMSProducer.PASSWORD,</span><br><span class="line">JMSProducer.BROKEURL);</span><br><span class="line"><span class="comment">// connection object[don't forget to close it]</span></span><br><span class="line">Connection connection = connectionFactory.createConnection();</span><br><span class="line"><span class="comment">// begin</span></span><br><span class="line">connection.start();</span><br><span class="line"><span class="comment">// communication with MQ[transaction modle, false in consumer]</span></span><br><span class="line">Session session = connection.createSession(<span class="keyword">true</span>, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line"><span class="comment">// MQ address object</span></span><br><span class="line">Destination destination;</span><br></pre></td></tr></table></figure>
+        <h3 id="Common"><a href="#Common" class="headerlink" title="Common"></a>Common</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// connection's factory[modle]</span></span><br><span class="line">ConnectionFactory connectionFactory = <span class="keyword">new</span> ActiveMQConnectionFactory(</span><br><span class="line">JMSProducer.USERNAME,</span><br><span class="line">JMSProducer.PASSWORD,</span><br><span class="line">JMSProducer.BROKEURL);</span><br><span class="line"><span class="comment">// connection object[don't forget to close it]</span></span><br><span class="line">Connection connection = connectionFactory.createConnection();</span><br><span class="line"><span class="comment">// begin</span></span><br><span class="line">connection.start();</span><br><span class="line"><span class="comment">// communication with MQ[transaction modle, false in consumer]</span></span><br><span class="line">Session session = connection.createSession(<span class="keyword">true</span>, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line"><span class="comment">// MQ address object</span></span><br><span class="line">Destination destination;</span><br></pre></td></tr></table></figure>
 <p><strong>close connection in final</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (connection != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          connection.close();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (JMSException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="Producer-Consumer"><a href="#Producer-Consumer" class="headerlink" title="Producer-Consumer"></a>Producer-Consumer</h3><p><em>producer</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the queue's name</span></span><br><span class="line">destination = session.createQueue(<span class="string">"HelloWorld"</span>);</span><br><span class="line"><span class="comment">// the producer object</span></span><br><span class="line">MessageProducer messageProducer = session.createProducer(destination);</span><br><span class="line"><span class="comment">// message</span></span><br><span class="line">TextMessage message = session.createTextMessage(<span class="string">"Hello ActiveMQ"</span>);</span><br><span class="line"><span class="comment">// send</span></span><br><span class="line">messageProducer.send(message);</span><br></pre></td></tr></table></figure></p>
 <p><em>consumer</em></p>
@@ -604,14 +604,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -628,18 +620,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -939,16 +919,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -1071,6 +1054,46 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

@@ -438,7 +438,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Listener-container-factory"><a href="#Listener-container-factory" class="headerlink" title="Listener container factory"></a>Listener container factory</h2><h3 id="Define-a-config-loader-function-fist"><a href="#Define-a-config-loader-function-fist" class="headerlink" title="Define a config loader function fist"></a>Define a config loader function fist</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, Object&gt; <span class="title">consumerConfigs</span><span class="params">(String groupId)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, Object&gt; consumerConfig = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    initKafkaClientConfiguration(consumerConfig);</span><br><span class="line">    consumerConfig.put(<span class="string">"group.id"</span>, groupId);</span><br><span class="line">    consumerConfig.put(..., ...);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> consumerConfig;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h2 id="Listener-container-factory"><a href="#Listener-container-factory" class="headerlink" title="Listener container factory"></a>Listener container factory</h2><h3 id="Define-a-config-loader-function-fist"><a href="#Define-a-config-loader-function-fist" class="headerlink" title="Define a config loader function fist"></a>Define a config loader function fist</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, Object&gt; <span class="title">consumerConfigs</span><span class="params">(String groupId)</span> </span>&#123;</span><br><span class="line">    Map&lt;String, Object&gt; consumerConfig = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    initKafkaClientConfiguration(consumerConfig);</span><br><span class="line">    consumerConfig.put(<span class="string">"group.id"</span>, groupId);</span><br><span class="line">    consumerConfig.put(..., ...);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> consumerConfig;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Create-factory-bean"><a href="#Create-factory-bean" class="headerlink" title="Create factory bean"></a>Create factory bean</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-one"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; <span class="title">kafkaListenerContainerFactoryTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConcurrentKafkaListenerContainerFactory&lt;Integer, String&gt; factory = <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">    factory.setConcurrency(<span class="number">10</span>);</span><br><span class="line">    factory.getContainerProperties().setPollTimeout(<span class="number">3000</span>);</span><br><span class="line">    factory.setConsumerFactory(consumerFactory(<span class="string">"group-two"</span>));</span><br><span class="line">    <span class="keyword">return</span> factory;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Point-factory-in-KafkaListener"><a href="#Point-factory-in-KafkaListener" class="headerlink" title="Point factory in @KafkaListener"></a>Point factory in <code>@KafkaListener</code></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@KafkaListener(topics = &quot;Topic-1&quot; , containerFactory = &quot;kafkaListenerContainerFactoryOne&quot;)</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">@KafkaListener(topics = &quot;Topic-2&quot; , containerFactory = &quot;kafkaListenerContainerFactoryTwo&quot;)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <h2 id="Get-header-body-by-annotation"><a href="#Get-header-body-by-annotation" class="headerlink" title="Get header body by annotation"></a>Get header body by annotation</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@KafkaListener</span>(id = <span class="string">"anno"</span>, topics = <span class="string">"topic-3"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">annoListener</span><span class="params">(@Payload String data,</span></span></span><br><span class="line"><span class="function"><span class="params">                         @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY)</span> Integer key,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_PARTITION_ID)</span> <span class="keyword">int</span> partition,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TOPIC)</span> String topic,</span></span><br><span class="line"><span class="function">                         @<span class="title">Header</span><span class="params">(KafkaHeaders.RECEIVED_TIMESTAMP)</span> <span class="keyword">long</span> ts) </span>&#123;</span><br><span class="line">    log.info(<span class="string">"topic.quick.anno receive : \n"</span>+</span><br><span class="line">        <span class="string">"data : "</span>        + data +      <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"key : "</span>         + key +       <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"partitionId : "</span> + partition + <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"topic : "</span>       + topic +     <span class="string">"\n"</span> +</span><br><span class="line">        <span class="string">"timestamp : "</span>   + ts +        <span class="string">"\n"</span></span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -615,7 +615,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="第1章无服务器简介"><a href="#第1章无服务器简介" class="headerlink" title="第1章无服务器简介"></a>第1章无服务器简介</h1><p>在本章中，我们首先要上一堂历史课，以了解导致我们走向无服务器的原因。在这种情况下，我们将描述什么是无服务器。最后，我们将通过总结为什么无服务器既是云自然增长的一部分，又是我们如何处理应用交付方式的障碍而总结一下。</p>
+            <h1 id="第1章无服务器简介"><a href="#第1章无服务器简介" class="headerlink" title="第1章无服务器简介"></a>第1章无服务器简介</h1><p>在本章中，我们首先要上一堂历史课，以了解导致我们走向无服务器的原因。在这种情况下，我们将描述什么是无服务器。最后，我们将通过总结为什么无服务器既是云自然增长的一部分，又是我们如何处理应用交付方式的障碍而总结一下。</p>
 <h1 id="搭建舞台"><a href="#搭建舞台" class="headerlink" title="搭建舞台"></a>搭建舞台</h1><p>为了将像Serverless这样的技术置于适当的环境中，我们必须首先概述其演进路径中的步骤。</p>
 <h2 id="云的诞生"><a href="#云的诞生" class="headerlink" title="云的诞生"></a>云的诞生</h2><p>让我们回到2006年。目前还没有人拥有iPhone，Ruby on Rails是一个炙手可热的新编程环境，并且Twitter也在启动。但是，与该报告更紧密的关系是，许多人将其服务器端应用程序托管在自己拥有的机架式数据中心中。</p>
 <p>2006年8月，发生了一些事情，从根本上改变了这种模式。亚马逊的新IT部门亚马逊网络服务（AWS）宣布推出<code>弹性计算云（EC2）</code>。</p>
@@ -860,7 +860,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure>
+            <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure>
 <p>main.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello World\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_executable(main main.c)</span><br></pre></td></tr></table></figure></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# cmake .</span><br><span class="line">-- The C compiler identification is GNU 8.2.1</span><br><span class="line">-- The CXX compiler identification is GNU 8.2.1</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc -- works</span><br><span class="line">-- Detecting C compiler ABI info</span><br><span class="line">-- Detecting C compiler ABI info - done</span><br><span class="line">-- Detecting C compile features</span><br><span class="line">-- Detecting C compile features - done</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - done</span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - done</span><br><span class="line">-- Configuring done</span><br><span class="line">-- Generating done</span><br><span class="line">-- Build files have been written to: /root/labc/demo</span><br></pre></td></tr></table></figure>
@@ -1096,7 +1096,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
+            <h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker images -a</span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              72dc10d3deba        22 hours ago        230MB</span><br><span class="line">tdtest              latest              e3ad759bb993        22 hours ago        230MB</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              820bc1802af7        22 hours ago        230MB</span><br><span class="line">...</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              ac8cea40eaa0        22 hours ago        223MB</span><br><span class="line">centos              latest              0f3e07c0138f        2 weeks ago         220MB</span><br><span class="line">redis               latest              01a52b3b5cd1        2 weeks ago         98.2MB</span><br><span class="line">ubuntu              latest              2ca708c1c9cc        3 weeks ago         64.2MB</span><br><span class="line">redis               alpine              ed7d2ff5a623        8 weeks ago         29.3MB</span><br></pre></td></tr></table></figure>
 <p>when put command <code>docker rmi 820bc1802af7</code>, <code>&lt;none&gt;:&lt;none&gt;</code> image delete fail.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: conflict: unable to delete 820bc1802af7 (cannot be forced) - image has dependent child images</span><br></pre></td></tr></table></figure></p>
 <p>this is cause by has other images depend on this image <code>820bc1802af7</code>.<br>use <code>docker image inspect</code>, find current image’s child image, repository tag name.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker image inspect --format=&apos;&#123;&#123;.RepoTags&#125;&#125; &#123;&#123;.Id&#125;&#125; &#123;&#123;.Parent&#125;&#125;&apos; $(docker image ls -q --filter since=820bc1802af7)</span><br><span class="line">[tdtest:latest] sha256:e3ad759bb99351a4951df11113e0ad3914a26d55e99e5243e13ebac19373efae sha256:8abd1595d4dfc922b81825940c0f6d73034eeb10b3e2b12a78b3d0e33d78588e</span><br></pre></td></tr></table></figure></p>
@@ -1278,7 +1278,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="CentOS-Base-repo"><a href="#CentOS-Base-repo" class="headerlink" title="CentOS-Base.repo"></a>CentOS-Base.repo</h2><p>modify /etc/yum.repos.d/CentOS-Base.repo</p>
+            <h2 id="CentOS-Base-repo"><a href="#CentOS-Base-repo" class="headerlink" title="CentOS-Base.repo"></a>CentOS-Base.repo</h2><p>modify /etc/yum.repos.d/CentOS-Base.repo</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[BaseOS]</span><br><span class="line">name=CentOS-$releasever - Base</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=BaseOS&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/BaseOS/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/BaseOS/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
 <h2 id="CentOS-AppStream-repo"><a href="#CentOS-AppStream-repo" class="headerlink" title="CentOS-AppStream.repo"></a>CentOS-AppStream.repo</h2><p>modify /etc/yum.repos.d/CentOS-AppStream.repo</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[AppStream]</span><br><span class="line">name=CentOS-$releasever - AppStream</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=AppStream&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/AppStream/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/AppStream/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
@@ -1446,7 +1446,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><h3 id="prepare-base-image"><a href="#prepare-base-image" class="headerlink" title="prepare base image"></a>prepare base image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image pull centos</span><br></pre></td></tr></table></figure>
+            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><h3 id="prepare-base-image"><a href="#prepare-base-image" class="headerlink" title="prepare base image"></a>prepare base image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image pull centos</span><br></pre></td></tr></table></figure>
 <h3 id="prepare-source-code"><a href="#prepare-source-code" class="headerlink" title="prepare source code"></a>prepare source code</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:taosdata/TDengine.git</span><br><span class="line">cd TDengine</span><br></pre></td></tr></table></figure>
 <p>or download release version package and unpackage</p>
 <h3 id="prepare-Dockerfile-file"><a href="#prepare-Dockerfile-file" class="headerlink" title="prepare Dockerfile file"></a>prepare <code>Dockerfile</code> file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># Compile image</span><br><span class="line">FROM centos as compile</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY src/ ./src/</span><br><span class="line">COPY deps/ ./deps/</span><br><span class="line">COPY packaging/ ./packaging/</span><br><span class="line">COPY CMakeLists.txt ./</span><br><span class="line"></span><br><span class="line">RUN yum update -y</span><br><span class="line"></span><br><span class="line">RUN yum group install -y &quot;Development Tools&quot;</span><br><span class="line"></span><br><span class="line">Run yum install -y cmake</span><br><span class="line"></span><br><span class="line">WORKDIR /root/build</span><br><span class="line">RUN cmake .. &amp;&amp; cmake --build .</span><br><span class="line"></span><br><span class="line">CMD [&quot;bash&quot;]</span><br><span class="line"></span><br><span class="line"># Final image</span><br><span class="line">FROM centos</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY --from=compile /root/build/build/bin /usr/bin/</span><br><span class="line">COPY --from=compile /root/build/build/lib/libtaos.so /usr/lib/</span><br><span class="line">COPY packaging/cfg/taos.cfg /etc/taos/</span><br><span class="line"></span><br><span class="line">RUN echo &quot;charset UTF-8&quot; &gt;&gt; /etc/taos/taos.cfg</span><br><span class="line"></span><br><span class="line">ENV LD_LIBRARY_PATH=&quot;$LD_LIBRARY_PATH:/usr/lib&quot;</span><br><span class="line">ENV LC_CTYPE=&quot;en_US.UTF-8&quot;</span><br><span class="line"></span><br><span class="line"># origin blog missing this</span><br><span class="line">ENV LC_ALL=&quot;C&quot;</span><br><span class="line"></span><br><span class="line">CMD [&quot;taosd&quot;]</span><br></pre></td></tr></table></figure>
@@ -1662,7 +1662,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><ol>
+            <ol>
 <li>Create directory</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/systemd/system/docker.service.d</span><br></pre></td></tr></table></figure>
@@ -1855,7 +1855,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="JS-number-type-accuracy-problem"><a href="#JS-number-type-accuracy-problem" class="headerlink" title="JS number type accuracy problem"></a>JS number type accuracy problem</h2><p>In js number type is 53 bit, if backgroud response 64 bit long type,<br>js will lose accuracy, number will not be the origin number.</p>
+            <h2 id="JS-number-type-accuracy-problem"><a href="#JS-number-type-accuracy-problem" class="headerlink" title="JS number type accuracy problem"></a>JS number type accuracy problem</h2><p>In js number type is 53 bit, if backgroud response 64 bit long type,<br>js will lose accuracy, number will not be the origin number.</p>
 <p>53 bit in decimal system length is about 16(2^52),but in java long type is about 20(2^64).<br>So backgroud return type in string is a better choice to void accuracy problem.</p>
 <h2 id="JsonSerializer-JsonDeserializer"><a href="#JsonSerializer-JsonDeserializer" class="headerlink" title="JsonSerializer JsonDeserializer"></a>JsonSerializer JsonDeserializer</h2><p>Avoiding JS loss of accuracy<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String text = (value == <span class="keyword">null</span> ? <span class="keyword">null</span> : String.valueOf(value));</span><br><span class="line">        <span class="keyword">if</span> (text != <span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeString(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>Deserialize input model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">deserialize</span><span class="params">(JsonParser jsonParser, DeserializationContext deserializationContext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String value = jsonParser.getText();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : Long.parseLong(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">            log.error(<span class="string">"Deserialize long type error: &#123;&#125;"</span>, value);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -2052,7 +2052,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>update yum package first<br><code>yum update</code></p>
+            <h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>update yum package first<br><code>yum update</code></p>
 <p>remove old version<br><code>yum remove docker  docker-common docker-selinux docker-engine</code></p>
 <p>install dependency and <code>yum-config-manager</code> in <code>yum-utils</code></p>
 <p><code>yum install -y yum-utils device-mapper-persistent-data lvm2</code></p>
@@ -2233,7 +2233,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h2><p>in file <code>/etc/profile</code> set<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export proxy=&quot;http://user:pwd1@192.168.3.1:8848&quot;</span><br><span class="line">export http_proxy=$proxy</span><br><span class="line">export https_proxy=$proxy</span><br><span class="line">export ftp_proxy=$proxy</span><br><span class="line">export no_proxy=&quot;localhost, 127.0.0.1, ::1&quot;</span><br></pre></td></tr></table></figure></p>
+            <h2 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h2><p>in file <code>/etc/profile</code> set<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export proxy=&quot;http://user:pwd1@192.168.3.1:8848&quot;</span><br><span class="line">export http_proxy=$proxy</span><br><span class="line">export https_proxy=$proxy</span><br><span class="line">export ftp_proxy=$proxy</span><br><span class="line">export no_proxy=&quot;localhost, 127.0.0.1, ::1&quot;</span><br></pre></td></tr></table></figure></p>
 <p>unset command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">unset http_proxy</span><br><span class="line">unset https_proxy</span><br><span class="line">unset ftp_proxy</span><br><span class="line">unset no_proxy</span><br></pre></td></tr></table></figure></p>
 <p>load variables<br><code>source /etc/profile</code></p>
 <h2 id="yum-proxy"><a href="#yum-proxy" class="headerlink" title="yum proxy"></a>yum proxy</h2><p>in file <code>/etc/yum.conf</code> set</p>
@@ -2379,14 +2379,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -2403,18 +2395,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -2697,16 +2677,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -2845,6 +2828,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

@@ -438,7 +438,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Synchronous-in-method"><a href="#Synchronous-in-method" class="headerlink" title="Synchronous in method"></a>Synchronous in method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> ++i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="Synchronous-in-method"><a href="#Synchronous-in-method" class="headerlink" title="Synchronous in method"></a>Synchronous in method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> ++i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">synchronized int fun();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: dup</span><br><span class="line">       // Field i:I</span><br><span class="line">       2: getfield      #2</span><br><span class="line">       5: iconst_1</span><br><span class="line">       6: iadd</span><br><span class="line">       7: dup_x1</span><br><span class="line">       // Field i:I</span><br><span class="line">       8: putfield      #2</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure></p>
 <p><code>synchronized</code> method is simply distinguished<br>in the run-time constant pool by the <code>ACC_SYNCHRONIZED</code> <strong>flag</strong></p>
 <h3 id="Synchronous-in-block"><a href="#Synchronous-in-block" class="headerlink" title="Synchronous in block"></a>Synchronous in block</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(Object obj, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span>(obj) &#123;</span><br><span class="line">		i+=j;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -616,7 +616,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void noZero(int) throws java.lang.Exception;</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: ifne          14</span><br><span class="line">       // class java/lang/Exception</span><br><span class="line">       4: new           #2</span><br><span class="line">       7: dup</span><br><span class="line">       // String no zero</span><br><span class="line">       8: ldc           #3</span><br><span class="line">       // Method java/lang/Exception.</span><br><span class="line">       //&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="line">      10: invokespecial #4</span><br><span class="line">      13: athrow</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure></p>
 <ol>
 <li>if not equals pass the throw part</li>
@@ -807,7 +807,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
+            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
 <p><strong>user_tables</strong></p>
 <h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
 <p><strong>user_tab_columns</strong></p>
@@ -986,7 +986,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Simple-array"><a href="#Simple-array" class="headerlink" title="Simple array"></a>Simple array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">daily</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> array[];</span><br><span class="line">  <span class="keyword">int</span> size=<span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> value=<span class="number">123</span>;</span><br><span class="line">  array = <span class="keyword">new</span> <span class="keyword">int</span>[size];</span><br><span class="line">  array[<span class="number">3</span>] = value;</span><br><span class="line">  value = array[<span class="number">5</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="Simple-array"><a href="#Simple-array" class="headerlink" title="Simple array"></a>Simple array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">daily</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> array[];</span><br><span class="line">  <span class="keyword">int</span> size=<span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> value=<span class="number">123</span>;</span><br><span class="line">  array = <span class="keyword">new</span> <span class="keyword">int</span>[size];</span><br><span class="line">  array[<span class="number">3</span>] = value;</span><br><span class="line">  value = array[<span class="number">5</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int[] daily();</span><br><span class="line">    Code:</span><br><span class="line">       0: bipush        10</span><br><span class="line">       2: istore_2</span><br><span class="line">       3: sipush        123</span><br><span class="line">       6: istore_3</span><br><span class="line">       7: iload_2</span><br><span class="line">       8: newarray       int</span><br><span class="line">      10: astore_1</span><br><span class="line">      11: aload_1</span><br><span class="line">      12: iconst_3</span><br><span class="line">      13: iload_3</span><br><span class="line">      14: iastore</span><br><span class="line">      15: aload_1</span><br><span class="line">      16: iconst_5</span><br><span class="line">      17: iaload</span><br><span class="line">      18: istore_3</span><br><span class="line">      19: aload_1</span><br><span class="line">      20: areturn</span><br></pre></td></tr></table></figure></p>
 <p>[7] load variable 10 to create a new array.<br>[10] save array’s reference to <code>array</code> variable.<br>Is <code>aload_x</code> show that the primary type array variable is an object ?</p>
 <h3 id="Object-array"><a href="#Object-array" class="headerlink" title="Object array"></a>Object array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Integer[] objectArray()&#123;</span><br><span class="line">  Integer oArray[];</span><br><span class="line">  <span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">  oArray = <span class="keyword">new</span> Integer[count];</span><br><span class="line">  oArray[<span class="number">0</span>] = <span class="keyword">new</span> Integer(<span class="number">7</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1166,7 +1166,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Normal-method"><a href="#Normal-method" class="headerlink" title="Normal method"></a>Normal method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i+j; &#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j, <span class="keyword">int</span> k)</span> </span>&#123; <span class="keyword">return</span> i+j+k; &#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="Normal-method"><a href="#Normal-method" class="headerlink" title="Normal method"></a>Normal method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i+j; &#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j, <span class="keyword">int</span> k)</span> </span>&#123; <span class="keyword">return</span> i+j+k; &#125;</span><br></pre></td></tr></table></figure>
 <p><strong>javap</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_1</span><br><span class="line">     1: iload_2</span><br><span class="line">     2: iadd</span><br><span class="line">     3: ireturn</span><br><span class="line"></span><br><span class="line">static int calc(int, int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_0</span><br><span class="line">     1: iload_1</span><br><span class="line">     2: iadd</span><br><span class="line">     3: iload_2</span><br><span class="line">     4: iadd</span><br><span class="line">     5: ireturn</span><br></pre></td></tr></table></figure>
 <h3 id="Nomal-invoke"><a href="#Nomal-invoke" class="headerlink" title="Nomal invoke"></a>Nomal invoke</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  calc(<span class="number">12</span>, <span class="number">13</span>);</span><br><span class="line">  AboutInvoke.calc(<span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1356,7 +1356,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="simple-calc"><a href="#simple-calc" class="headerlink" title="simple calc"></a>simple calc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ((i + j - <span class="number">1</span>) &amp; ~(j - <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="simple-calc"><a href="#simple-calc" class="headerlink" title="simple calc"></a>simple calc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ((i + j - <span class="number">1</span>) &amp; ~(j - <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>variable 0 is <code>this</code> -&gt; <code>aload_0</code></li>
 </ul>
@@ -1596,7 +1596,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="tradition-loop"><a href="#tradition-loop" class="headerlink" title="tradition loop"></a>tradition loop</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">spin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">for</span>(i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++) &#123;</span><br><span class="line">	;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h3 id="tradition-loop"><a href="#tradition-loop" class="headerlink" title="tradition loop"></a>tradition loop</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">spin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">for</span>(i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++) &#123;</span><br><span class="line">	;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>In vm there many frame at any point,<br>but only the operand stack in <strong>currrent frame</strong> is active.</p>
 <h3 id="javap-c-Spin-class"><a href="#javap-c-Spin-class" class="headerlink" title="javap -c Spin.class"></a>javap -c Spin.class</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void spin();</span><br><span class="line">    Code:</span><br><span class="line">       0: iconst_0</span><br><span class="line">       1: istore_1</span><br><span class="line">       2: iload_1</span><br><span class="line">       3: bipush        10</span><br><span class="line">       5: if_icmpge     14</span><br><span class="line">       8: iinc          1, 1</span><br><span class="line">      11: goto          2</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure>
 <div class="table-container">
@@ -1821,7 +1821,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><ul>
+            <h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><ul>
 <li><strong>Define</strong></li>
 </ul>
 <p><code>static public class Queue extends SyncPrimitive</code></p>
@@ -2027,7 +2027,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Zookeeper just like a cow boy, he know how to feed cattle.<br><img src="/2017/05/27/ZK-barrier/01.jpg" alt></p>
+            <p>Zookeeper just like a cow boy, he know how to feed cattle.<br><img src="/2017/05/27/ZK-barrier/01.jpg" alt></p>
 <p>Make a crowd of cattle move synchronized is not a easy thing.<br><img src="/2017/05/27/ZK-barrier/02.jpg" alt></p>
 <p>To hold cattle, cowboy need barriers.<br><img src="/2017/05/27/ZK-barrier/03.jpg" alt></p>
 <h3 id="Barrier"><a href="#Barrier" class="headerlink" title="Barrier"></a>Barrier</h3><ul>
@@ -2239,7 +2239,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Common"><a href="#Common" class="headerlink" title="Common"></a>Common</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// connection's factory[modle]</span></span><br><span class="line">ConnectionFactory connectionFactory = <span class="keyword">new</span> ActiveMQConnectionFactory(</span><br><span class="line">JMSProducer.USERNAME,</span><br><span class="line">JMSProducer.PASSWORD,</span><br><span class="line">JMSProducer.BROKEURL);</span><br><span class="line"><span class="comment">// connection object[don't forget to close it]</span></span><br><span class="line">Connection connection = connectionFactory.createConnection();</span><br><span class="line"><span class="comment">// begin</span></span><br><span class="line">connection.start();</span><br><span class="line"><span class="comment">// communication with MQ[transaction modle, false in consumer]</span></span><br><span class="line">Session session = connection.createSession(<span class="keyword">true</span>, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line"><span class="comment">// MQ address object</span></span><br><span class="line">Destination destination;</span><br></pre></td></tr></table></figure>
+            <h3 id="Common"><a href="#Common" class="headerlink" title="Common"></a>Common</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// connection's factory[modle]</span></span><br><span class="line">ConnectionFactory connectionFactory = <span class="keyword">new</span> ActiveMQConnectionFactory(</span><br><span class="line">JMSProducer.USERNAME,</span><br><span class="line">JMSProducer.PASSWORD,</span><br><span class="line">JMSProducer.BROKEURL);</span><br><span class="line"><span class="comment">// connection object[don't forget to close it]</span></span><br><span class="line">Connection connection = connectionFactory.createConnection();</span><br><span class="line"><span class="comment">// begin</span></span><br><span class="line">connection.start();</span><br><span class="line"><span class="comment">// communication with MQ[transaction modle, false in consumer]</span></span><br><span class="line">Session session = connection.createSession(<span class="keyword">true</span>, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line"><span class="comment">// MQ address object</span></span><br><span class="line">Destination destination;</span><br></pre></td></tr></table></figure>
 <p><strong>close connection in final</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (connection != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          connection.close();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (JMSException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="Producer-Consumer"><a href="#Producer-Consumer" class="headerlink" title="Producer-Consumer"></a>Producer-Consumer</h3><p><em>producer</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the queue's name</span></span><br><span class="line">destination = session.createQueue(<span class="string">"HelloWorld"</span>);</span><br><span class="line"><span class="comment">// the producer object</span></span><br><span class="line">MessageProducer messageProducer = session.createProducer(destination);</span><br><span class="line"><span class="comment">// message</span></span><br><span class="line">TextMessage message = session.createTextMessage(<span class="string">"Hello ActiveMQ"</span>);</span><br><span class="line"><span class="comment">// send</span></span><br><span class="line">messageProducer.send(message);</span><br></pre></td></tr></table></figure></p>
 <p><em>consumer</em></p>
@@ -2382,14 +2382,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -2406,18 +2398,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -2700,16 +2680,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -2848,6 +2831,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

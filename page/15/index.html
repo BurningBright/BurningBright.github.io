@@ -438,7 +438,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Clustered-Indexes"><a href="#Clustered-Indexes" class="headerlink" title="Clustered Indexes"></a>Clustered Indexes</h2><p><code>solidDB</code> and <code>innoDB</code> support clustered index.<br>It make sure the similar key’s row’s physical position similar too.<br>The field type ‘char’ or ‘varchar’ is not suitable for building clustered index.<br>Especially the field storage random char. It will lead to alot of movements.</p>
+            <h2 id="Clustered-Indexes"><a href="#Clustered-Indexes" class="headerlink" title="Clustered Indexes"></a>Clustered Indexes</h2><p><code>solidDB</code> and <code>innoDB</code> support clustered index.<br>It make sure the similar key’s row’s physical position similar too.<br>The field type ‘char’ or ‘varchar’ is not suitable for building clustered index.<br>Especially the field storage random char. It will lead to alot of movements.</p>
 <p><code>innoDB</code> will build a clustered index on primary key<br>If it not exists, system will replace it by a hidden primary key.</p>
 <p>Ordinary speak, DBMS will use clustered index to storage data<br>Second level index is base on it.</p>
 <h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><p><img src="/2017/05/01/High-performance-strategy-in-mysql/mysql02-09.JPG" alt><br>Contain row’s num and row’s value, it’s no difference with orther index.<br>It’s only a primary key named PRIMARY index(clustered index).</p>
@@ -696,7 +696,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Just like the hash function in java<br>Dispatch field’s row pointer to a slot by field’s hash code.<br>If some rows have same hash code, then storage pointer to a list.</p>
+            <p>Just like the hash function in java<br>Dispatch field’s row pointer to a slot by field’s hash code.<br>If some rows have same hash code, then storage pointer to a list.</p>
 <h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE animal (</span><br><span class="line">   name   VARCHAR(50)   NOT NULL,</span><br><span class="line">   weight DOUBLE(11, 3) NOT NULL,</span><br><span class="line">   KEY `name` (`name`) USING HASH</span><br><span class="line">) ENGINE=MEMORY;</span><br></pre></td></tr></table></figure></p>
 <p>mysql&gt; select * from animal;<br>+————+————-+<br>| name   | weight  |<br>+————+————-+<br>| python |  20.500 |<br>| bear   | 321.720 |<br>| lion   | 221.980 |<br>| rabbit |   7.123 |<br>+————+————-+</p>
 <h2 id="Try"><a href="#Try" class="headerlink" title="Try"></a>Try</h2><p><code>f</code> represent the hash function:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f(&apos;python&apos;) = 2123</span><br><span class="line">f(&apos;bear&apos;)   = 6417</span><br><span class="line">f(&apos;lion&apos;)   = 8771</span><br><span class="line">f(&apos;rabbit&apos;) = 2359</span><br></pre></td></tr></table></figure></p>
@@ -911,7 +911,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure>
+            <h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>umask=0000</code> mean to all user <code>rwx</code></li>
 <li><code>0</code> followed mean no backup</li>
@@ -1100,7 +1100,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   birthday   date           not null,</span><br><span class="line">   gender     enum(&apos;m&apos;, &apos;f&apos;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
+            <p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   birthday   date           not null,</span><br><span class="line">   gender     enum(&apos;m&apos;, &apos;f&apos;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
 <p>Create a b-tree index by two name and birthday.</p>
 <p><strong>B-Tree structure’s data is Sequential</strong></p>
 <h2 id="Use-B-Tree-index"><a href="#Use-B-Tree-index" class="headerlink" title="Use B-Tree index"></a>Use B-Tree index</h2><blockquote>
@@ -1290,7 +1290,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><img src="/2017/04/24/Introduce-Shiro/d59f6d02-1f45-3285-8983-4ea5f18111d5.png" alt="d59f6d02-1f45-3285-8983-4ea5f18111d5.png"><br><strong>Shiro can be used in</strong></p>
+            <p><img src="/2017/04/24/Introduce-Shiro/d59f6d02-1f45-3285-8983-4ea5f18111d5.png" alt="d59f6d02-1f45-3285-8983-4ea5f18111d5.png"><br><strong>Shiro can be used in</strong></p>
 <ul>
 <li><em>Authentication</em> check current <code>user</code> has identity</li>
 <li><em>Authorization</em> check <code>user</code>‘s priority, what he can do</li>
@@ -1495,7 +1495,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p><code>List&lt;Question&gt; question = new ArrayList&lt;Question&gt;();</code><br><code>Map&lt;Question, List&lt;Option&gt;&gt; mapping = new LinkedHashMap&lt;Question, List&lt;Option&gt;&gt;();</code></p>
+            <p><code>List&lt;Question&gt; question = new ArrayList&lt;Question&gt;();</code><br><code>Map&lt;Question, List&lt;Option&gt;&gt; mapping = new LinkedHashMap&lt;Question, List&lt;Option&gt;&gt;();</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;#if question??&gt;</span><br><span class="line">  &lt;#list question as ask&gt;</span><br><span class="line">    &lt;#list options[ask.id?c] as option&gt;</span><br><span class="line">      &lt;#if option.status = 0&gt;right&lt;#else&gt;false&lt;/#if&gt;</span><br><span class="line">    &lt;/#list&gt;</span><br><span class="line">  &lt;/#list&gt;</span><br><span class="line">&lt;/#if&gt;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>Is freemarker’s key <strong>only be String</strong> -_- shit.</li>
@@ -1674,7 +1674,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Package"><a href="#Package" class="headerlink" title="Package"></a>Package</h2><p><strong>org.apache.ibatis.binding</strong></p>
+            <h2 id="Package"><a href="#Package" class="headerlink" title="Package"></a>Package</h2><p><strong>org.apache.ibatis.binding</strong></p>
 <ul>
 <li>BindingException.java<br>When <em>MapperRegistry</em> Or <em>MapperMethod</em> bind interface with<br>target class object failed throw the Exception with exception message.</li>
 <li>MapperMethod.java<br>Execute with <em>Command pattern</em>, behind proxy, bind the input interface with it.</li>
@@ -1884,7 +1884,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Use-scope"><a href="#Use-scope" class="headerlink" title="Use scope"></a>Use scope</h3><ul>
+            <h3 id="Use-scope"><a href="#Use-scope" class="headerlink" title="Use scope"></a>Use scope</h3><ul>
 <li>Java AOP is base on dynamic proxy</li>
 <li>Plug in, for increasing function of package already exists.</li>
 <li>Framework, for some abstract programming level.</li>
@@ -2429,14 +2429,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -2453,18 +2445,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -2747,16 +2727,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -2895,6 +2878,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

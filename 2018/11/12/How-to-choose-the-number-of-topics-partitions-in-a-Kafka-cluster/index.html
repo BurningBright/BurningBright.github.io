@@ -438,7 +438,7 @@
       
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>This is a common question asked by many Kafka users.<br>The goal of this post is to explain a few important determining factors and provide a few simple formulas.</p>
+        <p>This is a common question asked by many Kafka users.<br>The goal of this post is to explain a few important determining factors and provide a few simple formulas.</p>
 <h2 id="More-Partitions-Lead-to-Higher-Throughput"><a href="#More-Partitions-Lead-to-Higher-Throughput" class="headerlink" title="More Partitions Lead to Higher Throughput"></a>More Partitions Lead to Higher Throughput</h2><p>The first thing to understand is that <strong>a topic partition is the unit of parallelism in Kafka</strong>.<br>On both the producer and the broker side, writes to different partitions can be done fully in parallel.<br>So expensive operations such as compression can utilize more hardware resources.<br>On the consumer side, Kafka always gives a single partition’s data to one consumer thread.<br>Thus, the degree of parallelism in the consumer (within a consumer group) is bounded by the number of partitions being consumed.<br>Therefore, in general, <strong>the more partitions</strong> there are in a Kafka cluster, <strong>the higher the throughput</strong> one can achieve.</p>
 <p>A rough formula for picking the number of partitions is based on throughput.<br>You measure the throughout that you can achieve on a single partition for production (call it p) and consumption (call it c).<br>Let’s say your target throughput is t.<br>Then you need to have at least max(t/p, t/c) partitions.<br>The per-partition throughput that one can achieve on the producer depends on configurations such as the batching size, compression codec, type of acknowledgement, replication factor, etc.<br>However, in general, <strong>one can produce at 10s of MB/sec on just a single partition</strong> as shown in this benchmark.<br>The consumer throughput is often application dependent since it corresponds to how fast <strong>the consumer logic can process each message</strong>.<br>So, you really need to measure it.</p>
 <p>Although it’s possible to increase the number of partitions over time, one has to be careful if messages are produced with keys.<br>When publishing a keyed message, Kafka deterministically maps the message to a partition based on the hash of the key.<br>This provides a guarantee that <strong>messages with the same key are always routed to the same partition</strong>.<br>This guarantee can be important for certain applications since messages within a partition are always delivered in order to the consumer.<br>If the number of partitions changes, such a guarantee may no longer hold.<br>To avoid this situation, a common practice is to over-partition a bit.<br><strong>Basically, you determine the number of partitions based on a future target throughput, say for one or two years later.</strong><br>Initially, you can just have a small Kafka cluster based on your current throughput.<br>Over time, you can add more brokers to the cluster and proportionally move a subset of the existing partitions to the new brokers (which can be done online).<br>This way, you can keep up with the throughput growth without breaking the semantics in the application when keys are used.</p>
@@ -624,14 +624,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -648,18 +640,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -959,16 +939,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -1091,6 +1074,46 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

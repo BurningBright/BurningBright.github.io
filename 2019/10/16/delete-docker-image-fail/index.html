@@ -438,7 +438,7 @@
       
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
+        <h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker images -a</span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              72dc10d3deba        22 hours ago        230MB</span><br><span class="line">tdtest              latest              e3ad759bb993        22 hours ago        230MB</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              820bc1802af7        22 hours ago        230MB</span><br><span class="line">...</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              ac8cea40eaa0        22 hours ago        223MB</span><br><span class="line">centos              latest              0f3e07c0138f        2 weeks ago         220MB</span><br><span class="line">redis               latest              01a52b3b5cd1        2 weeks ago         98.2MB</span><br><span class="line">ubuntu              latest              2ca708c1c9cc        3 weeks ago         64.2MB</span><br><span class="line">redis               alpine              ed7d2ff5a623        8 weeks ago         29.3MB</span><br></pre></td></tr></table></figure>
 <p>when put command <code>docker rmi 820bc1802af7</code>, <code>&lt;none&gt;:&lt;none&gt;</code> image delete fail.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: conflict: unable to delete 820bc1802af7 (cannot be forced) - image has dependent child images</span><br></pre></td></tr></table></figure></p>
 <p>this is cause by has other images depend on this image <code>820bc1802af7</code>.<br>use <code>docker image inspect</code>, find current image’s child image, repository tag name.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker image inspect --format=&apos;&#123;&#123;.RepoTags&#125;&#125; &#123;&#123;.Id&#125;&#125; &#123;&#123;.Parent&#125;&#125;&apos; $(docker image ls -q --filter since=820bc1802af7)</span><br><span class="line">[tdtest:latest] sha256:e3ad759bb99351a4951df11113e0ad3914a26d55e99e5243e13ebac19373efae sha256:8abd1595d4dfc922b81825940c0f6d73034eeb10b3e2b12a78b3d0e33d78588e</span><br></pre></td></tr></table></figure></p>
@@ -614,14 +614,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -638,18 +630,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -949,16 +929,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -1081,6 +1064,46 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

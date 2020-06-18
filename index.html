@@ -438,7 +438,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
+            <p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
 <p>经查资料，说是要避免 <code>Max redirect exception</code>，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。<br>想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。</p>
 <h2 id="命令的探索"><a href="#命令的探索" class="headerlink" title="命令的探索"></a>命令的探索</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><code>server.c</code>的<code>redisCommandTable</code>定义了每个命令对应的函数，<br>源码中的<code>set</code>命令对应的函数是<code>setCommand</code>函数，这个函数在<code>t_string.c</code>中定义。<br>源码中的<code>cluster</code>命令对应的函数是<code>clusterCommand</code>函数，这个函数在<code>cluster.c</code>中定义。</p>
 <p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">182</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,</span><br><span class="line">     <span class="string">"write use-memory @string"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">     &#123;<span class="string">"cluster"</span>,clusterCommand,<span class="number">-2</span>,</span><br><span class="line">     <span class="string">"admin ok-stale random"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -648,7 +648,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><blockquote>
+            <blockquote>
 <p>Lua 脚本功能是 Reids的一大亮点， 通过内嵌对 Lua 环境的支持，<br>Redis 解决了长久以来不能高效地处理 <strong>CAS （check-and-set）</strong> 命令的缺点。<br>并且可以通过组合使用多个命令， 轻松实现以前很难实现或者不能高效实现的模式。</p>
 </blockquote>
 <p>该抢购方案基于Lua脚本，实际项目中可根据需要扩展命令。</p>
@@ -865,7 +865,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
+            <h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
 <p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.h</a></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*-----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Redis cluster data structures, defines, exported API.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLUSTER_SLOTS 16384</span></span><br><span class="line"></span><br><span class="line">line:<span class="number">248</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">uint16_t</span> type;      <span class="comment">/* Message type */</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> myslots[CLUSTER_SLOTS/<span class="number">8</span>];</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">union</span> clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
 <p>博主解释的很挺清楚的了，说白了就是不会有这么多节点，不需要太多槽。</p>
@@ -1070,7 +1070,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="regular-expression"><a href="#regular-expression" class="headerlink" title="regular expression"></a>regular expression</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\bsys_.*?\b/</span><br></pre></td></tr></table></figure>
+            <h2 id="regular-expression"><a href="#regular-expression" class="headerlink" title="regular expression"></a>regular expression</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/\bsys_.*?\b/</span><br></pre></td></tr></table></figure>
 <p>match words begin with <code>sys_</code>, as short as possible.</p>
 <h2 id="definite-scope"><a href="#definite-scope" class="headerlink" title="definite scope"></a>definite scope</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find --name &quot;*.xml&quot; .</span><br></pre></td></tr></table></figure>
 <p>If you search directly under a folder<br><code>grep -r</code> —recursive may more suitable.</p>
@@ -1256,7 +1256,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><p>Simple demonstration of segment-level locking caused by concurrency in an Oracle database</p>
+            <p>Simple demonstration of segment-level locking caused by concurrency in an Oracle database</p>
 <p>reprint:简单演示 Oracle 数据库并发导致段级锁（表级锁）<br><a href="https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html</a></p>
 <h2 id="content"><a href="#content" class="headerlink" title="content"></a>content</h2><ul>
 <li>environment</li>
@@ -1502,7 +1502,7 @@
 </div>
 <h3 id="Install-Go"><a href="#Install-Go" class="headerlink" title="Install Go"></a>Install Go</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf go1.11.4.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line">vim /etc/profile</span><br><span class="line">export PATH=$PATH:/usr/local/go/bin</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line">go version</span><br></pre></td></tr></table></figure>
 <h3 id="Install-prometheus"><a href="#Install-prometheus" class="headerlink" title="Install prometheus"></a>Install prometheus</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf prometheus-2.6.0.linux-amd64.tar.gz</span><br><span class="line">ln -sv /usr/local/prometheus-2.6.0.linux-amd64/ /usr/local/Prometheus</span><br></pre></td></tr></table></figure>
-<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
+<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
 <p>check on browser <code>127.0.0.1:9090</code></p>
 <h3 id="Install-grafana"><a href="#Install-grafana" class="headerlink" title="Install grafana"></a>Install grafana</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh --nodeps grafana-5.4.2-1.x86_64.rpm</span><br><span class="line">sudo /bin/systemctl daemon-reload</span><br><span class="line">sudo /bin/systemctl enable grafana-server.service</span><br><span class="line">sudo /bin/systemctl start grafana-server.service</span><br></pre></td></tr></table></figure>
 <p>check on browser <code>127.0.0.1:3000</code></p>
@@ -1519,7 +1519,7 @@
 <li><p>start jar with exporter</p>
 </li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/bash</span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 <ol>
 <li>add prometheus config</li>
 </ol>
@@ -1697,7 +1697,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="install-dependencies-first"><a href="#install-dependencies-first" class="headerlink" title="install dependencies first"></a>install dependencies first</h1><p><code>yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make</code></p>
+            <h1 id="install-dependencies-first"><a href="#install-dependencies-first" class="headerlink" title="install dependencies first"></a>install dependencies first</h1><p><code>yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gcc make</code></p>
 <p>this pack may not necessary<br><code>yum install libffi-devel -y</code></p>
 <h1 id="download-amp-compile"><a href="#download-amp-compile" class="headerlink" title="download &amp; compile"></a>download &amp; compile</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tgz</span><br><span class="line">cd Python-3.7.6</span><br><span class="line">./configure</span><br><span class="line">make&amp;&amp;make install</span><br></pre></td></tr></table></figure>
 <h1 id="modify-default-setting"><a href="#modify-default-setting" class="headerlink" title="modify default setting"></a>modify default setting</h1><p>python3.7 locate in <code>/usr/local/bin</code> in default<br>we need to change default python2.7 to python3.7</p>
@@ -1868,7 +1868,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h1 id="node-switch"><a href="#node-switch" class="headerlink" title="node switch"></a>node switch</h1><p>when <code>npm install</code> error happen<br>check whether the web problem or the node version problem.</p>
+            <h1 id="node-switch"><a href="#node-switch" class="headerlink" title="node switch"></a>node switch</h1><p>when <code>npm install</code> error happen<br>check whether the web problem or the node version problem.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">node --version</span><br><span class="line">npm cache clean -f</span><br><span class="line">npm install -g n</span><br><span class="line"></span><br><span class="line"># switch</span><br><span class="line">n</span><br><span class="line"># delete</span><br><span class="line">n rm</span><br><span class="line"></span><br><span class="line"># node version</span><br><span class="line">n latest</span><br><span class="line">n stable</span><br><span class="line">n lts</span><br></pre></td></tr></table></figure>
 <p><a href="https://stackoverflow.com/questions/32791657/node-gyp-rebuild-build-error-make-failed-npm-install" target="_blank" rel="noopener">https://stackoverflow.com/questions/32791657/node-gyp-rebuild-build-error-make-failed-npm-install</a><br><a href="https://segmentfault.com/q/1010000009734734" target="_blank" rel="noopener">https://segmentfault.com/q/1010000009734734</a><br><a href="https://blog.csdn.net/weixin_38190050/article/details/99644735" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38190050/article/details/99644735</a></p>
 <h1 id="install-python3"><a href="#install-python3" class="headerlink" title="install python3"></a>install python3</h1><p>brew install python3</p>
@@ -2074,7 +2074,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull redislabs/redisearch:latest</span><br><span class="line">docker run --name redisearch -d -p 6379:6379 redislabs/redisearch:latest</span><br></pre></td></tr></table></figure>
+            <h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull redislabs/redisearch:latest</span><br><span class="line">docker run --name redisearch -d -p 6379:6379 redislabs/redisearch:latest</span><br></pre></td></tr></table></figure>
 <h2 id="dependency"><a href="#dependency" class="headerlink" title="dependency"></a>dependency</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.redislabs<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jredisearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h2 id="create-client"><a href="#create-client" class="headerlink" title="create client"></a>create client</h2><p>Initializing the client with JedisPool:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Client client = <span class="keyword">new</span> Client(<span class="string">"testing"</span>, <span class="string">"localhost"</span>, <span class="number">6379</span>);</span><br></pre></td></tr></table></figure></p>
 <p>Initializing the client with JedisSentinelPool:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MASTER_NAME = <span class="string">"mymaster"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;String&gt; sentinels;</span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    sentinels = <span class="keyword">new</span> HashSet();</span><br><span class="line">    sentinels.add(<span class="string">"localhost:7000"</span>);</span><br><span class="line">    sentinels.add(<span class="string">"localhost:7001"</span>);</span><br><span class="line">    sentinels.add(<span class="string">"localhost:7002"</span>);</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">Client client = <span class="keyword">new</span> Client(<span class="string">"testung"</span>, MASTER_NAME, sentinels);</span><br></pre></td></tr></table></figure></p>
@@ -2243,7 +2243,7 @@
       
         
           
-            <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h2 id="Clone-project"><a href="#Clone-project" class="headerlink" title="Clone project"></a>Clone project</h2><p><code>git clone https://github.com/BurningBright/minishowcase</code><br><a href="https://github.com/BurningBright/minishowcase" target="_blank" rel="noopener">https://github.com/BurningBright/minishowcase</a></p>
+            <h2 id="Clone-project"><a href="#Clone-project" class="headerlink" title="Clone project"></a>Clone project</h2><p><code>git clone https://github.com/BurningBright/minishowcase</code><br><a href="https://github.com/BurningBright/minishowcase" target="_blank" rel="noopener">https://github.com/BurningBright/minishowcase</a></p>
 <h2 id="Pull-images"><a href="#Pull-images" class="headerlink" title="Pull images"></a>Pull images</h2><p><a href="https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6" target="_blank" rel="noopener">https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6</a><br>pick version you like in docker<br><code>docker pull php:5.6.40-fpm-alpine</code></p>
 <p>alpine release is not popular as the ‘apk’ command install software is not as usual as <code>debian</code> <code>fedora</code>.<br>so it’s better to pull other version php image like<br><code>docker pull php:5.6.40-fpm-jessie</code></p>
 <p>pull stable version nginx version image.<br><code>docker pull nginx:stable</code></p>
@@ -2405,14 +2405,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -2429,18 +2421,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -2723,16 +2703,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -2871,6 +2854,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 

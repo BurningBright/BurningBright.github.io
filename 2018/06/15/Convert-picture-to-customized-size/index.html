@@ -438,7 +438,7 @@
       
 
       
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css"><h3 id="Main-method"><a href="#Main-method" class="headerlink" title="Main method"></a>Main method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageConvert</span><span class="params">(InputStream inputStream, Integer limit)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (inputStream == <span class="keyword">null</span> || limit == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    BufferedImage inputImage = ImageIO.read(inputStream);</span><br><span class="line">    <span class="keyword">int</span> size = getImageSize(inputImage);</span><br><span class="line">    <span class="keyword">if</span> (size &lt;= <span class="number">0</span> || inputImage == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// loop reduce pixel</span></span><br><span class="line">    <span class="keyword">while</span> (size &gt; imgLimit) &#123;</span><br><span class="line">        <span class="comment">// calculate edge shrink propotion</span></span><br><span class="line">        <span class="comment">// minus .05 improve convert speed</span></span><br><span class="line">        <span class="keyword">double</span> rate = (<span class="keyword">double</span>)imgLimit/size - .<span class="number">05</span>;</span><br><span class="line">        <span class="comment">// if origin is 20 times than limit, rate may little than 0</span></span><br><span class="line">        <span class="comment">// set ten times smaller than origin as default</span></span><br><span class="line">        <span class="keyword">if</span> (rate &lt; <span class="number">0</span>) rate = .<span class="number">1</span>;</span><br><span class="line">        rate = Math.sqrt(rate);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> width = (<span class="keyword">int</span>)(inputImage.getWidth(<span class="keyword">null</span>) * rate);</span><br><span class="line">        <span class="keyword">int</span> height = (<span class="keyword">int</span>)(inputImage.getHeight(<span class="keyword">null</span>) * rate);</span><br><span class="line">        BufferedImage outputImage = imageCompress(inputImage, width, height);</span><br><span class="line">        inputImage = outputImage;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// recalculate</span></span><br><span class="line">        size = getImageSize(inputImage);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inputImage;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h3 id="Main-method"><a href="#Main-method" class="headerlink" title="Main method"></a>Main method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageConvert</span><span class="params">(InputStream inputStream, Integer limit)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (inputStream == <span class="keyword">null</span> || limit == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    BufferedImage inputImage = ImageIO.read(inputStream);</span><br><span class="line">    <span class="keyword">int</span> size = getImageSize(inputImage);</span><br><span class="line">    <span class="keyword">if</span> (size &lt;= <span class="number">0</span> || inputImage == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// loop reduce pixel</span></span><br><span class="line">    <span class="keyword">while</span> (size &gt; imgLimit) &#123;</span><br><span class="line">        <span class="comment">// calculate edge shrink propotion</span></span><br><span class="line">        <span class="comment">// minus .05 improve convert speed</span></span><br><span class="line">        <span class="keyword">double</span> rate = (<span class="keyword">double</span>)imgLimit/size - .<span class="number">05</span>;</span><br><span class="line">        <span class="comment">// if origin is 20 times than limit, rate may little than 0</span></span><br><span class="line">        <span class="comment">// set ten times smaller than origin as default</span></span><br><span class="line">        <span class="keyword">if</span> (rate &lt; <span class="number">0</span>) rate = .<span class="number">1</span>;</span><br><span class="line">        rate = Math.sqrt(rate);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> width = (<span class="keyword">int</span>)(inputImage.getWidth(<span class="keyword">null</span>) * rate);</span><br><span class="line">        <span class="keyword">int</span> height = (<span class="keyword">int</span>)(inputImage.getHeight(<span class="keyword">null</span>) * rate);</span><br><span class="line">        BufferedImage outputImage = imageCompress(inputImage, width, height);</span><br><span class="line">        inputImage = outputImage;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// recalculate</span></span><br><span class="line">        size = getImageSize(inputImage);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inputImage;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Assistant-method"><a href="#Assistant-method" class="headerlink" title="Assistant method"></a>Assistant method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getImageSize</span><span class="params">(BufferedImage img)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    ImageIO.write(img, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    <span class="keyword">int</span> size = byteOS.size();</span><br><span class="line">    byteOS.close();</span><br><span class="line">    <span class="keyword">return</span> size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageCompress</span><span class="params">(Image img, <span class="keyword">int</span> w, <span class="keyword">int</span> h)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    BufferedImage image = <span class="keyword">new</span> BufferedImage(w, h, BufferedImage.TYPE_INT_RGB );</span><br><span class="line">    <span class="comment">// redraw converted graph</span></span><br><span class="line">    image.getGraphics().drawImage(img, <span class="number">0</span>, <span class="number">0</span>, w, h, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">256</span>);</span><br><span class="line">    ImageIO.write(image, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    ByteArrayInputStream byteIS = <span class="keyword">new</span> ByteArrayInputStream(byteOS.toByteArray());</span><br><span class="line">    BufferedImage product = ImageIO.read(byteIS);</span><br><span class="line">    byteOS.close();</span><br><span class="line">    byteIS.close();</span><br><span class="line">    <span class="keyword">return</span> product;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>Use memory to loop picture may cause leak problem.<br>Use 3th part software maybe a better choice? like ffmpeg.</p>
@@ -609,14 +609,6 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
                     <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
@@ -633,18 +625,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -944,16 +924,19 @@
         
 
 
-
-
   <script>
+    var _mtac = {};
     (function() {
-      var hm = document.createElement("script");
-      hm.src = "//tajs.qq.com/stats?sId=66568354";
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
       var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
+      s.parentNode.insertBefore(mta, s);
     })();
   </script>
+
+
 
 
 
@@ -1076,6 +1059,46 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 
