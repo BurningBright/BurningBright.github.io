@@ -98,18 +98,18 @@
 
 
 
-  <meta name="description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+  <meta name="description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。">
 <meta name="keywords" content="redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="探索redis 键散列过程源码">
 <meta property="og:url" content="http://linchenguang.com/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/index.html">
 <meta property="og:site_name" content="BurningBright">
-<meta property="og:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+<meta property="og:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-06-14T02:04:15.981Z">
+<meta property="og:updated_time" content="2020-06-20T03:20:49.366Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索redis 键散列过程源码">
-<meta name="twitter:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。 命令的探索定义server.c的redisComma">
+<meta name="twitter:description" content="在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。 经查资料，说是要避免 Max redirect exception，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。">
 
 
 
@@ -280,6 +280,14 @@
 
       
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
     </ul>
   
 
@@ -288,6 +296,27 @@
 
   
 
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
   
 </nav>
 
@@ -386,7 +415,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-14 10:04:15" itemprop="dateModified" datetime="2020-06-14T10:04:15+08:00">2020-06-14</time>
+                <time title="Modified: 2020-06-20 11:20:49" itemprop="dateModified" datetime="2020-06-20T11:20:49+08:00">2020-06-20</time>
               
             
           </span>
@@ -440,6 +469,7 @@
       
         <p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
 <p>经查资料，说是要避免 <code>Max redirect exception</code>，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。<br>想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。</p>
+<a id="more"></a>
 <h2 id="命令的探索"><a href="#命令的探索" class="headerlink" title="命令的探索"></a>命令的探索</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><code>server.c</code>的<code>redisCommandTable</code>定义了每个命令对应的函数，<br>源码中的<code>set</code>命令对应的函数是<code>setCommand</code>函数，这个函数在<code>t_string.c</code>中定义。<br>源码中的<code>cluster</code>命令对应的函数是<code>clusterCommand</code>函数，这个函数在<code>cluster.c</code>中定义。</p>
 <p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">182</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,</span><br><span class="line">     <span class="string">"write use-memory @string"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">     &#123;<span class="string">"cluster"</span>,clusterCommand,<span class="number">-2</span>,</span><br><span class="line">     <span class="string">"admin ok-stale random"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h3 id="set命令追踪"><a href="#set命令追踪" class="headerlink" title="set命令追踪"></a><code>set</code>命令追踪</h3><p>打开文件 <code>t_string.c</code> 查看调用过程<br><code>setCommand</code> -&gt; <code>setGenericCommand</code> -&gt; <code>genericSetKey</code>，函数<code>genericSetKey</code>在<code>db.c</code>中定义。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/t_string.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/t_string.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">96</span></span><br><span class="line"><span class="comment">/* SET key value [NX] [XX] [KEEPTTL] [EX &lt;seconds&gt;] [PX &lt;milliseconds&gt;] */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    setGenericCommand(c,flags,c-&gt;argv[<span class="number">1</span>],c-&gt;argv[<span class="number">2</span>],expire,unit,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">68</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> flags, robj *key, robj *val, robj *expire, <span class="keyword">int</span> unit, robj *ok_reply, robj *abort_reply)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    genericSetKey(c,c-&gt;db,key,val,flags &amp; OBJ_SET_KEEPTTL,<span class="number">1</span>);</span><br><span class="line">    ...</span><br><span class="line">    addReply(c, ok_reply ? ok_reply : shared.ok);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -925,7 +955,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -1074,6 +1104,326 @@
 
 
   
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
 
 
 

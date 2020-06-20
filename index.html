@@ -276,6 +276,14 @@
 
       
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
     </ul>
   
 
@@ -284,6 +292,27 @@
 
   
 
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
   
 </nav>
 
@@ -384,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-14 10:04:15" itemprop="dateModified" datetime="2020-06-14T10:04:15+08:00">2020-06-14</time>
+                <time title="Modified: 2020-06-20 11:20:49" itemprop="dateModified" datetime="2020-06-20T11:20:49+08:00">2020-06-20</time>
               
             
           </span>
@@ -437,47 +466,17 @@
 
       
         
-          
-            <p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
+          <p>在lua方案里碰到了在redis集群中执行多键操作，Key要在同一slot的限制。</p>
 <p>经查资料，说是要避免 <code>Max redirect exception</code>，节点会因为某些场景发生阻塞(阻塞时间大于 clutser-node-timeout)，被判断下线。<br>想来在多键命令执行时，节点是阻塞的，如果不做单slot限制，键槽所分布的节点都会受到阻塞的影响。</p>
-<h2 id="命令的探索"><a href="#命令的探索" class="headerlink" title="命令的探索"></a>命令的探索</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p><code>server.c</code>的<code>redisCommandTable</code>定义了每个命令对应的函数，<br>源码中的<code>set</code>命令对应的函数是<code>setCommand</code>函数，这个函数在<code>t_string.c</code>中定义。<br>源码中的<code>cluster</code>命令对应的函数是<code>clusterCommand</code>函数，这个函数在<code>cluster.c</code>中定义。</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">182</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,</span><br><span class="line">     <span class="string">"write use-memory @string"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">     &#123;<span class="string">"cluster"</span>,clusterCommand,<span class="number">-2</span>,</span><br><span class="line">     <span class="string">"admin ok-stale random"</span>,</span><br><span class="line">     <span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">     ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="set命令追踪"><a href="#set命令追踪" class="headerlink" title="set命令追踪"></a><code>set</code>命令追踪</h3><p>打开文件 <code>t_string.c</code> 查看调用过程<br><code>setCommand</code> -&gt; <code>setGenericCommand</code> -&gt; <code>genericSetKey</code>，函数<code>genericSetKey</code>在<code>db.c</code>中定义。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/t_string.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/t_string.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">96</span></span><br><span class="line"><span class="comment">/* SET key value [NX] [XX] [KEEPTTL] [EX &lt;seconds&gt;] [PX &lt;milliseconds&gt;] */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    setGenericCommand(c,flags,c-&gt;argv[<span class="number">1</span>],c-&gt;argv[<span class="number">2</span>],expire,unit,<span class="literal">NULL</span>,<span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">68</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> flags, robj *key, robj *val, robj *expire, <span class="keyword">int</span> unit, robj *ok_reply, robj *abort_reply)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    genericSetKey(c,c-&gt;db,key,val,flags &amp; OBJ_SET_KEEPTTL,<span class="number">1</span>);</span><br><span class="line">    ...</span><br><span class="line">    addReply(c, ok_reply ? ok_reply : shared.ok);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>打开文件 <code>db.c</code> 查看调用过程<br><code>genericSetKey</code> -&gt; <code>dbAdd</code> -&gt; <code>slotToKeyAdd</code> -&gt; <code>slotToKeyUpdateKey</code> -&gt; <code>keyHashSlot</code><br>终于看到散列计算的函数了，<code>keyHashSlot</code>在<code>cluster.c</code>中定义<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/db.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/db.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">244</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">genericSetKey</span><span class="params">(client *c, redisDb *db, robj *key, robj *val, <span class="keyword">int</span> keepttl, <span class="keyword">int</span> signal)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lookupKeyWrite(db,key) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        dbAdd(db,key,val);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dbOverwrite(db,key,val);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">179</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dbAdd</span><span class="params">(redisDb *db, robj *key, robj *val)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (server.cluster_enabled) slotToKeyAdd(key-&gt;ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1691</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyAdd</span><span class="params">(sds key)</span> </span>&#123;</span><br><span class="line">    slotToKeyUpdateKey(key,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1672</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slotToKeyUpdateKey</span><span class="params">(sds key, <span class="keyword">int</span> add)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> hashslot = keyHashSlot(key,keylen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="cluster-keyslot命令追踪"><a href="#cluster-keyslot命令追踪" class="headerlink" title="cluster keyslot命令追踪"></a><code>cluster keyslot</code>命令追踪</h3><p><code>cluster keyslot</code> 该命令能获取集群中key的slot值，可以看到调用的也是<code>keyHashSlot</code>函数<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">4251</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!strcasecmp(c-&gt;argv[<span class="number">1</span>]-&gt;ptr,<span class="string">"keyslot"</span>) &amp;&amp; c-&gt;argc == <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="comment">/* CLUSTER KEYSLOT &lt;key&gt; */</span></span><br><span class="line">        sds key = c-&gt;argv[<span class="number">2</span>]-&gt;ptr;</span><br><span class="line"></span><br><span class="line">        addReplyLongLong(c,keyHashSlot(key,sdslen(key)));</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h2><p>打开文件 <code>cluster.c</code>，可以看到散列计算过程<br>看函数、函数注释可知，当有花括号<code>{}</code> 时，仅计算括号内内容的散列<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">line：<span class="number">694</span></span><br><span class="line"><span class="comment">/* -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Key space handling</span></span><br><span class="line"><span class="comment"> * -------------------------------------------------------------------------- */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* We have 16384 hash slots. The hash slot of a given key is obtained</span></span><br><span class="line"><span class="comment"> * as the least significant 14 bits of the crc16 of the key.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * However if the key contains the &#123;...&#125; pattern, only the part between</span></span><br><span class="line"><span class="comment"> * &#123; and &#125; is hashed. This may be useful in the future to force certain</span></span><br><span class="line"><span class="comment"> * keys to be in the same node (assuming no resharding is in progress). */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">keyHashSlot</span><span class="params">(<span class="keyword">char</span> *key, <span class="keyword">int</span> keylen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s, e; <span class="comment">/* start-end indexes of &#123; and &#125; */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (s = <span class="number">0</span>; s &lt; keylen; s++)</span><br><span class="line">        <span class="keyword">if</span> (key[s] == <span class="string">'&#123;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#123;' ? Hash the whole key. This is the base case. */</span></span><br><span class="line">    <span class="keyword">if</span> (s == keylen) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* '&#123;' found? Check if we have the corresponding '&#125;'. */</span></span><br><span class="line">    <span class="keyword">for</span> (e = s+<span class="number">1</span>; e &lt; keylen; e++)</span><br><span class="line">        <span class="keyword">if</span> (key[e] == <span class="string">'&#125;'</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* No '&#125;' or nothing between &#123;&#125; ? Hash the whole key. */</span></span><br><span class="line">    <span class="keyword">if</span> (e == keylen || e == s+<span class="number">1</span>) <span class="keyword">return</span> crc16(key,keylen) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* If we are here there is both a &#123; and a &#125; on its right. Hash</span></span><br><span class="line"><span class="comment">     * what is in the middle between &#123; and &#125;. */</span></span><br><span class="line">    <span class="keyword">return</span> crc16(key+s+<span class="number">1</span>,e-s<span class="number">-1</span>) &amp; <span class="number">0x3FFF</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="异常追踪"><a href="#异常追踪" class="headerlink" title="异常追踪"></a>异常追踪</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;mset a 1 b 2</span><br><span class="line">CROSSSLOT Keys in request don&apos;t hash to the same slot</span><br></pre></td></tr></table></figure>
-<p>倒查异常的触发链：</p>
-<h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>异常定义在 <code>cluster.c</code><br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5711</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterRedirectClient</span><span class="params">(client *c, clusterNode *n, <span class="keyword">int</span> hashslot, <span class="keyword">int</span> error_code)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (error_code == CLUSTER_REDIR_CROSS_SLOT) &#123;</span><br><span class="line">        addReplySds(c,sdsnew(<span class="string">"-CROSSSLOT Keys in request don't hash to the same slot\r\n"</span>));</span><br><span class="line">    &#125; ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="触发"><a href="#触发" class="headerlink" title="触发"></a>触发</h3><p>触发点在<code>clusterNode *getNodeByQuery</code>函数中<br>外层循环遍历多指令，内层循环遍历多键，确保同一命令的所有键落在一个槽里。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">5515</span></span><br><span class="line"><span class="function">clusterNode *<span class="title">getNodeByQuery</span><span class="params">(client *c, struct redisCommand *cmd, robj **argv, <span class="keyword">int</span> argc, <span class="keyword">int</span> *hashslot, <span class="keyword">int</span> *error_code)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Check that all the keys are in the same hash slot, and obtain this</span></span><br><span class="line"><span class="comment">     * slot and the node associated. */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; ms-&gt;count; i++) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; numkeys; j++) &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">if</span> (firstkey == <span class="literal">NULL</span>) &#123;</span><br><span class="line">                ...</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">/* If it is not the first key, make sure it is exactly</span></span><br><span class="line"><span class="comment">                 * the same key as the first we saw. */</span></span><br><span class="line">                <span class="keyword">if</span> (!equalStringObjects(firstkey,thiskey)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (slot != thisslot) &#123;</span><br><span class="line">                        <span class="comment">/* Error: multiple keys from different slots. */</span></span><br><span class="line">                        getKeysFreeResult(keyindex);</span><br><span class="line">                        <span class="keyword">if</span> (error_code)</span><br><span class="line">                            *error_code = CLUSTER_REDIR_CROSS_SLOT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">/* Flag this request as one with multiple different</span></span><br><span class="line"><span class="comment">                         * keys. */</span></span><br><span class="line">                        multiple_keys = <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>继续向上寻找，函数被多个地方调用，这里主要看<code>server.c</code><br>在集群模式下处理命令会在此重定向，如果<code>getNodeByQuery</code>发现错误，会在<code>clusterRedirectClient</code>中应答<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                        &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3456</span></span><br><span class="line">    clusterRedirectClient(c,n,hashslot,error_code);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><p>继续向上寻找，函数仅在<code>networking.c</code>中被调用<br>这里让人下意识感觉有点不一样，从命名上看函数更偏向底层。<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">1757</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommandAndResetClient</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (processCommand(c) == C_OK) &#123;</span><br><span class="line">        commandProcessed(c);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1775</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">processInputBuffer</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* Keep processing while there is something in the input buffer */</span></span><br><span class="line">    <span class="keyword">while</span>(c-&gt;qb_pos &lt; sdslen(c-&gt;querybuf)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">/* Multibulk processing could see a &lt;= 0 length. */</span></span><br><span class="line">        <span class="keyword">if</span> (c-&gt;argc == <span class="number">0</span>) &#123;</span><br><span class="line">            resetClient(c);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="comment">/* We are finally ready to execute the command. */</span></span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid exiting this</span></span><br><span class="line"><span class="comment">                 * loop and trimming the client buffer later. So we return</span></span><br><span class="line"><span class="comment">                 * ASAP in that case. */</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1858</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* There is more data in the client input buffer, continue parsing it</span></span><br><span class="line"><span class="comment">     * in case to check if there is a full command to execute. */</span></span><br><span class="line">     processInputBuffer(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">3091</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">handleClientsWithPendingReadsUsingThreads</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">while</span>((ln = listNext(&amp;li))) &#123;</span><br><span class="line">        client *c = listNodeValue(ln);</span><br><span class="line">        readQueryFromClient(c-&gt;conn);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* Run the list of clients again to process the new buffers. */</span></span><br><span class="line">    <span class="keyword">while</span>(listLength(server.clients_pending_read)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_PENDING_COMMAND) &#123;</span><br><span class="line">            c-&gt;flags &amp;= ~CLIENT_PENDING_COMMAND;</span><br><span class="line">            <span class="keyword">if</span> (processCommandAndResetClient(c) == C_ERR) &#123;</span><br><span class="line">                <span class="comment">/* If the client is no longer valid, we avoid</span></span><br><span class="line"><span class="comment">                 * processing the client later. So we just go</span></span><br><span class="line"><span class="comment">                 * to the next. */</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        processInputBuffer(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> processed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="看不下去了"><a href="#看不下去了" class="headerlink" title="看不下去了"></a>看不下去了</h3><p>好吧，看到这已经没有方向了。继续查找调用，都是线程、IO相关的函数，实在不明白其中机制。<br>开始在网上搜索相关资料，一开始搜”get/set源码解析”，一直找不到想要的内容，异常的源头在哪？正常的命令从哪执行？</p>
-<p>直到在一篇文章中，发现自己错过了命令调用的地方<code>int processCommand(client *c)</code>。<br>而且追踪的思路是错的，之前一直以为异常是在命令函数执行之后报的，事实是<strong>异常检查在命令函数之前执行</strong>。</p>
-<p><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3368</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3381</span></span><br><span class="line">    <span class="comment">/* Now lookup the command and check ASAP about trivial error conditions</span></span><br><span class="line"><span class="comment">     * such as wrong arity, bad command name and so forth. */</span></span><br><span class="line">    c-&gt;cmd = c-&gt;lastcmd = lookupCommand(c-&gt;argv[<span class="number">0</span>]-&gt;ptr);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3448</span></span><br><span class="line">    clusterNode *n = getNodeByQuery(c,c-&gt;cmd,c-&gt;argv,c-&gt;argc,</span><br><span class="line">                                            &amp;hashslot,&amp;error_code);</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3601</span></span><br><span class="line">    <span class="comment">/* Exec the command */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_MULTI &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != execCommand &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != multiCommand &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand)</span><br><span class="line">    &#123;</span><br><span class="line">        queueMultiCommand(c);</span><br><span class="line">        addReply(c,shared.queued);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> C_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">line:<span class="number">3200</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(client *c, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    c-&gt;cmd-&gt;proc(c);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>proc</code> 即是文章开头提到的命令对应的函数</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>命令：</p>
-<blockquote>
-<p>redis-cli -&gt; network -&gt; acceptTcpHandler -&gt; anetTcpAccept -&gt; acceptCommonHandler -&gt; createClient -&gt; readQueryFromClient</p>
-</blockquote>
-<p>异常：</p>
-<blockquote>
-<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; getNodeByQuery -&gt; clusterRedirectClient</p>
-</blockquote>
-<p>执行：</p>
-<blockquote>
-<p>readQueryFromClient -&gt; processInputBuffer -&gt; processCommandAndResetClient -&gt; processCommand -&gt; lookupCommand -&gt; call</p>
-</blockquote>
-<p>散列：</p>
-<blockquote>
-<p>proc(c) -&gt; setCommand -&gt; setGenericCommand -&gt; genericSetKey -&gt; dbAdd -&gt; slotToKeyAdd -&gt; slotToKeyUpdateKey -&gt; keyHashSlot</p>
-</blockquote>
-<p>至此基本可以知道，Key中花括号的散列在哪计算，跨slot异常在哪抛出，命令定义函数在哪执行。</p>
-<hr>
-<p><a href="https://www.jianshu.com/p/220b8d2c41c3" target="_blank" rel="noopener">Redis集群的5种使用方式，各自优缺点分析</a><br><a href="https://www.cnblogs.com/jessema/p/6065855.html" target="_blank" rel="noopener">redis中set命令的源码分析</a><br><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -594,7 +593,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-14 09:36:52" itemprop="dateModified" datetime="2020-06-14T09:36:52+08:00">2020-06-14</time>
+                <time title="Modified: 2020-06-20 11:21:19" itemprop="dateModified" datetime="2020-06-20T11:21:19+08:00">2020-06-20</time>
               
             
           </span>
@@ -647,54 +646,19 @@
 
       
         
-          
-            <blockquote>
+          <blockquote>
 <p>Lua 脚本功能是 Reids的一大亮点， 通过内嵌对 Lua 环境的支持，<br>Redis 解决了长久以来不能高效地处理 <strong>CAS （check-and-set）</strong> 命令的缺点。<br>并且可以通过组合使用多个命令， 轻松实现以前很难实现或者不能高效实现的模式。</p>
 </blockquote>
 <p>该抢购方案基于Lua脚本，实际项目中可根据需要扩展命令。</p>
-<h2 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h2><ol>
-<li>是否已抢购(是否达到抢购上限)</li>
-<li>是否还有库存</li>
-<li>如果未抢购、有库存则扣减，否则返回0</li>
-<li>加入已抢购集合</li>
-<li>加入购买处理队列</li>
-<li>返回1</li>
-</ol>
-<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><h3 id="编写脚本"><a href="#编写脚本" class="headerlink" title="编写脚本"></a>编写脚本</h3><p><code>script.lua</code></p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- variable</span></span><br><span class="line"><span class="keyword">local</span> stockKey = KEYS[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">local</span> purchasedKey = KEYS[<span class="number">2</span>]</span><br><span class="line"><span class="keyword">local</span> handlerKey = KEYS[<span class="number">3</span>]</span><br><span class="line"><span class="keyword">local</span> userId = ARGV[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- check purchased set</span></span><br><span class="line"><span class="keyword">if</span> redis.call(<span class="string">"SISMEMBER"</span>, purchasedKey, userId) ~= <span class="number">0</span> <span class="keyword">then</span> <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- check stock</span></span><br><span class="line"><span class="keyword">local</span> stock = redis.call(<span class="string">"GET"</span>, stockKey)</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> stock <span class="keyword">or</span> <span class="built_in">tonumber</span>(stock) &lt;= <span class="number">0</span> <span class="keyword">then</span> <span class="keyword">return</span> <span class="number">0</span> <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- stock decrease</span></span><br><span class="line">redis.call(<span class="string">"DECR"</span>, stockKey)</span><br><span class="line"><span class="comment">-- add purchased set</span></span><br><span class="line">redis.call(<span class="string">"SADD"</span>, purchasedKey, userId)</span><br><span class="line"><span class="comment">-- add purchased handler queue</span></span><br><span class="line">redis.call(<span class="string">"LPUSH"</span>, handlerKey, userId)</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<h3 id="调试脚本"><a href="#调试脚本" class="headerlink" title="调试脚本"></a>调试脚本</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602171231.png" alt="20200602171231.png"></p>
-<p>又是个坑：参数的分隔用逗号 <code>,</code> 而且空格不能少</p>
-<p><code>redis-cli --ldb --eval script.lua apple_stock apple_purchased_set apple_purchased_queue , 711</code></p>
-<p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602165535.png" alt="20200602165535.png"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602165550.png" alt="20200602165550.png"></p>
-<h3 id="测试脚本"><a href="#测试脚本" class="headerlink" title="测试脚本"></a>测试脚本</h3><p><code>redis-cli</code></p>
-<p>文本转换为命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">script load &quot;-- variable\nlocal stockKey = KEYS[1]\nlocal purchasedKey = KEYS[2]\nlocal handlerKey = KEYS[3]\nlocal userId = ARGV[1]\n\n-- check purchased set\nif redis.call(\&quot;SISMEMBER\&quot;, purchasedKey, userId) ~= 0 then return 0 end\n\n-- check stock\nlocal stock = redis.call(\&quot;GET\&quot;, stockKey)\nif not stock or tonumber(stock) &lt;= 0 then return 0 end\n\n-- stock decrease\nredis.call(\&quot;DECR\&quot;, stockKey)\n-- add purchased set\nredis.call(\&quot;SADD\&quot;, purchasedKey, userId)\n-- add purchased handler queue\nredis.call(\&quot;LPUSH\&quot;, handlerKey, userId)\nreturn 1&quot;</span><br></pre></td></tr></table></figure>
-<p>得到sha1，执行命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evalsha a80403df241c6d1823f5c820a4d2b6284995444e 3 apple_stock apple_purchased_set apple_purchased_queue 777</span><br></pre></td></tr></table></figure></p>
-<p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200602171006.png" alt="20200602171006.png"></p>
-<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><h3 id="lua"><a href="#lua" class="headerlink" title="lua"></a>lua</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195605.png" alt="j-lua-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608195817.png" alt="j-lua-20000"></p>
-<h3 id="lua-cluster"><a href="#lua-cluster" class="headerlink" title="lua-cluster"></a>lua-cluster</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608193546.png" alt="j-lua-cluster-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608194858.png" alt="j-lua-cluster-20000"></p>
-<h3 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h3><p><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200047.png" alt="j-watch-10000"><br><img src="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/20200608200257.png" alt="j-watch-20000"></p>
-<ul>
-<li>lua 方案抢购先到先得，基本不会出现失败。</li>
-<li>lua 3个Master节点集群，性能对比单实例性能低。</li>
-<li>watch 方案里，会出现大概30%的抢购失败，且性能比lua方案低。</li>
-</ul>
-<p>ps. 由于集群版的 Key 批量操作限制，mset、mget、eval，目前只支持具有 <strong>相同slot值的Key</strong> 执行批量操作。<br>所以在集群版的抢购方案中，传入的Key需要带上<code>{}</code>把键值映射入相同的slot，让命令在一个节点执行。<br>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evalsha a80403df241c6d1823f5c820a4d2b6284995444e 3 apple_stock&#123;apple&#125; apple_purchased_set&#123;apple&#125; apple_purchased_queue&#123;apple&#125; 777</span><br></pre></td></tr></table></figure></p>
-<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><ul>
-<li>可以把有<strong>原子性要求</strong>的操作放入脚本</li>
-<li>监听<code>apple_purchased_queue</code>, 消费消息处理抢购。</li>
-<li>如果架构里有MQ，可以去除脚本里的<code>LPUSH</code>。</li>
-<li>消费者如果处理异常，可以使用延迟队列做”失败重试”、”失效检查”之类操作</li>
-</ul>
-<hr>
-<p>队列&amp;延迟队列：<br><a href="https://www.cnblogs.com/shamo89/p/9873368.html" target="_blank" rel="noopener">https://www.cnblogs.com/shamo89/p/9873368.html</a></p>
-<p>事务&amp;lua&amp;管道：<br><a href="https://blog.csdn.net/u013870094/article/details/82461527" target="_blank" rel="noopener">https://blog.csdn.net/u013870094/article/details/82461527</a></p>
-<p>命令：<br><a href="https://redis.io/commands#" target="_blank" rel="noopener">https://redis.io/commands#</a><br><a href="https://redis.io/topics/ldb" target="_blank" rel="noopener">https://redis.io/topics/ldb</a><br><a href="https://redis.io/commands/script-load" target="_blank" rel="noopener">https://redis.io/commands/script-load</a><br><a href="https://redis.io/commands/evalsha" target="_blank" rel="noopener">https://redis.io/commands/evalsha</a><br><a href="https://www.runoob.com/redis/redis-commands.html" target="_blank" rel="noopener">https://www.runoob.com/redis/redis-commands.html</a></p>
-<p>LUA脚本：<br><a href="https://yq.aliyun.com/articles/645851" target="_blank" rel="noopener">https://yq.aliyun.com/articles/645851</a><br><a href="https://blog.csdn.net/xixingzhe2/article/details/86167859" target="_blank" rel="noopener">https://blog.csdn.net/xixingzhe2/article/details/86167859</a><br><a href="https://www.jianshu.com/p/366d1b4f0d13" target="_blank" rel="noopener">https://www.jianshu.com/p/366d1b4f0d13</a><br><a href="https://www.jianshu.com/p/8028972cf735" target="_blank" rel="noopener">https://www.jianshu.com/p/8028972cf735</a><br><a href="https://www.runoob.com/lua/lua-miscellaneous-operator.html" target="_blank" rel="noopener">https://www.runoob.com/lua/lua-miscellaneous-operator.html</a></p>
-<p>异常：<br>Too many cluster redirections redis:<br><a href="https://segmentfault.com/a/1190000016461888" target="_blank" rel="noopener">https://segmentfault.com/a/1190000016461888</a><br><a href="https://blog.csdn.net/slg1988/article/details/93638501" target="_blank" rel="noopener">https://blog.csdn.net/slg1988/article/details/93638501</a><br><a href="https://blog.kelu.org/tech/2019/04/05/docker-compose-using-net-host.html" target="_blank" rel="noopener">https://blog.kelu.org/tech/2019/04/05/docker-compose-using-net-host.html</a></p>
-<p>Connection reset:<br><a href="https://www.cnblogs.com/liu-ke/p/7090698.html" target="_blank" rel="noopener">https://www.cnblogs.com/liu-ke/p/7090698.html</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/06/02/Second-kill-scheme-based-on-reids-lua-script/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -811,7 +775,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-14 09:36:52" itemprop="dateModified" datetime="2020-06-14T09:36:52+08:00">2020-06-14</time>
+                <time title="Modified: 2020-06-20 11:22:00" itemprop="dateModified" datetime="2020-06-20T11:22:00+08:00">2020-06-20</time>
               
             
           </span>
@@ -864,42 +828,18 @@
 
       
         
-          
-            <h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
+          <h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
 <p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.h</a></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*-----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Redis cluster data structures, defines, exported API.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLUSTER_SLOTS 16384</span></span><br><span class="line"></span><br><span class="line">line:<span class="number">248</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">uint16_t</span> type;      <span class="comment">/* Message type */</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> myslots[CLUSTER_SLOTS/<span class="number">8</span>];</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">union</span> clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
-<p>博主解释的很挺清楚的了，说白了就是不会有这么多节点，不需要太多槽。</p>
-<p>issue 里评论区有提到 <code>Compress bitmap to reduce network traffic</code>，<br>我觉得评论区最后的回复是对的，传输中的数据没有被压缩 <code>No compression, just 1 bit for 1 slot</code>。</p>
-<p>追查代码：<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">2433</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterSendPing</span><span class="params">(clusterLink *link, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    clusterBuildMessageHdr(hdr,type);</span><br><span class="line">    ...</span><br><span class="line">    clusterSendMessage(link,buf,totlen);</span><br><span class="line">    zfree(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">2329</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterBuildMessageHdr</span><span class="params">(clusterMsg *hdr, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="built_in">memcpy</span>(hdr-&gt;myslots,master-&gt;slots,<span class="keyword">sizeof</span>(hdr-&gt;myslots));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">2292</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterSendMessage</span><span class="params">(clusterLink *link, <span class="keyword">unsigned</span> <span class="keyword">char</span> *msg, <span class="keyword">size_t</span> msglen)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sdslen(link-&gt;sndbuf) == <span class="number">0</span> &amp;&amp; msglen != <span class="number">0</span>)</span><br><span class="line">        connSetWriteHandlerWithBarrier(link-&gt;conn, clusterWriteHandler, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    link-&gt;sndbuf = sdscatlen(link-&gt;sndbuf, msg, msglen);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>并没有发现有压缩的过程，我猜作者想说的是，压缩位图以节省内存空间<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterInit</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">518</span></span><br><span class="line">    <span class="comment">/* The slots -&gt; keys map is a radix tree. Initialize it here. */</span></span><br><span class="line">    server.cluster-&gt;slots_to_keys = raxNew();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="评论区老哥"><a href="#评论区老哥" class="headerlink" title="评论区老哥"></a>评论区老哥</h2><p>看完文章，评论区老哥的问题，引起了我的兴趣：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/20200521111826.png" alt="20200521111826.png"></p>
-<p>对呀，带宽损耗可不可以算出来？<br>给定节点数量、实例数量、超时时间，估算带宽损耗？<br>嗯，这很酷。。。</p>
-<p>博主已经介绍了ping发送数量的计算公式：<br><code>数量=1+10*num(node.pong_received&gt;cluster_node_timeout/2)</code><br>可对GOSSIP协议不够了解，计算结果和《Redis运维与实现》的例子对不上<br>200节点，20台物理机，15s超时，真的是占25Mb带宽吗？</p>
-<h2 id="跑一个看看"><a href="#跑一个看看" class="headerlink" title="跑一个看看"></a>跑一个看看</h2><p>没那么多物理机，用docker做个测试，创建20个节点，分布在2个桥接的网络上：<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/config.png" alt="config.png"><br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/created.png" alt="created.png"></p>
-<p>10分钟后docker的状态<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/docker-stats.png" alt="docker-stats.png"></p>
-<p>10分钟后redis-0的集群信息<br><img src="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/redis-0-info.png" alt="redis-0-info.png"></p>
-<ol>
-<li>通过容器的网络IO换算一下，带宽损耗1.66Mb，例子的数据是正确的~~~<br><code>((121.93MB / 600s) * 1024 / 1000) * 8 = 1.66Mbps</code></li>
-<li>通过redis-0的网络Output来看，每个消息大约 2.91KB/msg<br><code>6.24MB * 1024 / 2197 = 2.91KB/msg</code></li>
-<li>10分钟发送1114个ping，平均 1.86ping/s，可见公式里的 num(x) 大约是 0.086个</li>
-</ol>
-<h2 id="ping的发送"><a href="#ping的发送" class="headerlink" title="ping的发送"></a>ping的发送</h2><p>如果按本地所有节点都在默默等待超时来算，ping数量、带宽损耗会远高于观察到的结果<br>看源码可以知道，除了每秒固定的ping外，100ms发送ping的条件有3个</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">3389</span></span><br><span class="line"><span class="comment">/* -----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * CLUSTER cron job</span></span><br><span class="line"><span class="comment"> * -------------------------------------------------------------------------- */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* This is executed 10 times every second */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clusterCron</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3495</span></span><br><span class="line">    <span class="keyword">if</span> (!(iteration % <span class="number">10</span>)) &#123;</span><br><span class="line">        ...</span><br><span class="line">        clusterSendPing(min_pong_node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3575</span></span><br><span class="line">    <span class="keyword">if</span> (node-&gt;link &amp;&amp;</span><br><span class="line">        node-&gt;ping_sent == <span class="number">0</span> &amp;&amp;</span><br><span class="line">        (now - node-&gt;pong_received) &gt; server.cluster_node_timeout/<span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        clusterSendPing(node-&gt;link, CLUSTERMSG_TYPE_PING);</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ol>
-<li>当前节点和目标节点的连接有效</li>
-<li>没有向目标节点发过ping（没收到过目标节点的pong）</li>
-<li>目标节点的本地pong接收时间已经超时</li>
-</ol>
-<p>可见，我忽略了重要的第二点，即博主提到的：</p>
-<blockquote>
-<p>在消息体中，会携带一定数量的其他节点信息用于交换。</p>
-</blockquote>
-<p>也就是说，我向张三打听他是不是还活着，他会顺带着告诉我李四也还活着 :)</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于有GOSSIP协议的信息传播，集群ping数量大幅降低</p>
-<hr>
-<p>集群安装参考<br><a href="https://www.runoob.com/docker/docker-redis-cluster.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-redis-cluster.html</a><br><a href="https://blog.csdn.net/alinyua/article/details/80936940" target="_blank" rel="noopener">https://blog.csdn.net/alinyua/article/details/80936940</a><br><a href="https://blog.csdn.net/u012882163/article/details/100033442" target="_blank" rel="noopener">https://blog.csdn.net/u012882163/article/details/100033442</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -1202,7 +1142,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-05-31 21:24:24" itemprop="dateModified" datetime="2020-05-31T21:24:24+08:00">2020-05-31</time>
+                <time title="Modified: 2020-06-20 11:23:17" itemprop="dateModified" datetime="2020-06-20T11:23:17+08:00">2020-06-20</time>
               
             
           </span>
@@ -1255,8 +1195,7 @@
 
       
         
-          
-            <p>Simple demonstration of segment-level locking caused by concurrency in an Oracle database</p>
+          <p>Simple demonstration of segment-level locking caused by concurrency in an Oracle database</p>
 <p>reprint:简单演示 Oracle 数据库并发导致段级锁（表级锁）<br><a href="https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuning8023/archive/2013/03/20/2971946.html</a></p>
 <h2 id="content"><a href="#content" class="headerlink" title="content"></a>content</h2><ul>
 <li>environment</li>
@@ -1266,37 +1205,15 @@
 <p>本文简单演示并发导致的行级锁。并发是两个以上的用户对同样的数据进行修改（包括插入、删除和修改）。锁的产生是因为并发。没有并发，就没有锁。并发的产生是因为系统需要，系统需要是因为用户需要。</p>
 <p>This article briefly demonstrates row-level locking caused by concurrency. Concurrency is when two or more users make changes (including inserts, deletes, and modifications) to the same data. Locks occur because of concurrency. <strong>No concurrency, no locking.</strong> Concurrency occurs because the system needs it, and the system needs it because the user needs it.</p>
 </blockquote>
-<h2 id="environment"><a href="#environment" class="headerlink" title="environment"></a>environment</h2><ul>
-<li>Windows 2003 Server</li>
-<li>Oracle 11g Release 1 (11.1)</li>
-</ul>
-<h2 id="demonstration"><a href="#demonstration" class="headerlink" title="demonstration"></a>demonstration</h2><h3 id="open-the-first-sql-session"><a href="#open-the-first-sql-session" class="headerlink" title="open the first sql session"></a>open the first sql session</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; select distinct sid from v$mystat;</span><br><span class="line"> </span><br><span class="line">       SID</span><br><span class="line">----------</span><br><span class="line">       124</span><br><span class="line"> </span><br><span class="line">SQL&gt; create table t(x int) partition by range(x)(partition p1 values less than(10),partition p2 values less than(maxvalue));</span><br><span class="line"> </span><br><span class="line">表已创建。</span><br><span class="line"> </span><br><span class="line">SQL&gt; insert into t values(1);</span><br><span class="line"> </span><br><span class="line">已创建 1 行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select * from t partition(p1);</span><br><span class="line"> </span><br><span class="line">         X</span><br><span class="line">----------</span><br><span class="line">         1</span><br><span class="line"> </span><br><span class="line">SQL&gt; select sid,type,id1,id2,lmode,request,block</span><br><span class="line">  2  from v$lock where sid=124;</span><br><span class="line"> </span><br><span class="line">       SID TYPE         ID1        ID2      LMODE    REQUEST      BLOCK</span><br><span class="line">---------- ----- ---------- ---------- ---------- ---------- ----------</span><br><span class="line">       124 AE            99          0          4          0          0</span><br><span class="line">       124 TM        128807          0          3          0          0</span><br><span class="line">       124 TM        128808          0          3          0          0</span><br><span class="line">       124 TX        589847      46045          6          0          0</span><br><span class="line"> </span><br><span class="line">SQL&gt; select object_name, subobject_name</span><br><span class="line">  2    from dba_objects</span><br><span class="line">  3   where object_id in (128807, 128808);</span><br><span class="line"> </span><br><span class="line">OBJECT_NAME     SUBOBJECT_NAME</span><br><span class="line">--------------- ---------------</span><br><span class="line">T</span><br><span class="line">T               P1</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>create partition table <code>t</code>, with two partitions, <code>p1</code> and <code>p2</code></li>
-<li>insert a record into <code>p1</code></li>
-<li>find <code>TM</code> share lock in <code>t</code> and <code>p1</code>, by view <code>V$LOCK</code></li>
-<li><code>ID1</code> represents the locked object ID. You can get the object name by looking at the DBA_OBJECTS view. 128807 and 128808 correspond to the <code>p1</code> partition of table t and table t, respectively.</li>
-</ul>
-<h3 id="open-the-second-sql-session"><a href="#open-the-second-sql-session" class="headerlink" title="open the second sql session"></a>open the second sql session</h3><p>At this point, what happens if we do DDL operations on t table, p1 partition of t table, and p2 partition of t table:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; select distinct sid from v$mystat;</span><br><span class="line"> </span><br><span class="line">       SID</span><br><span class="line">----------</span><br><span class="line">       140</span><br><span class="line"> </span><br><span class="line">SQL&gt; truncate table t;</span><br><span class="line">truncate table t</span><br><span class="line">               *</span><br><span class="line">第 1 行出现错误:</span><br><span class="line">ORA-00054: 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">SQL&gt; alter table t truncate partition p1;</span><br><span class="line">alter table t truncate partition p1</span><br><span class="line">            *</span><br><span class="line">第 1 行出现错误:</span><br><span class="line">ORA-00054: 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">SQL&gt; alter table t truncate partition p2;</span><br><span class="line"> </span><br><span class="line">表被截断。</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>Only the <code>p2</code> partition is not section-locked, so DDL operations can be performed on <code>p2</code>.</p>
-</li>
-<li><p>A <code>TM</code> lock is a segmental-level lock that allows locks at the same level or lower, but rejects higher-level locks, making the DDL operation significantly higher. Oracle minimizes the scope of the lock as much as possible.</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; insert into t values(11);</span><br><span class="line"> </span><br><span class="line">已创建 1 行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select * from t partition(p2);</span><br><span class="line"> </span><br><span class="line">         X</span><br><span class="line">----------</span><br><span class="line">        11</span><br><span class="line"> </span><br><span class="line">SQL&gt; select sid,type,id1,id2,lmode,request,block</span><br><span class="line">  2  from v$lock where sid in (124,140)</span><br><span class="line">  3  order by sid,type;</span><br><span class="line"> </span><br><span class="line">       SID TY        ID1        ID2      LMODE    REQUEST      BLOCK</span><br><span class="line">---------- -- ---------- ---------- ---------- ---------- ----------</span><br><span class="line">       124 AE         99          0          4          0          0</span><br><span class="line">       124 TM     128808          0          3          0          0</span><br><span class="line">       124 TM     128807          0          3          0          0</span><br><span class="line">       124 TX     327711      45817          6          0          0</span><br><span class="line">       140 AE         99          0          4          0          0</span><br><span class="line">       140 TM     128807          0          3          0          0</span><br><span class="line">       140 TM     128809          0          3          0          0</span><br><span class="line">       140 TX     196611      45960          6          0          0</span><br><span class="line"> </span><br><span class="line">已选择8行。</span><br><span class="line"> </span><br><span class="line">SQL&gt; select object_name, subobject_name</span><br><span class="line">  2    from dba_objects</span><br><span class="line">  3   where object_id in (128807, 128808, 128809);</span><br><span class="line"> </span><br><span class="line">OBJECT_NAME     SUBOBJECT_NAME</span><br><span class="line">--------------- ---------------</span><br><span class="line">T</span><br><span class="line">T               P1</span><br><span class="line">T               P2</span><br><span class="line"> </span><br><span class="line">SQL&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>When a piece of data is inserted into a <code>p2</code> partition, a Shared lock is also added to the <code>p2</code> partition, i.e. ID1=128809.</p>
-</li>
-<li><p>A <code>TM lock</code> is a table-level Shared lock. A table is usually viewed as a segment. When a table has several segments, each segment is individually locked.</p>
-</li>
-</ul>
-<h2 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h2><ul>
-<li>segmental-level lock allows locks at the same level or lower, but rejects higher-level locks. so <code>p1</code> reject DDL, but <code>p2</code> truncated.</li>
-</ul>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/04/10/Segment-level-locking-in-Oracle/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -1413,7 +1330,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-17 22:45:19" itemprop="dateModified" datetime="2020-06-17T22:45:19+08:00">2020-06-17</time>
+                <time title="Modified: 2020-06-20 11:24:00" itemprop="dateModified" datetime="2020-06-20T11:24:00+08:00">2020-06-20</time>
               
             
           </span>
@@ -1466,8 +1383,7 @@
 
       
         
-          
-            <h2 id="Install-software-first"><a href="#Install-software-first" class="headerlink" title="Install software first"></a>Install software first</h2><div class="table-container">
+          <h2 id="Install-software-first"><a href="#Install-software-first" class="headerlink" title="Install software first"></a>Install software first</h2><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1500,45 +1416,15 @@
 </tbody>
 </table>
 </div>
-<h3 id="Install-Go"><a href="#Install-Go" class="headerlink" title="Install Go"></a>Install Go</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf go1.11.4.linux-amd64.tar.gz</span><br><span class="line"></span><br><span class="line">vim /etc/profile</span><br><span class="line">export PATH=$PATH:/usr/local/go/bin</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line">go version</span><br></pre></td></tr></table></figure>
-<h3 id="Install-prometheus"><a href="#Install-prometheus" class="headerlink" title="Install prometheus"></a>Install prometheus</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -C /usr/local/ -xvf prometheus-2.6.0.linux-amd64.tar.gz</span><br><span class="line">ln -sv /usr/local/prometheus-2.6.0.linux-amd64/ /usr/local/Prometheus</span><br></pre></td></tr></table></figure>
-<p>If the target ip:port already know,then edit <code>prometheus.yml</code> may more convient.<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">/usr/local/Prometheus/prometheus --config.file=/usr/local/Prometheus/prometheus.yml &amp;</span><br></pre></td></tr></table></figure></p>
-<p>check on browser <code>127.0.0.1:9090</code></p>
-<h3 id="Install-grafana"><a href="#Install-grafana" class="headerlink" title="Install grafana"></a>Install grafana</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh --nodeps grafana-5.4.2-1.x86_64.rpm</span><br><span class="line">sudo /bin/systemctl daemon-reload</span><br><span class="line">sudo /bin/systemctl enable grafana-server.service</span><br><span class="line">sudo /bin/systemctl start grafana-server.service</span><br></pre></td></tr></table></figure>
-<p>check on browser <code>127.0.0.1:3000</code></p>
-<p><a href="https://blog.csdn.net/ywd1992/article/details/85989259" target="_blank" rel="noopener">https://blog.csdn.net/ywd1992/article/details/85989259</a></p>
-<h2 id="jar-exporter"><a href="#jar-exporter" class="headerlink" title="jar exporter"></a>jar exporter</h2><ol>
-<li>for mointor jar, we need dispatch unique jmx port to every jar process.</li>
-<li>download prometheus jar exporter and jmx_exporter tomcat config file.</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># target package</span><br><span class="line">/usr/local/Demo.jar</span><br><span class="line"></span><br><span class="line"># download https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.3.1/jmx_prometheus_javaagent-0.3.1.jar</span><br><span class="line">/usr/local/jmx_prometheus_javaagent-0.3.1.jar</span><br><span class="line"></span><br><span class="line"># download jmx_exporter tomcat https://github.com/prometheus/jmx_exporter/tree/master/example_configs</span><br><span class="line">/usr/local/tomcat.yaml</span><br></pre></td></tr></table></figure>
-<ol>
-<li><p>config jmx exporter<br>replace <code>Catalina</code> to <code>Tomcat</code><br>name with <code>jar_config.yaml</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">---   </span><br><span class="line">lowercaseOutputLabelNames: true</span><br><span class="line">lowercaseOutputName: true</span><br><span class="line">rules:</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=GlobalRequestProcessor, name=\&quot;(\w+-\w+)-(\d+)\&quot;&gt;&lt;&gt;(\w+):&apos;</span><br><span class="line">  name: tomcat_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    port: &quot;$2&quot;</span><br><span class="line">    protocol: &quot;$1&quot;</span><br><span class="line">  help: Tomcat global $3</span><br><span class="line">  type: COUNTER</span><br><span class="line">- pattern: &apos;Tomcat&lt;j2eeType=Servlet, WebModule=//([-a-zA-Z0-9+&amp;@#/%?=~_|!:.,;]*[-a-zA-Z0-9+&amp;@#/%=~_|]), name=([-a-zA-Z0-9+/$%~_-|!.]*), J2EEApplication=none, J2EEServer=none&gt;&lt;&gt;(requestCount|maxTime|processingTime|errorCount):&apos;</span><br><span class="line">  name: tomcat_servlet_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    module: &quot;$1&quot;</span><br><span class="line">    servlet: &quot;$2&quot;</span><br><span class="line">  help: Tomcat servlet $3 total</span><br><span class="line">  type: COUNTER</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=ThreadPool, name=&quot;(\w+-\w+)-(\d+)&quot;&gt;&lt;&gt;(currentThreadCount|currentThreadsBusy|keepAliveCount|pollerThreadCount|connectionCount):&apos;</span><br><span class="line">  name: tomcat_threadpool_$3</span><br><span class="line">  labels:</span><br><span class="line">    port: &quot;$2&quot;</span><br><span class="line">    protocol: &quot;$1&quot;</span><br><span class="line">  help: Tomcat threadpool $3</span><br><span class="line">  type: GAUGE</span><br><span class="line">- pattern: &apos;Tomcat&lt;type=Manager, host=([-a-zA-Z0-9+&amp;@#/%?=~_|!:.,;]*[-a-zA-Z0-9+&amp;@#/%=~_|]), context=([-a-zA-Z0-9+/$%~_-|!.]*)&gt;&lt;&gt;(processingTime|sessionCounter|rejectedSessions|expiredSessions):&apos;</span><br><span class="line">  name: tomcat_session_$3_total</span><br><span class="line">  labels:</span><br><span class="line">    context: &quot;$2&quot;</span><br><span class="line">    host: &quot;$1&quot;</span><br><span class="line">  help: Tomcat session $3 total</span><br><span class="line">  type: COUNTER</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>start jar with exporter</p>
-</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">nohup java -javaagent:/usr/local/jmx_prometheus_javaagent-0.3.1.jar=30015:/usr/local/jar_config.yaml -jar /usr/local/Demo.jar &gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>add prometheus config</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;tomcat&apos;</span><br><span class="line">  static_configs:</span><br><span class="line">  - targets: [&apos;10.86.86.100:30015&apos;]</span><br><span class="line">    labels:</span><br><span class="line">      appname: &apos;demo&apos;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>add grafana dashboard<br>add jar dashboard <code>https://grafana.com/dashboards/8563</code></li>
-</ol>
-<p><a href="https://www.jianshu.com/p/8a5e681b18ce" target="_blank" rel="noopener">https://www.jianshu.com/p/8a5e681b18ce</a></p>
-<h2 id="to-config-alert-on-grafana"><a href="#to-config-alert-on-grafana" class="headerlink" title="to config alert on grafana"></a>to config alert on grafana</h2><p>First i want add email channel, but the smtp inside is restricted,<br>and <code>go</code> not support none ssl unencrypted connection.</p>
-<p>I even install a email server software <code>hmailserver</code>, but still not work.<br>So i give up, and use <code>dingding</code> notice robot instead.</p>
-<p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227162128.jpg" alt="20200227162128.jpg"></p>
-<h3 id="Add-grafana-alert-channel"><a href="#Add-grafana-alert-channel" class="headerlink" title="Add grafana alert channel"></a>Add grafana alert channel</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227162827.jpg" alt="20200227162827.jpg"></p>
-<h3 id="Add-query-panel"><a href="#Add-query-panel" class="headerlink" title="Add query panel"></a>Add query panel</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227164011.jpg" alt="20200227164011.jpg"></p>
-<p>If the <code>min step</code> format not correct like <code>60</code>, the alert rule may throw error.<br><code>parse error at char 88: missing unit character in duration</code></p>
-<h3 id="Add-alert-rule"><a href="#Add-alert-rule" class="headerlink" title="Add alert rule"></a>Add alert rule</h3><p><img src="/2020/02/27/Monitor-jar-by-prometheus/20200227164204.jpg" alt="20200227164204.jpg"></p>
-<p>The <code>8563</code> dashboard’s panel can’t be used to mointor target directly.<br>Exception will be throw when you edit panel and add alert directly.<br>Make sure the panel query has point the target instance, then add alert.</p>
-<p><a href="https://grafana.com/docs/grafana/latest/alerting/rules/" target="_blank" rel="noopener">https://grafana.com/docs/grafana/latest/alerting/rules/</a><br><a href="https://www.jianshu.com/p/2b230390f37e" target="_blank" rel="noopener">https://www.jianshu.com/p/2b230390f37e</a><br><a href="https://github.com/FUSAKLA/alertmanager-grafana-dashboard/issues/1" target="_blank" rel="noopener">https://github.com/FUSAKLA/alertmanager-grafana-dashboard/issues/1</a><br><a href="https://yq.aliyun.com/articles/250063" target="_blank" rel="noopener">https://yq.aliyun.com/articles/250063</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/02/27/Monitor-jar-by-prometheus/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -2184,12 +2070,24 @@
                 
               
 
-              <time title="Created: 2019-12-15 18:12:04 / Modified: 19:43:18" itemprop="dateCreated datePublished" datetime="2019-12-15T18:12:04+08:00">2019-12-15</time>
+              <time title="Created: 2019-12-15 18:12:04" itemprop="dateCreated datePublished" datetime="2019-12-15T18:12:04+08:00">2019-12-15</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-20 11:25:03" itemprop="dateModified" datetime="2020-06-20T11:25:03+08:00">2020-06-20</time>
               
             
           </span>
@@ -2242,35 +2140,16 @@
 
       
         
+          <h2 id="Clone-project"><a href="#Clone-project" class="headerlink" title="Clone project"></a>Clone project</h2><p><code>git clone https://github.com/BurningBright/minishowcase</code><br><a href="https://github.com/BurningBright/minishowcase" target="_blank" rel="noopener">https://github.com/BurningBright/minishowcase</a></p>
+          <!--noindex-->
           
-            <h2 id="Clone-project"><a href="#Clone-project" class="headerlink" title="Clone project"></a>Clone project</h2><p><code>git clone https://github.com/BurningBright/minishowcase</code><br><a href="https://github.com/BurningBright/minishowcase" target="_blank" rel="noopener">https://github.com/BurningBright/minishowcase</a></p>
-<h2 id="Pull-images"><a href="#Pull-images" class="headerlink" title="Pull images"></a>Pull images</h2><p><a href="https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6" target="_blank" rel="noopener">https://hub.docker.com/_/php?tab=tags&amp;page=1&amp;name=5.6</a><br>pick version you like in docker<br><code>docker pull php:5.6.40-fpm-alpine</code></p>
-<p>alpine release is not popular as the ‘apk’ command install software is not as usual as <code>debian</code> <code>fedora</code>.<br>so it’s better to pull other version php image like<br><code>docker pull php:5.6.40-fpm-jessie</code></p>
-<p>pull stable version nginx version image.<br><code>docker pull nginx:stable</code></p>
-<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><h3 id="Copy-nginx-configuration"><a href="#Copy-nginx-configuration" class="headerlink" title="Copy nginx configuration"></a>Copy nginx configuration</h3><p>start nginx container first<br><code>docker run --name nginx-tmp -d nginx:stable</code><br>copy default.conf<br><code>docker cp nginx-tmp:/etc/nginx/confi.d nginx-tmp/</code><br>delete tmp container<br><code>docker rm nginx-tmp</code></p>
-<h3 id="Start-php-container"><a href="#Start-php-container" class="headerlink" title="Start php container"></a>Start php container</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run --name php-mini \</span><br><span class="line">-p 9000:9000 -v /Users/root/minishowcase:/var/www \</span><br><span class="line">-d php:5.6.40-fpm-alpine</span><br></pre></td></tr></table></figure>
-<p>run image mapping container port 9000 to host port 9000, mapping host project file to container.</p>
-<p>check php inner ip<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker inspect --format=&apos;&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;&apos; php-mini</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://www.runoob.com/docker/docker-install-php.html" target="_blank" rel="noopener">https://www.runoob.com/docker/docker-install-php.html</a></p>
-<h3 id="Start-nginx-container"><a href="#Start-nginx-container" class="headerlink" title="Start nginx container"></a>Start nginx container</h3><p>modify <code>conf.d/default.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">user  nginx;</span><br><span class="line">worker_processes  1;</span><br><span class="line">worker_rlimit_nofile 65535;</span><br><span class="line">error_log  /var/log/nginx/error.log warn;</span><br><span class="line">pid        /var/run/nginx.pid;</span><br><span class="line">events &#123;</span><br><span class="line">    use epoll;</span><br><span class="line">    worker_connections  65535;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       /etc/nginx/mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    log_format  main  &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos;</span><br><span class="line">                      &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos;</span><br><span class="line">                      &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&apos;;</span><br><span class="line">    access_log  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line">    server_tokens off;</span><br><span class="line">    gzip on;</span><br><span class="line">    gzip_disable &quot;msie6&quot;;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen    80;       </span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        root   /var/www;</span><br><span class="line">        index  index.html index.htm index.php;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            try_files $uri $uri/ /index.php?$args;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location ~ \.php$ &#123;</span><br><span class="line">            fastcgi_pass   172.17.0.2:9000;</span><br><span class="line">            fastcgi_index  index.php;</span><br><span class="line">            fastcgi_split_path_info ^((?U).+\.php)(/?.+)$;</span><br><span class="line">            fastcgi_param SCRIPT_NAME $fastcgi_script_name;</span><br><span class="line">            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;</span><br><span class="line">            fastcgi_param PATH_INFO $fastcgi_path_info;</span><br><span class="line">            fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;</span><br><span class="line">            include        fastcgi_params;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location ~ /\.ht &#123;</span><br><span class="line">            deny  all;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="https://www.jianshu.com/p/5edfbb2af389" target="_blank" rel="noopener">https://www.jianshu.com/p/5edfbb2af389</a></p>
-<p><code>fastcgi_pass   172.17.0.2:9000;</code> this line is php’s inner address.</p>
-<p>start nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run --name nginx-mini \</span><br><span class="line">-p 80:80 -v /Users/root/minishowcase:/var/www \</span><br><span class="line">-v /Users/root/nginx-mini/conf.d:/etc/nginx/conf.d \</span><br><span class="line">-d nginx:stable</span><br></pre></td></tr></table></figure></p>
-<h3 id="check-php-status"><a href="#check-php-status" class="headerlink" title="check php status"></a>check php status</h3><p>add <code>info.php</code> check php status <a href="http://127.0.0.1/info.php" target="_blank" rel="noopener">http://127.0.0.1/info.php</a></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">echo</span> phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="Install-php-extenstion"><a href="#Install-php-extenstion" class="headerlink" title="Install php extenstion"></a>Install php extenstion</h2><p>minishowcase needs php ‘gd’ extenstion, it be used to make thumbnail picture.</p>
-<p>cause i use apline version php image, it wasted alot of time to insatll.</p>
-<p>firt <code>apt</code> <code>yum</code> is not command to install dependency in apline, <code>apk</code> is the key.</p>
-<p><a href="https://blog.csdn.net/flame1980/article/details/98851803" target="_blank" rel="noopener">https://blog.csdn.net/flame1980/article/details/98851803</a></p>
-<p>get into php container<br><code>docker exec -it php-mini bash</code></p>
-<p>install gd and it’s dependencies<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">apk upgrade --update &amp;&amp; apk add \</span><br><span class="line">  coreutils \</span><br><span class="line">  freetype-dev \</span><br><span class="line">  libjpeg-turbo-dev \</span><br><span class="line">  libltdl \</span><br><span class="line">  libmcrypt-dev \</span><br><span class="line">  libpng-dev \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) iconv mcrypt \</span><br><span class="line">&amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br></pre></td></tr></table></figure></p>
-<p>it’s better to write a <code>Dockerfile</code> to build a integrated image</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM php:5.6.40-fpm-alpine</span><br><span class="line">RUN docker-php-ext-install mysqli</span><br><span class="line">RUN apk upgrade --update &amp;&amp; apk add \</span><br><span class="line">  coreutils \</span><br><span class="line">  freetype-dev \</span><br><span class="line">  libjpeg-turbo-dev \</span><br><span class="line">  libltdl \</span><br><span class="line">  libmcrypt-dev \</span><br><span class="line">  libpng-dev \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) iconv mcrypt \</span><br><span class="line">&amp;&amp; docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \</span><br><span class="line">&amp;&amp; docker-php-ext-install -j$(nproc) gd</span><br></pre></td></tr></table></figure>
-<p>check gd status<br>add <code>gd.php</code> to checkout gd extenstion.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">  if(extension_loaded(&apos;gd&apos;)) &#123;</span><br><span class="line">    echo &apos;gd ready&apos;;</span><br><span class="line">    foreach(gd_info() as $cate=&gt;$value)</span><br><span class="line">      echo &quot;$cate: $value&quot;;</span><br><span class="line">  &#125; else</span><br><span class="line">    echo &apos;no gd&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://blog.csdn.net/wt1286331074/article/details/91425518" target="_blank" rel="noopener">https://blog.csdn.net/wt1286331074/article/details/91425518</a><br><a href="https://www.jb51.cc/php/139142.html" target="_blank" rel="noopener">https://www.jb51.cc/php/139142.html</a></p>
-
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/12/15/Deploy-php-in-docker/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
           
+          <!--/noindex-->
         
       
     </div>
@@ -2675,7 +2554,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2818,6 +2697,326 @@
 
 
   
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
 
 
 
