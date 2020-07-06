@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。 考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为  \begin">
+<meta name="keywords" content="calculus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漫步微积分2.5 - 极限的概念">
+<meta property="og:url" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。 考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为  \begin">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718182913134">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183031776">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183222060">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183306664">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183424095">
+<meta property="og:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183518846">
+<meta property="og:updated_time" content="2020-07-05T07:12:39.293Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="漫步微积分2.5 - 极限的概念">
+<meta name="twitter:description" content="前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。 考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为  \begin">
+<meta name="twitter:image" content="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718182913134">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>漫步微积分2.5 - 极限的概念 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">漫步微积分2.5 - 极限的概念
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 12:21:04" itemprop="dateCreated datePublished" datetime="2020-07-04T12:21:04+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:12:39" itemprop="dateModified" datetime="2020-07-05T15:12:39+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。</p>
+<p>考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\lim_{x\to a}f(x)=L.\tag1
+\end{equation}</script><center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718182913134" alt="这里写图片描述" title>
+图1
+</center>
+
+<a id="more"></a>
+<p>如果不存在这样的实数 $L$，我们说$x$趋近$a$时$f(x)$没有极限，或者$\lim_{x\to a}f(x)$ 不存在。另一种和(1)等价且被广泛使用的符号是</p>
+<script type="math/tex; mode=display">
+
+f(x)\to L\quad as \quad x\to a</script><p>现在考虑(1)式的意义，$x$等于$a$时$f(x)$会如何是没有意义的；而对于$x$接近$a$时的$f(x)$值才是有意义的，理解这一点非常重要。</p>
+<p>对于(1)式来说，这些非正式的描述对我们直观的理解非常有利，并且对于实际需求也足够了。然而，作为定义，他们又不严谨也不精确，因为有越来越接近和趋近这样的含糊用语。(1)式的精确意义非常重要，所以我们不能只留给学生去想象。我们尽可能简洁又清晰的给出一个令人满意的定义。接下来的部分，阅读的时候最好比平时更仔细些，及饬令他们自然的不耐烦用什么似乎是过度的挑剔的精度。</p>
+<p>首先分析一个具体的实例，希望从中可以提取出通用情况的本质</p>
+<script type="math/tex; mode=display">
+
+\lim_{x\to 0}\frac{2x^2+x}{x}=1</script><p>这里我们必须验证的函数是</p>
+<script type="math/tex; mode=display">
+
+y=f(x)=\frac{2x^2+x}{x}</script><p>这个函数在$x=0$处无定义，除了$x\neq 0$外的所有$x$，化简表达式的</p>
+<script type="math/tex; mode=display">
+
+f(x)=\frac{x(2x+1)}{x}=2x+1.</script><p>从图2中，我们可以清楚的看到，当$x$趋近于$0$时，$f(x)$ 趋近于$1$。为了给出定量的描述，我们需要$f(x)$与极限值$1$之差的公式：</p>
+<script type="math/tex; mode=display">
+
+f(x)-1=(2x+1)-1=2x.</script><center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183031776" alt="这里写图片描述" title>
+图2
+</center>
+从公式中可以看到$f(x)$可以越来越接近$1$，也就是说，当$x$无线靠近$0$时，这个差可以变得任意小。
+
+$$
+\begin{eqnarray*}
+f(x)-1
+&=&\frac{1}{100}\ \ \qquad when\qquad x=\frac{1}{200}\\
+f(x)-1
+&=&\frac{1}{1000}\qquad when\qquad x=\frac{1}{2000}
+\end{eqnarray*}
+$$
+更一般的，让$\epsilon$是任意正数，无论多小，定义$\delta$为它的一半$\delta =\frac{1}{2}\epsilon$。那么当$x$和$0$的距离小于$\delta$时，$f(x)$到$1$的距离将小于$\epsilon$；也就是
+
+$$
+
+if\quad |x|<\delta =\frac{1}{2}\epsilon\quad then\quad |f(x)-1|="2|x|<\epsilon" . $$ 这个说法比$x$趋近$0$时$f(x)$趋近$1$的模糊说法更精确。它精确地告诉我们$x$必须接近$0$到什么程度时，才能保证$f(x)$ 靠近$1$的程度。当然，$x$不能等于$0$，因为$x="0$处$f(x)$没意义。" 现在这个$\epsilon -\delta$定义应该很容易掌握了:对于任意一个正数$\epsilon$，存在一个正数$\delta$，使得 |f(x)-l|<\epsilon 其中$x\neq a$，且满足不等式 |x-a|<\delta 换句话说：如果给定一个$\epsilon>0$，那么可以找到这样的一个正数$\delta$，满足当$x$在$a$的$\delta$邻域内时，$f(x)$将在$L$的$\epsilon$邻域内。跟之前一样，我们只关心$x=a$附近的$f(x)$行为，不在乎$x=a$处发生什么。
+
+用函数$y=f(x)$的图像来解释这个想法会更直观一些，如图3。图中，$2\epsilon$是水平带的宽度，它的中心线是$y=L$，$2\delta$是垂直带的宽度，它的中心线是$x=a$，上面的定义可以表达为
+
+对于每条水平带，无论它多窄，存在这样的一条垂直带，如果$x\neq a$限定在垂直带内，那么对应部分限定在水平带内。
+<center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183222060" alt="这里写图片描述" title>
+图3
+</center>
+(1)式的精确定义应该是我们最关注的，并且它在微积分理论中扮演着重要的角色。但是，对于极限直观的理解足够满足我们的实际需要，从这个层面来说，下面的例子现在应该不难解决了。
+
+例1：首先
+
+$$
+
+\lim_{x\to 2}(3x+4)=10
+
+$$
+当$x$趋近$2$时，$3x$趋近$6$，$3x+4$趋近$6+4=10$。下一个
+
+$$
+
+\lim_{x\to 1}\frac{x^2-1}{x-1}=\lim_{x\to 1}\frac{(x+1)(x-1)}{x-1}=\lim_{x\to 1}(x+1)=2
+
+$$
+我们首先注意到函数$(x^2-1)/(x-1)$在$x=1$处没有定义，因为此时分子分母均等于$0$。但是这无关紧要，因为重要的是$x$在$1$附近而不是$1$处的函数行为，所以对所有$x$均可进行消去操作，得到$x+1$，它趋近$2$。
+
+例2：考虑一些极限不存在的函数是非常有启发意义的。例如图4，这些极限行为通过图像都很容易理解。第一种情况，当$x$为正数时，函数等于$1$，当$x$为负数时，函数等于$-1$，在$x=0$处没有定义，所以当$x$趋近$0$时，函数不存在一个确定的数。专业点来说就是极限不存在，记为
+
+$$
+
+\lim_{x\to 0+}\frac{x}{|x|}=1\qquad \lim_{x\to 0-}\frac{x}{|x|}=-1.
+
+$$
+<center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183306664" alt="这里写图片描述" title>
+图4
+</center>
+符号$x\to 0+$和$x\to 0-$表明变量$x$分别从正向(右边)和反向(左边)趋近$0$。另外两个极限因为$x$趋近$0$时绝对值任意大所以也不存在极限。用符号表示就是
+
+$$
+
+\lim_{x\to 0+}\frac{1}{x}=\infty ,\quad \lim_{x\to 0-}\frac{1}{x}=-\infty ,\quad \lim_{x\to 0}\frac{1}{x^2}=\infty.
+
+$$
+记住：(1)式中的数$L$必须是实数；$L=\infty$不符合要求。
+
+计算极限的主要规则就是我们期待的那样。例如
+
+$$
+
+\lim_{x\to a}x=a;
+
+$$
+如果$c$是常数，那么
+
+$$
+
+\lim_{x\to a}c=c.
+
+$$
+还有，如果$\lim_{x\to a}f(x)=L$，$\lim_{x\to a}g(x)=M$，那么
+
+$$
+\begin{eqnarray*}
+\lim_{x\to a}[f(x)+g(x)]
+&=&L+M,\\
+\lim_{x\to a}[f(x)-g(x)]
+&=&L-M,\\
+\lim_{x\to a}f(x)g(x)
+&=&LM,\\
+\lim_{x\to a}\frac{f(x)}{g(x)}
+&=&\frac{L}{M}\quad (M\neq 0).
+\end{eqnarray*}
+$$
+也就是说，和的极限是极限的和，差，乘和商同样满足。这些叫做极限法则或者极限定理。
+
+我们之前说过微积分是解决问题的一种技能，不是逻辑的分支。相比于演绎推理，它更多的是处理直观理解带来的方法。当然了，我们将试图让读者相信我们论述的真实性和过程的合法性。然而，为了避免用大量难理解的理论材料充斥文本，我们尽可能简洁，不那么正式的表达。（对于这里陈述的极限性质，相关证明可能以番外的形式给出，至于是否更新，还是看呼声吧，哈哈哈）
+
+在结束本部分主题之前，我们讨论两个具体的三角极限。之后会发现他们非常重要。第一个是
+
+$$
+\begin{equation}
+\lim_{\theta\to 0}\frac{sin\theta}{\theta}\tag2
+\end{equation}
+$$
+
+注意，这里的$\theta$是弧度。我们不能简单的设$\theta =0$，因为结果将是无意义的等式$0/0$。我们注意到它不同于下面的代数极限，
+
+$$
+
+\lim_{x\to 0}\frac{3x^2+2x}{x}=\lim_{x\to 0}\frac{x(3x+2)}{x}=\lim_{x\to 0}(3x+2)=2
+
+$$
+因为$sin\theta$无法明显的消去$\theta$。为了对(2)式的函数行为有个印象，我们计算几个很小的$\theta$对应的比值。我们注意到，如果用$-\theta$代替$\theta$，我们有
+
+$$
+
+\frac{sin -\theta}{-\theta}=\frac{-sin\theta}{-\theta}=\frac{sin\theta}{\theta}
+
+$$
+所以我们只关于正的$\theta$。利用计算器我们得到几个八位小数值(表1)。这些值说明(但不能证明!)
+<center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183424095" alt="这里写图片描述" title>
+表1
+</center>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\lim_{\theta\to 0}\frac{sin\theta}{\theta}=1.\tag3
+\end{equation}</script><p>现在我们从几何角度来证实(3)式。让$P$，$Q$是单位圆上彼此濒临的两个点(图5)，让$\overline{PQ}$和$\widehat{PQ}$表示两点的弦长和弧长。那么当两点移动到一起时，弦长比弧长趋近于$1$</p>
+<script type="math/tex; mode=display">
+
+\frac{chord\ length\ \overline{PQ}}{arc\ length\ \widehat{PQ}}\to 1\quad as\quad \widehat{PQ}\to 0.</script><p><center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718183518846" alt="这里写图片描述" title>
+图5
+</center><br>对于图中的符号，这个几何陈述等价于</p>
+<script type="math/tex; mode=display">
+
+\frac{2sin\theta}{2\theta}=\frac{sin\theta}{\theta}\to 1\quad as\quad 2\theta \to 0\quad or\quad \theta\to 0,</script><p>这就是(3)式。</p>
+<p>第二个极限是</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\lim_{\theta\to 0}\frac{1-cos\theta}{\theta}=0.\tag4
+\end{equation}</script><p>利用三角恒等式$sin^2\theta+cos^2\theta=1$以及(3)式得：</p>
+<script type="math/tex; mode=display">
+\begin{eqnarray*}
+\lim_{\theta\to 0}\frac{1-cos\theta}{\theta}
+&=&\lim_{\theta\to 0}\left(\frac{1-cos\theta}{\theta}\cdot\frac{1+cos\theta}{1+cos\theta}\right)\\
+&=&\lim_{\theta\to 0}\frac{1-cos^2\theta}{\theta(1+cos\theta)}\\
+&=&\lim_{\theta\to 0}\frac{sin^2\theta}{\theta(1+cos\theta)}\\
+&=&\lim_{\theta\to 0}\left(\frac{sin\theta}{\theta}\cdot\frac{sin\theta}{1+cos\theta}\right)\\
+&=&\left(\lim_{\theta\to 0}\frac{sin\theta}{\theta}\right)\left(\frac{sin\theta}{1+cos\theta}\right)\\
+&=&1\cdot\frac{0}{1+1}=0.
+\end{eqnarray*}</script><p>最后一步用到了当$\theta\to 0$时$sin\theta\to 0$，$cos\theta\to 1$，从图5的$sin\theta$和$cos\theta$几何意义可以很容易证实他们。</p>
+<p><a href="https://blog.csdn.net/u010182633/article/details/51944420" target="_blank" rel="noopener">漫步微积分六——极限的概念</a></p>
+</\delta>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/calculus/" rel="tag"># calculus</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/" rel="next" title="漫步微积分2.4 - 速度和变化率">
+                <i class="fa fa-chevron-left"></i> 漫步微积分2.4 - 速度和变化率
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/" rel="prev" title="漫步微积分2.6 - 连续函数">
+                漫步微积分2.6 - 连续函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">227</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">78</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

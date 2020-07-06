@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Apache-Lucene-Demo/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/07/Markdown-syntax/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/01/29/Apache-Lucene-Demo/" class="post-title-link" itemprop="url">Apache Lucene Demo</a>
+                <a href="/2017/02/07/Markdown-syntax/" class="post-title-link" itemprop="url">Markdown syntax</a>
               
             
           </h1>
@@ -396,1105 +396,7 @@
                 
               
 
-              <time title="Created: 2017-01-29 20:31:32" itemprop="dateCreated datePublished" datetime="2017-01-29T20:31:32+08:00">2017-01-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="IndexFiles"><a href="#IndexFiles" class="headerlink" title="IndexFiles"></a>IndexFiles</h2><p>As we discussed in the previous walk-through, the IndexFiles class creates a Lucene Index. Let’s take a look at how it does this.</p>
-<p>The main() method parses the command-line parameters, then in preparation for instantiating <code>IndexWriter</code>, opens a <code>Directory</code>, and instantiates <code>StandardAnalyzer</code> and <code>IndexWriterConfig</code>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;args.length;i++) &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="string">"-index"</span>.equals(args[i])) &#123;</span><br><span class="line">    indexPath = args[i+<span class="number">1</span>];</span><br><span class="line">    i++;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"-docs"</span>.equals(args[i])) &#123;</span><br><span class="line">    docsPath = args[i+<span class="number">1</span>];</span><br><span class="line">    i++;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"-update"</span>.equals(args[i])) &#123;</span><br><span class="line">    create = <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The value of the <code>-index</code> command-line parameter is the name of the <strong> filesystem directory </strong> where all index information should be stored. If IndexFiles is invoked with a relative path given in the -index command-line parameter, or if the -index command-line parameter is not given, causing the default relative index path “index” to be used, the index path will be created as a subdirectory of the current working directory (if it does not already exist). On some platforms, the index path may be created in a different directory (such as the user’s home directory).</p>
-<p>The <code>-docs</code> command-line parameter value is the location of the directory containing files <strong> to be indexed </strong> .</p>
-<p>The <code>-update</code> command-line parameter tells IndexFiles <strong> not to delete </strong> the index if it already exists. When -update is not given, IndexFiles will first wipe the slate clean before indexing any documents.</p>
-<p>Lucene <code>Directorys</code> are used by the IndexWriter to store information in the index. In addition to the <code>FSDirectory</code> implementation we are using, there are several other Directory subclasses that can write to RAM, to databases, etc.<br>(索引可以放在文件/内存/数据库…)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Directory dir = FSDirectory.open(Paths.get(indexPath));</span><br></pre></td></tr></table></figure>
-<p>Lucene <code>Analyzers</code> are processing pipelines that break up text into indexed tokens, a.k.a. terms, and optionally perform other operations on these tokens, e.g. downcasing, synonym insertion, filtering out unwanted tokens, etc. The Analyzer we are using is StandardAnalyzer, which creates tokens using the Word Break rules from the Unicode Text Segmentation algorithm specified in <a href="http://unicode.org/reports/tr29/" target="_blank" rel="noopener">Unicode Standard Annex #29</a>; converts tokens to lowercase; and then filters out stopwords. Stopwords are common language words such as articles (a, an, the, etc.) and other tokens that may have less value for searching. It should be noted that there are different rules for every language, and you should use the proper analyzer for each. Lucene currently provides Analyzers for a number of different languages (see the javadocs under <a href="http://lucene.apache.org/core/6_4_0/analyzers-common/overview-summary.html" target="_blank" rel="noopener">lucene/analysis/common/src/java/org/apache/lucene/analysis</a>).</p>
-<p>The IndexWriterConfig instance holds all configuration for IndexWriter. For example, we set the OpenMode to use here based on the value of the -update command-line parameter.</p>
-<p>Looking further down in the file, after IndexWriter is instantiated, you should see the indexDocs() code. This recursive function crawls the directories and creates <code>Document</code> objects. The Document is simply a data object to represent the text content from the file as well as its creation time and location. These instances are added to the IndexWriter. If the -update command-line parameter is given, the IndexWriterConfig OpenMode will be set to <code>OpenMode.CREATE_OR_APPEND</code>, and rather than adding documents to the index, the IndexWriter will <strong> update </strong> them in the index by attempting to find an already-indexed document with the same identifier (in our case, the file path serves as the identifier); deleting it from the index if it exists; and then adding the new document to the index.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Indexes a single document */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">indexDoc</span><span class="params">(IndexWriter writer, Path file, <span class="keyword">long</span> lastModified)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> (InputStream stream = Files.newInputStream(file)) &#123;</span><br><span class="line">    <span class="comment">// make a new, empty document</span></span><br><span class="line">    Document doc = <span class="keyword">new</span> Document();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the path of the file as a field named "path".  Use a</span></span><br><span class="line">    <span class="comment">// field that is indexed (i.e. searchable), but don't tokenize</span></span><br><span class="line">    <span class="comment">// the field into separate words and don't index term frequency</span></span><br><span class="line">    <span class="comment">// or positional information:</span></span><br><span class="line">    Field pathField = <span class="keyword">new</span> StringField(<span class="string">"path"</span>, file.toString(), Field.Store.YES);</span><br><span class="line">    doc.add(pathField);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the last modified date of the file a field named "modified".</span></span><br><span class="line">    <span class="comment">// Use a LongPoint that is indexed (i.e. efficiently filterable with</span></span><br><span class="line">    <span class="comment">// PointRangeQuery).  This indexes to milli-second resolution, which</span></span><br><span class="line">    <span class="comment">// is often too fine.  You could instead create a number based on</span></span><br><span class="line">    <span class="comment">// year/month/day/hour/minutes/seconds, down the resolution you require.</span></span><br><span class="line">    <span class="comment">// For example the long value 2011021714 would mean</span></span><br><span class="line">    <span class="comment">// February 17, 2011, 2-3 PM.</span></span><br><span class="line">    doc.add(<span class="keyword">new</span> LongPoint(<span class="string">"modified"</span>, lastModified));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add the contents of the file to a field named "contents".  Specify a Reader,</span></span><br><span class="line">    <span class="comment">// so that the text of the file is tokenized and indexed, but not stored.</span></span><br><span class="line">    <span class="comment">// Note that FileReader expects the file to be in UTF-8 encoding.</span></span><br><span class="line">    <span class="comment">// If that's not the case searching for special characters will fail.</span></span><br><span class="line">    doc.add(<span class="keyword">new</span> TextField(<span class="string">"contents"</span>, <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(stream, StandardCharsets.UTF_8))));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (writer.getConfig().getOpenMode() == OpenMode.CREATE) &#123;</span><br><span class="line">      <span class="comment">// New index, so we just add the document (no old document can be there):</span></span><br><span class="line">      System.out.println(<span class="string">"adding "</span> + file);</span><br><span class="line">      writer.addDocument(doc);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// Existing index (an old copy of this document may have been indexed) so</span></span><br><span class="line">      <span class="comment">// we use updateDocument instead to replace the old one matching the exact</span></span><br><span class="line">      <span class="comment">// path, if present:</span></span><br><span class="line">      System.out.println(<span class="string">"updating "</span> + file);</span><br><span class="line">      writer.updateDocument(<span class="keyword">new</span> Term(<span class="string">"path"</span>, file.toString()), doc);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Searching-Files"><a href="#Searching-Files" class="headerlink" title="Searching Files"></a>Searching Files</h2><p>The SearchFiles class is quite simple. It primarily collaborates with an <code>IndexSearcher</code>, <code>StandardAnalyzer</code>, (which is used in the <code>IndexFiles</code> class as well) and a QueryParser. The query parser is constructed with an analyzer used to interpret your query text in the same way the documents are interpreted: finding word boundaries, downcasing, and removing useless words like ‘a’, ‘an’ and ‘the’. The Query object contains the results from the QueryParser which is passed to the searcher. Note that it’s also possible to programmatically construct a rich <code>Query</code> object without using the <code>query parser</code>. The <code>query</code> parser just enables decoding the <a href="http://lucene.apache.org/core/6_4_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package_description" target="_blank" rel="noopener">Lucene query syntax</a> into the corresponding Query object.</p>
-<p>SearchFiles uses the <code>IndexSearcher.search(query,n)</code> method that returns <code>TopDocs</code> with max n hits. The results are printed in pages, sorted by score (i.e. relevance).</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Collect enough docs to show 5 pages</span></span><br><span class="line">TopDocs results = searcher.search(query, <span class="number">5</span> * hitsPerPage);</span><br><span class="line">ScoreDoc[] hits = results.scoreDocs;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/28/lucene-demo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/28/lucene-demo/" class="post-title-link" itemprop="url">lucene demo</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-28 21:52:23" itemprop="dateCreated datePublished" datetime="2017-01-28T21:52:23+08:00">2017-01-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Build-Index"><a href="#Build-Index" class="headerlink" title="Build Index"></a>Build Index</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.Analyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.standard.StandardAnalyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Field;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.TextField;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriter;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriterConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.Directory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.FSDirectory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.RAMDirectory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Indexer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>  IndexWriter writer;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例化写索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Indexer</span><span class="params">(String indexDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Analyzer analyzer=<span class="keyword">new</span> StandardAnalyzer();<span class="comment">//分词器</span></span><br><span class="line">        IndexWriterConfig writerConfig=<span class="keyword">new</span> IndexWriterConfig(analyzer);<span class="comment">//写索引配置</span></span><br><span class="line">        <span class="comment">//Directory ramDirectory= new RAMDirectory();//索引写的内存</span></span><br><span class="line">        Directory directory= FSDirectory.open(Paths.get(indexDir));<span class="comment">//索引存储磁盘位置</span></span><br><span class="line">        writer=<span class="keyword">new</span> IndexWriter(directory,writerConfig);<span class="comment">//实例化一个写索引</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭写索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加指定目录的所有文件的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">index</span><span class="params">(String dataDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File[] files=<span class="keyword">new</span> File(dataDir).listFiles();<span class="comment">//得到指定目录的文档数组</span></span><br><span class="line">        <span class="keyword">for</span>(File file:files)&#123;</span><br><span class="line">            indexFile(file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> writer.numDocs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">indexFile</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"索引文件:"</span>+file.getCanonicalPath());<span class="comment">//打印索引到的文件路径信息</span></span><br><span class="line">        Document document=getDocument(file);<span class="comment">//得到一个文档信息，相对一个表记录</span></span><br><span class="line">        writer.addDocument(document);<span class="comment">//写入到索引，相当于插入一个表记录</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个文档记录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Document <span class="title">getDocument</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Document document=<span class="keyword">new</span> Document();<span class="comment">//实例化一个文档</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"context"</span>,<span class="keyword">new</span> FileReader(file)));<span class="comment">//添加一个文档信息，相当于一个数据库表字段</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"fileName"</span>,file.getName(), Field.Store.YES));<span class="comment">//添加文档的名字属性</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"filePath"</span>,file.getCanonicalPath(),Field.Store.YES));<span class="comment">//添加文档的路径属性</span></span><br><span class="line">        <span class="keyword">return</span> document;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []ages)</span></span>&#123;</span><br><span class="line">        String indexDir=<span class="string">"E:\\LuceneIndex"</span>;</span><br><span class="line">        String dataDir=<span class="string">"E:\\LuceneTestData"</span>;</span><br><span class="line">        Indexer indexer=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> indexSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            indexer=<span class="keyword">new</span> Indexer(indexDir);</span><br><span class="line">            indexSum= indexer.index(dataDir);</span><br><span class="line">            System.out.printf(<span class="string">"完成"</span>+indexSum+<span class="string">"个文件的索引"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                indexer.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Read-amp-Query"><a href="#Read-amp-Query" class="headerlink" title="Read &amp; Query"></a>Read &amp; Query</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.Analyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.analysis.standard.StandardAnalyzer;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.Field;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.document.TextField;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriter;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.index.IndexWriterConfig;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.Directory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.FSDirectory;</span><br><span class="line"><span class="keyword">import</span> org.apache.lucene.store.RAMDirectory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Indexer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span>  IndexWriter writer;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例化写索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Indexer</span><span class="params">(String indexDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Analyzer analyzer=<span class="keyword">new</span> StandardAnalyzer();<span class="comment">//分词器</span></span><br><span class="line">        IndexWriterConfig writerConfig=<span class="keyword">new</span> IndexWriterConfig(analyzer);<span class="comment">//写索引配置</span></span><br><span class="line">        <span class="comment">//Directory ramDirectory= new RAMDirectory();//索引写的内存</span></span><br><span class="line">        Directory directory= FSDirectory.open(Paths.get(indexDir));<span class="comment">//索引存储磁盘位置</span></span><br><span class="line">        writer=<span class="keyword">new</span> IndexWriter(directory,writerConfig);<span class="comment">//实例化一个写索引</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭写索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加指定目录的所有文件的索引</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataDir</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">index</span><span class="params">(String dataDir)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File[] files=<span class="keyword">new</span> File(dataDir).listFiles();<span class="comment">//得到指定目录的文档数组</span></span><br><span class="line">        <span class="keyword">for</span>(File file:files)&#123;</span><br><span class="line">            indexFile(file);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> writer.numDocs();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">indexFile</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"索引文件:"</span>+file.getCanonicalPath());<span class="comment">//打印索引到的文件路径信息</span></span><br><span class="line">        Document document=getDocument(file);<span class="comment">//得到一个文档信息，相对一个表记录</span></span><br><span class="line">        writer.addDocument(document);<span class="comment">//写入到索引，相当于插入一个表记录</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回一个文档记录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Document <span class="title">getDocument</span><span class="params">(File file)</span><span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Document document=<span class="keyword">new</span> Document();<span class="comment">//实例化一个文档</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"context"</span>,<span class="keyword">new</span> FileReader(file)));<span class="comment">//添加一个文档信息，相当于一个数据库表字段</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"fileName"</span>,file.getName(), Field.Store.YES));<span class="comment">//添加文档的名字属性</span></span><br><span class="line">        document.add(<span class="keyword">new</span> TextField(<span class="string">"filePath"</span>,file.getCanonicalPath(),Field.Store.YES));<span class="comment">//添加文档的路径属性</span></span><br><span class="line">        <span class="keyword">return</span> document;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String []ages)</span></span>&#123;</span><br><span class="line">        String indexDir=<span class="string">"E:\\LuceneIndex"</span>;</span><br><span class="line">        String dataDir=<span class="string">"E:\\LuceneTestData"</span>;</span><br><span class="line">        Indexer indexer=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">int</span> indexSum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            indexer=<span class="keyword">new</span> Indexer(indexDir);</span><br><span class="line">            indexSum= indexer.index(dataDir);</span><br><span class="line">            System.out.printf(<span class="string">"完成"</span>+indexSum+<span class="string">"个文件的索引"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                indexer.close();</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/28/lucene-concept/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/28/lucene-concept/" class="post-title-link" itemprop="url">lucene concept</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-28 20:54:56" itemprop="dateCreated datePublished" datetime="2017-01-28T20:54:56+08:00">2017-01-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Document"><a href="#Document" class="headerlink" title="Document"></a>Document</h2><p>Document used to describe a document, it can be a html page, a email or a text file. a Document made by a series of File.You can imagine a record of DB as a Document, fields as Fields object</p>
-<h2 id="Field"><a href="#Field" class="headerlink" title="Field"></a>Field</h2><p>Field used to descibe a property in Document, like a email’s title and content can be descibed by two Fileds</p>
-<h2 id="Analyzer"><a href="#Analyzer" class="headerlink" title="Analyzer"></a>Analyzer</h2><p>Before a Document be Indexed, Document content should be participle first, Analyzer will done the job. Analyzer class is a abstract class, it have a lot of implementations. In different language, it should choose right Analyzer to do this. After Analysis , the content token to IndexWriter to build Index.</p>
-<h2 id="IndexWriter"><a href="#IndexWriter" class="headerlink" title="IndexWriter"></a>IndexWriter</h2><p>IndexWriter is the core Lucene used to build Index, it’s job is to take every Document into Index.</p>
-<h2 id="Directory"><a href="#Directory" class="headerlink" title="Directory"></a>Directory</h2><p>This class represent Lucene’s Index save path. It is a abstract class, it has two implementations. First is FSDirectory, it represent the Index in file system. Second is RAMDirectory, it represent the Index in random memory.</p>
-<h2 id="Query"><a href="#Query" class="headerlink" title="Query"></a>Query</h2><p>Query is a abstract class, has a lot of implementations, like TermQuery, BooleanQuery, PrefixQuery. The task of this class is to take user’s query string packing into a Query that Lucene could recognize</p>
-<h2 id="IndexSearcher"><a href="#IndexSearcher" class="headerlink" title="IndexSearcher"></a>IndexSearcher</h2><p>IndexSearcher is used to search in the builded Index. It’s only way to open a Index is read, so it could be a lot of IndexSearcher on a single Index implementations do operations.</p>
-<h2 id="Hits"><a href="#Hits" class="headerlink" title="Hits"></a>Hits</h2><p>Hits used to save search result.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/27/Apache-Lucene-Core/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/27/Apache-Lucene-Core/" class="post-title-link" itemprop="url">Apache Lucene Core</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-27 19:43:14" itemprop="dateCreated datePublished" datetime="2017-01-27T19:43:14+08:00">2017-01-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Apache LuceneTM is a high-performance, full-featured text search engine library<br>written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform.<br>Apache Lucene is an open source project available for free download.<br>Please use the links on the right to access Lucene.</p>
-<h2 id="Features"><a href="#Features" class="headerlink" title="Features"></a>Features</h2><p>Lucene offers powerful features through a simple API:\</p>
-<h3 id="Scalable-High-Performance-Indexing"><a href="#Scalable-High-Performance-Indexing" class="headerlink" title="Scalable, High-Performance Indexing"></a>Scalable, High-Performance Indexing</h3><ul>
-<li>over <a href="http://home.apache.org/~mikemccand/lucenebench/indexing.html" target="_blank" rel="noopener">150GB/hour on modern hardware</a></li>
-<li>small RAM requirements — only 1MB heap</li>
-<li>incremental indexing as fast as batch indexing</li>
-<li>index size roughly 20-30% the size of text indexed</li>
-</ul>
-<h3 id="Powerful-Accurate-and-Efficient-Search-Algorithms"><a href="#Powerful-Accurate-and-Efficient-Search-Algorithms" class="headerlink" title="Powerful, Accurate and Efficient Search Algorithms"></a>Powerful, Accurate and Efficient Search Algorithms</h3><ul>
-<li>ranked searching — best results returned first</li>
-<li>many powerful query types: phrase queries, wildcard queries, proximity queries, range queries and more</li>
-<li>fielded searching (e.g. title, author, contents)</li>
-<li>sorting by any field</li>
-<li>multiple-index searching with merged results</li>
-<li>allows simultaneous update and searching</li>
-<li>flexible faceting, highlighting, joins and result grouping</li>
-<li>fast, memory-efficient and typo-tolerant suggesters</li>
-<li>pluggable ranking models, including the <a href="https://en.wikipedia.org/wiki/Vector_space_model" target="_blank" rel="noopener">Vector Space Model</a> and <a href="https://en.wikipedia.org/wiki/Okapi_BM25" target="_blank" rel="noopener">Okapi BM25</a></li>
-<li>configurable storage engine (codecs)</li>
-</ul>
-<h3 id="Cross-Platform-Solution"><a href="#Cross-Platform-Solution" class="headerlink" title="Cross-Platform Solution"></a>Cross-Platform Solution</h3><ul>
-<li>Available as Open Source software under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank" rel="noopener">Apache License</a> which lets you use Lucene in both commercial and Open Source programs</li>
-<li>100%-pure Java</li>
-<li>Implementations in other <a href="https://wiki.apache.org/lucene-java/LuceneImplementations" target="_blank" rel="noopener">programming languages</a> available that are index-compatible</li>
-</ul>
-<h3 id="The-Apache-Software-Foundation"><a href="#The-Apache-Software-Foundation" class="headerlink" title="The Apache Software Foundation"></a>The Apache Software Foundation</h3><p>The <a href="http://www.apache.org/" target="_blank" rel="noopener">Apache Software Foundation</a> provides support for the Apache community of open-source software projects. The Apache projects are defined by collaborative consensus based processes, an open, pragmatic software license and a desire to create high quality software that leads the way in its field. Apache Lucene, Apache Solr, Apache PyLucene, Apache Open Relevance Project and their respective logos are trademarks of The Apache Software Foundation. All other marks mentioned may be trademarks or registered trademarks of their respective owners.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/26/collection-and-array/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/26/collection-and-array/" class="post-title-link" itemprop="url">collection and array</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-26 19:16:51" itemprop="dateCreated datePublished" datetime="2017-01-26T19:16:51+08:00">2017-01-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Collection-to-array"><a href="#Collection-to-array" class="headerlink" title="Collection to array"></a>Collection to array</h2><ol>
-<li><p>Object[]</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object[] listArray = list.toArray();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>specific array</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String[] listArray = (String[]) list.toArray(new String[0])</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>ps. it’s can’t be used to translate generic paradigm typed array</p>
-<h2 id="Array-to-collection"><a href="#Array-to-collection" class="headerlink" title="Array to collection"></a>Array to collection</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List list = new ArrayList();</span><br><span class="line">list = Arrays.asList(array);</span><br></pre></td></tr></table></figure>
-<p>ps. primary type can’t do it like this, it’s parameter must be objects</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/26/gzip-stream/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/26/gzip-stream/" class="post-title-link" itemprop="url">gzip stream</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-26 18:50:24" itemprop="dateCreated datePublished" datetime="2017-01-26T18:50:24+08:00">2017-01-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>Use GZIPOutputStream ZipOutputStream packing the output<br>maybe it’s destination a file or a socket, it’s not the  point. usually we use generic paradigm the reprecent the  data source in stream and the compressed data out stream</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">compress</span><span class="params">(InputStream is, OutputStream os)</span></span></span><br><span class="line"><span class="function">              <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    GZIPOutputStream gos = <span class="keyword">new</span> GZIPOutputStream(os);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">byte</span> data[] = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER];</span><br><span class="line">    <span class="keyword">while</span> ((count = is.read(data, <span class="number">0</span>, BUFFER)) != -<span class="number">1</span>) &#123;</span><br><span class="line">        gos.write(data, <span class="number">0</span>, count);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    gos.finish();</span><br><span class="line">    gos.flush();</span><br><span class="line">    gos.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/url-encoding/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/url-encoding/" class="post-title-link" itemprop="url">url encoding</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 15:17:05" itemprop="dateCreated datePublished" datetime="2017-01-24T15:17:05+08:00">2017-01-24</time>
+              <time title="Created: 2017-02-07 10:40:16" itemprop="dateCreated datePublished" datetime="2017-02-07T10:40:16+08:00">2017-02-07</time>
             
 
             
@@ -1565,26 +467,7 @@
       
         
           
-            <ul>
-<li><p>RFC 3986 section 2.2 reserved january 2005</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">! * &apos;( ) ; : @&amp; = + $ ,/ ? # [ ]</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 3986 section 2.3 unreserved january 2005</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A B C D E F G H I J K L M N O P Q RS T U V W X Y Z  </span><br><span class="line">a b c d e f g h i j k l m n o p q rs t u v w x y z  </span><br><span class="line">0 1 2 3 4 5 6 7 8 9 - _ .~</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 2396 URI Generic Syntax reserved August 1998</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;  /  ?  :  @  &amp;  =  +  $  ,</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 2396 URI Generic Syntax unreserved August 1998</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alphanum  or  mark</span><br><span class="line">mark      = -  _  .  !  ~  *  &apos;  (  )</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><strong>java use the older one</strong><br><strong>for compatible java use the same collection unreserved from all browser just like RFC2986 no ‘~’ add ‘*’</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * Unreserved characters can be escaped without changing the</span><br><span class="line"> * semantics of the URI, but this should not be done unless the</span><br><span class="line"> * URI is being used in a context that does not allow the</span><br><span class="line"> * unescaped character to appear.</span><br><span class="line"> */</span><br></pre></td></tr></table></figure></p>
-<h2 id="regular-expression"><a href="#regular-expression" class="headerlink" title="regular expression"></a>regular expression</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?$/</span><br></pre></td></tr></table></figure>
-<ul>
-<li>start with ‘http/https/ftp/ftps’</li>
-<li>can’t contain double bytes characters or not unreserved characters</li>
-</ul>
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">**Blod**</span><br><span class="line">*Emphasize*</span><br><span class="line">++Undeline++</span><br><span class="line">~~Strikethrough~~</span><br><span class="line">==Heightlight==</span><br><span class="line">^Superscript^</span><br><span class="line">~Subscript~</span><br><span class="line"></span><br><span class="line">![pic](pic.jpg)</span><br><span class="line">[git](http://github.com)</span><br><span class="line">@[]()[?]</span><br><span class="line"></span><br><span class="line">- unordered list</span><br><span class="line">1. Order list</span><br><span class="line">- [] Task[?]</span><br><span class="line"></span><br><span class="line">[^id]</span><br><span class="line">[^id]:xxx</span><br><span class="line"></span><br><span class="line">`code`</span><br><span class="line">\`\`\`code block\`\`\`</span><br><span class="line"></span><br><span class="line">***page break</span><br><span class="line"></span><br><span class="line">---section break</span><br><span class="line"></span><br><span class="line">___sentence break</span><br><span class="line"></span><br><span class="line">[TOC]</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1641,7 +524,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/mybatis-foreach-error/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/07/Unicode-block/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1661,7 +544,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/01/24/mybatis-foreach-error/" class="post-title-link" itemprop="url">mybatis foreach error</a>
+                <a href="/2017/02/07/Unicode-block/" class="post-title-link" itemprop="url">Unicode block</a>
               
             
           </h1>
@@ -1686,7 +569,7 @@
                 
               
 
-              <time title="Created: 2017-01-24 11:13:55" itemprop="dateCreated datePublished" datetime="2017-01-24T11:13:55+08:00">2017-01-24</time>
+              <time title="Created: 2017-02-07 10:23:31" itemprop="dateCreated datePublished" datetime="2017-02-07T10:23:31+08:00">2017-02-07</time>
             
 
             
@@ -1720,7 +603,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
 
                 
                 
@@ -1757,410 +640,2943 @@
       
         
           
-            <h2 id="Parameter-‘-frch-item-0’-not-found-Available-parameters-are-list"><a href="#Parameter-‘-frch-item-0’-not-found-Available-parameters-are-list" class="headerlink" title="Parameter ‘__frch_item_0’ not found. Available parameters are [list]"></a>Parameter ‘__frch_item_0’ not found. Available parameters are [list]</h2><p><strong>Mybatis parameter in list</strong></p>
-<ol>
-<li>查看parameterType的类型是不是Java.util.List类型，如果是的话，看foreach 的collection属性是不是list，因为 传递一个 List 实例或者数组作为参数对象传给 MyBatis,MyBatis 会自动将它包装在一个 Map 中,用名称在作为键。List 实例将会以“list” 作为键,而数组实例将会以“array”作为键<br><code>Is parameterType type Java.util.List. If it is, be caution foreach&#39;s collection must &#39;list&#39;. Becase if put a List example or array to Mybatis, it will auto put it to a Map, use it&#39;s name as key, example as value. So Mybatis will put a special map to foreach</code></li>
-<li>foreach is any value in list?</li>
-<li>foreach is property spell error?</li>
-<li>Mybatis set field auto increase but Mysql not.</li>
-<li>Item’s property is not right</li>
-</ol>
-<p><em>ps: use Map reduce Bean’s work, but question is if query result is null, then it’s corresponding property will lost(null)</em></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/hexo-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/hexo-install/" class="post-title-link" itemprop="url">hexo install</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 10:41:54" itemprop="dateCreated datePublished" datetime="2017-01-24T10:41:54+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-01-09 22:49:54" itemprop="dateModified" datetime="2019-01-09T22:49:54+08:00">2019-01-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install-amp-theme"><a href="#Install-amp-theme" class="headerlink" title="Install &amp; theme"></a>Install &amp; theme</h2><blockquote>
-<p>use cnpm<br>npm install -g cnpm —registry=<a href="https://registry.npm.taobao.org" target="_blank" rel="noopener">https://registry.npm.taobao.org</a></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo cnpm install hexo-cli -g</span><br><span class="line">hexo init blog</span><br><span class="line">cd blog</span><br><span class="line"></span><br><span class="line">cnpm install</span><br><span class="line">hexo server</span><br><span class="line"></span><br><span class="line"># may ship</span><br><span class="line">git clone https://github.com/tufu9441/maupassant-hexo.git themes/maupassant</span><br><span class="line">npm install hexo-renderer-jade --save</span><br><span class="line">npm install hexo-renderer-sass --save</span><br><span class="line"></span><br><span class="line">npm install hexo-tag-katex --save</span><br></pre></td></tr></table></figure>
-<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><ul>
-<li><p>enter themes\landscape\layout_partial，open head.ejs，delete 31th row fonts.googleapis.com</p>
-</li>
-<li><p>download jquery-2.0.3.min.js put into themes\landscape\source\js , enter themes\landscape\layout_partial, openafter-footer.ejs, replace 17th row to /js/jquery-2.0.3.min.js。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/mybatis-foreach/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/mybatis-foreach/" class="post-title-link" itemprop="url">mybatis foreach</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 10:21:38" itemprop="dateCreated datePublished" datetime="2017-01-24T10:21:38+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="table-container">
+            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br></pre></td></tr></table></figure>
+<div class="table-container">
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th style="text-align:right">Description</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>item</td>
-<td style="text-align:right">循环体中的具体对象。支持属性的点路径访问，如item.age,item.info.details。具体说明：在list和数组中是其中的对象，在map中是value。该参数为必选。</td>
+<td>0000-007F</td>
+<td>\p{InBasicLatin}</td>
+<td>0000-007F</td>
+<td>C0控制符及基本拉丁文&lt;/br&gt;(C0 Control and Basic Latin)</td>
 </tr>
 <tr>
-<td>collection</td>
-<td style="text-align:right">要做foreach的对象，作为入参时，List&lt;?&gt;对象默认用list代替作为键，数组对象有array代替作为键，Map对象用map代替作为键。当然在作为入参时可以使用@Param(“keyName”)来设置键，设置keyName后，list,array,map将会失效。 除了入参这种情况外，还有一种作为参数对象的某个字段的时候。举个例子：如果User有属性List ids。入参是User对象，那么这个collection = “ids”如果User有属性Ids ids;其中Ids是个对象，Ids有个属性List id;入参是User对象，那么collection = “ids.id”上面只是举例，具体collection等于什么，就看你想对那个元素做循环。该参数为必选。</td>
+<td>0080-00FF</td>
+<td>\p{InLatin-1Supplement}</td>
+<td>0080-00FF</td>
+<td>C1控制符及拉丁文补充-1&lt;/br&gt;(C1 Control and Latin 1 Supplement)</td>
 </tr>
 <tr>
-<td>separator</td>
-<td style="text-align:right">元素之间的分隔符，例如在in()的时候，separator=”,”会自动在元素中间用“,“隔开，避免手动输入逗号导致sql错误，如in(1,2,)这样。该参数可选。</td>
+<td>0100-017F</td>
+<td>\p{InLatinExtended-A}</td>
+<td>0100-017F</td>
+<td>拉丁文扩展-A&lt;/br&gt;(Latin Extended-A)</td>
 </tr>
 <tr>
-<td>open</td>
-<td style="text-align:right">foreach代码的开始符号，一般是(和close=”)”合用。常用在in(),values()时。该参数可选。</td>
+<td>0180-024F</td>
+<td>\p{InLatinExtended-B}</td>
+<td>0180-024F</td>
+<td>拉丁文扩展-B&lt;/br&gt;(Latin Extended-B)</td>
 </tr>
 <tr>
-<td>close</td>
-<td style="text-align:right">foreach代码的关闭符号，一般是)和open=”(“合用。常用在in(),values()时。该参数可选。</td>
+<td>0250-02AF</td>
+<td>\p{InIPAExtensions}</td>
+<td>0250-02AF</td>
+<td>国际音标扩展&lt;/br&gt;(IPA Extensions)</td>
 </tr>
 <tr>
-<td>index</td>
-<td style="text-align:right">在list和数组中,index是元素的序号，在map中，index是元素的key，该参数可选。</td>
+<td>02B0-02FF</td>
+<td>\p{InSpacingModifierLetters}</td>
+<td>02B0-02FF</td>
+<td>空白修饰字母&lt;/br&gt;(Spacing Modifiers)</td>
+</tr>
+<tr>
+<td>0300-036F</td>
+<td>\p{InCombiningDiacriticalMarks}</td>
+<td>0300-036F</td>
+<td>结合用读音符号&lt;/br&gt;(Combining Diacritics Marks)</td>
+</tr>
+<tr>
+<td>0370-03FF</td>
+<td>\p{InGreekandCoptic}</td>
+<td>0370-03FF</td>
+<td>希腊文及科普特文&lt;/br&gt;(Greek and Coptic)</td>
+</tr>
+<tr>
+<td>0400-04FF</td>
+<td>\p{InCyrillic}</td>
+<td>0400-04FF</td>
+<td>西里尔字母(Cyrillic)</td>
+</tr>
+<tr>
+<td>0500-052F</td>
+<td>\p{InCyrillicSupplement}</td>
+<td>0500-052F</td>
+<td>西里尔字母补充&lt;/br&gt;(Cyrillic Supplement)</td>
+</tr>
+<tr>
+<td>0530-058F</td>
+<td>\p{InArmenian}</td>
+<td>0530-058F</td>
+<td>亚美尼亚语&lt;/br&gt;(Armenian)</td>
+</tr>
+<tr>
+<td>0590-05FF</td>
+<td>\p{InHebrew}</td>
+<td>0590-05FF</td>
+<td>希伯来文&lt;/br&gt;(Hebrew)</td>
+</tr>
+<tr>
+<td>0600-06FF</td>
+<td>\p{InArabic}</td>
+<td>0600-06FF</td>
+<td>阿拉伯文&lt;/br&gt;(Arabic)</td>
+</tr>
+<tr>
+<td>0700-074F</td>
+<td>\p{InSyriac}</td>
+<td>0700-074F</td>
+<td>叙利亚文&lt;/br&gt;(Syriac)</td>
+</tr>
+<tr>
+<td>0750-077F</td>
+<td>\p{InArabicSupplement}</td>
+<td>0750-077F</td>
+<td>阿拉伯文补充&lt;/br&gt;(Arabic Supplement)</td>
+</tr>
+<tr>
+<td>0780-07BF</td>
+<td>\p{InThaana}</td>
+<td>0780-07BF</td>
+<td>马尔代夫语&lt;/br&gt;(Thaana)</td>
+</tr>
+<tr>
+<td>07C0-07FF</td>
+<td>\p{InNKo}</td>
+<td>07C0-077F</td>
+<td>西非书面语言&lt;/br&gt;(N’Ko)</td>
+</tr>
+<tr>
+<td>0800-083F</td>
+<td>\p{InSamaritan}</td>
+<td>0800-085F</td>
+<td>阿维斯塔语及巴列维语(Avestan and Pahlavi)</td>
+</tr>
+<tr>
+<td>0840-085F</td>
+<td>\p{InMandaic}</td>
+<td>0860-087F</td>
+<td>Mandaic</td>
+</tr>
+<tr>
+<td>08A0-08FF</td>
+<td>\p{InArabicExtended-A}</td>
+<td>0880-08AF</td>
+<td>撒马利亚语&lt;/br&gt;(Samaritan)</td>
+</tr>
+<tr>
+<td>0900-097F</td>
+<td>\p{InDevanagari}</td>
+<td>0900-097F</td>
+<td>天城文书&lt;/br&gt;(Devanagari)</td>
+</tr>
+<tr>
+<td>0980-09FF</td>
+<td>\p{InBengali}</td>
+<td>0980-09FF</td>
+<td>孟加拉语&lt;/br&gt;(Bengali)</td>
+</tr>
+<tr>
+<td>0A00-0A7F</td>
+<td>\p{InGurmukhi}</td>
+<td>0A00-0A7F</td>
+<td>锡克教文&lt;/br&gt;(Gurmukhi)</td>
+</tr>
+<tr>
+<td>0A80-0AFF</td>
+<td>\p{InGujarati}</td>
+<td>0A80-0AFF</td>
+<td>古吉拉特文&lt;/br&gt;(Gujarati)</td>
+</tr>
+<tr>
+<td>0B00-0B7F</td>
+<td>\p{InOriya}</td>
+<td>0B00-0B7F</td>
+<td>奥里亚文&lt;/br&gt;(Oriya)</td>
+</tr>
+<tr>
+<td>0B80-0BFF</td>
+<td>\p{InTamil}</td>
+<td>0B80-0BFF</td>
+<td>泰米尔文&lt;/br&gt;(Tamil)</td>
+</tr>
+<tr>
+<td>0C00-0C7F</td>
+<td>\p{InTelugu}</td>
+<td>0C00-0C7F</td>
+<td>泰卢固文&lt;/br&gt;(Telugu)</td>
+</tr>
+<tr>
+<td>0C80-0CFF</td>
+<td>\p{InKannada}</td>
+<td>0C80-0CFF</td>
+<td>卡纳达文&lt;/br&gt;(Kannada)</td>
+</tr>
+<tr>
+<td>0D00-0D7F</td>
+<td>\p{InMalayalam}</td>
+<td>0D00-0D7F</td>
+<td>德拉维族语&lt;/br&gt;(Malayalam)</td>
+</tr>
+<tr>
+<td>0D80-0DFF</td>
+<td>\p{InSinhala}</td>
+<td>0D80-0DFF</td>
+<td>僧伽罗语&lt;/br&gt;(Sinhala)</td>
+</tr>
+<tr>
+<td>0E00-0E7F</td>
+<td>\p{InThai}</td>
+<td>0E00-0E7F</td>
+<td>泰文&lt;/br&gt;(Thai)</td>
+</tr>
+<tr>
+<td>0E80-0EFF</td>
+<td>\p{InLao}</td>
+<td>0E80-0EFF</td>
+<td>老挝文&lt;/br&gt;(Lao)</td>
+</tr>
+<tr>
+<td>0F00-0FFF</td>
+<td>\p{InTibetan}</td>
+<td>0F00-0FFF</td>
+<td>藏文&lt;/br&gt;(Tibetan)</td>
+</tr>
+<tr>
+<td>1000-109F</td>
+<td>\p{InMyanmar}</td>
+<td>1000-109F</td>
+<td>缅甸语&lt;/br&gt;(Myanmar)</td>
+</tr>
+<tr>
+<td>10A0-10FF</td>
+<td>\p{InGeorgian}</td>
+<td>10A0-10FF</td>
+<td>格鲁吉亚语(Georgian)</td>
+</tr>
+<tr>
+<td>1100-11FF</td>
+<td>\p{InHangulJamo}</td>
+<td>1100-11FF</td>
+<td>朝鲜文&lt;/br&gt;(Hangul Jamo)</td>
+</tr>
+<tr>
+<td>1200-137F</td>
+<td>\p{InEthiopic}</td>
+<td>1200-137F</td>
+<td>埃塞俄比亚语&lt;/br&gt;(Ethiopic)</td>
+</tr>
+<tr>
+<td>1380-139F</td>
+<td>\p{InEthiopicSupplement}</td>
+<td>1380-139F</td>
+<td>埃塞俄比亚语补充&lt;/br&gt;(Ethiopic Supplement)</td>
+</tr>
+<tr>
+<td>13A0-13FF</td>
+<td>\p{InCherokee}</td>
+<td>13A0-13FF</td>
+<td>切罗基语&lt;/br&gt;(Cherokee)</td>
+</tr>
+<tr>
+<td>1400-167F</td>
+<td>\p{InUnifiedCanadianAboriginalSyllabics}</td>
+<td>1400-167F</td>
+<td>统一加拿大土著语音节&lt;/br&gt;(Unified Canadian Aboriginal Syllabics)</td>
+</tr>
+<tr>
+<td>1680-169F</td>
+<td>\p{InOgham}</td>
+<td>1680-169F</td>
+<td>欧甘字母&lt;/br&gt;(Ogham)</td>
+</tr>
+<tr>
+<td>16A0-16FF</td>
+<td>\p{InRunic}</td>
+<td>16A0-16FF</td>
+<td>如尼文(Runic)</td>
+</tr>
+<tr>
+<td>1700-171F</td>
+<td>\p{InTagalog}</td>
+<td>1700-171F</td>
+<td>塔加拉语&lt;/br&gt;(Tagalog)</td>
+</tr>
+<tr>
+<td>1720-173F</td>
+<td>\p{InHanunoo}</td>
+<td>1720-173F</td>
+<td>Hanunóo</td>
+</tr>
+<tr>
+<td>1740-175F</td>
+<td>\p{InBuhid}</td>
+<td>1740-175F</td>
+<td>Buhid</td>
+</tr>
+<tr>
+<td>1760-177F</td>
+<td>\p{InTagbanwa}</td>
+<td>1760-177F</td>
+<td>Tagbanwa</td>
+</tr>
+<tr>
+<td>1780-17FF</td>
+<td>\p{InKhmer}</td>
+<td>1780-17FF</td>
+<td>高棉语&lt;/br&gt;(Khmer)</td>
+</tr>
+<tr>
+<td>1800-18AF</td>
+<td>\p{InMongolian}</td>
+<td>1800-18AF</td>
+<td>蒙古文&lt;/br&gt;(Mongolian)</td>
+</tr>
+<tr>
+<td>18B0-18FF</td>
+<td>\p{InUnifiedCanadianAboriginalSyllabicsExtended}</td>
+<td>18B0-18FF</td>
+<td>Cham</td>
+</tr>
+<tr>
+<td>1900-194F</td>
+<td>\p{InLimbu}</td>
+<td>1900-194F</td>
+<td>Limbu</td>
+</tr>
+<tr>
+<td>1950-197F</td>
+<td>\p{InTaiLe}</td>
+<td>1950-197F</td>
+<td>德宏泰语&lt;/br&gt;(Tai Le)</td>
+</tr>
+<tr>
+<td>1980-19DF</td>
+<td>\p{InNewTaiLue}</td>
+<td>1980-19DF</td>
+<td>新傣仂语&lt;/br&gt;(New Tai Lue)</td>
+</tr>
+<tr>
+<td>19E0-19FF</td>
+<td>\p{InKhmerSymbols}</td>
+<td>19E0-19FF</td>
+<td>高棉语记号&lt;/br&gt;(Kmer Symbols)</td>
+</tr>
+<tr>
+<td>1A00-1A1F</td>
+<td>\p{InBuginese}</td>
+<td>1A00-1A1F</td>
+<td>Buginese</td>
+</tr>
+<tr>
+<td>1A20-1AAF</td>
+<td>\p{InTaiTham}</td>
+<td>1A20-1A5F</td>
+<td>Batak</td>
+</tr>
+<tr>
+<td>1B00-1B7F</td>
+<td>\p{InBalinese}</td>
+<td>1A80-1AEF</td>
+<td>Lanna</td>
+</tr>
+<tr>
+<td>1B80-1BBF</td>
+<td>\p{InSundanese}</td>
+<td>1B00-1B7F</td>
+<td>巴厘语&lt;/br&gt;(Balinese)</td>
+</tr>
+<tr>
+<td>1BC0-1BFF</td>
+<td>\p{InBatak}</td>
+<td>1B80-1BB0</td>
+<td>巽他语&lt;/br&gt;(Sundanese)</td>
+</tr>
+<tr>
+<td>1C00-1C4F</td>
+<td>\p{InLepcha}</td>
+<td>1BC0-1BFF</td>
+<td>Pahawh Hmong</td>
+</tr>
+<tr>
+<td>1C50-1C7F</td>
+<td>\p{InOlChiki}</td>
+<td>1C00-1C4F</td>
+<td>雷布查语(Lepcha)</td>
+</tr>
+<tr>
+<td>1CC0-1CCF</td>
+<td>\p{InSundaneseSupplement}</td>
+<td>1C50-1C7F</td>
+<td>Ol Chiki</td>
+</tr>
+<tr>
+<td>1CD0-1CFF</td>
+<td>\p{InVedicExtensions}</td>
+<td>1C80-1CDF</td>
+<td>曼尼普尔语(Meithei/Manipuri)</td>
+</tr>
+<tr>
+<td>1D00-1D7F</td>
+<td>\p{InPhoneticExtensions}</td>
+<td>1D00-1D7F</td>
+<td>语音学扩展&lt;/br&gt;(Phonetic Extensions)</td>
+</tr>
+<tr>
+<td>1D80-1DBF</td>
+<td>\p{InPhoneticExtensionsSupplement}</td>
+<td>1D80-1DBF</td>
+<td>语音学扩展补充&lt;/br&gt;(Phonetic Extensions Supplement)</td>
+</tr>
+<tr>
+<td>1DC0-1DFF</td>
+<td>\p{InCombiningDiacriticalMarksSupplement}</td>
+<td>1DC0-1DFF</td>
+<td>结合用读音符号补充&lt;/br&gt;(Combining Diacritics Marks Supplement)</td>
+</tr>
+<tr>
+<td>1E00-1EFF</td>
+<td>\p{InLatinExtendedAdditional}</td>
+<td>1E00-1EFF</td>
+<td>拉丁文扩充附加&lt;/br&gt;(Latin Extended Additional)</td>
+</tr>
+<tr>
+<td>1F00-1FFF</td>
+<td>\p{InGreekExtended}</td>
+<td>1F00-1FFF</td>
+<td>希腊语扩充&lt;/br&gt;(Greek Extended)</td>
+</tr>
+<tr>
+<td>2000-206F</td>
+<td>\p{InGeneralPunctuation}</td>
+<td>2000-206F</td>
+<td>常用标点(General Punctuation)</td>
+</tr>
+<tr>
+<td>2070-209F</td>
+<td>\p{InSuperscriptsandSubscripts}</td>
+<td>2070-209F</td>
+<td>上标及下标&lt;/br&gt;(Superscripts and Subscripts)</td>
+</tr>
+<tr>
+<td>20A0-20CF</td>
+<td>\p{InCurrencySymbols}</td>
+<td>20A0-20CF</td>
+<td>货币符号&lt;/br&gt;(Currency Symbols)</td>
+</tr>
+<tr>
+<td>20D0-20FF</td>
+<td>\p{InCombiningDiacriticalMarksforSymbols}</td>
+<td>20D0-20FF</td>
+<td>组合用记号&lt;/br&gt;(Combining Diacritics Marks for Symbols)</td>
+</tr>
+<tr>
+<td>2100-214F</td>
+<td>\p{InLetterlikeSymbols}</td>
+<td>2100-214F</td>
+<td>字母式符号&lt;/br&gt;(Letterlike Symbols)</td>
+</tr>
+<tr>
+<td>2150-218F</td>
+<td>\p{InNumberForms}</td>
+<td>2150-218F</td>
+<td>数字形式&lt;/br&gt;(Number Form)</td>
+</tr>
+<tr>
+<td>2190-21FF</td>
+<td>\p{InArrows}</td>
+<td>2190-21FF</td>
+<td>箭头&lt;/br&gt;(Arrows)</td>
+</tr>
+<tr>
+<td>2200-22FF</td>
+<td>\p{InMathematicalOperators}</td>
+<td>2200-22FF</td>
+<td>数学运算符&lt;/br&gt;(Mathematical Operator)</td>
+</tr>
+<tr>
+<td>2300-23FF</td>
+<td>\p{InMiscellaneousTechnical}</td>
+<td>2300-23FF</td>
+<td>杂项工业符号&lt;/br&gt;(Miscellaneous Technical)</td>
+</tr>
+<tr>
+<td>2400-243F</td>
+<td>\p{InControlPictures}</td>
+<td>2400-243F</td>
+<td>控制图片&lt;/br&gt;(Control Pictures)</td>
+</tr>
+<tr>
+<td>2440-245F</td>
+<td>\p{InOpticalCharacterRecognition}</td>
+<td>2440-245F</td>
+<td>光学识别符&lt;/br&gt;(Optical Character Recognition)</td>
+</tr>
+<tr>
+<td>2460-24FF</td>
+<td>\p{InEnclosedAlphanumerics}</td>
+<td>2460-24FF</td>
+<td>封闭式字母数字&lt;/br&gt;(Enclosed Alphanumerics)</td>
+</tr>
+<tr>
+<td>2500-257F</td>
+<td>\p{InBoxDrawing}</td>
+<td>2500-257F</td>
+<td>制表符&lt;/br&gt;(Box Drawing)</td>
+</tr>
+<tr>
+<td>2580-259F</td>
+<td>\p{InBlockElements}</td>
+<td>2580-259F</td>
+<td>方块元素&lt;/br&gt;(Block Element)</td>
+</tr>
+<tr>
+<td>25A0-25FF</td>
+<td>\p{InGeometricShapes}</td>
+<td>25A0-25FF</td>
+<td>几何图形&lt;/br&gt;(Geometric Shapes)</td>
+</tr>
+<tr>
+<td>2600-26FF</td>
+<td>\p{InMiscellaneousSymbols}</td>
+<td>2600-26FF</td>
+<td>杂项符号&lt;/br&gt;(Miscellaneous Symbols)</td>
+</tr>
+<tr>
+<td>2700-27BF</td>
+<td>\p{InDingbats}</td>
+<td>2700-27BF</td>
+<td>印刷符号&lt;/br&gt;(Dingbats)</td>
+</tr>
+<tr>
+<td>27C0-27EF</td>
+<td>\p{InMiscellaneousMathematicalSymbols-A}</td>
+<td>27C0-27EF</td>
+<td>杂项数学符号-A&lt;/br&gt;(Miscellaneous Mathematical Symbols-A)</td>
+</tr>
+<tr>
+<td>27F0-27FF</td>
+<td>\p{InSupplementalArrows-A}</td>
+<td>27F0-27FF</td>
+<td>追加箭头-A&lt;/br&gt;(Supplemental Arrows-A)</td>
+</tr>
+<tr>
+<td>2800-28FF</td>
+<td>\p{InBraillePatterns}</td>
+<td>2800-28FF</td>
+<td>盲文点字模型&lt;/br&gt;(Braille Patterns)</td>
+</tr>
+<tr>
+<td>2900-297F</td>
+<td>\p{InSupplementalArrows-B}</td>
+<td>2900-297F</td>
+<td>追加箭头-B&lt;/br&gt;(Supplemental Arrows-B)</td>
+</tr>
+<tr>
+<td>2980-29FF</td>
+<td>\p{InMiscellaneousMathematicalSymbols-B}</td>
+<td>2980-29FF</td>
+<td>杂项数学符号-B&lt;/br&gt;(Miscellaneous Mathematical Symbols-B)</td>
+</tr>
+<tr>
+<td>2A00-2AFF</td>
+<td>\p{InSupplementalMathematicalOperators}</td>
+<td>2A00-2AFF</td>
+<td>追加数学运算符&lt;/br&gt;(Supplemental Mathematical Operator)</td>
+</tr>
+<tr>
+<td>2B00-2BFF</td>
+<td>\p{InMiscellaneousSymbolsandArrows}</td>
+<td>2B00-2BFF</td>
+<td>杂项符号和箭头&lt;/br&gt;(Miscellaneous Symbols and Arrows)</td>
+</tr>
+<tr>
+<td>2C00-2C5F</td>
+<td>\p{InGlagolitic}</td>
+<td>2C00-2C5F</td>
+<td>格拉哥里字母(Glagolitic)</td>
+</tr>
+<tr>
+<td>2C60-2C7F</td>
+<td>\p{InLatinExtended-C}</td>
+<td>2C60-2C7F</td>
+<td>拉丁文扩展-C&lt;/br&gt;(Latin Extended-C)</td>
+</tr>
+<tr>
+<td>2C80-2CFF</td>
+<td>\p{InCoptic}</td>
+<td>2C80-2CFF</td>
+<td>古埃及语&lt;/br&gt;(Coptic)</td>
+</tr>
+<tr>
+<td>2D00-2D2F</td>
+<td>\p{InGeorgianSupplement}</td>
+<td>2D00-2D2F</td>
+<td>格鲁吉亚语补充&lt;/br&gt;(Georgian Supplement)</td>
+</tr>
+<tr>
+<td>2D30-2D7F</td>
+<td>\p{InTifinagh}</td>
+<td>2D30-2D7F</td>
+<td>提非纳文&lt;/br&gt;(Tifinagh)</td>
+</tr>
+<tr>
+<td>2D80-2DDF</td>
+<td>\p{InEthiopicExtended}</td>
+<td>2D80-2DDF</td>
+<td>埃塞俄比亚语扩展&lt;/br&gt;(Ethiopic Extended)</td>
+</tr>
+<tr>
+<td>2DE0-2DFF</td>
+<td>\p{InCyrillicExtended-A}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2E00-2E7F</td>
+<td>\p{InSupplementalPunctuation}</td>
+<td>2E00-2E7F</td>
+<td>追加标点&lt;/br&gt;(Supplemental Punctuation)</td>
+</tr>
+<tr>
+<td>2E80-2EFF</td>
+<td>\p{InCJKRadicalsSupplement}</td>
+<td>2E80-2EFF</td>
+<td>CJK 部首补充&lt;/br&gt;(CJK Radicals Supplement)</td>
+</tr>
+<tr>
+<td>2F00-2FDF</td>
+<td>\p{InKangxiRadicals}</td>
+<td>2F00-2FDF</td>
+<td>康熙字典部首&lt;/br&gt;(Kangxi Radicals)</td>
+</tr>
+<tr>
+<td>2FF0-2FFF</td>
+<td>\p{InIdeographicDescriptionCharacters}</td>
+<td>2FF0-2FFF</td>
+<td>表意文字描述符&lt;/br&gt;(Ideographic Description Characters)</td>
+</tr>
+<tr>
+<td>3000-303F</td>
+<td>\p{InCJKSymbolsandPunctuation}</td>
+<td>3000-303F</td>
+<td>CJK 符号和标点&lt;/br&gt;(CJK Symbols and Punctuation)</td>
+</tr>
+<tr>
+<td>3040-309F</td>
+<td>\p{InHiragana}</td>
+<td>3040-309F</td>
+<td>日文平假名&lt;/br&gt;(Hiragana)</td>
+</tr>
+<tr>
+<td>30A0-30FF</td>
+<td>\p{InKatakana}</td>
+<td>30A0-30FF</td>
+<td>日文片假名&lt;/br&gt;(Katakana)</td>
+</tr>
+<tr>
+<td>3100-312F</td>
+<td>\p{InBopomofo}</td>
+<td>3100-312F</td>
+<td>注音字母&lt;/br&gt;(Bopomofo)</td>
+</tr>
+<tr>
+<td>3130-318F</td>
+<td>\p{InHangulCompatibilityJamo}</td>
+<td>3130-318F</td>
+<td>朝鲜文兼容字母&lt;/br&gt;(Hangul Compatibility Jamo)</td>
+</tr>
+<tr>
+<td>3190-319F</td>
+<td>\p{InKanbun}</td>
+<td>3190-319F</td>
+<td>象形字注释标志&lt;/br&gt;(Kanbun)</td>
+</tr>
+<tr>
+<td>31A0-31BF</td>
+<td>\p{InBopomofoExtended}</td>
+<td>31A0-31BF</td>
+<td>注音字母扩展&lt;/br&gt;(Bopomofo Extended)</td>
+</tr>
+<tr>
+<td>31C0-31EF</td>
+<td>\p{InCJKStrokes}</td>
+<td>31C0-31EF</td>
+<td>CJK 笔画&lt;/br&gt;(CJK Strokes)</td>
+</tr>
+<tr>
+<td>31F0-31FF</td>
+<td>\p{InKatakanaPhoneticExtensions}</td>
+<td>31F0-31FF</td>
+<td>日文片假名语音扩展&lt;/br&gt;(Katakana Phonetic Extensions)</td>
+</tr>
+<tr>
+<td>3200-32FF</td>
+<td>\p{InEnclosedCJKLettersandMonths}</td>
+<td>3200-32FF</td>
+<td>封闭式 CJK 文字和月份&lt;/br&gt;(Enclosed CJK Letters and Months)</td>
+</tr>
+<tr>
+<td>3300-33FF</td>
+<td>\p{InCJKCompatibility}</td>
+<td>3300-33FF</td>
+<td>CJK 兼容&lt;/br&gt;(CJK Compatibility)</td>
+</tr>
+<tr>
+<td>3400-4DBF</td>
+<td>\p{InCJKUnifiedIdeographsExtensionA}</td>
+<td>3400-4DBF</td>
+<td>CJK 统一表意符号扩展 A&lt;/br&gt;(CJK Unified Ideographs Extension A)</td>
+</tr>
+<tr>
+<td><strong>4DC0-4DFF</strong></td>
+<td><strong>\p{InYijingHexagramSymbols}</strong></td>
+<td><strong>4DC0-4DFF</strong></td>
+<td><strong>易经六十四卦符号&lt;/br&gt;(Yijing Hexagrams Symbols)</strong></td>
+</tr>
+<tr>
+<td><strong>4E00-9FFF</strong></td>
+<td><strong>\p{InCJKUnifiedIdeographs}</strong></td>
+<td><strong>4E00-9FBF</strong></td>
+<td><strong>CJK 统一表意符号&lt;/br&gt;(CJK Unified Ideographs)</strong></td>
+</tr>
+<tr>
+<td>A000-A48F</td>
+<td>\p{InYiSyllables}</td>
+<td>A000-A48F</td>
+<td>彝文音节&lt;/br&gt;(Yi Syllables)</td>
+</tr>
+<tr>
+<td>A490-A4CF</td>
+<td>\p{InYiRadicals}</td>
+<td>A490-A4CF</td>
+<td>彝文字根&lt;/br&gt;(Yi Radicals)</td>
+</tr>
+<tr>
+<td>A4D0-A4FF</td>
+<td>\p{InLisu}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A500-A63F</td>
+<td>\p{InVai}</td>
+<td>A500-A61F</td>
+<td>Vai</td>
+</tr>
+<tr>
+<td>A640-A69F</td>
+<td>\p{InCyrillicExtended-B}</td>
+<td>A660-A6FF</td>
+<td>统一加拿大土著语音节补充&lt;/br&gt;(Unified Canadian Aboriginal Syllabics Supplement)</td>
+</tr>
+<tr>
+<td>A6A0-A6FF</td>
+<td>\p{InBamum}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A700-A71F</td>
+<td>\p{InModifierToneLetters}</td>
+<td>A700-A71F</td>
+<td>声调修饰字母&lt;/br&gt;(Modifier Tone Letters)</td>
+</tr>
+<tr>
+<td>A720-A7FF</td>
+<td>\p{InLatinExtended-D}</td>
+<td>A720-A7FF</td>
+<td>拉丁文扩展-D&lt;/br&gt;(Latin Extended-D)</td>
+</tr>
+<tr>
+<td>A800-A82F</td>
+<td>\p{InSylotiNagri}</td>
+<td>A800-A82F</td>
+<td>Syloti Nagri</td>
+</tr>
+<tr>
+<td>A830-A83F</td>
+<td>\p{InCommonIndicNumberForms}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A840-A87F</td>
+<td>\p{InPhags-pa}</td>
+<td>A840-A87F</td>
+<td>八思巴字&lt;/br&gt;(Phags-pa)</td>
+</tr>
+<tr>
+<td>A880-A8DF</td>
+<td>\p{InSaurashtra}</td>
+<td>A880-A8DF</td>
+<td>Saurashtra</td>
+</tr>
+<tr>
+<td>A8E0-A8FF</td>
+<td>\p{InDevanagariExtended}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A900-A92F</td>
+<td>\p{InKayahLi}</td>
+<td>A900-A97F</td>
+<td>爪哇语&lt;/br&gt;(Javanese)</td>
+</tr>
+<tr>
+<td>A930-A95F</td>
+<td>\p{InRejang}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A960-A97F</td>
+<td>\p{InHangulJamoExtended-A}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>A980-A9DF</td>
+<td>\p{InJavanese}</td>
+<td>A980-A9DF</td>
+<td>Chakma</td>
+</tr>
+<tr>
+<td>AA00-AA5F</td>
+<td>\p{InCham}</td>
+<td>AA00-AA3F</td>
+<td>Varang Kshiti</td>
+</tr>
+<tr>
+<td>AA60-AA7F</td>
+<td>\p{InMyanmarExtended-A}</td>
+<td>AA40-AA6F</td>
+<td>Sorang Sompeng</td>
+</tr>
+<tr>
+<td>AA80-AADF</td>
+<td>\p{InTaiViet}</td>
+<td>AA80-AADF</td>
+<td>Newari</td>
+</tr>
+<tr>
+<td>AAE0-AAFF</td>
+<td>\p{InMeeteiMayekExtensions}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>AB00-AB2F</td>
+<td>\p{InEthiopicExtended-A}</td>
+<td>AB00-AB5F</td>
+<td>越南傣语&lt;/br&gt;(Vi?t Thái)</td>
+</tr>
+<tr>
+<td>ABC0-ABFF</td>
+<td>\p{InMeeteiMayek}</td>
+<td>AB80-ABA0</td>
+<td>Kayah Li</td>
+</tr>
+<tr>
+<td>AC00-D7AF</td>
+<td>\p{InHangulSyllables}</td>
+<td>AC00-D7AF</td>
+<td>朝鲜文音节&lt;/br&gt;(Hangul Syllables)</td>
+</tr>
+<tr>
+<td>D7B0-D7FF</td>
+<td>\p{InHangulJamoExtended-B}</td>
+<td>D800-DBFF</td>
+<td>High-half zone of UTF-16</td>
+</tr>
+<tr>
+<td>D800-DB7F</td>
+<td>\p{InHighSurrogates}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DB80-DBFF</td>
+<td>\p{InHighPrivateUseSurrogates}</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DC00-DFFF</td>
+<td>\p{InLowSurrogates}</td>
+<td>DC00-DFFF</td>
+<td>Low-half zone of UTF-16</td>
+</tr>
+<tr>
+<td>E000-F8FF</td>
+<td>\p{InPrivateUseArea}</td>
+<td>E000-F8FF</td>
+<td>自行使用区域&lt;/br&gt;(Private Use Zone)</td>
+</tr>
+<tr>
+<td>F900-FAFF</td>
+<td>\p{InCJKCompatibilityIdeographs}</td>
+<td>F900-FAFF</td>
+<td>CJK 兼容象形文字&lt;/br&gt;(CJK Compatibility Ideographs)</td>
+</tr>
+<tr>
+<td>FB00-FB4F</td>
+<td>\p{InAlphabeticPresentationForms}</td>
+<td>FB00-FB4F</td>
+<td>字母表达形式&lt;/br&gt;(Alphabetic Presentation Form)</td>
+</tr>
+<tr>
+<td>FB50-FDFF</td>
+<td>\p{InArabicPresentationForms-A}</td>
+<td>FB50-FDFF</td>
+<td>阿拉伯表达形式A&lt;/br&gt;(Arabic Presentation Form-A)</td>
+</tr>
+<tr>
+<td>FE00-FE0F</td>
+<td>\p{InVariationSelectors}</td>
+<td>FE00-FE0F</td>
+<td>变量选择符&lt;/br&gt;(Variation Selector)</td>
+</tr>
+<tr>
+<td>FE10-FE1F</td>
+<td>\p{InVerticalForms}</td>
+<td>FE10-FE1F</td>
+<td>竖排形式&lt;/br&gt;(Vertical Forms)</td>
+</tr>
+<tr>
+<td>FE20-FE2F</td>
+<td>\p{InCombiningHalfMarks}</td>
+<td>FE20-FE2F</td>
+<td>组合用半符号&lt;/br&gt;(Combining Half Marks)</td>
+</tr>
+<tr>
+<td>FE30-FE4F</td>
+<td>\p{InCJKCompatibilityForms}</td>
+<td>FE30-FE4F</td>
+<td>CJK 兼容形式&lt;/br&gt;(CJK Compatibility Forms)</td>
+</tr>
+<tr>
+<td>FE50-FE6F</td>
+<td>\p{InSmallFormVariants}</td>
+<td>FE50-FE6F</td>
+<td>小型变体形式&lt;/br&gt;(Small Form Variants)</td>
+</tr>
+<tr>
+<td>FE70-FEFF</td>
+<td>\p{InArabicPresentationForms-B}</td>
+<td>FE70-FEFF</td>
+<td>阿拉伯表达形式B&lt;/br&gt;(Arabic Presentation Form-B)</td>
+</tr>
+<tr>
+<td>FF00-FFEF</td>
+<td>\p{InHalfwidthandFullwidthForms}</td>
+<td>FF00-FFEF</td>
+<td>半型及全型形式&lt;/br&gt;(Halfwidth and Fullwidth Form)</td>
+</tr>
+<tr>
+<td>FFF0-FFFF</td>
+<td>\p{InSpecials}</td>
+<td>FFF0-FFFF</td>
+<td>特殊&lt;/br&gt;(Specials)</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><strong>select count(*) from users WHERE id in ( ? , ? )</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;countByUserList&quot; resultType=&quot;_int&quot; parameterType=&quot;list&quot;&gt;    </span><br><span class="line">select count(*) from users    </span><br><span class="line">  &lt;where&gt;    </span><br><span class="line">    id in    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; collection=&quot;list&quot; separator=&quot;,&quot; open=&quot;(&quot; close=&quot;)&quot; index=&quot;&quot;&gt;    </span><br><span class="line">      #&#123;item.id, jdbcType=NUMERIC&#125;    </span><br><span class="line">    &lt;/foreach&gt;    </span><br><span class="line">  &lt;/where&gt;    </span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>insert into deliver select ?,? from dual union all select ?,? from dual</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;addList&quot;&gt;  </span><br><span class="line">    INSERT INTO DELIVER  </span><br><span class="line">        (  </span><br><span class="line">            &lt;include refid=&quot;selectAllColumnsSql&quot;/&gt;  </span><br><span class="line">         )  </span><br><span class="line"></span><br><span class="line">      &lt;foreach collection=&quot;deliverList&quot; item=&quot;item&quot; separator=&quot;UNION ALL&quot;&gt;  </span><br><span class="line">            SELECT   </span><br><span class="line">                 #&#123;item.id, jdbcType=NUMERIC&#125;,  </span><br><span class="line">                 #&#123;item.name, jdbcType=VARCHAR&#125;  </span><br><span class="line">            FROM DUAL  </span><br><span class="line">      &lt;/foreach&gt;  </span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>insert into string_string (key, value) values (?, ?) , (?, ?) </strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;ins_string_string&quot;&gt;    </span><br><span class="line">    insert into string_string (key, value) values    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; index=&quot;key&quot; collection=&quot;map&quot;    </span><br><span class="line">        open=&quot;&quot; separator=&quot;,&quot; close=&quot;&quot;&gt;(#&#123;key&#125;, #&#123;item&#125;)&lt;/foreach&gt;    </span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>select count(*) from key_cols where col_a = ? AND col_b = ?</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;sel_key_cols&quot; resultType=&quot;int&quot;&gt;    </span><br><span class="line">    select count(*) from key_cols where    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; index=&quot;key&quot; collection=&quot;map&quot;    </span><br><span class="line">        open=&quot;&quot; separator=&quot;AND&quot; close=&quot;&quot;&gt;$&#123;key&#125; = #&#123;item&#125;&lt;/foreach&gt;    </span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure></p>
-<p><em>ps: 一定要注意到$和#的区别，$的参数直接输出，#的参数会被替换为?，然后传入参数值执行。</em></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-whole-words/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/06/Match-whole-words/" class="post-title-link" itemprop="url">Match whole words</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-06 22:07:37" itemprop="dateCreated datePublished" datetime="2017-02-06T22:07:37+08:00">2017-02-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><blockquote>
+<p>My cat is brown<br>category<br>octocat<br>staccato</p>
+</blockquote>
+<ul>
+<li>find word ‘cat’</li>
+<li>find word begin with ‘cat’</li>
+<li>find word end with ‘cat’</li>
+<li>find word contain ‘cat’</li>
+<li>find word not begin with ‘cat’</li>
+<li>find word not end with ‘cat’</li>
+<li>find word not contain ‘cat’</li>
+</ul>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p><strong>Word boundaries</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\bcat\b</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None</li>
+<li><p>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<br><strong>Nonboundaries</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\Bcat\B</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Regex options: None</p>
+</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\bcat       (?&lt;!\w)(?=\w)cat</span><br><span class="line">cat\b       cat(?&lt;=\w)(?!\w)</span><br><span class="line">\Bcat       (?&lt;=\w)cat(?!\w)</span><br><span class="line">cat\B       (?&lt;!\w)cat(?=\w)</span><br><span class="line">\b(?!\w*?cat\w*?)\w+?\b</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong><em>\b  -&gt;  (?&lt;=\w)(?!\w)|(?&lt;!\w)(?=\w)</em></strong></p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p><strong>‹\b› matches in these three positions:</strong></p>
+<ul>
+<li>Before the first character in the subject, if the first character is a word character</li>
+<li>After the last character in the subject, if the last character is a word character</li>
+<li>Between two characters in the subject, where one is a word character and the other<br>is not a word character</li>
+</ul>
+<p><strong>‹\B› matches in these five positions:</strong></p>
+<ul>
+<li>Before the first character in the subject, if the first character is not a word character</li>
+<li>After the last character in the subject, if the last character is not a word character</li>
+<li>Between two word characters</li>
+<li>Between two nonword characters</li>
+<li>The empty string</li>
+</ul>
+<h2 id="Word-Characters"><a href="#Word-Characters" class="headerlink" title="Word Characters"></a>Word Characters</h2><ul>
+<li><code>Java</code> :<ul>
+<li><strong>Java 4 to 6</strong> ‹\w› matches <strong>only ASCII</strong> characters</li>
+<li><strong>Java 7</strong> ‹\w› extended matches Unicode characters if set the <code>UNICODE_CHARACTER_CLASS</code> flag</li>
+<li><strong>All version Java</strong> ‹\b› is Unicode-enabled, supporting any script</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><code>.NET, JavaScript, PCRE, Perl, Python, and Ruby have</code>:<ul>
+<li>‹\b› match between two characters where <strong>one is</strong> matched by ‹\w› and <strong>the other</strong> by ‹\W›.</li>
+<li>‹\B› always matches between two characters where <strong>both</strong> are matched by ‹\w› or ‹\W›</li>
+</ul>
+</li>
+<li><code>JavaScript, PCRE, and Ruby</code> : ‹\w› is identical to ‹[a-zA-Z0-9_]› so only “whole words only” search in language which use <strong>Latin alphabet</strong>.</li>
+<li><p><code>.NET</code> : treats letters and digits from <strong>all scripts</strong> as word characters. You can do a “whole words only” search on words in <strong>any language</strong></p>
+</li>
+<li><p><code>Python 2.x</code>: non-ASCII characters are included only if you pass the <code>UNICODE</code> or <code>U</code> flag when creating the regex.</p>
+</li>
+<li><p><code>Python 3.x</code>: non-ASCII character are included by default, but you can exclude them with the <code>ASCII</code> or <code>A</code>flag. This flag affects both ‹\b› and ‹\w› equally.</p>
+</li>
+<li><p><code>Perl</code>: depends on your version of <code>Perl</code> and <code>/adlu</code> flags whether ‹\w› is pure ASCII or includes all Unicode letters, digits, and underscores.</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-start-end/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/06/Match-start-end/" class="post-title-link" itemprop="url">Match "start" & "end"</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-06 17:11:42" itemprop="dateCreated datePublished" datetime="2017-02-06T17:11:42+08:00">2017-02-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><blockquote>
+<p>alpha…..↵<br>alpha…..↵<br>begin…..↵<br>…….end↵<br>….omega↵<br>….omega↵</p>
+</blockquote>
+<ul>
+<li>Match <code>&#39;alpha&#39;</code> occurs at the very beginning</li>
+<li>Match two <code>&#39;alpha&#39;</code> at line head</li>
+<li>Match <code>&#39;omega&#39;</code> occurs at the very end</li>
+<li>Match two <code>&#39;omega&#39;</code> at line end</li>
+<li>Match <code>&#39;begin&#39;</code> at line’s head</li>
+<li>Match <code>&#39;end&#39;</code> at line’s tail</li>
+</ul>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>Start of the subject<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^alpha</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None (“^ and $ match at line breaks” must not be set, if not <strong>matches two</strong>)</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\Aalpha</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby<br>End of the subject</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">omega$</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None (“^ and $ match at line breaks” must not be set, if not <strong>matches two</strong>)</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">omega\Z</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby Start of a line</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^begin</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: ^ and $ match at line breaks</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">end\$</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: ^ and $ match at line breaks</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><ul>
+<li><code>JavaScript</code> does not support ‹\A›.</li>
+<li>The anchor ‹^› is equivalent to ‹\A›, as long as you do not turn on the <strong>“^ and $ match at line breaks”</strong> option.</li>
+<li><p>The anchor ‹$› is equivalent to ‹\Z›, as long as you do not turn on the <strong>“^ and $ match at line breaks”</strong> option.</p>
+<ul>
+<li>In <code>Java</code> is <strong>Pattern.MULTILINE</strong> option<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Enables multiline mode.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt; In multiline mode the expressions &lt;tt&gt;^&lt;/tt&gt; and &lt;tt&gt;$&lt;/tt&gt; match</span><br><span class="line"> * just after or just before, respectively, a line terminator or the end of</span><br><span class="line"> * the input sequence.  By default these expressions only match at the</span><br><span class="line"> * beginning and the end of the entire input sequence.</span><br><span class="line"> *</span><br><span class="line"> * &lt;p&gt; Multiline mode can also be enabled via the embedded flag</span><br><span class="line"> * expression&amp;nbsp;&lt;tt&gt;(?m)&lt;/tt&gt;.  &lt;/p&gt;</span><br><span class="line"> */</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>The anchors ‹\Z› and ‹\z› always match at the very end of the subject text, <strong>after the last character</strong></p>
+</li>
+<li>&lt;\Z› without having to worry about stripping off a <strong>trailing line break</strong> at the end of your subject text.</li>
+<li>&lt;\Z&gt; The very last <code>\r\n|\r|\n</code> -&gt; <code>↵</code> will be ignore.</li>
+<li>&lt;\z&gt; The very last <code>\r\n|\r|\n</code> -&gt; <code>↵</code> will not be ignore.</li>
+</ul>
+<hr>
+<ul>
+<li><code>JavaScript</code> does not support ‹\A›</li>
+<li><code>JavaScript</code> does not support ‹\Z› or ‹\z› at all</li>
+<li><code>.NET, Java, PCRE, Perl, and Ruby</code> support both ‹\Z› and ‹\z›.</li>
+<li><code>Python</code> supports only ‹\Z›.</li>
+</ul>
+<h2 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h2><ul>
+<li><code>.NET, Java, XRegExp, PCRE, Perl, and Python1</code>: (?m) internal mode, for “^ and $ match at line breaks”.</li>
+<li>Ruby uses‹(?m)› to turn on <strong>“dot matches line breaks”</strong> mode.</li>
+<li>In Ruby, ‹^› and ‹$› <strong>always match</strong> at the start and end of each line.</li>
+<li>‹(?-m)› to turn off the option.</li>
+<li>&lt;(?i)&gt; turn on the ignore the sensitive of letter.</li>
+<li>&lt;(?s)&gt; dot matches line breaks.[except <code>Ruby</code>]</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Full-text-retrieval-fundamental-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/06/Full-text-retrieval-fundamental-4/" class="post-title-link" itemprop="url">Full-text retrieval fundamental</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-06 13:40:14" itemprop="dateCreated datePublished" datetime="2017-02-06T13:40:14+08:00">2017-02-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2017/02/06/Full-text-retrieval-fundamental-4/Full-text retrieval.png" alt></p>
+<h3 id="Build-Index"><a href="#Build-Index" class="headerlink" title="Build Index"></a>Build Index</h3><ol>
+<li>Data source(Documents) ready be index.</li>
+<li>Lexcial analysis, language processing, translate to Terms.</li>
+<li>Create dictionary, posting index table.</li>
+<li>Writen into hard disk, or other space.</li>
+</ol>
+<h3 id="Query-process"><a href="#Query-process" class="headerlink" title="Query process"></a>Query process</h3><ul>
+<li>A. Input query parse.</li>
+<li>B. Lexcial analysis, language processing, translate to terms.</li>
+<li>C. Syntax analysis, translate to a query tree.</li>
+<li>D. Read hard disk index to memory</li>
+<li>E. Get every term’s documents list by query tree, get result documents by ‘And’/‘Or’/‘Not’ operations on list.</li>
+<li>F. Sort result documents by doc relevance.</li>
+<li>G. Return query result.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-characters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/05/Match-characters/" class="post-title-link" itemprop="url">Match characters</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-05 19:20:32" itemprop="dateCreated datePublished" datetime="2017-02-05T19:20:32+08:00">2017-02-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Match-a-character"><a href="#Match-a-character" class="headerlink" title="Match a character"></a>Match a character</h1><p><strong>Hexadecimal character</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<p><strong>Nonhexadecimal character</strong><br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<hr>
+<blockquote>
+<p>The notation using square brackets is called<br><strong>a character class</strong></p>
+</blockquote>
+<ul>
+<li><p><strong><code>\, ^, -, and ]</code> have special function in square brackets</strong></p>
+</li>
+<li><p><em>JavaScript</em> treats ‹[]› as an empty character class that <strong>always fails to match</strong>.</p>
+</li>
+<li><p>In all the regex flavors discussed in this book, a <strong>negated character class</strong> matches <strong>line break characters</strong>, unless you add them to the negated character class. Make sure that you don’t accidentally allow your regex to span <em>across lines</em>.</p>
+</li>
+</ul>
+<hr>
+<h3 id="About-w"><a href="#About-w" class="headerlink" title="About \w"></a>About <code>\w</code></h3><ul>
+<li>Java 4-6, JavaScript, PCRE, Ruby : <code>\w</code> -&gt; [a-zA-Z0-9_]</li>
+<li>Java 7 : set <strong>Pattern.UNICODE_CHARACTER_CLASS</strong> flag, <code>\w</code> matches unicode characters. <strong>(?U)</strong> Inner regex usage.</li>
+<li>Python2.x : set UNICODE or U flag, matches unicode characters.</li>
+<li>Python3.x : matches unicode characters in default, <code>\w</code> ASCII-only with the ASCII or A flag.</li>
+<li>Perl&gt;=5.1.4 : <code>/u (Unicode)</code> adds all Unicode scripts, and <code>/l
+(locale)</code> makes <code>\w</code> depend on the locale. (<code>/d</code>, no <code>adlu</code>) Unicode scripts rule same as Perl&lt;5.1.4.</li>
+<li>Perl&lt;5.1.4 : matches unicode characters in default, <code>\w</code> automatically includes Unicode scripts if the subject string or the regex are <strong>encoded as UTF-8</strong>, or the regex includes a code <strong>point above 255</strong> such as ‹\x{100}› or a Unicode property such as ‹\p{L}›. If not, the default for <code>\w</code> is pure ASCII</li>
+</ul>
+<h3 id="About-d"><a href="#About-d" class="headerlink" title="About \d"></a>About <code>\d</code></h3><ul>
+<li><code>\d</code> follows the same rules as <code>\w</code> in all these flavors.</li>
+<li>In .NET, digits from other scripts are always included.</li>
+<li>In Python it depends on the <strong>UNICODE</strong> and <strong>ASCII</strong> flags, and whether you’re using Python 2.x or 3.x. In Perl 5.14, it depends on the <strong>/adlu</strong> flags.</li>
+<li>In earlier versions of Perl, it depends on <strong>the encoding</strong> of the subject and regex, and whether the regex has any Uncicode tokens</li>
+</ul>
+<h3 id="About-s"><a href="#About-s" class="headerlink" title="About \s"></a>About <code>\s</code></h3><ul>
+<li><code>\s</code> matches any whitespace character. This includes spaces, tabs, and line breaks.</li>
+<li><code>\S</code> matches any character <strong>not matched</strong> by <code>\s</code></li>
+<li>In .NET and JavaScript, <code>\s</code> also matches any character defined as whitespace by the <strong>Unicode standard</strong>.</li>
+<li>In Java, Perl, and Python, <code>\s</code> follows the same rules as <code>\w</code> and <code>\d</code>.</li>
+<li>Notice that JavaScript uses <strong>Unicode</strong> for ‹\s› but <strong>ASCII</strong> for <code>\d</code> and <code>\w</code>.</li>
+</ul>
+<hr>
+<h3 id="Flavor-Specific-Features"><a href="#Flavor-Specific-Features" class="headerlink" title="Flavor-Specific Features"></a>Flavor-Specific Features</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9-[g-zG-Z]]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET 2.0 or later</li>
+</ul>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\w&amp;&amp;[a-fA-F0-9\s]]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>uses character class <strong>intersection</strong> to match a hexadecimal digit.</li>
+<li>Regex options: None</li>
+<li>Regex flavors: Java</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9&amp;&amp;[^g-zG-Z]]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>uses character class <strong>subtraction</strong> to match a single hexadecimal character in a roundabout way.</li>
+<li>Regex options: None</li>
+<li>Regex flavors: Java</li>
+</ul>
+<h1 id="Match-any-character"><a href="#Match-any-character" class="headerlink" title="Match any character"></a>Match any character</h1><h3 id="Any-character-except-line-breaks"><a href="#Any-character-except-line-breaks" class="headerlink" title="Any character except line breaks"></a>Any character except line breaks</h3><blockquote>
+<p><code>&#39;.&#39;</code></p>
+</blockquote>
+<ul>
+<li>Regex options: None (the “dot matches line breaks” option must not be set)</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<hr>
+<h3 id="Any-character-including-line-breaks"><a href="#Any-character-including-line-breaks" class="headerlink" title="Any character including line breaks"></a>Any character including line breaks</h3><blockquote>
+<p><code>&#39;.&#39;</code></p>
+</blockquote>
+<ul>
+<li>Regex options: Dot matches line breaks</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
+</ul>
+<blockquote>
+<p><code>&#39;[\s\S]&#39;</code></p>
+</blockquote>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<hr>
+<h3 id="Inner-mode"><a href="#Inner-mode" class="headerlink" title="Inner mode"></a>Inner mode</h3><blockquote>
+<p><code>(?s)&#39;.&#39;</code></p>
+</blockquote>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python</li>
+</ul>
+<blockquote>
+<p><code>(?m)&#39;.&#39;</code></p>
+</blockquote>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: Ruby</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/ASCII/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/05/ASCII/" class="post-title-link" itemprop="url">ASCII</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-05 16:15:21" itemprop="dateCreated datePublished" datetime="2017-02-05T16:15:21+08:00">2017-02-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>8</th>
+<th>9</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+<th>F</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>NUL</td>
+<td>SOH</td>
+<td>STX</td>
+<td>ETX</td>
+<td>EOT</td>
+<td>ENQ</td>
+<td>ACK</td>
+<td>BEL</td>
+<td>BS</td>
+<td>HT</td>
+<td>LF</td>
+<td>VT</td>
+<td>FF</td>
+<td>CR</td>
+<td>SO</td>
+<td>SI</td>
+</tr>
+<tr>
+<td>1</td>
+<td>DLE</td>
+<td>DC1</td>
+<td>DC2</td>
+<td>DC3</td>
+<td>DC4</td>
+<td>NAK</td>
+<td>SYN</td>
+<td>ETB</td>
+<td>CAN</td>
+<td>EM</td>
+<td>SUB</td>
+<td>ESC</td>
+<td>FS</td>
+<td>GS</td>
+<td>RS</td>
+<td>US</td>
+</tr>
+<tr>
+<td>2</td>
+<td>(space)</td>
+<td>!</td>
+<td>“</td>
+<td>#</td>
+<td>$</td>
+<td>%</td>
+<td>&amp;</td>
+<td>‘</td>
+<td>(</td>
+<td>)</td>
+<td>*</td>
+<td>+</td>
+<td>,</td>
+<td>-</td>
+<td>.</td>
+<td>/</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>:</td>
+<td>;</td>
+<td>&lt;</td>
+<td>=</td>
+<td>&gt;</td>
+<td>?</td>
+</tr>
+<tr>
+<td>4</td>
+<td>@</td>
+<td>A</td>
+<td>B</td>
+<td>C</td>
+<td>D</td>
+<td>E</td>
+<td>F</td>
+<td>G</td>
+<td>H</td>
+<td>I</td>
+<td>J</td>
+<td>K</td>
+<td>L</td>
+<td>M</td>
+<td>N</td>
+<td>O</td>
+</tr>
+<tr>
+<td>5</td>
+<td>P</td>
+<td>Q</td>
+<td>R</td>
+<td>S</td>
+<td>T</td>
+<td>U</td>
+<td>V</td>
+<td>W</td>
+<td>X</td>
+<td>Y</td>
+<td>Z</td>
+<td>[</td>
+<td>\</td>
+<td>]</td>
+<td>^</td>
+<td>_</td>
+</tr>
+<tr>
+<td>6</td>
+<td>`</td>
+<td>a</td>
+<td>b</td>
+<td>c</td>
+<td>d</td>
+<td>e</td>
+<td>f</td>
+<td>g</td>
+<td>h</td>
+<td>i</td>
+<td>j</td>
+<td>k</td>
+<td>l</td>
+<td>m</td>
+<td>n</td>
+<td>o</td>
+</tr>
+<tr>
+<td>7</td>
+<td>p</td>
+<td>q</td>
+<td>r</td>
+<td>s</td>
+<td>t</td>
+<td>u</td>
+<td>v</td>
+<td>w</td>
+<td>x</td>
+<td>y</td>
+<td>z</td>
+<td>{</td>
+<td>&#124;</td>
+<td>}</td>
+<td>~</td>
+<td>DEL (delete)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="Contrast"><a href="#Contrast" class="headerlink" title="Contrast"></a>Contrast</h3><ul>
+<li>NUL(null)</li>
+<li>SOH(start of headline)</li>
+<li>STX (start of text)</li>
+<li>ETX (end of text)</li>
+<li>EOT (end of transmission)</li>
+<li>ENQ (enquiry)</li>
+<li>ACK (acknowledge)</li>
+<li>BEL (bell)</li>
+<li>BS (backspace)</li>
+<li>HT (horizontal tab)</li>
+<li>LF (NL line feed, new line)</li>
+<li>VT (vertical tab)</li>
+<li>FF (NP form feed, new page)</li>
+<li>CR (carriage return)</li>
+<li>SO (shift out)</li>
+<li>SI (shift in)</li>
+<li>DLE (data link escape)</li>
+<li>DC1 (device control 1)</li>
+<li>DC2 (device control 2)</li>
+<li>DC3 (device control 3)</li>
+<li>DC4 (device control 4)</li>
+<li>NAK (negative acknowledge)</li>
+<li>SYN (synchronous idle)</li>
+<li>ETB (end of trans. block)</li>
+<li>CAN (cancel)</li>
+<li>EM (end of medium)</li>
+<li>SUB (substitute)</li>
+<li>ESC (escape)</li>
+<li>FS (file separator)</li>
+<li>GS (group separator)</li>
+<li>RS (record separator)</li>
+<li>US (unit separator)</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-nonprintable-characters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/05/Match-nonprintable-characters/" class="post-title-link" itemprop="url">Match nonprintable characters</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-05 15:24:03" itemprop="dateCreated datePublished" datetime="2017-02-05T15:24:03+08:00">2017-02-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these characters</strong></p>
+<ul>
+<li>bell</li>
+<li>escape</li>
+<li>form feed</li>
+<li>line</li>
+<li>feed</li>
+<li>carriage return</li>
+<li>horizontal tab</li>
+<li>vertical tab<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexadecimal ASCII codes :</span><br><span class="line">07, 1B, 0C, 0A, 0D, 09, 0B</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\v</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Python, Ruby</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\f\n\r\t\v</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, Python, Ruby</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\x0B</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Representation</th>
+<th>Meaning</th>
+<th>Hex</th>
+<th>Regex flavors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>‹\a›</td>
+<td>bell</td>
+<td>0x07</td>
+<td>.NET, Java, PCRE, Perl, Python, Ruby</td>
+</tr>
+<tr>
+<td>‹\e›</td>
+<td>escape</td>
+<td>0x1B</td>
+<td>.NET, Java, PCRE, Perl, Ruby</td>
+</tr>
+<tr>
+<td>‹\f›</td>
+<td>form feed</td>
+<td>0x0C</td>
+<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
+</tr>
+<tr>
+<td>‹\n›</td>
+<td>line feed (newline)</td>
+<td>0x0A</td>
+<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
+</tr>
+<tr>
+<td>‹\r›</td>
+<td>carriage return</td>
+<td>0x0D</td>
+<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
+</tr>
+<tr>
+<td>‹\t›</td>
+<td>horizontal tab</td>
+<td>0x09</td>
+<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
+</tr>
+<tr>
+<td>‹\v›</td>
+<td>vertical tab</td>
+<td>0x0B</td>
+<td>.NET, Java, JavaScript, Python, Ruby, Perl-5.10, PCRE-7.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\cG\x1B\cL\cJ\cM\cI\cK</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Ruby 1.9</li>
+</ul>
+<hr>
+<p><strong>The 7-bit character set</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\x0C\x0A\x0D\x09\x0B</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/04/Match-literal-text/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/04/Match-literal-text/" class="post-title-link" itemprop="url">Match literal text</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-04 21:30:47" itemprop="dateCreated datePublished" datetime="2017-02-04T21:30:47+08:00">2017-02-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these literal</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The punctuation characters in the ASCII table are: !&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~</span><br></pre></td></tr></table></figure></p>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">!&quot;#\$%&amp;&apos;\(\)\*\+,-\./:;&lt;=&gt;\?@\[\\]\^_`\&#123;\|&#125;~</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$()*+.?[\^&#123;|</span><br></pre></td></tr></table></figure>
+<ul>
+<li>these characters is key words, only <strong><em>matches itsself</em></strong></li>
+<li><strong><em>‘]’ and ‘}’</em></strong> is not</li>
+</ul>
+<hr>
+<h3 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">\Q!&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~\E</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: Java 6, PCRE, Perl</li>
+</ul>
+<p><strong>use \Q \E to suppresses the meaning<br>of all metacharacters, including the backslash</strong></p>
+<hr>
+<h3 id="Case-insensitive-matching"><a href="#Case-insensitive-matching" class="headerlink" title="Case-insensitive matching"></a>Case-insensitive matching</h3><p><strong>Outside the regex</strong><br><code>ascii</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<p><strong>Inside the regex</strong><br><code>(?i)ascii</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python, Ruby</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/03/github-style/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/03/github-style/" class="post-title-link" itemprop="url">github style</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-03 22:12:08" itemprop="dateCreated datePublished" datetime="2017-02-03T22:12:08+08:00">2017-02-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:36:20" itemprop="dateModified" datetime="2020-06-17T22:36:20+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2017/02/03/github-style/095329_upMF_12.png" alt><br><strong>Top to down, left to right</strong></p>
+<ul>
+<li>XXX’s GitHub repository : “offical” page</li>
+<li>Your GitHub repository : “personal” page</li>
+<li>Working directory : “battlefield”</li>
+<li>Local repository : local project storage</li>
+<li>Index : cache space</li>
+</ul>
+<ol>
+<li><code>&quot;fork&quot;</code> : web “offical” -&gt; “personal”</li>
+<li><code>&quot;Pull request&quot;</code> : web handle to “offical”</li>
+<li><code>push</code> : local storage to remote storage</li>
+<li><code>fetch</code> : remote storage to local storage</li>
+<li><code>clone</code> : copy a remote git project</li>
+<li><code>pull XXX-github</code> : get “offical” update to local storage and merge to “battlefield”</li>
+<li><code>merge</code> : merge local storage to “battlefield”</li>
+<li><code>pull my-github</code> : get remote storage update to local storage</li>
+<li><code>checkout</code> : reset file or hash version to “battlefield” directly from local storage</li>
+<li><code>checkout</code> : reset file cover “battlefield” from cache</li>
+<li><code>commit -a</code> : handle to local storage and update to remote directly(push)</li>
+<li><code>commit</code> : handle to local storage</li>
+<li><code>add</code> : put add/delete/modify to cache</li>
+<li><code>reset</code> : reset file or hash version to cache from local storage</li>
+</ol>
 
           
         
@@ -2206,7 +3622,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2248,7 +3664,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">212</span>
+                    <span class="site-state-item-count">227</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2297,7 +3713,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -2468,7 +3888,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">77</span>
+                      
+                    
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -3066,46 +4488,6 @@
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 

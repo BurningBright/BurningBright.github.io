@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/23/Synchronous-primitive-in-zk/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/29/Hello-Ant/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/23/Synchronous-primitive-in-zk/" class="post-title-link" itemprop="url">Synchronous primitive in zk</a>
+                <a href="/2017/06/29/Hello-Ant/" class="post-title-link" itemprop="url">Hello Ant</a>
               
             
           </h1>
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="Created: 2017-05-23 22:39:32" itemprop="dateCreated datePublished" datetime="2017-05-23T22:39:32+08:00">2017-05-23</time>
+              <time title="Created: 2017-06-29 22:49:12" itemprop="dateCreated datePublished" datetime="2017-06-29T22:49:12+08:00">2017-06-29</time>
             
 
             
@@ -430,7 +430,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
@@ -467,28 +467,1158 @@
       
         
           
-            <h3 id="Laboratory-structure"><a href="#Laboratory-structure" class="headerlink" title="Laboratory structure"></a>Laboratory structure</h3><ul>
-<li><p>Every instance is a watcher, when event be triggered<br>  process method will be <strong>callback</strong>.</p>
+            <h3 id="Create-project"><a href="#Create-project" class="headerlink" title="Create project"></a>Create project</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir hello</span><br><span class="line">mkdir src</span><br><span class="line">cd src</span><br><span class="line">vim Hello.java</span><br></pre></td></tr></table></figure>
+<p>Say hello to ant.</p>
+<h3 id="Build-xml"><a href="#Build-xml" class="headerlink" title="Build.xml"></a>Build.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">vim Build.xml</span><br></pre></td></tr></table></figure>
+<p>Set up properties<br>the source file path/ class path/ jar path and so on.<br>the trigger target is <code>rerun</code><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"hello"</span> <span class="attr">default</span>=<span class="string">"rerun"</span> <span class="attr">basedir</span>=<span class="string">"."</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"src"</span> <span class="attr">value</span>=<span class="string">"src"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dest"</span> <span class="attr">value</span>=<span class="string">"classes"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jar_path"</span> <span class="attr">value</span>=<span class="string">"hello.jar"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>Define the init method<br>clean workspace first<br>print a log and make classes directory<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"init"</span> <span class="attr">depends</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| B U I L D I N G $&#123;dest&#125; |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>compile project use javac command<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"compile"</span> <span class="attr">depends</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">javac</span> <span class="attr">srcdir</span>=<span class="string">"$&#123;src&#125;"</span> <span class="attr">destdir</span>=<span class="string">"$&#123;dest&#125;"</span> <span class="attr">includeAntRuntime</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>package project target to a jar and execute<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"build"</span> <span class="attr">depends</span>=<span class="string">"compile"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">jar</span> <span class="attr">jarfile</span>=<span class="string">"$&#123;jar_path&#125;"</span> <span class="attr">basedir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"run"</span> <span class="attr">depends</span>=<span class="string">"build"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java</span> <span class="attr">classname</span>=<span class="string">"Hello"</span> <span class="attr">classpath</span>=<span class="string">"$&#123;jar_path&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>delete build files<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">file</span>=<span class="string">"$&#123;jar_path&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>x<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>rerun the process<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"rerun"</span> <span class="attr">depends</span>=<span class="string">"clean,run"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"run"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"clean"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">echo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Procedure"><a href="#Procedure" class="headerlink" title="Procedure"></a>Procedure</h3><ol>
+<li>clean</li>
+<li>init</li>
+<li>compile</li>
+<li>build</li>
+<li>run</li>
+<li>1 -&gt; 5</li>
+<li>clean</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/21/Annotation-in-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/21/Annotation-in-java/" class="post-title-link" itemprop="url">Annotation in java</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-21 23:03:12" itemprop="dateCreated datePublished" datetime="2017-06-21T23:03:12+08:00">2017-06-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Create-Annotation"><a href="#Create-Annotation" class="headerlink" title="Create Annotation"></a>Create Annotation</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> DBTable &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Target and Retention is meta annotation</li>
+<li>Target point the annotation’s place in law[SOURCE in default]</li>
+<li>Retention point the annotation avaliable time</li>
+</ol>
+<h3 id="Create-More"><a href="#Create-More" class="headerlink" title="Create More"></a>Create More</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Constraints &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">primaryKey</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">nullable</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">unique</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>annotation interface’s method will become ture annotation’s <code>property</code></li>
+<li>interface need a default value</li>
+<li>type support <code>Primary Type</code> <code>Class</code> <code>String</code> <code>Enum</code> <code>Annotation</code></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ConstraintsMore &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span></span></span><br><span class="line"><span class="function">     @<span class="title">Constraints</span><span class="params">(nullable=<span class="keyword">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Annotation not support inherit</strong><br>use default value implements inheritage</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlInteger &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlString &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p><code>Alternative way</code></p>
+<ol>
+<li><p>Use enumeration type to define the type in DB<br>but this way lose agility.</p>
+</li>
+<li><p>Use String to describe the type you want to define<br>but ths way bind handler with DB, if DB changes<br>java need to modify and recompile.</p>
+</li>
+<li><p>Define some annotation more, to describe what you want<br>this is good, but maybe a little confusion</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/19/Rtmp-in-raspberry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/19/Rtmp-in-raspberry/" class="post-title-link" itemprop="url">Rtmp in raspberry</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-19 22:47:52" itemprop="dateCreated datePublished" datetime="2017-06-19T22:47:52+08:00">2017-06-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="install-relay"><a href="#install-relay" class="headerlink" title="install relay"></a>install relay</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential libpcre3 libpcre3-dev libssl-dev</span><br></pre></td></tr></table></figure>
+<h3 id="install-nginx"><a href="#install-nginx" class="headerlink" title="install nginx"></a>install nginx</h3><p>prepare</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo wget http://nginx.org/download/nginx-1.13.1.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxvf nginx-1.13.1.tar.gz</span><br><span class="line"></span><br><span class="line">sudo wget https://github.com/arut/nginx-rtmp-module/archive/master.zip</span><br><span class="line"></span><br><span class="line">unzip master.zip</span><br><span class="line"></span><br><span class="line">cd nginx-1.13.1</span><br></pre></td></tr></table></figure>
+<p>compile &amp; install</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master</span><br><span class="line">sudo make</span><br><span class="line">sudo sudo make install</span><br></pre></td></tr></table></figure>
+<h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rtmp &#123;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 1935;</span><br><span class="line">        chunk_size 4096;</span><br><span class="line">        application live &#123;</span><br><span class="line">            live on;</span><br><span class="line">            record off;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://blog.csdn.net/defonds/article/details/9274479/" target="_blank" rel="noopener">http://blog.csdn.net/defonds/article/details/9274479/</a></p>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>restart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/nginx/sbin/nginx -s stop</span><br><span class="line">sudo /usr/local/nginx/sbin/nginx</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep nginx</span><br><span class="line">kill -QUIT xxx</span><br><span class="line">/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure>
+<h3 id="test"><a href="#test" class="headerlink" title="test"></a>test</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -re -i &quot;/mnt/pny/T25.mp4&quot; -vcodec libx264 -r 15 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -b:v 500k -s 360x240 -q 10 rtmp://192.168.xxx.xxx:1935/live/demo</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/16/Char-in-MFC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/16/Char-in-MFC/" class="post-title-link" itemprop="url">Char in MFC</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-16 22:52:41" itemprop="dateCreated datePublished" datetime="2017-06-16T22:52:41+08:00">2017-06-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="character"><a href="#character" class="headerlink" title="character"></a>character</h3><ul>
+<li>char：<br>prefix with <code>str</code><br>ANSI: <code>strcat( )</code>, <code>strcpy( )</code>, <code>strlen( )</code></li>
+</ul>
+<ul>
+<li>wchar_t :<br>prefix with <code>wcs</code><br>Unicode: <code>wcscat()</code>, <code>wcscpy()</code>, <code>wcslen()</code></li>
+</ul>
+<ul>
+<li>WCHAR:<br><code>typedef wchar_t WCHAR</code><br><strong>WCHAR == wchar_t</strong><br>macro <code>_UNICODE</code> in <code>c</code>, macro <code>UNICODE</code> in <code>windows</code><br>if no macro defined, system use <code>ANSI</code> compiling and run.</li>
+</ul>
+<ul>
+<li>TCHAR:<br><strong>Condition define type</strong><br>If macro <code>UNICODE</code> defined<br><code>typedef wchar_t TCHAR;</code><br>If not<br><code>typedef char TCHAR;</code></li>
+</ul>
+<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span>   UNICODE</span></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">wchar_t</span>   TCHAR;     </span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">char</span>   TCHAR;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">char</span>   CHAR;</span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">wchar_t</span>   WCHAR;</span><br></pre></td></tr></table></figure>
+<p>From VS2005 C++’s encoding use <code>UNICODE</code> in default.</p>
+<h3 id="translate"><a href="#translate" class="headerlink" title="translate"></a>translate</h3><p>char -&gt; wchar_t<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">wchar_t</span>* <span class="title">Util::CharToWchar</span><span class="params">(<span class="keyword">char</span>* c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> length = <span class="built_in">strlen</span>(c) + <span class="number">1</span>;   <span class="comment">// the text end \0 [0x00] [EOF]</span></span><br><span class="line">  <span class="keyword">wchar_t</span> *wide = (<span class="keyword">wchar_t</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">wchar_t</span>)*length);</span><br><span class="line">  <span class="built_in">memset</span>(t, <span class="number">0</span>, length * <span class="keyword">sizeof</span>(<span class="keyword">wchar_t</span>));</span><br><span class="line">  MultiByteToWideChar(CP_ACP, <span class="number">0</span>, c, <span class="built_in">strlen</span>(c), wide, length);</span><br><span class="line">  <span class="comment">//wcout &lt;&lt; wide &lt;&lt; endl;</span></span><br><span class="line">  <span class="keyword">return</span> wide;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>wchar_t -&gt; char<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">Util::WcharToChar</span><span class="params">(<span class="keyword">wchar_t</span>* wc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> length = wcslen(wc) + <span class="number">1</span>;</span><br><span class="line">  	<span class="built_in">cout</span> &lt;&lt; length1 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  	<span class="keyword">char</span> *c = <span class="keyword">new</span> <span class="keyword">char</span>[length1];</span><br><span class="line">  	WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, wc, <span class="number">-1</span>,</span><br><span class="line">      c, length, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">  	<span class="built_in">cout</span> &lt;&lt; c &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/12/Hello-VC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/12/Hello-VC/" class="post-title-link" itemprop="url">Hello VC++</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-12 23:03:46" itemprop="dateCreated datePublished" datetime="2017-06-12T23:03:46+08:00">2017-06-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Swap-Mouse-Button"><a href="#Swap-Mouse-Button" class="headerlink" title="Swap Mouse Button"></a>Swap Mouse Button</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;tchar.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"windows.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// a handler</span></span><br><span class="line">	HKEY key;</span><br><span class="line">  <span class="comment">// target key</span></span><br><span class="line">	LPCTSTR SubKey = _T(<span class="string">"Control Panel\\Mouse"</span>);</span><br><span class="line">	<span class="keyword">if</span> (::RegOpenKeyEx(HKEY_CURRENT_USER, SubKey, <span class="number">0</span>, KEY_ALL_ACCESS, &amp;key) !=</span><br><span class="line">		ERROR_SUCCESS) &#123;</span><br><span class="line">		::RegCloseKey(key);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">char</span> dwValue[<span class="number">256</span>];</span><br><span class="line">	DWORD dwSize = <span class="keyword">sizeof</span>(DWORD);</span><br><span class="line">	DWORD dwType = REG_SZ;</span><br><span class="line">	<span class="keyword">if</span> (::RegQueryValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, &amp;dwType,</span><br><span class="line">		(LPBYTE)&amp;dwValue, &amp;dwSize) != ERROR_SUCCESS) &#123;</span><br><span class="line">		::RegCloseKey(key);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (dwValue[<span class="number">0</span>] == <span class="string">'1'</span>) &#123;</span><br><span class="line"></span><br><span class="line">		DWORD value = <span class="string">'0'</span>;</span><br><span class="line">		<span class="keyword">if</span> (ERROR_SUCCESS</span><br><span class="line">			!= ::RegSetValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, REG_SZ,</span><br><span class="line">			(CONST BYTE*) &amp;value, <span class="number">1</span>)) &#123;</span><br><span class="line">			::RegCloseKey(key);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		SwapMouseButton(<span class="number">0</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		DWORD value = <span class="string">'1'</span>;</span><br><span class="line">		<span class="keyword">if</span> (ERROR_SUCCESS</span><br><span class="line">			!= ::RegSetValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, REG_SZ,</span><br><span class="line">			(CONST BYTE*) &amp;value, <span class="number">1</span>)) &#123;</span><br><span class="line">			::RegCloseKey(key);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		SwapMouseButton(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">  <span class="comment">// release</span></span><br><span class="line">	::RegCloseKey(key);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>RegOpenKeyEx</code>/ <code>RegQueryValueEx</code>/ <code>RegSetValueEx</code> is register table function.</li>
+<li><code>RegCloseKey</code> when function above failed release handler.</li>
+<li><code>SwapMouseButton</code> used to control which button’s left right.</li>
+</ul>
+<h3 id="LPCTSTR"><a href="#LPCTSTR" class="headerlink" title="LPCTSTR"></a>LPCTSTR</h3><ul>
+<li><code>L</code> Long no actual meaning</li>
+<li><code>P</code> pointer</li>
+<li><code>C</code> constant</li>
+<li><code>T</code> base on <code>UNICODE</code> macro, define <code>char</code> or <code>wchar_t</code></li>
+<li><code>STR</code> string char*</li>
+</ul>
+<p>So <code>LPCTSTR</code> almost <code>const char*</code></p>
+<p>If macro not define <code>UNICODE</code>, lead to</p>
 <blockquote>
-<p>public class SyncPrimitive implements Watcher</p>
+<p>const char* value can’t initial LPCTSTR instance class.</p>
 </blockquote>
-</li>
-<li><p><strong>Properties</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// share zk client</span></span><br><span class="line"><span class="keyword">static</span> ZooKeeper zk = <span class="keyword">null</span>;</span><br><span class="line"><span class="comment">// share lock mointor</span></span><br><span class="line"><span class="keyword">static</span> Integer mutex;</span><br><span class="line"><span class="comment">// instance zk path</span></span><br><span class="line">String root;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Constructor</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">SyncPrimitive(String address) &#123;</span><br><span class="line">    <span class="keyword">if</span>(zk == <span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"Starting ZK:"</span>);</span><br><span class="line">            zk = <span class="keyword">new</span> ZooKeeper(address, <span class="number">3000</span>, <span class="keyword">this</span>);</span><br><span class="line">            mutex = <span class="keyword">new</span> Integer(-<span class="number">1</span>);</span><br><span class="line">            System.out.println(<span class="string">"Finished starting ZK: "</span> + zk);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            System.out.println(e.toString());</span><br><span class="line">            zk = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// else mutex = new Integer(-1);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;tchar.h&gt;</span><br><span class="line">LPCTSTR SubKey = _T(&quot;Control Panel\\Mouse&quot;);</span><br></pre></td></tr></table></figure>
+<p>or<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LPCWSTR SubKey = L&quot;Control Panel\\Mouse&quot;;</span><br></pre></td></tr></table></figure></p>
+<p><code>_T(&quot;ABC&quot;)</code> the letter in <code>_T()</code> obtain 2 bytes same as chinese characters.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/07/Synchronization-in-compiling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/07/Synchronization-in-compiling/" class="post-title-link" itemprop="url">Synchronization in compiling</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-07 22:44:33" itemprop="dateCreated datePublished" datetime="2017-06-07T22:44:33+08:00">2017-06-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Synchronous-in-method"><a href="#Synchronous-in-method" class="headerlink" title="Synchronous in method"></a>Synchronous in method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> ++i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">synchronized int fun();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: dup</span><br><span class="line">       // Field i:I</span><br><span class="line">       2: getfield      #2</span><br><span class="line">       5: iconst_1</span><br><span class="line">       6: iadd</span><br><span class="line">       7: dup_x1</span><br><span class="line">       // Field i:I</span><br><span class="line">       8: putfield      #2</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure></p>
+<p><code>synchronized</code> method is simply distinguished<br>in the run-time constant pool by the <code>ACC_SYNCHRONIZED</code> <strong>flag</strong></p>
+<h3 id="Synchronous-in-block"><a href="#Synchronous-in-block" class="headerlink" title="Synchronous in block"></a>Synchronous in block</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(Object obj, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span>(obj) &#123;</span><br><span class="line">		i+=j;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">void fun(java.lang.Object, int);</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_1</span><br><span class="line">       1: dup</span><br><span class="line">       2: astore_3</span><br><span class="line">       3: monitorenter</span><br><span class="line">       4: aload_0</span><br><span class="line">       5: dup</span><br><span class="line">       // Field i:I</span><br><span class="line">       6: getfield      #2                  </span><br><span class="line">       9: iload_2</span><br><span class="line">      10: iadd</span><br><span class="line">      // Field i:I</span><br><span class="line">      11: putfield      #2</span><br><span class="line">      14: aload_3</span><br><span class="line">      15: monitorexit</span><br><span class="line">      16: goto          26</span><br><span class="line">      19: astore        4</span><br><span class="line">      21: aload_3</span><br><span class="line">      22: monitorexit</span><br><span class="line">      23: aload         4</span><br><span class="line">      25: athrow</span><br><span class="line">      26: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           4    16    19   any</span><br><span class="line">          19    23    19   any</span><br></pre></td></tr></table></figure></p>
+<p><code>monitorexit</code> will be executed definitely<br>If not exit normally, <code>#25</code> will throw exception</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Throw-try-catch-finally-in-compiling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/06/Throw-try-catch-finally-in-compiling/" class="post-title-link" itemprop="url">Throw try catch finally in compiling</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-06 22:20:46" itemprop="dateCreated datePublished" datetime="2017-06-06T22:20:46+08:00">2017-06-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void noZero(int) throws java.lang.Exception;</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: ifne          14</span><br><span class="line">       // class java/lang/Exception</span><br><span class="line">       4: new           #2</span><br><span class="line">       7: dup</span><br><span class="line">       // String no zero</span><br><span class="line">       8: ldc           #3</span><br><span class="line">       // Method java/lang/Exception.</span><br><span class="line">       //&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="line">      10: invokespecial #4</span><br><span class="line">      13: athrow</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure></p>
 <ol>
-<li>if the common zk client not exists, create one</li>
-<li>create the lock monitor by the way</li>
-<li>if not init the propertiy mutex is 0.</li>
+<li>if not equals pass the throw part</li>
+<li>if equals take constant string as param create a Exception.</li>
+<li>throw it to the caller[handler?].</li>
 </ol>
-</li>
-<li><p><strong>Implements</strong> abstract method</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">        mutex.notify();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>If the thread have monitor, call one another.<br>If not, wait for monitor <code>mutex</code> unlock.</p>
+<h3 id="Catch-an-exception"><a href="#Catch-an-exception" class="headerlink" title="Catch an exception"></a>Catch an exception</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">e</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">    noZero(<span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(ExcpA a) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(ExcpB b) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void e();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: goto          17</span><br><span class="line">       8: astore_1</span><br><span class="line">       9: goto          17</span><br><span class="line">      12: astore_1</span><br><span class="line">      13: goto          17</span><br><span class="line">      16: astore_1</span><br><span class="line">      17: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     8   Class HaveATry$ExcpA</span><br><span class="line">           0     5    12   Class HaveATry$ExcpB</span><br><span class="line">           0     5    16   Class java/lang/Exception</span><br></pre></td></tr></table></figure>
+<p><code>excption table</code><br>Every catcher have a chance to catch.</p>
+<p><code>astore_1</code><br>Beginning of handler for excpSentry() store thrown value in local var 1.</p>
+<h3 id="Finally"><a href="#Finally" class="headerlink" title="Finally"></a>Finally</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123; noZero(<span class="number">0</span>); &#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int f();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: iconst_2</span><br><span class="line">       6: ireturn</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: iconst_1</span><br><span class="line">       9: istore_2</span><br><span class="line">      10: iconst_2</span><br><span class="line">      11: ireturn</span><br><span class="line">      12: astore_3</span><br><span class="line">      13: iconst_2</span><br><span class="line">      14: ireturn</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     7   Class java/lang/Exception</span><br><span class="line">           0     5    12   any</span><br><span class="line">           7    10    12   any</span><br></pre></td></tr></table></figure>
+<p>5/6 copy instructions of 13/14.<br>7th is the Exception handler.<br>11th can’t reach.<br>what’s the object of istore_2/ istore_3 ???</p>
+<p><code>istore_2</code> the catcher itself’s handler?<br><code>istore_3</code> the finaly’s handler comes from <code>istore_2</code> ?</p>
+<p><code>any</code> mean in range instructions finished then goto target.</p>
+<p>The final return handle by finally got <code>2</code></p>
 
           
         
@@ -545,7 +1675,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/22/Hello-World/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Oracle-query-table-column-comment/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -565,7 +1695,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/22/Hello-World/" class="post-title-link" itemprop="url">Hello World</a>
+                <a href="/2017/06/06/Oracle-query-table-column-comment/" class="post-title-link" itemprop="url">Oracle query table column comment</a>
               
             
           </h1>
@@ -590,995 +1720,7 @@
                 
               
 
-              <time title="Created: 2017-05-22 21:52:44" itemprop="dateCreated datePublished" datetime="2017-05-22T21:52:44+08:00">2017-05-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">"hello world"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>invokevirtual</code><br><code>$ javap -c HelloWorld</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Compiled from <span class="string">"HelloWorld.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">HelloWorld</span><span class="params">()</span></span>;</span><br><span class="line">    Code:</span><br><span class="line">       <span class="number">0</span>: aload_0</span><br><span class="line">       <span class="comment">// Method java/lang/Object."&lt;init&gt;":()V</span></span><br><span class="line">       1: invokespecial #1</span><br><span class="line">       <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    Code:</span><br><span class="line">       <span class="comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span></span><br><span class="line">       0: getstatic     #2</span><br><span class="line">       <span class="comment">// String hello world</span></span><br><span class="line">       3: ldc           #3</span><br><span class="line">       <span class="comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span></span><br><span class="line">       5: invokevirtual #4</span><br><span class="line">       <span class="number">8</span>: <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>The property <code>out</code> in System is a <code>packaged</code> type <code>PrintStream</code>.<br>There is a <code>BufferedOutputStream</code> inside <code>PrintStream</code>.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">System</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> PrintStream out = <span class="keyword">null</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">setOut0</span><span class="params">(PrintStream out)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initializeSystemClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      ...</span><br><span class="line">      FileOutputStream fdOut = <span class="keyword">new</span> FileOutputStream(FileDescriptor.out);</span><br><span class="line">      ...</span><br><span class="line">      setOut0(newPrintStream(fdOut, props.getProperty(<span class="string">"sun.stdout.encoding"</span>)));</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The init method called after thread initialization, initialize the system class.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> PrintStream <span class="title">newPrintStream</span><span class="params">(FileOutputStream fos, String enc)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (enc != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> PrintStream(<span class="keyword">new</span> BufferedOutputStream(fos, <span class="number">128</span>), <span class="keyword">true</span>, enc);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException uee) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PrintStream(<span class="keyword">new</span> BufferedOutputStream(fos, <span class="number">128</span>), <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>package buffer function into <code>out</code>. base on encoding, create output stream object.</p>
-<hr>
-<p><img src="/2017/05/22/Hello-World/01.png" alt><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT void JNICALL</span><br><span class="line">Java_java_lang_System_setOut0(JNIEnv *env, jclass cla, jobject stream)</span><br><span class="line">&#123;</span><br><span class="line">    jfieldID fid =</span><br><span class="line">        (*env)-&gt;GetStaticFieldID(env,cla,&quot;out&quot;,&quot;Ljava/io/PrintStream;&quot;);</span><br><span class="line">    if (fid == 0)</span><br><span class="line">        return;</span><br><span class="line">    (*env)-&gt;SetStaticObjectField(env,cla,fid,stream);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><p>The native method <code>setOut0</code> will call this c function.</p>
-</li>
-<li><p><code>fid</code> the member of <code>System</code> the <code>out</code>‘s id.</p>
-</li>
-<li><p><code>&quot;Ljava/io/PrintStream;&quot;</code> mean <code>java.io.PrintStream</code> object</p>
-</li>
-</ul>
-<p><img src="/2017/05/22/Hello-World/02.png" alt></p>
-<p><code>SetStaticObjectField</code> define here.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void (JNICALL *SetStaticObjectField)</span><br><span class="line">      (JNIEnv *env, jclass clazz, jfieldID fieldID, jobject value);</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/21/The-structure-of-the-JVM-overview-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/21/The-structure-of-the-JVM-overview-2/" class="post-title-link" itemprop="url">The structure of the JVM overview 2</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-21 18:58:53" itemprop="dateCreated datePublished" datetime="2017-05-21T18:58:53+08:00">2017-05-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h2><h3 id="Local-Variables"><a href="#Local-Variables" class="headerlink" title="Local Variables"></a>Local Variables</h3><p>Each frame contains <strong>an array of variables</strong> known as its <code>local variables</code>.</p>
-<ul>
-<li><p>one can hold<br>&gt;<br>boolean, byte, char, short, int,<br>float, reference, returnAddress</p>
-</li>
-<li><p>a pair can hold <code>long or double</code></p>
-</li>
-</ul>
-<p>JVM uses local variables to pass parameters on method invocation.</p>
-<p>On instance method invocation, <strong>local variable 0</strong> is always used to pass<br>a reference to instance it’self(<code>this</code>).</p>
-<h3 id="Operand-Stacks"><a href="#Operand-Stacks" class="headerlink" title="Operand Stacks"></a>Operand Stacks</h3><p>Each frame contains a last-in-first-out (LIFO) stack known as its operand stack.</p>
-<p>Used to push or pop constant or values from variable or method.</p>
-<p>Values from the operand stack must be operated upon in ways <strong>appropriate to their types</strong>.</p>
-<p>These restrictions on operand stack manipulation are enforced through <strong>class file verification</strong>.</p>
-<h3 id="Dynamic-Linking"><a href="#Dynamic-Linking" class="headerlink" title="Dynamic Linking"></a>Dynamic Linking</h3><p>Each frame contains a reference to the <code>run-time constant pool</code> for<br>the type of the current method to support <code>dynamic linking</code> of the method code.</p>
-<p><code>invoke</code> <code>InvocationHandler</code> in java ?</p>
-<p>Used to reduce the <strong>invasive</strong> of the code linked code,<br>keep current code shape and solid.</p>
-<p>Dynamic linking translates these <code>symbolic
-method</code> references into <code>concrete method</code> references.</p>
-<h3 id="Normal-Method-Invocation-Completion"><a href="#Normal-Method-Invocation-Completion" class="headerlink" title="Normal Method Invocation Completion"></a>Normal Method Invocation Completion</h3><p>A method invocation completes normally if<br>that invocation does <strong>not cause</strong> an exception to be thrown.</p>
-<p>The current frame use <code>break</code> characteristic to restore <strong>the state of the invoker</strong><br>for the program counter of the invoker appropriately incremented to <strong>skip past</strong><br>the method invocation instruction(PC Register?).</p>
-<h3 id="Abrupt-Method-Invocation-Completion"><a href="#Abrupt-Method-Invocation-Completion" class="headerlink" title="Abrupt Method Invocation Completion"></a>Abrupt Method Invocation Completion</h3><p>A method invocation <code>completes abruptly</code> if execution of a JVM<br>instruction within the method causes the JVM to throw an<br>exception, and that exception is <strong>not handled</strong> within the method.</p>
-<p>Execution of an <code>athrow</code> instruction also causes an exception to<br>be <code>explicitly thrown</code> and, if the exception is not caught by the<br>current method, results in <strong>abrupt method</strong> invocation completion.</p>
-<p>A method invocation that completes abruptly <strong>never returns</strong> a value to its invoker.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/19/The-structure-of-the-JVM-overview-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/19/The-structure-of-the-JVM-overview-1/" class="post-title-link" itemprop="url">The structure of the JVM overview 1</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-19 22:18:55" itemprop="dateCreated datePublished" datetime="2017-05-19T22:18:55+08:00">2017-05-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Run-Time-Data-Areas"><a href="#Run-Time-Data-Areas" class="headerlink" title="Run-Time Data Areas"></a>Run-Time Data Areas</h2><h3 id="The-pc-Register"><a href="#The-pc-Register" class="headerlink" title="The pc Register"></a>The pc Register</h3><p>JVM can support many thread run at once.<br>Each JVM thread has <strong>it’s own</strong> <code>pc register</code>.</p>
-<p>At any point,thread executing the code of a <strong>single method</strong> ,<br>called the current method for that thread.</p>
-<p>If the method is a <code>native</code> method, <code>pc register</code> is undefined,<br>else the <code>pc register</code> contains the address of <strong>JVM instruction</strong> current being executed.</p>
-<p>It is wide enough to hold a <code>returnAddress</code> or a <code>native pointer</code> on the specific platform.</p>
-<h3 id="Java-Virtual-Machine-Stacks"><a href="#Java-Virtual-Machine-Stacks" class="headerlink" title="Java Virtual Machine Stacks"></a>Java Virtual Machine Stacks</h3><p>Each Java Virtual Machine thread has a private <code>JVM stack</code></p>
-<p>A <code>JVM stack</code> stores frames, frames may be heap allocated.</p>
-<ul>
-<li><p>Requires a larger JVM stack than is permitted<br><code>StackOverflowError</code> in <strong>infinite recursion</strong> this error happen.</p>
-</li>
-<li><p>Stacks dynamically expanded, and expansion is attempted but<br>  insufficient memory can be made available to effect the expansion.<br><code>OutOfMemoryError</code> in <strong>fames too many?</strong> in stack this error may happen.</p>
-</li>
-</ul>
-<h3 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h3><p>The heap is the run-time data area, it’s a ‘public area’.<br><code>GC</code> be appointed to manage this area.</p>
-<p><code>OutOfMemoryError</code> when frame need memory size over the <strong>maximum heap size</strong>.</p>
-<h3 id="Method-Area"><a href="#Method-Area" class="headerlink" title="Method Area"></a>Method Area</h3><p><code>Method Area</code> is a ‘public area’ as well.</p>
-<p>It stores</p>
-<ol>
-<li><code>per-class structures</code> such as the <strong>run-time constant pool</strong></li>
-<li>field and method data</li>
-<li>the code for methods and constructors, including<br>the <code>special methods</code> (§2.9) used in class and instance initialization<br>and interface initialization.</li>
-</ol>
-<p>Accturally it is the <strong>origin class library</strong> of all programes in JVM.</p>
-<p><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</p>
-<h3 id="Run-Time-Constant-Pool"><a href="#Run-Time-Constant-Pool" class="headerlink" title="Run-Time Constant Pool"></a>Run-Time Constant Pool</h3><p>Each run-time constant pool is allocated from the JVM’s <code>method area</code>.</p>
-<p>The run-time constant pool serves a function similar to<br>that of <strong>a symbol table</strong> for a programming language</p>
-<p><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</p>
-<h3 id="Native-Method-Stacks"><a href="#Native-Method-Stacks" class="headerlink" title="Native Method Stacks"></a>Native Method Stacks</h3><p>JVM may use conventional stacks,<br>colloquially called <code>C stacks</code> to support <strong>native method</strong>.</p>
-<p>Also be used by the implementation of <strong>an interpreter</strong> for the JVM’s<br>instruction set in a language such as C.</p>
-<p>If JVM rely on conventional stack, it need not supply native method stacks.</p>
-<p>If supplied, native method stacks are<br>typically allocated per thread when <strong>each thread</strong> is created.</p>
-<ul>
-<li><code>StackOverflowError</code> thread requires a larger native method stack than <strong>is permitted</strong></li>
-<li><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/17/Java-ClassLoader-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/17/Java-ClassLoader-3/" class="post-title-link" itemprop="url">Java ClassLoader 3</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-17 21:47:54" itemprop="dateCreated datePublished" datetime="2017-05-17T21:47:54+08:00">2017-05-17</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="NoClassDefFoundError"><a href="#NoClassDefFoundError" class="headerlink" title="NoClassDefFoundError"></a>NoClassDefFoundError</h3><p>When JavaEE load big quantity package in develop environment,<br>mantain dependency will become hard.<br>Especially JavaEE have alot of ClassLoader now.</p>
-<p>When developing in IDE, package can be found, but can’t found class in deploy status.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@WebServlet</span>(name = <span class="string">"NoClassDefFoundErrorServlet"</span>, urlPatterns = <span class="string">"/noClassDefFoundError.do"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NoClassDefFoundErrorServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        resp.getWriter().println(TestCase<span class="class">.<span class="keyword">class</span>.<span class="title">toString</span>())</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>When <code>TestCase.class</code> from junit package, it’s scope is <code>provider</code>.<br>Junit package will not be depolyed,<br>so loader can’t find class in <code>WEB-INF/lib</code>.</p>
-<h3 id="NoSuchMethodError"><a href="#NoSuchMethodError" class="headerlink" title="NoSuchMethodError"></a>NoSuchMethodError</h3><p>This Error mean project included package version wrong.<br>The resource code use the high version package in IDE,<br>but package low level package in deploy environment.</p>
-<p>Use <code>-verbose:class</code> to judge which version package jvm loaded.</p>
-<h3 id="ClassCastException"><a href="#ClassCastException" class="headerlink" title="ClassCastException"></a>ClassCastException</h3><p>When more than one class loader loaded same class,<br>and use them to do operation, this problem may happen.<br>Because delegate model is different.</p>
-<p>when in tradition <code>delegate</code> model this problem will not happen,<br>in JavaEE environment, module load it’s self resource first.<br>Although direct point outside resource, but use it’s parent loader’s resource first.</p>
-<p>In JVM, how make sure a implement is the class’s implement?<br>JVM find a implement by ClassLoader + class full name.<br>class be define in a data structure named <code>SystemDictionary</code>.<br>This structure accept a ClassLoader and a name as parameters,<br>and return a class’s implement in call.</p>
-<h3 id="LinkageError"><a href="#LinkageError" class="headerlink" title="LinkageError"></a>LinkageError</h3><p>Different ClassLoader’s class, the method be overrided.<br><code>LinkageError</code> is essentially same with <code>LinkageError</code>.</p>
-<h3 id="IllegalAccessError"><a href="#IllegalAccessError" class="headerlink" title="IllegalAccessError"></a>IllegalAccessError</h3><p>The implement has no privilege to access method or field.<br>When class be loaded in a Unanticipated package, this problem happens</p>
-<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>can’t find</th>
-<th>not right</th>
-<th>more than one</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ClassNotFoundException NoClassDefFoundError</td>
-<td>IncompatibleClassChangeError NoSuchMethodError NoSuchFieldError IllegalAccessError</td>
-<td>ClassCastException LinkageError</td>
-</tr>
-<tr>
-<td>Ctrl+Shift+T</td>
-<td>-verbose:class</td>
-<td>-verbose:class</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/16/Java-ClassLoader-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/16/Java-ClassLoader-2/" class="post-title-link" itemprop="url">Java ClassLoader 2</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-16 22:33:53" itemprop="dateCreated datePublished" datetime="2017-05-16T22:33:53+08:00">2017-05-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Inheritance-system"><a href="#Inheritance-system" class="headerlink" title="Inheritance system"></a>Inheritance system</h3><p>When JVM start, <code>bookstrap</code> class loader will be loaded into java core.<br>like class in rt.jar.bookstrap is other ClassLoader’s parent,<br>it is the only loader has <strong>no parent</strong>.</p>
-<p>Then the <code>extension</code> class loader, it’s parent is bookstrap,<br>it used to load class from java’s environment path java.ext.dir.</p>
-<p>Third the most important class loader, the <code>system classpath</code><br>class loader, developer’s self define class.<br>It’s parent is extension, it load class from<br>java’s environment path <code>java.class.path</code>.<br>Path can be set in <code>-classpath</code> parameter in command.</p>
-<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><p>The system is not <code>Inheritance</code> but <code>Delegation</code><br>Most loader will find resource in it’s parents, if not find in local.<br>Actually it ensure the high level loader’s class<br>can be assign with lower level loader’s type.</p>
-<p>The motivation of <code>Delegation</code> is avoid load same class multi times.<br>When in 1995, java be used in <code>Applet</code>.<br>At that time the network bandwidth has priority, so program load class<br>when class be used then load it. Model is load parent first.</p>
-<p>But in this time java show it’s power in server part.<br>Server need loader follow <strong>reverse delegation priciple</strong>,<br>to load local class first, if can’t load class in parent.</p>
-<h3 id="JavaEE-Delegation-model"><a href="#JavaEE-Delegation-model" class="headerlink" title="JavaEE Delegation model"></a>JavaEE Delegation model</h3><p>Tomcat class load sequence(delegation model)</p>
-<ol>
-<li>Bookstrap  @rt.jar</li>
-<li>Extension  @lib/ext</li>
-<li>System     @%catalina_home%/bin/bootstrap.jar</li>
-<li>Common     @%catalina_home%/lib</li>
-<li>Webapp     @WEB-INF/lib</li>
-</ol>
-<p>In tomcat default model,<br>try to load class in Bootstrap and Extension first.<br>If can’t load, try to load class in Webapp<br>If still can’t load, load in Common.</p>
-<p>In Ali’s tomcat, it is in delegate model, so parent has priority.<br>So use Common loader first, then Webapp loader.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/16/ip2region-file-structure-and-principle/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/16/ip2region-file-structure-and-principle/" class="post-title-link" itemprop="url">ip2region file structure and principle</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-16 13:28:29" itemprop="dateCreated datePublished" datetime="2017-05-16T13:28:29+08:00">2017-05-16</time>
+              <time title="Created: 2017-06-06 18:09:39" itemprop="dateCreated datePublished" datetime="2017-06-06T18:09:39+08:00">2017-06-06</time>
             
 
             
@@ -1649,113 +1791,13 @@ method</code> references into <code>concrete method</code> references.</p>
       
         
           
-            <p>ip2region - 最自由的ip地址查询库，ip到地区的映射库，提供Binary,B树和纯内存三种查询算法，妈妈再也不用担心我的ip地址定位。</p>
-<p><strong>1. 99.9%准确率，定时更新：</strong></p>
-<p>数据聚合了一些知名ip到地名查询提供商的数据，这些是他们官方的的准确率，经测试着实比纯真啥的准确多了。<br><br>每次聚合一下数据需要1-2天，会不定时更新。</p>
-<p><strong>2. 标准化的数据格式：</strong></p>
-<p>每条ip数据段都固定了格式：<em>城市Id|国家|区域|省份|城市|ISP</em></p>
-<p>只有中国的数据精确到了城市，其他国家只能定位到国家，后前的选项全部是0，已经包含了全部你能查到的大大小小的国家。<br>（请忽略前面的城市Id，个人项目需求）</p>
-<p><strong>3. 体积小：</strong></p>
-<p>生成的数据库文件ip2region.db只有1.5M（1.2版本前是3.5M）</p>
-<p><strong>4. 多查询客户端的支持，0.0x毫秒级别的查询</strong></p>
-<p>已经集成的客户端有：java, php, c, python，nodejs，php扩展(支持linux, php5, php7版本已支持)，golang。</p>
-<pre><code>提供了两种查询算法，响应时间如下：
-客户端/binary算法/b-tree算法/Memory算法：
-java/0.x毫秒/0.x毫秒/0.1x毫秒 (使用RandomAccessFile)
-php/0.x毫秒/0.1x毫秒/0.1x毫秒
-c/0.0x毫秒/0.0x毫秒/0.00x毫秒(b-tree算法基本稳定在0.02x毫秒级别)
-python/0.x毫秒/0.1x毫秒/未知
-</code></pre><p>任何客户端b-tree都比binary算法快，当然Memory算法固然是最快的！</p>
-<p><strong>5. 测试程序：</strong><br>java:</p>
-<pre><code>cd binding/java
-ant all
-java -jar ip2region-{version}.jar ./data/ip2region.db
-</code></pre><p>php:</p>
-<pre><code>php binding/php/testSearcher ./data/ip2region.db
-</code></pre><p>c:</p>
-<pre><code>cd binding/c/
-gcc -g -O2 testSearcher.c ip2region.c
-./a.out ../../data/ip2region.db
-</code></pre><p>python:</p>
-<pre><code>python binding/python/testSearcher ./data/ip2region.db
-</code></pre><p>均会看到如下界面：</p>
-<pre><code>initializing  B-tree ...
-+----------------------------------+
-| ip2region test script            |
-| Author: chenxin619315@gmail.com  |
-| Type &#39;quit&#39; to exit program      |
-+----------------------------------+
-p2region&gt;&gt; 101.105.35.57
-2163|中国|华南|广东省|深圳市|鹏博士 in 0.02295 millseconds
-</code></pre><p>输入ip地址开始测试，第一次会稍微有点慢，在运行命令后面接入binary,memory来尝试其他算法，建议使用b-tree算法，速度和并发需求的可以使用memory算法。</p>
-<p>具体集成请参考不同客户端的测试源码。</p>
-<p><strong>6. 如何生成ip2region.db文件</strong></p>
-<p>从ip2region 1.2.2版本开始里面提交了一个dbMaker-{version}.jar的可以执行jar文件，用它来完成这个工作：</p>
-<ul>
-<li>1, 确保你安装好了java环境（不玩Java的童鞋就自己谷歌找找拉，临时用一用，几分钟的事情）</li>
-<li>2, cd到ip2region的根目录，然后运行如下命令：</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java -jar dbMaker-&#123;version&#125;.jar -src 文本数据文件 -region 地域csv文件 [-dst 生成的ip2region.db文件的目录]</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 文本数据文件：db文件的原始文本数据文件路径，自带的ip2region.db文件就是/data/ip.merge.txt生成而来的，你可以换成自己的或者更改/data/ip.merge.txt重新生成</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 地域csv文件：该文件目的是方便配置ip2region进行数据关系的存储，得到的数据包含一个city_id，这个直接使用/data/origin/global_region.csv文件即可</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ip2region.db文件的目录：是可选参数，没有指定的话会在当前目录生成一份./data/ip2region.db文件</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>3, 获取生成的ip2region.db文件覆盖原来的ip2region.db文件即可</li>
-<li>4, 默认的ip2region.db文件生成命令:</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd ip2region项目根目录</span><br><span class="line">java -jar dbMaker-1.2.2.jar -src ./data/ip.merge.txt ./data/global_region.csv</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 会看到一大片的输出</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>5, 数据库文件的结构和原理请阅读 @冬芽 的blog：<a href="http://dongyado.com/tools/2016/08/18/structure-of-ip2region-database-file/" target="_blank" rel="noopener">“ip2region数据库文件的结构和原理”</a></li>
-</ul>
-<h1 id="一-源数据如何存储到ip2region-db"><a href="#一-源数据如何存储到ip2region-db" class="headerlink" title="一. 源数据如何存储到ip2region.db"></a>一. 源数据如何存储到ip2region.db</h1><h2 id="1-源数据来源与结构"><a href="#1-源数据来源与结构" class="headerlink" title="1. 源数据来源与结构"></a>1. 源数据来源与结构</h2><p>ip2region 的ip数据来自纯真和淘宝的ip数据库，每次抓取完成之后会生成 ip.merge.txt， 再通过程序根据这个源文件生成ip2region.db 文件。</p>
-<p>ip.merge.txt 中每一行对应一条完整记录，每一条记录由ip段和数据组成，格式如下：</p>
-<p>0.0.0.0|0.255.255.255|未分配或者内网IP|0|0|0|0<br>1.0.0.0|1.0.0.255|澳大利亚|0|0|0|0<br>1.0.1.0|1.0.3.255|中国|华东|福建省|福州市|电信<br>1.0.4.0|1.0.7.255|澳大利亚|0|0|0|0<br>1.0.8.0|1.0.15.255|中国|华南|广东省|广州市|电信<br>1.0.16.0|1.0.31.255|日本|0|0|0|0<br>1.0.32.0|1.0.63.255|中国|华南|广东省|广州市|电信<br>1.0.64.0|1.0.127.255|日本|0|0|0|0<br>1.0.128.0|1.0.255.255|泰国|0|0|0|0<br>1.1.0.0|1.1.0.255|中国|华东|福建省|福州市|电信<br>从左到右分别表示： 起始ip,结束ip,国家，区域，省份，市，运营商。无数据区域默认为0。</p>
-<p>最新的ip.merge.txt 有122474条记录，并且根据开始ip地址升序排列。</p>
-<h2 id="2-如何生成ip2region-db"><a href="#2-如何生成ip2region-db" class="headerlink" title="2. 如何生成ip2region.db"></a>2. 如何生成ip2region.db</h2><p>给定一个ip，如何快速从ip.merge.txt中找到该ip所属记录？最简单的办法就是顺序遍历，当该ip在某条记录起始和结束ip之间时，即命中。</p>
-<p>这是低效的做法，如何提高查询性能？用过mysql和其他数据库的的都知道，使用索引。所以ip2region.db使用了内建索引，直接将性能提升到0.0x毫秒级别。</p>
-<p>根据ip.merge.txt，为所有数据生成一份索引，并和数据地址组成一个索引项(index block), 然后按起始ip升序排列组成索引，并存储到数据文件的末尾，最终生成的ip2region.db文件大小只有3.5M。</p>
-<p>此时的数据库文件中的每一条索引都指向一条对应的数据，也就是说如</p>
-<p>|中国|华南|广东省|广州市|电信<br>这样的数据在文件中被重复存储了很多次，再经过去重优化之后，ip2region.db只有1.5M了，此时把数据库文件全部读取到内存再查找都是非常可行的。</p>
-<h1 id="二-ip2region-db-结构"><a href="#二-ip2region-db-结构" class="headerlink" title="二. ip2region.db 结构"></a>二. ip2region.db 结构</h1><p>生成 ip2region.db 的时候，首先会在首部预留 8 bytes 的SUPER BLOCK 和 8k 的 HEADER INDEX。</p>
-<p>再根据ip.merge.txt，依据每一条记录的起始ip, 结束ip和数据，生成一个index block， 前四个字节存储起始ip, 中间四个字节存储结束ip, 后四个字节存储已经计算出的数据地址，并暂存到INDEX区。</p>
-<p>当 INDEX 索引区和 DATA 数据区确定下来之后，再把 INDEX 的起始位置存储到 SUPER BLOCK 的前四个字节，结束位置存储到 SUPER BLOCK 的后四个字节。</p>
-<p>再把 INDEX 分成大小为 4K 的索引分区，把每个分区起始位置的索引的起始ip和该索引的位置存入一个 header index block, 组成 HEADER INDEX 区域, 最后写入ip2region.db。</p>
-<ul>
-<li>SUPER BLOCK</li>
-</ul>
-<p>用来保存 INDEX 的起始地址和结束地址，first index ptr 指向INDEX起始位置的index block， last index ptr 指向最后一个index block的地址。这样查询的时候直接读取superblock 8个字节，就能快速获取 INDEX 索引区域的地址。</p>
-<ul>
-<li>HEADER INDEX</li>
-</ul>
-<p>HEADER INDEX 区是对 INDEX 区的二级索引， INDEX总长度除以 4K 就是 HEADER INDEX 的实际索引数。</p>
-<p>该区域长度为8k, 由 8 bytes 的 header index block 组成。</p>
-<p>header index block 前四个字节存储每个4K分区起始位置的index block 的起始ip值，后四个字节指向该index block的地址。</p>
-<p>把HEADER INDEX 区定义为8k，可以通过一次磁盘读取读取整个HEADER INDEX 区，然后在内存中进行查询，查询的结果可以确定该ip在INDEX区的某个4k分区内，然后再根据地址一次读取4k index 到内存，再在内存中查询，从而减少磁盘读取的次数。</p>
-<ul>
-<li>DATA</li>
-</ul>
-<p>保存的数据，数据格式如下：</p>
-<p>  2163|中国|华南|广东省|深圳市|鹏博士<br>分别表示 城市ip,国家，区域，省份，城市，运营商</p>
-<ul>
-<li>INDEX</li>
-</ul>
-<p>索引区域，索引元素为 index block (12 字节)， 分成三个部分，起始ip, 结束ip, 数据信息, 每一条 index block 对应 ip.merge.txt 中的一条记录。</p>
-<p>数据信息：前一个字节保存数据长度， 后三个字节保存数据地址（DATA中）。</p>
-<p>每个index block 表示一个ip段的索引。当指定ip 在某个 index block 的起始ip和结束ip中间，即表示命中索引。</p>
-<p>再通过 index block 中的数据地址和数据长度，就能从ip2region.db读取对应的地址。</p>
-<h1 id="三-搜索方法"><a href="#三-搜索方法" class="headerlink" title="三. 搜索方法"></a>三. 搜索方法</h1><h2 id="binary搜索"><a href="#binary搜索" class="headerlink" title="binary搜索"></a>binary搜索</h2><ul>
-<li>把ip值通过ip2long方法转为长整型</li>
-<li>通过 SUPER BLOCK 拿到INDEX的起始位置和结束位置</li>
-<li>相减+1得出index block 总数</li>
-<li>采用二分法直接求解，比较 index block 和当前ip的大小，即可找到该ip属于的 index block</li>
-<li>拿到该 index block 的后面四个字节， 分别得到数据长度和数据地址</li>
-<li>从数据地址读取拿到的所得长度的字节，即是搜索结果</li>
-</ul>
-<h2 id="b-tree-搜索"><a href="#b-tree-搜索" class="headerlink" title="b-tree 搜索"></a>b-tree 搜索</h2><ul>
-<li>把ip值通过ip2long 转为长整型</li>
-<li>使用二分法在 HEADER INDEX 中搜索，比较得到对应的 header index block</li>
-<li>header index block 指向 INDEX 中的一个 4K 分区，所以直接把搜索范围降低到 4K</li>
-<li>采用二分法在获取到的 4K 分区搜索，得到对应的 index block</li>
-<li>拿到该 index block 的后面四个字节， 分别得到数据长度和数据地址</li>
-<li>从数据地址读取拿到的所得长度的字节，即是搜索结果</li>
-</ul>
+            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tables</strong></p>
+<h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tab_columns</strong></p>
+<h3 id="Query-Comment"><a href="#Query-Comment" class="headerlink" title="Query Comment"></a>Query Comment</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select * from user_tab_comments;</span><br><span class="line">select * from user_tab_comments t where t.COMMENTS like &apos;%shit%&apos; order by t.TABLE_NAME;</span><br><span class="line"></span><br><span class="line">select * from user_col_comments;</span><br><span class="line">select * from user_col_comments t where t.COLUMN_NAME=&apos;xxx&apos;;</span><br><span class="line"></span><br><span class="line">select * from user_tab_comments t1, user_col_comments t2 where t1.TABLE_NAME = t2.TABLE_NAME and t2.COMMENTS like &apos;%shit%&apos;;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tab_comments</strong></p>
+<p><strong>user_col_comments</strong></p>
 
           
         
@@ -1812,7 +1854,7 @@ p2region&gt;&gt; 101.105.35.57
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/15/Java-ClassLoader-1/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/05/Arrays-in-compiling/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1832,7 +1874,7 @@ p2region&gt;&gt; 101.105.35.57
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/15/Java-ClassLoader-1/" class="post-title-link" itemprop="url">Java ClassLoader 1</a>
+                <a href="/2017/06/05/Arrays-in-compiling/" class="post-title-link" itemprop="url">Arrays in compiling</a>
               
             
           </h1>
@@ -1857,7 +1899,7 @@ p2region&gt;&gt; 101.105.35.57
                 
               
 
-              <time title="Created: 2017-05-15 22:44:29" itemprop="dateCreated datePublished" datetime="2017-05-15T22:44:29+08:00">2017-05-15</time>
+              <time title="Created: 2017-06-05 22:48:57" itemprop="dateCreated datePublished" datetime="2017-06-05T22:48:57+08:00">2017-06-05</time>
             
 
             
@@ -1928,17 +1970,14 @@ p2region&gt;&gt; 101.105.35.57
       
         
           
-            <h3 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> Class&lt;?&gt; defineClass(String name, <span class="keyword">byte</span>[] b, <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) &#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> ClassLoader <span class="title">getParent</span><span class="params">()</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> URL <span class="title">getResource</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Enumeration&lt;URL&gt; <span class="title">getResources</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>Most important method is <code>loadClass(arg)</code> ,<br>it accept a class’s <strong>full name</strong>, and return it’s instance.</p>
-</li>
-<li><p><code>defineClass(arg)</code> accept a byte array, turn it into instance.<br>Usually, it <strong>load a file</strong> from disk, then pass file byte into JVM.<br>Instantiate Class into a instance through JVM’s(<strong>native method</strong>) define to Class.</p>
-</li>
-<li><code>getResource()</code> and <code>getResources</code> search URL from repository.<br>They have agent mechanism as well as loadClass, like:<br><code>defineClass(getResource(name).getBytes())</code></li>
-</ul>
-<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><p>Because Java <strong>late binding</strong> and <strong>explain</strong> character,<br>Classes’ will be load when it needed like<br>static method/ construct method or direct allocate in field.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">xxx</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    B b = <span class="keyword">new</span> B();</span><br><span class="line">    b.xxoo();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>They are same when <code>B</code> have default constructor.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">B b = <span class="keyword">new</span> B();</span><br><span class="line"></span><br><span class="line">B b = Class.forName(<span class="string">"B"</span>, <span class="keyword">false</span>,</span><br><span class="line">    A<span class="class">.<span class="keyword">class</span>.<span class="title">getClassLoader</span>()).<span class="title">newInstance</span>()</span>;</span><br></pre></td></tr></table></figure></p>
+            <h3 id="Simple-array"><a href="#Simple-array" class="headerlink" title="Simple array"></a>Simple array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">daily</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> array[];</span><br><span class="line">  <span class="keyword">int</span> size=<span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> value=<span class="number">123</span>;</span><br><span class="line">  array = <span class="keyword">new</span> <span class="keyword">int</span>[size];</span><br><span class="line">  array[<span class="number">3</span>] = value;</span><br><span class="line">  value = array[<span class="number">5</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int[] daily();</span><br><span class="line">    Code:</span><br><span class="line">       0: bipush        10</span><br><span class="line">       2: istore_2</span><br><span class="line">       3: sipush        123</span><br><span class="line">       6: istore_3</span><br><span class="line">       7: iload_2</span><br><span class="line">       8: newarray       int</span><br><span class="line">      10: astore_1</span><br><span class="line">      11: aload_1</span><br><span class="line">      12: iconst_3</span><br><span class="line">      13: iload_3</span><br><span class="line">      14: iastore</span><br><span class="line">      15: aload_1</span><br><span class="line">      16: iconst_5</span><br><span class="line">      17: iaload</span><br><span class="line">      18: istore_3</span><br><span class="line">      19: aload_1</span><br><span class="line">      20: areturn</span><br></pre></td></tr></table></figure></p>
+<p>[7] load variable 10 to create a new array.<br>[10] save array’s reference to <code>array</code> variable.<br>Is <code>aload_x</code> show that the primary type array variable is an object ?</p>
+<h3 id="Object-array"><a href="#Object-array" class="headerlink" title="Object array"></a>Object array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Integer[] objectArray()&#123;</span><br><span class="line">  Integer oArray[];</span><br><span class="line">  <span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">  oArray = <span class="keyword">new</span> Integer[count];</span><br><span class="line">  oArray[<span class="number">0</span>] = <span class="keyword">new</span> Integer(<span class="number">7</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Integer[] objectArray();</span><br><span class="line">    Code:</span><br><span class="line">       0: bipush        10</span><br><span class="line">       2: istore_2</span><br><span class="line">       3: iload_2</span><br><span class="line">       // class java/lang/Integer</span><br><span class="line">       4: anewarray     #2</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: aload_1</span><br><span class="line">       9: iconst_0</span><br><span class="line">       // class java/lang/Integer</span><br><span class="line">      10: new           #2</span><br><span class="line">      13: dup</span><br><span class="line">      14: bipush        7</span><br><span class="line">      // Method java/lang/Integer.&quot;&lt;init&gt;&quot;:(I)V</span><br><span class="line">      16: invokespecial #3</span><br><span class="line">      20: aload_1</span><br><span class="line">      21: areturn</span><br></pre></td></tr></table></figure></p>
+<h3 id="Multianewarray"><a href="#Multianewarray" class="headerlink" title="Multianewarray"></a>Multianewarray</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[][][] create3darray() &#123;</span><br><span class="line">  <span class="keyword">int</span> matrix[][][];</span><br><span class="line">  matrix = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>];</span><br><span class="line">  <span class="keyword">return</span> matrix;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int[][][] create3darray();</span><br><span class="line">    Code:</span><br><span class="line">       0: iconst_2</span><br><span class="line">       1: iconst_3</span><br><span class="line">       2: iconst_4</span><br><span class="line">       // class &quot;[[[I&quot;</span><br><span class="line">       3: multianewarray #4,  3</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: aload_1</span><br><span class="line">       9: areturn</span><br></pre></td></tr></table></figure></p>
+<p>Three constant used to create the 3 dimensional array.<br>Store to variable <code>matrix</code>, push to the top of stack.</p>
 
           
         
@@ -1995,7 +2034,7 @@ p2region&gt;&gt; 101.105.35.57
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/14/How-to-close-port-in-windows/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/04/Invoke-in-compiling/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -2015,7 +2054,7 @@ p2region&gt;&gt; 101.105.35.57
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/14/How-to-close-port-in-windows/" class="post-title-link" itemprop="url">How to close port in windows</a>
+                <a href="/2017/06/04/Invoke-in-compiling/" class="post-title-link" itemprop="url">Invoke in compiling</a>
               
             
           </h1>
@@ -2040,7 +2079,7 @@ p2region&gt;&gt; 101.105.35.57
                 
               
 
-              <time title="Created: 2017-05-14 22:51:52" itemprop="dateCreated datePublished" datetime="2017-05-14T22:51:52+08:00">2017-05-14</time>
+              <time title="Created: 2017-06-04 22:37:12" itemprop="dateCreated datePublished" datetime="2017-06-04T22:37:12+08:00">2017-06-04</time>
             
 
             
@@ -2074,7 +2113,7 @@ p2region&gt;&gt; 101.105.35.57
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
                 
                 
@@ -2111,225 +2150,24 @@ p2region&gt;&gt; 101.105.35.57
       
         
           
-            <h3 id="Control-port-in-linux"><a href="#Control-port-in-linux" class="headerlink" title="Control port in linux"></a>Control port in linux</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -anp</span><br><span class="line"></span><br><span class="line"># close</span><br><span class="line">iptables -A INPUT -p tcp --drop 8080 -j DROP</span><br><span class="line">iptables -A OUTPUT -p tcp --dport 8080 -j DROP</span><br><span class="line"></span><br><span class="line"># open</span><br><span class="line">iptables -A INPUT -ptcp --dport 8080 -j ACCEPT</span><br></pre></td></tr></table></figure>
-<h3 id="Control-port-in-windows"><a href="#Control-port-in-windows" class="headerlink" title="Control port in windows"></a>Control port in windows</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -ano</span><br><span class="line"></span><br><span class="line"># find program name</span><br><span class="line">tasklist|findstr &quot;3624&quot;</span><br><span class="line"></span><br><span class="line"># kill it</span><br><span class="line">taskkill /f /t /im Dandelion.exe</span><br></pre></td></tr></table></figure>
+            <h3 id="Normal-method"><a href="#Normal-method" class="headerlink" title="Normal method"></a>Normal method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i+j; &#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j, <span class="keyword">int</span> k)</span> </span>&#123; <span class="keyword">return</span> i+j+k; &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_1</span><br><span class="line">     1: iload_2</span><br><span class="line">     2: iadd</span><br><span class="line">     3: ireturn</span><br><span class="line"></span><br><span class="line">static int calc(int, int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_0</span><br><span class="line">     1: iload_1</span><br><span class="line">     2: iadd</span><br><span class="line">     3: iload_2</span><br><span class="line">     4: iadd</span><br><span class="line">     5: ireturn</span><br></pre></td></tr></table></figure>
+<h3 id="Nomal-invoke"><a href="#Nomal-invoke" class="headerlink" title="Nomal invoke"></a>Nomal invoke</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  calc(<span class="number">12</span>, <span class="number">13</span>);</span><br><span class="line">  AboutInvoke.calc(<span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">void call();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: bipush        12</span><br><span class="line">       3: bipush        13</span><br><span class="line">       // Method calc:(II)I</span><br><span class="line">       5: invokevirtual #2</span><br><span class="line">       8: pop</span><br><span class="line">       9: bipush        12</span><br><span class="line">      11: bipush        13</span><br><span class="line">      13: bipush        14</span><br><span class="line">      // Method calc:(III)I</span><br><span class="line">      15: invokestatic  #3</span><br><span class="line">      18: pop</span><br><span class="line">      19: return</span><br></pre></td></tr></table></figure></p>
+<p>Compiler generates <strong>symbolic references</strong> to<br>the methods(#2 #3) of an instance(Pointer?).</p>
+<p>These symbols are store in <strong>run-time constant pool</strong>.</p>
+<p>They are resolved at run-time to determine the <strong>actual method location</strong>.</p>
+<h3 id="Special-invoke"><a href="#Special-invoke" class="headerlink" title="Special invoke"></a>Special invoke</h3><p><strong>Father</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> money = <span class="number">10</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">haveFun</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> getMoney(); &#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getMoney</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> money; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>Son</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">havePunk</span><span class="params">()</span> </span>&#123; <span class="keyword">super</span>.haveFun(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// Father play</span><br><span class="line">public int haveFun();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       // Method getMoney:()I</span><br><span class="line">       1: invokespecial #3</span><br><span class="line">       4: ireturn</span><br><span class="line"></span><br><span class="line">// Son play</span><br><span class="line">void havePunk();</span><br><span class="line">     Code:</span><br><span class="line">        0: aload_0</span><br><span class="line">        // Method Father.haveFun:()I</span><br><span class="line">        1: invokespecial #2</span><br><span class="line">        4: pop</span><br><span class="line">        5: return</span><br></pre></td></tr></table></figure></p>
+<p><code>invokespecial</code> instruction always pass <code>this</code> to<br>the invoked method as its <strong>first argument</strong>.<br>As usual, it is received in <strong>local variable 0</strong>(aload_0).</p>
 <ol>
-<li><p>open <code>control-panel -&gt; manage-tool</code> open <code>local safety policy</code><br>choose <code>Ip safety policy</code> to create a new ip policy.</p>
+<li><p>The method in super class call itself’s instance method.<br>If the method is private , use <code>invokespecial</code>.</p>
 </li>
-<li><p>remove <code>use add guide</code>, click <code>add new rule</code>, then add a new filter.</p>
+<li><p>If the sub class call super class’s instance method, all use <code>invokespecial</code>.</p>
 </li>
-<li><p>edit filter properties, src is <code>any ip address</code>, target is <code>my id address</code>.<br>in <code>protocol</code> tab, <code>protocol type</code> choose <code>TCP</code>, <code>to this port</code> input <code>135</code>.</p>
-</li>
-<li>repeat <code>UDP</code> port in [135, 139, 445]<br><code>TCP</code> port in [135, 137, 139, 445, 593, 1025, 2745, 3127, 6129, 3389]</li>
-<li>in new <code>rule</code> dialog, the <code>filter operation</code> choose <strong>forbidden</strong>.</li>
-<li>confirm new <code>rule</code>, in <code>ip policy</code> right click <code>rule</code> choose <code>dispatch</code>.</li>
-<li>restart computer.</li>
 </ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/13/Zookeeper-Example/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/13/Zookeeper-Example/" class="post-title-link" itemprop="url">Zookeeper Example</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-13 21:21:09" itemprop="dateCreated datePublished" datetime="2017-05-13T21:21:09+08:00">2017-05-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://zookeeper.apache.org/doc/r3.5.2-alpha/javaExample.html" target="_blank" rel="noopener">https://zookeeper.apache.org/doc/r3.5.2-alpha/javaExample.html</a></p>
-<h3 id="Executor"><a href="#Executor" class="headerlink" title="Executor"></a>Executor</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Executor</span></span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">Watcher</span>, <span class="title">Runnable</span>,</span></span><br><span class="line"><span class="class">        <span class="title">DataMonitor</span>.<span class="title">DataMonitorListener</span></span></span><br></pre></td></tr></table></figure>
-<p>Declare class first, implements Zookeeper <code>Watcher</code><br>, thread Runnable and DataMonitor’s inner interface Listener.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">new</span> Executor(hostPort, znode, filename, exec).run();</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Arguments sequence is</p>
-<ol>
-<li>host:port</li>
-<li>znode path</li>
-<li>process output file path</li>
-<li>process command array</li>
-</ol>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Executor</span><span class="params">(String hostPort, String znode, String filename,</span></span></span><br><span class="line"><span class="function"><span class="params">            String exec[])</span> <span class="keyword">throws</span> KeeperException, IOException </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.filename = filename;</span><br><span class="line">    <span class="keyword">this</span>.exec = exec;</span><br><span class="line">    zk = <span class="keyword">new</span> ZooKeeper(hostPort, <span class="number">3000</span>, <span class="keyword">this</span>);</span><br><span class="line">    dm = <span class="keyword">new</span> DataMonitor(zk, znode, <span class="keyword">null</span>, <span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>In constuctor, <code>Executor</code> use it’s Object self as a parameter.<br>ZooKeeper need a <code>Watch</code> in third parameter, it triger<br>Executor’s implements to triger <code>Monitor</code> again.</p>
-<p>DataMonitor need a <code>DataMonitorListener</code> to know what<br>operation need to notify when event happen.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">while</span> (!dm.dead) &#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>It’s Runnable implements.<br>When <code>Executor</code> be created and run in main, it check monitor’s status.<br>When first initiated, monitor dead should in false, main thread will wait for zookeeper client to wake it up.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">"Starting child"</span>);</span><br><span class="line">    child = Runtime.getRuntime().exec(exec);</span><br><span class="line">    <span class="keyword">new</span> StreamWriter(child.getInputStream(), System.out);</span><br><span class="line">    <span class="keyword">new</span> StreamWriter(child.getErrorStream(), System.err);</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>local process executed here, it’s output will be write into file path.</p>
-<hr>
-<p>feedbackTarget.sh<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"hello zookeeper"</span> &gt;&amp;1</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"hello error"</span> &gt;&amp;2</span><br><span class="line">	sleep 3s</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></figure></p>
-<p><code>192.168.3.11:2181 /key ./example/leon sh ./example/feedbackTarget.sh</code></p>
-<h3 id="DataMonitor"><a href="#DataMonitor" class="headerlink" title="DataMonitor"></a>DataMonitor</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class DataMonitor implements Watcher, StatCallback</span><br></pre></td></tr></table></figure>
-<p>implements <code>Watcher</code> as a watcher, but not use as watcher.<br>implements <code>StatCallback</code>, zookeeper client should callback this monitor when node status changed.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">    String path = event.getPath();</span><br><span class="line">    <span class="keyword">if</span> (event.getType() == Event.EventType.None) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (event.getState()) &#123;</span><br><span class="line">        <span class="keyword">case</span> SyncConnected:</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> Expired:</span><br><span class="line">            dead = <span class="keyword">true</span>;</span><br><span class="line">            listener.closing(KeeperException.Code.SessionExpired);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (path != <span class="keyword">null</span> &amp;&amp; path.equals(znode)) &#123;</span><br><span class="line">            zk.exists(znode, <span class="keyword">true</span>, <span class="keyword">this</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (chainedWatcher != <span class="keyword">null</span>) &#123;</span><br><span class="line">        chainedWatcher.process(event);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Monitor feedback what it seen to the listener,<br>and register the next chainedWatcher if exitst.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processResult</span><span class="params">(<span class="keyword">int</span> rc, String path, Object ctx, Stat stat)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  b = zk.getData(znode, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">  ...</span><br><span class="line">  listener.exists(b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Put zookeeper client’s callback to executor.</p>
 
           
         
@@ -2375,7 +2213,7 @@ p2region&gt;&gt; 101.105.35.57
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2417,7 +2255,7 @@ p2region&gt;&gt; 101.105.35.57
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">212</span>
+                    <span class="site-state-item-count">227</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2466,7 +2304,11 @@ p2region&gt;&gt; 101.105.35.57
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -2637,7 +2479,9 @@ p2region&gt;&gt; 101.105.35.57
                     
                       
                     
-                    <span class="site-state-item-count">77</span>
+                      
+                    
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -3235,46 +3079,6 @@ p2region&gt;&gt; 101.105.35.57
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 

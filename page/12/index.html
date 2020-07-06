@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/07/Synchronization-in-compiling/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/30/linux-execute-in-background/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/06/07/Synchronization-in-compiling/" class="post-title-link" itemprop="url">Synchronization in compiling</a>
+                <a href="/2017/08/30/linux-execute-in-background/" class="post-title-link" itemprop="url">linux execute in background</a>
               
             
           </h1>
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="Created: 2017-06-07 22:44:33" itemprop="dateCreated datePublished" datetime="2017-06-07T22:44:33+08:00">2017-06-07</time>
+              <time title="Created: 2017-08-30 20:34:43" itemprop="dateCreated datePublished" datetime="2017-08-30T20:34:43+08:00">2017-08-30</time>
             
 
             
@@ -430,7 +430,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -467,751 +467,495 @@
       
         
           
-            <h3 id="Synchronous-in-method"><a href="#Synchronous-in-method" class="headerlink" title="Synchronous in method"></a>Synchronous in method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> ++i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">synchronized int fun();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: dup</span><br><span class="line">       // Field i:I</span><br><span class="line">       2: getfield      #2</span><br><span class="line">       5: iconst_1</span><br><span class="line">       6: iadd</span><br><span class="line">       7: dup_x1</span><br><span class="line">       // Field i:I</span><br><span class="line">       8: putfield      #2</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure></p>
-<p><code>synchronized</code> method is simply distinguished<br>in the run-time constant pool by the <code>ACC_SYNCHRONIZED</code> <strong>flag</strong></p>
-<h3 id="Synchronous-in-block"><a href="#Synchronous-in-block" class="headerlink" title="Synchronous in block"></a>Synchronous in block</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(Object obj, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span>(obj) &#123;</span><br><span class="line">		i+=j;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">void fun(java.lang.Object, int);</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_1</span><br><span class="line">       1: dup</span><br><span class="line">       2: astore_3</span><br><span class="line">       3: monitorenter</span><br><span class="line">       4: aload_0</span><br><span class="line">       5: dup</span><br><span class="line">       // Field i:I</span><br><span class="line">       6: getfield      #2                  </span><br><span class="line">       9: iload_2</span><br><span class="line">      10: iadd</span><br><span class="line">      // Field i:I</span><br><span class="line">      11: putfield      #2</span><br><span class="line">      14: aload_3</span><br><span class="line">      15: monitorexit</span><br><span class="line">      16: goto          26</span><br><span class="line">      19: astore        4</span><br><span class="line">      21: aload_3</span><br><span class="line">      22: monitorexit</span><br><span class="line">      23: aload         4</span><br><span class="line">      25: athrow</span><br><span class="line">      26: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           4    16    19   any</span><br><span class="line">          19    23    19   any</span><br></pre></td></tr></table></figure></p>
-<p><code>monitorexit</code> will be executed definitely<br>If not exit normally, <code>#25</code> will throw exception</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Throw-try-catch-finally-in-compiling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/06/Throw-try-catch-finally-in-compiling/" class="post-title-link" itemprop="url">Throw try catch finally in compiling</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-06 22:20:46" itemprop="dateCreated datePublished" datetime="2017-06-06T22:20:46+08:00">2017-06-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void noZero(int) throws java.lang.Exception;</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: ifne          14</span><br><span class="line">       // class java/lang/Exception</span><br><span class="line">       4: new           #2</span><br><span class="line">       7: dup</span><br><span class="line">       // String no zero</span><br><span class="line">       8: ldc           #3</span><br><span class="line">       // Method java/lang/Exception.</span><br><span class="line">       //&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="line">      10: invokespecial #4</span><br><span class="line">      13: athrow</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure></p>
-<ol>
-<li>if not equals pass the throw part</li>
-<li>if equals take constant string as param create a Exception.</li>
-<li>throw it to the caller[handler?].</li>
+            <p><a href="http://blog.csdn.net/zstu_zlj/article/details/51783937" target="_blank" rel="noopener">link</a></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Always meet problem like this:<br>Login in by <code>telnet/ssh</code>, run some time costs task<br>But be interrupted, cause by the net problem.</p>
+<p>How to deal this kind problem, let task run background</p>
+<h2 id="Command-nohup-setsid-amp"><a href="#Command-nohup-setsid-amp" class="headerlink" title="Command nohup/setsid/&amp;"></a>Command <code>nohup/setsid/&amp;</code></h2><ol>
+<li><strong>nohup</strong></li>
 </ol>
-<h3 id="Catch-an-exception"><a href="#Catch-an-exception" class="headerlink" title="Catch an exception"></a>Catch an exception</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">e</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">    noZero(<span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(ExcpA a) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(ExcpB b) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void e();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: goto          17</span><br><span class="line">       8: astore_1</span><br><span class="line">       9: goto          17</span><br><span class="line">      12: astore_1</span><br><span class="line">      13: goto          17</span><br><span class="line">      16: astore_1</span><br><span class="line">      17: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     8   Class HaveATry$ExcpA</span><br><span class="line">           0     5    12   Class HaveATry$ExcpB</span><br><span class="line">           0     5    16   Class java/lang/Exception</span><br></pre></td></tr></table></figure>
-<p><code>excption table</code><br>Every catcher have a chance to catch.</p>
-<p><code>astore_1</code><br>Beginning of handler for excpSentry() store thrown value in local var 1.</p>
-<h3 id="Finally"><a href="#Finally" class="headerlink" title="Finally"></a>Finally</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123; noZero(<span class="number">0</span>); &#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int f();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: iconst_2</span><br><span class="line">       6: ireturn</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: iconst_1</span><br><span class="line">       9: istore_2</span><br><span class="line">      10: iconst_2</span><br><span class="line">      11: ireturn</span><br><span class="line">      12: astore_3</span><br><span class="line">      13: iconst_2</span><br><span class="line">      14: ireturn</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     7   Class java/lang/Exception</span><br><span class="line">           0     5    12   any</span><br><span class="line">           7    10    12   any</span><br></pre></td></tr></table></figure>
-<p>5/6 copy instructions of 13/14.<br>7th is the Exception handler.<br>11th can’t reach.<br>what’s the object of istore_2/ istore_3 ???</p>
-<p><code>istore_2</code> the catcher itself’s handler?<br><code>istore_3</code> the finaly’s handler comes from <code>istore_2</code> ?</p>
-<p><code>any</code> mean in range instructions finished then goto target.</p>
-<p>The final return handle by finally got <code>2</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Oracle-query-table-column-comment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/06/Oracle-query-table-column-comment/" class="post-title-link" itemprop="url">Oracle query table column comment</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-06 18:09:39" itemprop="dateCreated datePublished" datetime="2017-06-06T18:09:39+08:00">2017-06-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tables</strong></p>
-<h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_columns</strong></p>
-<h3 id="Query-Comment"><a href="#Query-Comment" class="headerlink" title="Query Comment"></a>Query Comment</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select * from user_tab_comments;</span><br><span class="line">select * from user_tab_comments t where t.COMMENTS like &apos;%shit%&apos; order by t.TABLE_NAME;</span><br><span class="line"></span><br><span class="line">select * from user_col_comments;</span><br><span class="line">select * from user_col_comments t where t.COLUMN_NAME=&apos;xxx&apos;;</span><br><span class="line"></span><br><span class="line">select * from user_tab_comments t1, user_col_comments t2 where t1.TABLE_NAME = t2.TABLE_NAME and t2.COMMENTS like &apos;%shit%&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_comments</strong></p>
-<p><strong>user_col_comments</strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/05/Arrays-in-compiling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/05/Arrays-in-compiling/" class="post-title-link" itemprop="url">Arrays in compiling</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-05 22:48:57" itemprop="dateCreated datePublished" datetime="2017-06-05T22:48:57+08:00">2017-06-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Simple-array"><a href="#Simple-array" class="headerlink" title="Simple array"></a>Simple array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">daily</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> array[];</span><br><span class="line">  <span class="keyword">int</span> size=<span class="number">10</span>;</span><br><span class="line">  <span class="keyword">int</span> value=<span class="number">123</span>;</span><br><span class="line">  array = <span class="keyword">new</span> <span class="keyword">int</span>[size];</span><br><span class="line">  array[<span class="number">3</span>] = value;</span><br><span class="line">  value = array[<span class="number">5</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">int[] daily();</span><br><span class="line">    Code:</span><br><span class="line">       0: bipush        10</span><br><span class="line">       2: istore_2</span><br><span class="line">       3: sipush        123</span><br><span class="line">       6: istore_3</span><br><span class="line">       7: iload_2</span><br><span class="line">       8: newarray       int</span><br><span class="line">      10: astore_1</span><br><span class="line">      11: aload_1</span><br><span class="line">      12: iconst_3</span><br><span class="line">      13: iload_3</span><br><span class="line">      14: iastore</span><br><span class="line">      15: aload_1</span><br><span class="line">      16: iconst_5</span><br><span class="line">      17: iaload</span><br><span class="line">      18: istore_3</span><br><span class="line">      19: aload_1</span><br><span class="line">      20: areturn</span><br></pre></td></tr></table></figure></p>
-<p>[7] load variable 10 to create a new array.<br>[10] save array’s reference to <code>array</code> variable.<br>Is <code>aload_x</code> show that the primary type array variable is an object ?</p>
-<h3 id="Object-array"><a href="#Object-array" class="headerlink" title="Object array"></a>Object array</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Integer[] objectArray()&#123;</span><br><span class="line">  Integer oArray[];</span><br><span class="line">  <span class="keyword">int</span> count = <span class="number">10</span>;</span><br><span class="line">  oArray = <span class="keyword">new</span> Integer[count];</span><br><span class="line">  oArray[<span class="number">0</span>] = <span class="keyword">new</span> Integer(<span class="number">7</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Integer[] objectArray();</span><br><span class="line">    Code:</span><br><span class="line">       0: bipush        10</span><br><span class="line">       2: istore_2</span><br><span class="line">       3: iload_2</span><br><span class="line">       // class java/lang/Integer</span><br><span class="line">       4: anewarray     #2</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: aload_1</span><br><span class="line">       9: iconst_0</span><br><span class="line">       // class java/lang/Integer</span><br><span class="line">      10: new           #2</span><br><span class="line">      13: dup</span><br><span class="line">      14: bipush        7</span><br><span class="line">      // Method java/lang/Integer.&quot;&lt;init&gt;&quot;:(I)V</span><br><span class="line">      16: invokespecial #3</span><br><span class="line">      20: aload_1</span><br><span class="line">      21: areturn</span><br></pre></td></tr></table></figure></p>
-<h3 id="Multianewarray"><a href="#Multianewarray" class="headerlink" title="Multianewarray"></a>Multianewarray</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[][][] create3darray() &#123;</span><br><span class="line">  <span class="keyword">int</span> matrix[][][];</span><br><span class="line">  matrix = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">2</span>][<span class="number">3</span>][<span class="number">4</span>];</span><br><span class="line">  <span class="keyword">return</span> matrix;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int[][][] create3darray();</span><br><span class="line">    Code:</span><br><span class="line">       0: iconst_2</span><br><span class="line">       1: iconst_3</span><br><span class="line">       2: iconst_4</span><br><span class="line">       // class &quot;[[[I&quot;</span><br><span class="line">       3: multianewarray #4,  3</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: aload_1</span><br><span class="line">       9: areturn</span><br></pre></td></tr></table></figure></p>
-<p>Three constant used to create the 3 dimensional array.<br>Store to variable <code>matrix</code>, push to the top of stack.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/04/Invoke-in-compiling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/04/Invoke-in-compiling/" class="post-title-link" itemprop="url">Invoke in compiling</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-04 22:37:12" itemprop="dateCreated datePublished" datetime="2017-06-04T22:37:12+08:00">2017-06-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Normal-method"><a href="#Normal-method" class="headerlink" title="Normal method"></a>Normal method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i+j; &#125;</span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j, <span class="keyword">int</span> k)</span> </span>&#123; <span class="keyword">return</span> i+j+k; &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_1</span><br><span class="line">     1: iload_2</span><br><span class="line">     2: iadd</span><br><span class="line">     3: ireturn</span><br><span class="line"></span><br><span class="line">static int calc(int, int, int);</span><br><span class="line">  Code:</span><br><span class="line">     0: iload_0</span><br><span class="line">     1: iload_1</span><br><span class="line">     2: iadd</span><br><span class="line">     3: iload_2</span><br><span class="line">     4: iadd</span><br><span class="line">     5: ireturn</span><br></pre></td></tr></table></figure>
-<h3 id="Nomal-invoke"><a href="#Nomal-invoke" class="headerlink" title="Nomal invoke"></a>Nomal invoke</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  calc(<span class="number">12</span>, <span class="number">13</span>);</span><br><span class="line">  AboutInvoke.calc(<span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">void call();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: bipush        12</span><br><span class="line">       3: bipush        13</span><br><span class="line">       // Method calc:(II)I</span><br><span class="line">       5: invokevirtual #2</span><br><span class="line">       8: pop</span><br><span class="line">       9: bipush        12</span><br><span class="line">      11: bipush        13</span><br><span class="line">      13: bipush        14</span><br><span class="line">      // Method calc:(III)I</span><br><span class="line">      15: invokestatic  #3</span><br><span class="line">      18: pop</span><br><span class="line">      19: return</span><br></pre></td></tr></table></figure></p>
-<p>Compiler generates <strong>symbolic references</strong> to<br>the methods(#2 #3) of an instance(Pointer?).</p>
-<p>These symbols are store in <strong>run-time constant pool</strong>.</p>
-<p>They are resolved at run-time to determine the <strong>actual method location</strong>.</p>
-<h3 id="Special-invoke"><a href="#Special-invoke" class="headerlink" title="Special invoke"></a>Special invoke</h3><p><strong>Father</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> money = <span class="number">10</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">haveFun</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> getMoney(); &#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getMoney</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> money; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><strong>Son</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> <span class="keyword">extends</span> <span class="title">Father</span></span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">havePunk</span><span class="params">()</span> </span>&#123; <span class="keyword">super</span>.haveFun(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// Father play</span><br><span class="line">public int haveFun();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       // Method getMoney:()I</span><br><span class="line">       1: invokespecial #3</span><br><span class="line">       4: ireturn</span><br><span class="line"></span><br><span class="line">// Son play</span><br><span class="line">void havePunk();</span><br><span class="line">     Code:</span><br><span class="line">        0: aload_0</span><br><span class="line">        // Method Father.haveFun:()I</span><br><span class="line">        1: invokespecial #2</span><br><span class="line">        4: pop</span><br><span class="line">        5: return</span><br></pre></td></tr></table></figure></p>
-<p><code>invokespecial</code> instruction always pass <code>this</code> to<br>the invoked method as its <strong>first argument</strong>.<br>As usual, it is received in <strong>local variable 0</strong>(aload_0).</p>
+<blockquote>
+<p>in early version UNIX terminal communicate with system by<br>modem[cat?]. when logout or disconnect, modem send a hang up<br>signal to system to close current session process and all sub processes.</p>
+</blockquote>
+<p>When terminal logout or connect broke, terminal recieves a ‘HUP[hangup]’ signal.<br>So we have two solutions</p>
+<ul>
+<li>let process ignore ‘HUP’ signal</li>
+<li>change process’s owner</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./sunny.sh clientid xxxxx &amp;</span><br><span class="line">nohup ./sunny.sh clientid &gt; sunny.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 <ol>
-<li><p>The method in super class call itself’s instance method.<br>If the method is private , use <code>invokespecial</code>.</p>
-</li>
-<li><p>If the sub class call super class’s instance method, all use <code>invokespecial</code>.</p>
-</li>
+<li><strong>setsid</strong></li>
+</ol>
+<p>Change process’s owner to process id ‘1’</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setid ./sunny.sh clientid xxxxx</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>&amp;</strong></li>
+</ol>
+<p>When command put in <code>()</code> , command can be run in sub shell.<br>Put <code>&amp;</code> into <code>()</code> as well, the commited job wouldn’t be add in job list.<br>So command can ignore the <code>HUP</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(./sunny.sh clientid xxxxx &amp;)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>disown</strong></li>
+</ol>
+<p>If a process already running</p>
+<ul>
+<li><code>disown -h</code> make a job ignore signal</li>
+<li><code>disown -ah</code> make all jobs ignore signal</li>
+<li><code>disown -rh</code> make running jobs ignore signal</li>
+</ul>
+<p>if job already run in background<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+<p>if job already run in front<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># [ctrl + z]</span><br><span class="line">[1]+  Stopped                 ./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># put to background</span><br><span class="line">bg %1</span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/22/Java-memory-anaylsis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/22/Java-memory-anaylsis/" class="post-title-link" itemprop="url">Java memory anaylsis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-22 22:06:09" itemprop="dateCreated datePublished" datetime="2017-08-22T22:06:09+08:00">2017-08-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Machine-addresses"><a href="#Machine-addresses" class="headerlink" title="Machine addresses"></a>Machine addresses</h3><p>Many data structures involve representation of machine addresses.</p>
+<p>The typical x64 architectures we widely used, need <strong>8 bytes</strong> to represent address.</p>
+<p>Many older machines use a 32-bit architecture that<br>would involve just <strong>4 bytes</strong> per machine address.</p>
+<h3 id="Primary-type"><a href="#Primary-type" class="headerlink" title="Primary type"></a>Primary type</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>byte</td>
+<td>1</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>1</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2</td>
+</tr>
+<tr>
+<td>int</td>
+<td>4</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h3><p><img src="/2017/08/22/Java-memory-anaylsis/object.svg" alt="Object"></p>
+<p>The <code>overhead</code> includes:</p>
+<ul>
+<li>a reference to the object’s class</li>
+<li>garbage collection information</li>
+<li>synchronization information</li>
+</ul>
+<hr>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList:"></a>LinkedList:</h4><p><img src="/2017/08/22/Java-memory-anaylsis/linkedlist.svg" alt="Object"></p>
+<p>Instance :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for first node reference</li>
+<li>4 bytes counter</li>
+<li>4 bytes padding</li>
+</ul>
+<p>Node :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for the <strong>references</strong> to the Item</li>
+<li>8 bytes for the <strong>next</strong> to the Item</li>
+<li>8 bytes for the extra overhead</li>
+</ul>
+<p>total :<br><strong>32 + (40 + size(Ojbect)) * N</strong></p>
+<h4 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h4><p><img src="/2017/08/22/Java-memory-anaylsis/array.svg" alt="Object"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int[N]</td>
+<td>24 + 4N</td>
+</tr>
+<tr>
+<td>Integer[N]</td>
+<td>24 + 32N</td>
+</tr>
+<tr>
+<td>int[M][N]</td>
+<td>24 + 8 * (24 + 4N)</td>
+</tr>
+<tr>
+<td>Integer[M][N]</td>
+<td>24 + 8 * (24 + 32N)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 16 bytes</span><br><span class="line">public class String &#123;</span><br><span class="line">  // reference 8 bytes</span><br><span class="line">  // 24 + 2N bytes</span><br><span class="line">  private char[] value;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int offset;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int count;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int hash;</span><br><span class="line">  ...</span><br><span class="line">  // padding 4 bytes</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Total : 64 + 2N</strong></p>
+<hr>
+<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p><img src="/2017/08/22/Java-memory-anaylsis/hashmap.svg" alt="Object"><br>array length : M<br>average node size : N<br><strong>Total[structure] : 64M + 48N</strong></p>
+<hr>
+<h3 id="Tree"><a href="#Tree" class="headerlink" title="Tree"></a>Tree</h3><p><img src="/2017/08/22/Java-memory-anaylsis/tree.svg" alt="Object"><br><strong>Total[structure] : 56N</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/21/python-edit-file/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/21/python-edit-file/" class="post-title-link" itemprop="url">python edit file</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-21 20:51:38" itemprop="dateCreated datePublished" datetime="2017-08-21T20:51:38+08:00">2017-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> os.path</span><br><span class="line"></span><br><span class="line">dirpath = <span class="string">'F:\\Users'</span></span><br><span class="line">pattern = <span class="string">'&lt;/head&gt;'</span></span><br><span class="line">css = <span class="string">'&lt;link rel="stylesheet" href="./style.css"&gt;&lt;/head&gt;'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> os.listdir(dirpath):</span><br><span class="line">    <span class="comment"># read all text</span></span><br><span class="line">    origin = open(os.path.join(dirpath, file), <span class="string">'r+'</span>).readlines()</span><br><span class="line">    <span class="comment"># edit target line</span></span><br><span class="line">    origin[<span class="number">0</span>] = re.compile(pattern).sub(css, origin[<span class="number">0</span>])</span><br><span class="line">    <span class="comment"># rewrite whole file</span></span><br><span class="line">    open(os.path.join(dirpath, file), <span class="string">'w+'</span>).writelines(origin)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>os.listdir(dir)</code> list single node’s sub directory</li>
+<li><code>os.path.join(a, b)</code> conbine two path string</li>
+<li><code>re.compile(pattern).sub(result, src)</code> replace string</li>
 </ol>
 
           
@@ -1269,7 +1013,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/01/Arithmetic-in-compiling/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/20/Tomcat-static-resources/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1289,7 +1033,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/06/01/Arithmetic-in-compiling/" class="post-title-link" itemprop="url">Arithmetic in compiling</a>
+                <a href="/2017/08/20/Tomcat-static-resources/" class="post-title-link" itemprop="url">Tomcat static resources</a>
               
             
           </h1>
@@ -1314,7 +1058,7 @@
                 
               
 
-              <time title="Created: 2017-06-01 21:47:48" itemprop="dateCreated datePublished" datetime="2017-06-01T21:47:48+08:00">2017-06-01</time>
+              <time title="Created: 2017-08-20 12:48:31" itemprop="dateCreated datePublished" datetime="2017-08-20T12:48:31+08:00">2017-08-20</time>
             
 
             
@@ -1385,74 +1129,21 @@
       
         
           
-            <h3 id="simple-calc"><a href="#simple-calc" class="headerlink" title="simple calc"></a>simple calc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ((i + j - <span class="number">1</span>) &amp; ~(j - <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>variable 0 is <code>this</code> -&gt; <code>aload_0</code></li>
-</ul>
-<h3 id="javap-c"><a href="#javap-c" class="headerlink" title="javap -c"></a>javap -c</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: iload_2</span><br><span class="line">       2: iadd</span><br><span class="line">       3: iconst_1</span><br><span class="line">       4: isub</span><br><span class="line">       5: iload_2</span><br><span class="line">       6: iconst_1</span><br><span class="line">       7: isub</span><br><span class="line">       8: iconst_m1</span><br><span class="line">       9: ixor</span><br><span class="line">      10: iand</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>[0]</td>
-<td>push <code>i</code> value into stack</td>
-</tr>
-<tr>
-<td>[1]</td>
-<td>push <code>j</code> value into stack</td>
-</tr>
-<tr>
-<td>[2]</td>
-<td>add; result push stack</td>
-</tr>
-<tr>
-<td>[3]</td>
-<td>push constant <code>1</code> into stack</td>
-</tr>
-<tr>
-<td>[4]</td>
-<td>subtract; push result</td>
-</tr>
-<tr>
-<td>[5]</td>
-<td><code>j</code> value push stack</td>
-</tr>
-<tr>
-<td>[6]</td>
-<td>push constant <code>1</code> again</td>
-</tr>
-<tr>
-<td>[7]</td>
-<td>subtract; push result</td>
-</tr>
-<tr>
-<td>[8]</td>
-<td>push constant <code>-1</code></td>
-</tr>
-<tr>
-<td>[9]</td>
-<td>do XOR; push result</td>
-</tr>
-<tr>
-<td>[10]</td>
-<td>do AND; push result</td>
-</tr>
-<tr>
-<td>[11]</td>
-<td>return int</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ul>
-<li><code>~(j-1)</code> transform into <code>-1^(j-1)</code><br>exclusive or, <code>-1</code> bytes is <strong>all high bit</strong>.<br>any int oxr with all high bit, the high bit will be low, low will be high.</li>
-</ul>
+            <h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p><code>$CATALINA_HOME\conf\web.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;servlet&gt;</span><br><span class="line">    &lt;servlet-name&gt;default&lt;/servlet-name&gt;</span><br><span class="line">    &lt;servlet-class&gt;org.apache.catalina.servlets.DefaultServlet&lt;/servlet-class&gt;</span><br><span class="line">    &lt;init-param&gt;</span><br><span class="line">        &lt;param-name&gt;debug&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;0&lt;/param-value&gt;</span><br><span class="line">    &lt;/init-param&gt;</span><br><span class="line">    &lt;init-param&gt;</span><br><span class="line">        &lt;param-name&gt;listings&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;false&lt;/param-value&gt;</span><br><span class="line">    &lt;/init-param&gt;</span><br><span class="line">    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</span><br><span class="line">&lt;/servlet&gt;</span><br></pre></td></tr></table></figure>
+<p>When param <code>listings</code> is true, <code>/</code> can list all files</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- The mapping for the default servlet --&gt;</span><br><span class="line">&lt;servlet-mapping&gt;</span><br><span class="line">    &lt;servlet-name&gt;default&lt;/servlet-name&gt;</span><br><span class="line">    &lt;url-pattern&gt;/&lt;/url-pattern&gt;</span><br><span class="line">&lt;/servlet-mapping&gt;</span><br></pre></td></tr></table></figure>
+<p>The pattern mapping is this, for all no mapping <code>servlet-mapping</code> request.</p>
+<h3 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected void doGet(HttpServletRequest request,</span><br><span class="line">  HttpServletResponse response)</span><br><span class="line">    throws IOException, ServletException &#123;</span><br><span class="line">      // Serve the requested resource, including the data content</span><br><span class="line">      serveResource(request, response, true, fileEncoding);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>judge resource existence</li>
+<li>judge file readable</li>
+<li>set response head <code>content-type</code> base on file type</li>
+<li>judge file time</li>
+<li>set response timeout</li>
+<li>stream operation</li>
+</ol>
+<p><img src="/2017/08/20/Tomcat-static-resources/tomcat.png" alt="tomcat"></p>
 
           
         
@@ -1509,7 +1200,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/31/Foundation-in-compiling/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/19/python-basic-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1529,7 +1220,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/31/Foundation-in-compiling/" class="post-title-link" itemprop="url">Foundation in compiling</a>
+                <a href="/2017/08/19/python-basic-1/" class="post-title-link" itemprop="url">python basic 1</a>
               
             
           </h1>
@@ -1554,7 +1245,659 @@
                 
               
 
-              <time title="Created: 2017-05-31 22:52:33" itemprop="dateCreated datePublished" datetime="2017-05-31T22:52:33+08:00">2017-05-31</time>
+              <time title="Created: 2017-08-19 23:22:29" itemprop="dateCreated datePublished" datetime="2017-08-19T23:22:29+08:00">2017-08-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Replace-String"><a href="#Replace-String" class="headerlink" title="Replace String"></a>Replace String</h2><ol>
+<li><p>replace function</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = &apos;hello word&apos;</span><br><span class="line">b = a.replace(&apos;word&apos;,&apos;python&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>regex</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line">a = &apos;hello word&apos;</span><br><span class="line">pattern = re.compile(&apos;word&apos;)</span><br><span class="line">b = pattern.sub(&apos;python&apos;,a)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="Change-line-inside"><a href="#Change-line-inside" class="headerlink" title="Change line inside"></a>Change line inside</h2><ol>
+<li>three single qute ‘’’</li>
+<li>three double qute “””</li>
+<li>one backslash \</li>
+</ol>
+<h2 id="Thread-sleep"><a href="#Thread-sleep" class="headerlink" title="Thread sleep"></a>Thread sleep</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">time.sleep(7)</span><br></pre></td></tr></table></figure>
+<h2 id="Real-time-print"><a href="#Real-time-print" class="headerlink" title="Real time print"></a>Real time print</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import sys</span><br><span class="line">print &apos;hello word&apos;</span><br><span class="line">sys.stdout.flush()</span><br><span class="line">time.sleep(7)</span><br></pre></td></tr></table></figure>
+<h2 id="Basic-function"><a href="#Basic-function" class="headerlink" title="Basic function"></a>Basic function</h2><h3 id="type-transfer"><a href="#type-transfer" class="headerlink" title="type transfer"></a>type transfer</h3><ul>
+<li><p>int()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int(&apos;7&apos;)</span><br><span class="line">int(&apos;17&apos;, 16)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>str()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">str(7)</span><br><span class="line">hex(17)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="string"><a href="#string" class="headerlink" title="string"></a>string</h3><ol>
+<li><p>remove blank / special characters<br><code>s.strip().lstrip().rstrip(&#39;,&#39;)</code></p>
+</li>
+<li><p>copy</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcpy(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strcpy'</span></span><br><span class="line">sStr2 = sStr1</span><br><span class="line">sStr1 = <span class="string">'strcpy2'</span></span><br><span class="line"><span class="keyword">print</span> sStr2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>concat</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcat(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strcat'</span></span><br><span class="line">sStr2 = <span class="string">'append'</span></span><br><span class="line">sStr1 += sStr2</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>find</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strchr(sStr1,sStr2)</span></span><br><span class="line"><span class="comment"># &lt; 0 not found</span></span><br><span class="line">sStr1 = <span class="string">'strchr'</span></span><br><span class="line">sStr2 = <span class="string">'s'</span></span><br><span class="line">nPos = sStr1.index(sStr2)</span><br><span class="line"><span class="keyword">print</span> nPos</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>compare</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcmp(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strchr'</span></span><br><span class="line">sStr2 = <span class="string">'strch'</span></span><br><span class="line"><span class="keyword">print</span> cmp(sStr1,sStr2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>scan 4 contain</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strspn(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'12345678'</span></span><br><span class="line">sStr2 = <span class="string">'456'</span></span><br><span class="line"><span class="comment">#sStr1 and chars both in sStr1 and sStr2</span></span><br><span class="line"><span class="keyword">print</span> len(sStr1 <span class="keyword">and</span> sStr2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>length</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strlen(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'strlen'</span></span><br><span class="line"><span class="keyword">print</span> len(sStr1)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>case</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strlwr(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'JCstrlwr'</span></span><br><span class="line">sStr1 = sStr1.upper()</span><br><span class="line"><span class="comment">#sStr1 = sStr1.lower()</span></span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>add pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncat(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">sStr2 = <span class="string">'abcdef'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 += sStr2[<span class="number">0</span>:n]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>compare pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncmp(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">sStr2 = <span class="string">'123bc'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line"><span class="keyword">print</span> cmp(sStr1[<span class="number">0</span>:n],sStr2[<span class="number">0</span>:n])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>copy pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncpy(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">''</span></span><br><span class="line">sStr2 = <span class="string">'12345'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 = sStr2[<span class="number">0</span>:n]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>replace pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strnset(sStr1,ch,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">ch = <span class="string">'r'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 = n * ch + sStr1[<span class="number">3</span>:]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>scan string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strpbrk(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'cekjgdklab'</span></span><br><span class="line">sStr2 = <span class="string">'gka'</span></span><br><span class="line">nPos = <span class="number">-1</span></span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> sStr1:</span><br><span class="line">    <span class="keyword">if</span> c <span class="keyword">in</span> sStr2:</span><br><span class="line">        nPos = sStr1.index(c)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"><span class="keyword">print</span> nPos</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>reverse string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strrev(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'abcdefg'</span></span><br><span class="line">sStr1 = sStr1[::<span class="number">-1</span>]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>split string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strtok(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'ab,cde,fgh,ijk'</span></span><br><span class="line">sStr2 = <span class="string">','</span></span><br><span class="line">sStr1 = sStr1[sStr1.find(sStr2) + <span class="number">1</span>:]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br><span class="line"><span class="comment">#or</span></span><br><span class="line">s = <span class="string">'ab,cde,fgh,ijk'</span></span><br><span class="line">print(s.split(<span class="string">','</span>))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>connect string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">delimiter = <span class="string">','</span></span><br><span class="line">mylist = [<span class="string">'Brazil'</span>, <span class="string">'Russia'</span>, <span class="string">'India'</span>, <span class="string">'China'</span>]</span><br><span class="line"><span class="keyword">print</span> delimiter.join(mylist)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/10/Spring-Structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/10/Spring-Structure/" class="post-title-link" itemprop="url">Spring Structure</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-10 22:45:44" itemprop="dateCreated datePublished" datetime="2017-08-10T22:45:44+08:00">2017-08-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:35:00" itemprop="dateModified" datetime="2020-06-17T22:35:00+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2017/08/10/Spring-Structure/spring-structure.svg" alt="spring structure"></p>
+<ol>
+<li><em>AliasRegistry</em><br>定义对 <code>Alias</code> 的简单增删改操作</li>
+</ol>
+<ol>
+<li>SimpleAliasRegistry  &lt;—1<br>实现 <code>Alias</code> 缓存，实现 <em>AliasRegistry</em></li>
+</ol>
+<ol>
+<li>DefaultSingletonBeanRegistry  &lt;-2  &lt;—9<br>实现 <em>SingletonBeanRegistry</em></li>
+</ol>
+<ol>
+<li>FactoryBeanRegistrySupport  &lt;-3<br>增加了对 <code>FactoryBean</code> 的特殊处理 <code>Util</code>?</li>
+</ol>
+<ol>
+<li>AbstractBeanFactory  &lt;-4  &lt;—12<br>综合 <code>注册器</code> <code>可配置定义</code> 的功能</li>
+</ol>
+<ol>
+<li>AbstractAutowireCapableBeanFactory  &lt;-5  &lt;—15<br>综合 <code>Bean工厂</code> <code>Bean特性定义</code> 的功能</li>
+</ol>
+<ol>
+<li>DefaultListableBeanFactory  &lt;-6  &lt;—8  &lt;—10<br>综合所有功能 主要实现Bean处理</li>
+</ol>
+<ol>
+<li><em>BeanDifinitionRegistry</em>  &lt;-1</li>
+</ol>
+<ol>
+<li><em>SingletonBeanRegistry</em><br>定义 <code>单例</code> 注册 获取</li>
+</ol>
+<ol>
+<li><em>BeanFactory</em><br>定义 获取Bean Bean的属性</li>
+</ol>
+<ol>
+<li><em>HierarchicalBeanFactory</em>  &lt;-10<br>定义 <code>父工厂</code> 的支持</li>
+</ol>
+<ol>
+<li><em>ConfigurableBeanFactory</em>  &lt;-9 &lt;-11<br>定义 <code>配置工厂</code> 的各种方法</li>
+</ol>
+<ol>
+<li><em>ListableBeanFactory</em>  &lt;-10<br>定义 条件取Bean <code>配置清单</code> 的方法</li>
+</ol>
+<ol>
+<li><em>ConfigurableListableBeanFactory</em>  &lt;-12  &lt;-13 &lt;-10<br>定义 指定 <code>忽略类型、接口</code> 等</li>
+</ol>
+<ol>
+<li><em>AutowireCapableBeanFactory</em>  &lt;-10<br>定义 Bean 操作 及 回调处理</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/05/Raspberry-ap-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/05/Raspberry-ap-mode/" class="post-title-link" itemprop="url">Raspberry ap mode</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-05 16:25:19" itemprop="dateCreated datePublished" datetime="2017-08-05T16:25:19+08:00">2017-08-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><p>upgrade system &amp;&amp; update apt-get resources<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/etc/apt/sources.list</span><br><span class="line"></span><br><span class="line">deb http://mirrors.zju.edu.cn/raspbian/raspbian/ jessie main contrib non-free rpi</span><br><span class="line"># Uncomment line below then &apos;apt-get update&apos; to enable &apos;apt-get source&apos;</span><br><span class="line"></span><br><span class="line">#deb-src http://mirrors.zju.edu.cn/raspbian/raspbian/ jessie main contrib non-free rpi</span><br><span class="line">#deb http://mirror.nus.edu.sg/raspbian/raspbian wheezy main contrib non-free rpi</span><br><span class="line">#deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi</span><br><span class="line"># Uncomment line below then &apos;apt-get update&apos; to enable &apos;apt-get source&apos;</span><br><span class="line">#deb-src http://archive.raspbian.org/raspbian/ jessie main contrib non-free rpi</span><br></pre></td></tr></table></figure></p>
+<p>software<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/oblique/create_ap.git</span><br></pre></td></tr></table></figure></p>
+<p>dependencies<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install util-linux procps iproute2 iw haveged hostapd dnsmasq</span><br></pre></td></tr></table></figure></p>
+<p><strong>hostapd</strong> is the daemon thread of <code>Host Access Point</code><br>used to provide <code>WPA2</code> token check and authentication</p>
+<p><strong>dnsmasq</strong> used to config <code>DNS</code> provide <code>DHCP</code> service</p>
+<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p><a href="https://github.com/oblique/create_ap" target="_blank" rel="noopener">Config Git Page</a></p>
+<h3 id="Wlan-config"><a href="#Wlan-config" class="headerlink" title="Wlan config"></a>Wlan config</h3><p>dispatch wlan0 a static ip address<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/dhcpcd.conf</span><br><span class="line"></span><br><span class="line">interface wlan0</span><br><span class="line">    static ip_address=192.168.0.1/24</span><br></pre></td></tr></table></figure></p>
+<p>comments the wlan0 wpa-conf to prevent distribute host mode<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/network/interfaces</span><br><span class="line"></span><br><span class="line">allow-hotplug wlan0</span><br><span class="line">iface wlan0 inet manual</span><br><span class="line">#    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf</span><br></pre></td></tr></table></figure></p>
+<p>restart raspberry<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service dhcpcd restart</span><br><span class="line">sudo reboot</span><br><span class="line">sudo init 0</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="Host-config"><a href="#Host-config" class="headerlink" title="Host config"></a>Host config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/hostapd/hostapd.conf</span><br><span class="line"></span><br><span class="line">interface=wlan0</span><br><span class="line">driver=nl80211</span><br><span class="line">ssid=pi3ap</span><br><span class="line">hw_mode=g</span><br><span class="line">channel=6</span><br><span class="line">wmm_enabled=1</span><br><span class="line">macaddr_acl=0</span><br><span class="line">auth_algs=1</span><br><span class="line">ignore_broadcast_ssid=0</span><br><span class="line"># WPA2 mode</span><br><span class="line">wpa=2</span><br><span class="line">wpa_passphrase=12345678</span><br><span class="line">wpa_key_mgmt=WPA-PSK</span><br><span class="line">rsn_pairwise=CCMP</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Web-config"><a href="#Web-config" class="headerlink" title="Web config"></a>Web config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/sysctl.conf</span><br><span class="line"></span><br><span class="line"># remove comment</span><br><span class="line">net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
+<p>if not want to reboot raspberry<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c &quot;echo 1 &gt;/proc/sys/net/ipv4/ip_forward&quot;</span><br></pre></td></tr></table></figure></p>
+<p>For config <code>NAT</code>, config firewall first<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -t nat -APOSTROUTING -o eth0 -j MASQUERADE</span><br><span class="line">sudo iptables -A FORWARD -i eth0-o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT</span><br><span class="line">sudo iptables -A FORWARD -i wlan0-o eth0 -j ACCEPT</span><br></pre></td></tr></table></figure></p>
+<p>set rule autostart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c &quot;iptables-save&gt; /etc/iptables.ipv4.nat&quot;</span><br></pre></td></tr></table></figure></p>
+<p>run <code>NAT</code> by <code>DHCPCD</code> need a new config<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat</span><br><span class="line">iptables-restore &lt;/etc/iptables.ipv4.nat</span><br></pre></td></tr></table></figure></p>
+<p>restart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service hostapdstart</span><br><span class="line">sudo service dnsmasq start</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/03/Tomcat-ClassLoader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/03/Tomcat-ClassLoader/" class="post-title-link" itemprop="url">Tomcat-ClassLoader</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-03 18:47:51" itemprop="dateCreated datePublished" datetime="2017-08-03T18:47:51+08:00">2017-08-03</time>
             
 
             
@@ -1625,59 +1968,43 @@
       
         
           
-            <h3 id="tradition-loop"><a href="#tradition-loop" class="headerlink" title="tradition loop"></a>tradition loop</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">spin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">for</span>(i=<span class="number">0</span>; i&lt;<span class="number">10</span>; i++) &#123;</span><br><span class="line">	;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>In vm there many frame at any point,<br>but only the operand stack in <strong>currrent frame</strong> is active.</p>
-<h3 id="javap-c-Spin-class"><a href="#javap-c-Spin-class" class="headerlink" title="javap -c Spin.class"></a>javap -c Spin.class</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void spin();</span><br><span class="line">    Code:</span><br><span class="line">       0: iconst_0</span><br><span class="line">       1: istore_1</span><br><span class="line">       2: iload_1</span><br><span class="line">       3: bipush        10</span><br><span class="line">       5: if_icmpge     14</span><br><span class="line">       8: iinc          1, 1</span><br><span class="line">      11: goto          2</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>[0]</td>
-<td>push int constant 0</td>
-</tr>
-<tr>
-<td>[1]</td>
-<td>store into local variable 1 (i=0)</td>
-</tr>
-<tr>
-<td>[2]</td>
-<td>push local variable <strong>1</strong> (-&gt; i)</td>
-</tr>
-<tr>
-<td>[3]</td>
-<td>push int constant 10</td>
-</tr>
-<tr>
-<td>[5]</td>
-<td>break if great or equals (i&gt;=10)</td>
-</tr>
-<tr>
-<td>[8]</td>
-<td>increment local variable <strong>1</strong> by 1 (i++)</td>
-</tr>
-<tr>
-<td>[11]</td>
-<td>loop</td>
-</tr>
-<tr>
-<td>[14]</td>
-<td>return void when done</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h3 id="Instructions"><a href="#Instructions" class="headerlink" title="Instructions"></a>Instructions</h3><ul>
-<li><code>iconst_&lt;i&gt;</code> <strong>push</strong> an int constant to operand stack</li>
-<li><code>bipush</code> <strong>immediate push</strong> int constant to operand stack</li>
-<li><code>istore_&lt;i&gt;</code> <strong>pops</strong> an int from the operand stack and stores it in local variable <strong>i</strong></li>
-<li><code>iload_&lt;i&gt;</code> <strong>pushes</strong> the value in local variable <strong>i</strong> on to the operand stack</li>
-</ul>
+            <h2 id="JVM-class-loader"><a href="#JVM-class-loader" class="headerlink" title="JVM class loader"></a>JVM class loader</h2><p>JVM contain loaders:</p>
+<ol>
+<li>BootStrapClassLoader<br> jvm need foundation class</li>
+<li>ExtClassLoader<br> load <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>AppClassLoader<br> $CLASS_PATH$ and -classpath, and class not be contained above</li>
+<li>CustomClassLoader<br> self define class loader[<strong>progress</strong>]</li>
+</ol>
+<p>different classloader’s class <strong>can’t use in mix</strong>,<br>even if the class is <strong>same package name</strong> and <strong>same class name</strong>.</p>
+<p>JVM use delegation model</p>
+<ol>
+<li>pass request to father <strong>until the top</strong></li>
+<li>if top can’t load return to <strong>sub level</strong></li>
+<li>if the floor can’t load class throw <strong>ClassNotFoundException</strong></li>
+</ol>
+<p><a href="2017-05-16 Java-ClassLoader-2">java class loader</a></p>
+<p>So if a same path class be put in $CLASS_PATH$ directory, java will load<br>$CLASS_PATH$ class first.</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/java-classloader.svg" alt></p>
+<h2 id="Tomcat-class-loader"><a href="#Tomcat-class-loader" class="headerlink" title="Tomcat class loader"></a>Tomcat class loader</h2><p>Tomcat loader like this:</p>
+<ol>
+<li>Bootstrap<br> guilde class loader <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>System<br> tomcat container loading <code>$CATALINA_HOME$/bin</code> jars</li>
+<li>Common<br> app common use class <code>$CATALINA_HOME$/lib</code> jars</li>
+<li>WebApp<br> <code>WEB-INF/classes</code> and <code>WEB-INF/lib</code> developer’s workspace</li>
+</ol>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/tomcat-classloader.svg" alt></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>When developing throw an exception from java.io.ObjectStreamClass</p>
+<p><em>row:2034</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> ClassCastException(</span><br><span class="line">  <span class="string">"cannot assign instance of "</span> +</span><br><span class="line">  val.getClass().getName() + <span class="string">" to field "</span> +</span><br><span class="line">  f.getDeclaringClass().getName() + <span class="string">"."</span> +</span><br><span class="line">  f.getName() + <span class="string">" of type "</span> +</span><br><span class="line">  f.getType().getName() + <span class="string">" in instance of "</span> +</span><br><span class="line">  obj.getClass().getName());</span><br></pre></td></tr></table></figure></p>
+<p>From inspect the class type is a blank type only a path name.<br>Manually change the Class type suppress exception then jump breakpoint<br>the throw a exception like this:</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/TIM-20170802190442.png" alt></p>
+<h3 id="Key-Point"><a href="#Key-Point" class="headerlink" title="Key Point"></a>Key Point</h3><p>The Class used to communication is for other application use,<br>but the class contain a property that is from acceptor’s offical workspace.</p>
+<p>Two application use a same tomcat and<br>put the dependent jar in <code>$CATALINA_HOME$/lib</code>.</p>
+<p>It lead to a problem, the acceptor’s application load object and it’s field<br>class in two different classloader. one is <code>WebAppClassLoader</code>, on is <code>bootstrap</code></p>
+<ol>
+<li>In object receive acceptor object use the common class jar[find in floor level]</li>
+<li>When object comes the property field’s class be found in workspace<br> but object’s classloader can’t see,<br> so as it’s sign target field class is just a shell.</li>
+<li>When suppress exception and jump breakpoint,<br> the business class violate the loader constraint.</li>
+</ol>
 
           
         
@@ -1734,7 +2061,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/29/ZK-queue/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/23/Cryptology-in-transmission/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1754,7 +2081,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/29/ZK-queue/" class="post-title-link" itemprop="url">ZK queue</a>
+                <a href="/2017/07/23/Cryptology-in-transmission/" class="post-title-link" itemprop="url">Cryptology in transmission</a>
               
             
           </h1>
@@ -1779,7 +2106,7 @@
                 
               
 
-              <time title="Created: 2017-05-29 22:19:42" itemprop="dateCreated datePublished" datetime="2017-05-29T22:19:42+08:00">2017-05-29</time>
+              <time title="Created: 2017-07-23 20:17:51" itemprop="dateCreated datePublished" datetime="2017-07-23T20:17:51+08:00">2017-07-23</time>
             
 
             
@@ -1796,7 +2123,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+                <time title="Modified: 2020-06-17 22:34:01" itemprop="dateModified" datetime="2020-06-17T22:34:01+08:00">2020-06-17</time>
               
             
           </span>
@@ -1813,7 +2140,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a></span>
 
                 
                 
@@ -1850,40 +2177,35 @@
       
         
           
-            <h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><ul>
-<li><strong>Define</strong></li>
-</ul>
-<p><code>static public class Queue extends SyncPrimitive</code></p>
-<p>class define in SyncPrimitive, it’s inner static class.</p>
-<p>same as the previous article <code>ZK barrier</code></p>
-<ul>
-<li><p><strong>Properties</strong><br>no properties</p>
+            <h2 id="Password"><a href="#Password" class="headerlink" title="Password"></a>Password</h2><p>In application <code>password</code> mean a text string, used to authenticate user identity.</p>
+<p>In cryptology <code>cipher</code> mean a series of algorithms.<br><code>encript</code> and <code>decript</code> be called cipher algorithm.</p>
+<h2 id="Key"><a href="#Key" class="headerlink" title="Key"></a>Key</h2><p>A parameter in algorithm, participate calculation.<br>In generally bigger length of the key is, the harder to attack brutally</p>
+<h2 id="Symmetric-key-algorithm"><a href="#Symmetric-key-algorithm" class="headerlink" title="Symmetric-key algorithm"></a>Symmetric-key algorithm</h2><p>Usual algorithm hava <code>DES</code> <code>3DES</code> <code>AES</code>.<br>advantage of this algorithm is performanc, disadvantage is security problem.</p>
+<p>Once the key be attacked, the ciphertext be decripted.<br>So how to securely transfer symmetric key be a big problem.</p>
+<h2 id="Public-key-cryptography"><a href="#Public-key-cryptography" class="headerlink" title="Public-key cryptography"></a>Public-key cryptography</h2><p>Who want to make sure security, who generate key pair.<br>Sender use public key to encript, receiver use private key to decript.</p>
+<p>The advantage of this cryptograpy is security, disadvantage is performance.</p>
+<h2 id="Message-digest"><a href="#Message-digest" class="headerlink" title="Message digest"></a>Message digest</h2><p><code>MD5</code> <code>SHA</code> hash algorithm used to create a fingerprint.<br>It’s an one way hash function, and unreversible.<br>Make sure data not dropping packet, prevent data not be replaced by attacker.</p>
+<h2 id="Message-authentication-code"><a href="#Message-authentication-code" class="headerlink" title="Message authentication code"></a>Message authentication code</h2><p>First share common key first.<br>Sender calculate mac code by mac algorithm and key.<br>Receiver calculate as well, check data is not be ‘modified’.</p>
+<p>But mac can’t resolve non-repudiation problem. Sender say the <code>key</code> be stolen,<br>the data sended by attacker.</p>
+<h2 id="Digital-Signature"><a href="#Digital-Signature" class="headerlink" title="Digital Signature"></a>Digital Signature</h2><p>The way to resolve this problem is use <code>public-key cryptography</code> to calc mac.</p>
+<ol>
+<li><p>Sender use <code>private key</code> calc mac, send message with mac.</p>
 </li>
-<li><p><strong>Constructor</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Queue(String address, String name) &#123;</span><br><span class="line">    <span class="keyword">super</span>(address);</span><br><span class="line">    <span class="keyword">this</span>.root = name;</span><br><span class="line">    <span class="comment">// Create ZK node name</span></span><br><span class="line">    <span class="keyword">if</span> (zk != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Stat s = zk.exists(root, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">                zk.create(root, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">                 Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                        CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<li><p>Receiver split data, got message and mac.</p>
 </li>
-</ul>
-<p>the constructor is not same as barrier, it no need common path.</p>
-<ul>
-<li><strong>push</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">produce</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    ByteBuffer b = ByteBuffer.allocate(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">byte</span>[] value;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add child with value i</span></span><br><span class="line">    b.putInt(i);</span><br><span class="line">    value = b.array();</span><br><span class="line">    zk.create(root + <span class="string">"/element"</span>, value, Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                CreateMode.PERSISTENT_SEQUENTIAL);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<li><p>receiver check mac by <code>public key</code>, result is same with <code>sender&#39;s mac</code> show success.</p>
 </li>
-</ul>
-<p>create a node with value.</p>
-<ul>
-<li><strong>pop</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">consume</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> retvalue = -<span class="number">1</span>;</span><br><span class="line">    Stat stat = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get the first element available</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (list.size() == <span class="number">0</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"Going to wait"</span>);</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                String min = list.get(<span class="number">0</span>).substring(<span class="number">7</span>);</span><br><span class="line">                <span class="keyword">for</span>(String s : list)&#123;</span><br><span class="line">                  String tempValue = s.substring(<span class="number">7</span>);</span><br><span class="line">                  min = tempValue.compareTo(min) &lt; <span class="number">0</span>? tempValue: min;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                System.out.println(<span class="string">"Temporary value: "</span> +</span><br><span class="line">                    root + <span class="string">"/element"</span> + min);</span><br><span class="line">                <span class="keyword">byte</span>[] b = zk.getData(root +</span><br><span class="line">                    <span class="string">"/element"</span> + min, <span class="keyword">false</span>, stat);</span><br><span class="line">                zk.delete(root + <span class="string">"/element"</span> + min, <span class="number">0</span>);</span><br><span class="line">                ByteBuffer buffer = ByteBuffer.wrap(b);</span><br><span class="line">                retvalue = buffer.getInt();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> retvalue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>Synchronously pop the minimum node name’s node.</p>
-<h3 id="Test-queue"><a href="#Test-queue" class="headerlink" title="Test queue"></a>Test queue</h3><ul>
-<li><p>a producer</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"7"</span>, <span class="string">"p"</span>&#125;;</span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        queueTest(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>few customer</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"3"</span>, <span class="string">"c"</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;Integer.valueOf(args[<span class="number">2</span>]); i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            queueTest(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>Queue’s sequential rely on the node name’s sequential.<br>If nodes’ name sequential messed up, the queue is messed as well.</p>
-<p>The queue rely on name form, so the data’s key must all be fetch from zookeeper.<br>If the key quantity is big, the I/O cost well be appreciable.</p>
+</ol>
+<h3 id="Public-key-credential"><a href="#Public-key-credential" class="headerlink" title="Public-key credential"></a>Public-key credential</h3><p>Certification Authority[CA] to manage organization’s public key.</p>
+<ol>
+<li>Receiver create key pair, private key manage by it’s self, public key pass to CA.</li>
+<li>CA check [offline maybe] the key is from the organization.</li>
+<li>CA sign the receiver’s public-key by itself’s private-key to generate a <code>PKC</code></li>
+<li>fetch <code>PKC</code></li>
+<li>Sender use CA’s public-key to check <code>PKC</code>,<br>if successd then the public-key in <code>PKC</code> is the reciver’s.</li>
+<li>Encript by <code>public-key</code> send to receiver.</li>
+<li>Receive and decript message by <code>private-key</code>.</li>
+</ol>
 
           
         
@@ -1940,7 +2262,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/27/ZK-barrier/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/08/Quantum-machine/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1960,7 +2282,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/05/27/ZK-barrier/" class="post-title-link" itemprop="url">ZK barrier</a>
+                <a href="/2017/07/08/Quantum-machine/" class="post-title-link" itemprop="url">Quantum machine</a>
               
             
           </h1>
@@ -1985,7 +2307,7 @@
                 
               
 
-              <time title="Created: 2017-05-27 22:06:47" itemprop="dateCreated datePublished" datetime="2017-05-27T22:06:47+08:00">2017-05-27</time>
+              <time title="Created: 2017-07-08 22:05:23" itemprop="dateCreated datePublished" datetime="2017-07-08T22:05:23+08:00">2017-07-08</time>
             
 
             
@@ -2019,7 +2341,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a></span>
 
                 
                 
@@ -2056,225 +2378,16 @@
       
         
           
-            <p>Zookeeper just like a cow boy, he know how to feed cattle.<br><img src="/2017/05/27/ZK-barrier/01.jpg" alt></p>
-<p>Make a crowd of cattle move synchronized is not a easy thing.<br><img src="/2017/05/27/ZK-barrier/02.jpg" alt></p>
-<p>To hold cattle, cowboy need barriers.<br><img src="/2017/05/27/ZK-barrier/03.jpg" alt></p>
-<h3 id="Barrier"><a href="#Barrier" class="headerlink" title="Barrier"></a>Barrier</h3><ul>
-<li><strong>Define</strong></li>
-</ul>
-<p><code>static public class Barrier extends SyncPrimitive</code></p>
-<p>class define in SyncPrimitive, it’s inner static class.</p>
-<p>It take it’s outter class as template, take outter class’s<br>static variable as common space.</p>
-<ul>
-<li><p><strong>Properties</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// max cow number</span><br><span class="line">int size;</span><br><span class="line">// the barrier&apos;s name</span><br><span class="line">String name;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Constructor</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Barrier(String address, String root, <span class="keyword">int</span> size) &#123;</span><br><span class="line">    <span class="comment">// Create barrier node</span></span><br><span class="line">    <span class="keyword">super</span>(address);</span><br><span class="line">    <span class="keyword">this</span>.root = root;</span><br><span class="line">    <span class="keyword">this</span>.size = size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (zk != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Stat s = zk.exists(root, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">              <span class="comment">//path, no data, no privilege control, not temple node</span></span><br><span class="line">                zk.create(root, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">                    Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// My node name</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        name = <span class="keyword">new</span> String(InetAddress.getLocalHost()</span><br><span class="line">            .getCanonicalHostName().toString());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (UnknownHostException e) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>Used to create a barrier node in zookeeper.<br><code>super()</code> used to create the zk client object.</p>
-<ul>
-<li><strong>In</strong></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enter</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    String path = zk.create(root + <span class="string">"/"</span> + name, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">        Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">            CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line">    name = path.substring(path.lastIndexOf(<span class="string">"/"</span>) + <span class="number">1</span>, path.length());</span><br><span class="line">    <span class="comment">// keep check</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            <span class="comment">// get current cattles out</span></span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            System.out.println(Thread.currentThread()</span><br><span class="line">                .getName() + <span class="string">" "</span> + list.size());</span><br><span class="line">            <span class="comment">// enter when reach the threshold</span></span><br><span class="line">            <span class="keyword">if</span> (list.size() &lt; size) &#123;</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Once a cow, check the threshold.<br>If not reach, wait for more cow come, or enter barrier.<br>Loop checking, when wake up the threshold should reached.</p>
-<p><code>CreateMode.EPHEMERAL_SEQUENTIAL</code> like this  <code>_1, _2</code></p>
-<ul>
-<li><strong>Out</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">leave</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException </span>&#123;</span><br><span class="line">    zk.delete(root + <span class="string">"/"</span> + name, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// keep check</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (list.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>Once a cow, check the space empty or not.<br>If not empty, wait for more cow leave, or leave barrier.<br>Loop checking, when wake up the threshold should reached.</p>
-<h3 id="Test-one-barrier"><a href="#Test-one-barrier" class="headerlink" title="Test one barrier"></a>Test one barrier</h3><ul>
-<li>In main<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            barrierTest(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>Simulate three cows.</p>
-<ul>
-<li>Test method<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">barrierTest</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">    Barrier b = <span class="keyword">new</span> Barrier(args[<span class="number">1</span>], <span class="string">"/b1"</span>, <span class="keyword">new</span> Integer(args[<span class="number">2</span>]));</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> flag = b.enter();</span><br><span class="line">        System.out.println(<span class="string">"Entered barrier: "</span> +</span><br><span class="line">            Thread.currentThread().getName());</span><br><span class="line">        <span class="keyword">if</span>(!flag) System.out.println(<span class="string">"Error when entering the barrier"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// simulate cow sleep</span></span><br><span class="line">        Thread.sleep(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line">        b.leave();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (KeeperException e)&#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e)&#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"Left barrier "</span> +</span><br><span class="line">        Thread.currentThread().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>This test’s synchroniz is base on cow notify another.<br>So it must make sure when cowboy[zookeeper] tiggered,<br>the transaction have bean done.</p>
-<p>In other word, cattles should all enter then all out.<br>If run too fast, the last cattle can’t be notify, keep waiting.<br>If the number equal to the threshold, cattles can’t leave as well.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/26/Hello-ActiveMq/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/26/Hello-ActiveMq/" class="post-title-link" itemprop="url">Hello ActiveMq</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-26 18:56:32" itemprop="dateCreated datePublished" datetime="2017-05-26T18:56:32+08:00">2017-05-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Common"><a href="#Common" class="headerlink" title="Common"></a>Common</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// connection's factory[modle]</span></span><br><span class="line">ConnectionFactory connectionFactory = <span class="keyword">new</span> ActiveMQConnectionFactory(</span><br><span class="line">JMSProducer.USERNAME,</span><br><span class="line">JMSProducer.PASSWORD,</span><br><span class="line">JMSProducer.BROKEURL);</span><br><span class="line"><span class="comment">// connection object[don't forget to close it]</span></span><br><span class="line">Connection connection = connectionFactory.createConnection();</span><br><span class="line"><span class="comment">// begin</span></span><br><span class="line">connection.start();</span><br><span class="line"><span class="comment">// communication with MQ[transaction modle, false in consumer]</span></span><br><span class="line">Session session = connection.createSession(<span class="keyword">true</span>, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line"><span class="comment">// MQ address object</span></span><br><span class="line">Destination destination;</span><br></pre></td></tr></table></figure>
-<p><strong>close connection in final</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (connection != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          connection.close();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (JMSException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="Producer-Consumer"><a href="#Producer-Consumer" class="headerlink" title="Producer-Consumer"></a>Producer-Consumer</h3><p><em>producer</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the queue's name</span></span><br><span class="line">destination = session.createQueue(<span class="string">"HelloWorld"</span>);</span><br><span class="line"><span class="comment">// the producer object</span></span><br><span class="line">MessageProducer messageProducer = session.createProducer(destination);</span><br><span class="line"><span class="comment">// message</span></span><br><span class="line">TextMessage message = session.createTextMessage(<span class="string">"Hello ActiveMQ"</span>);</span><br><span class="line"><span class="comment">// send</span></span><br><span class="line">messageProducer.send(message);</span><br></pre></td></tr></table></figure></p>
-<p><em>consumer</em></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// the queue's name</span></span><br><span class="line">destination = session.createQueue(<span class="string">"HelloWorld"</span>);</span><br><span class="line"><span class="comment">// the producer object</span></span><br><span class="line">messageConsumer = session.createConsumer(destination);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">    <span class="comment">// timeout if no response</span></span><br><span class="line">    TextMessage textMessage = (TextMessage) messageConsumer.receive(<span class="number">100000</span>);</span><br><span class="line">    <span class="keyword">if</span>(textMessage != <span class="keyword">null</span>)&#123;</span><br><span class="line">        System.out.println(<span class="string">"recieved:"</span> + textMessage.getText());</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Publish-Subscribe"><a href="#Publish-Subscribe" class="headerlink" title="Publish-Subscribe"></a>Publish-Subscribe</h3><p><strong>publish</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// give a topic</span></span><br><span class="line">Topic topic = session.createTopic(<span class="string">"HelloTopic"</span>);</span><br><span class="line"><span class="comment">// message</span></span><br><span class="line">TextMessage message = session.createTextMessage(<span class="string">"ActiveMQ Topic"</span>);</span><br><span class="line"><span class="comment">// sender</span></span><br><span class="line">MessageProducer producer = session.createProducer(topic);</span><br><span class="line"><span class="comment">// set tmp data</span></span><br><span class="line">producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);</span><br><span class="line"><span class="comment">// publish</span></span><br><span class="line">producer.send(message);</span><br></pre></td></tr></table></figure></p>
-<p><strong>subscribe</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// got a topic</span></span><br><span class="line">Topic topic = session.createTopic(<span class="string">"HelloTopic"</span>);</span><br><span class="line"><span class="comment">// reciever</span></span><br><span class="line">MessageConsumer consumer = session.createConsumer(topic);</span><br><span class="line"><span class="comment">// set a listener, deal callback</span></span><br><span class="line">consumer.setMessageListener(<span class="keyword">new</span> MessageListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessage</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">        TextMessage tmd = (TextMessage) message;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"Received message: "</span> + tmd.getText());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (JMSException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+            <p><img src="/2017/07/08/Quantum-machine/snow-hill.jpg" alt></p>
+<h3 id="Offical-introduce"><a href="#Offical-introduce" class="headerlink" title="Offical introduce"></a>Offical introduce</h3><p>In nature world, things tend to evolve toward their lowest energy.<br>hot thing cool down, snow slide down hills and so on.</p>
+<p>Image a kind of problem, which valley is the lowest?<br>or which space snowslide is the easiest?</p>
+<p>Classical algorithms seek the lowest valley by send traveler to landscape<br>and move base on logical. This is generally most efficient to move(best track), but he is easy be traped and<br>can’t see the global view, only got tiny space’s solution</p>
+<p>In contrast, quantum seek by a team, contact each other by a phenomenon called <code>Quantum superposition</code>.<br>They can <code>feel</code> each other, the solution is their <code>feeling</code><br>Another phenomenon called <code>Quantum tunneling</code>, they can <code>cross</code> the hill<br>rather than forced to climb them.</p>
+<p><img src="/2017/07/08/Quantum-machine/cooling-201508.png" alt></p>
+<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p><code>Quantum tunneling</code> used this phenomenon to simulate nature[maybe god].<br><code>Quantum superposition</code> soldiers used to simulation.<br><code>Quantum annealing</code> is an algorithm to simulate the <code>rule</code> behind the problem.</p>
+<p>More qubits to simulate, quicker to find the turth.</p>
+<p>Maybe just like the snow on the hill, they contact with each other.<br>Theirself must know which space’s snow density is the lowest<br>and avalanche probability is the highest.</p>
+<p>Quantum machine maybe used special condition/ simulation device/ observe device to get a problem’s solution <strong>by watch</strong>.</p>
 
           
         
@@ -2320,7 +2433,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2362,7 +2475,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">212</span>
+                    <span class="site-state-item-count">227</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2411,7 +2524,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -2582,7 +2699,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">77</span>
+                      
+                    
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -3180,46 +3299,6 @@
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 

@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-characters/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/14/Lazy-Greedy-Selfish/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/02/05/Match-characters/" class="post-title-link" itemprop="url">Match characters</a>
+                <a href="/2017/02/14/Lazy-Greedy-Selfish/" class="post-title-link" itemprop="url">Lazy Greedy Selfish</a>
               
             
           </h1>
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="Created: 2017-02-05 19:20:32" itemprop="dateCreated datePublished" datetime="2017-02-05T19:20:32+08:00">2017-02-05</time>
+              <time title="Created: 2017-02-14 17:03:47" itemprop="dateCreated datePublished" datetime="2017-02-14T17:03:47+08:00">2017-02-14</time>
             
 
             
@@ -467,959 +467,53 @@
       
         
           
-            <h1 id="Match-a-character"><a href="#Match-a-character" class="headerlink" title="Match a character"></a>Match a character</h1><p><strong>Hexadecimal character</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<p><strong>Nonhexadecimal character</strong><br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^a-fA-F0-9]</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<blockquote>
-<p>The notation using square brackets is called<br><strong>a character class</strong></p>
-</blockquote>
-<ul>
-<li><p><strong><code>\, ^, -, and ]</code> have special function in square brackets</strong></p>
-</li>
-<li><p><em>JavaScript</em> treats ‹[]› as an empty character class that <strong>always fails to match</strong>.</p>
-</li>
-<li><p>In all the regex flavors discussed in this book, a <strong>negated character class</strong> matches <strong>line break characters</strong>, unless you add them to the negated character class. Make sure that you don’t accidentally allow your regex to span <em>across lines</em>.</p>
-</li>
-</ul>
-<hr>
-<h3 id="About-w"><a href="#About-w" class="headerlink" title="About \w"></a>About <code>\w</code></h3><ul>
-<li>Java 4-6, JavaScript, PCRE, Ruby : <code>\w</code> -&gt; [a-zA-Z0-9_]</li>
-<li>Java 7 : set <strong>Pattern.UNICODE_CHARACTER_CLASS</strong> flag, <code>\w</code> matches unicode characters. <strong>(?U)</strong> Inner regex usage.</li>
-<li>Python2.x : set UNICODE or U flag, matches unicode characters.</li>
-<li>Python3.x : matches unicode characters in default, <code>\w</code> ASCII-only with the ASCII or A flag.</li>
-<li>Perl&gt;=5.1.4 : <code>/u (Unicode)</code> adds all Unicode scripts, and <code>/l
-(locale)</code> makes <code>\w</code> depend on the locale. (<code>/d</code>, no <code>adlu</code>) Unicode scripts rule same as Perl&lt;5.1.4.</li>
-<li>Perl&lt;5.1.4 : matches unicode characters in default, <code>\w</code> automatically includes Unicode scripts if the subject string or the regex are <strong>encoded as UTF-8</strong>, or the regex includes a code <strong>point above 255</strong> such as ‹\x{100}› or a Unicode property such as ‹\p{L}›. If not, the default for <code>\w</code> is pure ASCII</li>
-</ul>
-<h3 id="About-d"><a href="#About-d" class="headerlink" title="About \d"></a>About <code>\d</code></h3><ul>
-<li><code>\d</code> follows the same rules as <code>\w</code> in all these flavors.</li>
-<li>In .NET, digits from other scripts are always included.</li>
-<li>In Python it depends on the <strong>UNICODE</strong> and <strong>ASCII</strong> flags, and whether you’re using Python 2.x or 3.x. In Perl 5.14, it depends on the <strong>/adlu</strong> flags.</li>
-<li>In earlier versions of Perl, it depends on <strong>the encoding</strong> of the subject and regex, and whether the regex has any Uncicode tokens</li>
-</ul>
-<h3 id="About-s"><a href="#About-s" class="headerlink" title="About \s"></a>About <code>\s</code></h3><ul>
-<li><code>\s</code> matches any whitespace character. This includes spaces, tabs, and line breaks.</li>
-<li><code>\S</code> matches any character <strong>not matched</strong> by <code>\s</code></li>
-<li>In .NET and JavaScript, <code>\s</code> also matches any character defined as whitespace by the <strong>Unicode standard</strong>.</li>
-<li>In Java, Perl, and Python, <code>\s</code> follows the same rules as <code>\w</code> and <code>\d</code>.</li>
-<li>Notice that JavaScript uses <strong>Unicode</strong> for ‹\s› but <strong>ASCII</strong> for <code>\d</code> and <code>\w</code>.</li>
-</ul>
-<hr>
-<h3 id="Flavor-Specific-Features"><a href="#Flavor-Specific-Features" class="headerlink" title="Flavor-Specific Features"></a>Flavor-Specific Features</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9-[g-zG-Z]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET 2.0 or later</li>
-</ul>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\w&amp;&amp;[a-fA-F0-9\s]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>uses character class <strong>intersection</strong> to match a hexadecimal digit.</li>
-<li>Regex options: None</li>
-<li>Regex flavors: Java</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-Z0-9&amp;&amp;[^g-zG-Z]]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>uses character class <strong>subtraction</strong> to match a single hexadecimal character in a roundabout way.</li>
-<li>Regex options: None</li>
-<li>Regex flavors: Java</li>
-</ul>
-<h1 id="Match-any-character"><a href="#Match-any-character" class="headerlink" title="Match any character"></a>Match any character</h1><h3 id="Any-character-except-line-breaks"><a href="#Any-character-except-line-breaks" class="headerlink" title="Any character except line breaks"></a>Any character except line breaks</h3><blockquote>
-<p><code>&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None (the “dot matches line breaks” option must not be set)</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<h3 id="Any-character-including-line-breaks"><a href="#Any-character-including-line-breaks" class="headerlink" title="Any character including line breaks"></a>Any character including line breaks</h3><blockquote>
-<p><code>&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: Dot matches line breaks</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
-</ul>
-<blockquote>
-<p><code>&#39;[\s\S]&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<hr>
-<h3 id="Inner-mode"><a href="#Inner-mode" class="headerlink" title="Inner mode"></a>Inner mode</h3><blockquote>
-<p><code>(?s)&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python</li>
-</ul>
-<blockquote>
-<p><code>(?m)&#39;.&#39;</code></p>
-</blockquote>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: Ruby</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/ASCII/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/05/ASCII/" class="post-title-link" itemprop="url">ASCII</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-05 16:15:21" itemprop="dateCreated datePublished" datetime="2017-02-05T16:15:21+08:00">2017-02-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="ASCII"><a href="#ASCII" class="headerlink" title="ASCII"></a>ASCII</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th></th>
-<th>0</th>
-<th>1</th>
-<th>2</th>
-<th>3</th>
-<th>4</th>
-<th>5</th>
-<th>6</th>
-<th>7</th>
-<th>8</th>
-<th>9</th>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>D</th>
-<th>E</th>
-<th>F</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>0</td>
-<td>NUL</td>
-<td>SOH</td>
-<td>STX</td>
-<td>ETX</td>
-<td>EOT</td>
-<td>ENQ</td>
-<td>ACK</td>
-<td>BEL</td>
-<td>BS</td>
-<td>HT</td>
-<td>LF</td>
-<td>VT</td>
-<td>FF</td>
-<td>CR</td>
-<td>SO</td>
-<td>SI</td>
-</tr>
-<tr>
-<td>1</td>
-<td>DLE</td>
-<td>DC1</td>
-<td>DC2</td>
-<td>DC3</td>
-<td>DC4</td>
-<td>NAK</td>
-<td>SYN</td>
-<td>ETB</td>
-<td>CAN</td>
-<td>EM</td>
-<td>SUB</td>
-<td>ESC</td>
-<td>FS</td>
-<td>GS</td>
-<td>RS</td>
-<td>US</td>
-</tr>
-<tr>
-<td>2</td>
-<td>(space)</td>
-<td>!</td>
-<td>“</td>
-<td>#</td>
-<td>$</td>
-<td>%</td>
-<td>&amp;</td>
-<td>‘</td>
-<td>(</td>
-<td>)</td>
-<td>*</td>
-<td>+</td>
-<td>,</td>
-<td>-</td>
-<td>.</td>
-<td>/</td>
-</tr>
-<tr>
-<td>3</td>
-<td>0</td>
-<td>1</td>
-<td>2</td>
-<td>3</td>
-<td>4</td>
-<td>5</td>
-<td>6</td>
-<td>7</td>
-<td>8</td>
-<td>9</td>
-<td>:</td>
-<td>;</td>
-<td>&lt;</td>
-<td>=</td>
-<td>&gt;</td>
-<td>?</td>
-</tr>
-<tr>
-<td>4</td>
-<td>@</td>
-<td>A</td>
-<td>B</td>
-<td>C</td>
-<td>D</td>
-<td>E</td>
-<td>F</td>
-<td>G</td>
-<td>H</td>
-<td>I</td>
-<td>J</td>
-<td>K</td>
-<td>L</td>
-<td>M</td>
-<td>N</td>
-<td>O</td>
-</tr>
-<tr>
-<td>5</td>
-<td>P</td>
-<td>Q</td>
-<td>R</td>
-<td>S</td>
-<td>T</td>
-<td>U</td>
-<td>V</td>
-<td>W</td>
-<td>X</td>
-<td>Y</td>
-<td>Z</td>
-<td>[</td>
-<td>\</td>
-<td>]</td>
-<td>^</td>
-<td>_</td>
-</tr>
-<tr>
-<td>6</td>
-<td>`</td>
-<td>a</td>
-<td>b</td>
-<td>c</td>
-<td>d</td>
-<td>e</td>
-<td>f</td>
-<td>g</td>
-<td>h</td>
-<td>i</td>
-<td>j</td>
-<td>k</td>
-<td>l</td>
-<td>m</td>
-<td>n</td>
-<td>o</td>
-</tr>
-<tr>
-<td>7</td>
-<td>p</td>
-<td>q</td>
-<td>r</td>
-<td>s</td>
-<td>t</td>
-<td>u</td>
-<td>v</td>
-<td>w</td>
-<td>x</td>
-<td>y</td>
-<td>z</td>
-<td>{</td>
-<td>&#124;</td>
-<td>}</td>
-<td>~</td>
-<td>DEL (delete)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h3 id="Contrast"><a href="#Contrast" class="headerlink" title="Contrast"></a>Contrast</h3><ul>
-<li>NUL(null)</li>
-<li>SOH(start of headline)</li>
-<li>STX (start of text)</li>
-<li>ETX (end of text)</li>
-<li>EOT (end of transmission)</li>
-<li>ENQ (enquiry)</li>
-<li>ACK (acknowledge)</li>
-<li>BEL (bell)</li>
-<li>BS (backspace)</li>
-<li>HT (horizontal tab)</li>
-<li>LF (NL line feed, new line)</li>
-<li>VT (vertical tab)</li>
-<li>FF (NP form feed, new page)</li>
-<li>CR (carriage return)</li>
-<li>SO (shift out)</li>
-<li>SI (shift in)</li>
-<li>DLE (data link escape)</li>
-<li>DC1 (device control 1)</li>
-<li>DC2 (device control 2)</li>
-<li>DC3 (device control 3)</li>
-<li>DC4 (device control 4)</li>
-<li>NAK (negative acknowledge)</li>
-<li>SYN (synchronous idle)</li>
-<li>ETB (end of trans. block)</li>
-<li>CAN (cancel)</li>
-<li>EM (end of medium)</li>
-<li>SUB (substitute)</li>
-<li>ESC (escape)</li>
-<li>FS (file separator)</li>
-<li>GS (group separator)</li>
-<li>RS (record separator)</li>
-<li>US (unit separator)</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/05/Match-nonprintable-characters/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/05/Match-nonprintable-characters/" class="post-title-link" itemprop="url">Match nonprintable characters</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-05 15:24:03" itemprop="dateCreated datePublished" datetime="2017-02-05T15:24:03+08:00">2017-02-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these characters</strong></p>
-<ul>
-<li>bell</li>
-<li>escape</li>
-<li>form feed</li>
-<li>line</li>
-<li>feed</li>
-<li>carriage return</li>
-<li>horizontal tab</li>
-<li>vertical tab<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexadecimal ASCII codes :</span><br><span class="line">07, 1B, 0C, 0A, 0D, 09, 0B</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\v</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\f\n\r\t\v</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\a\e\f\n\r\t\x0B</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby</li>
-</ul>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Representation</th>
-<th>Meaning</th>
-<th>Hex</th>
-<th>Regex flavors</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>‹\a›</td>
-<td>bell</td>
-<td>0x07</td>
-<td>.NET, Java, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\e›</td>
-<td>escape</td>
-<td>0x1B</td>
-<td>.NET, Java, PCRE, Perl, Ruby</td>
-</tr>
-<tr>
-<td>‹\f›</td>
-<td>form feed</td>
-<td>0x0C</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\n›</td>
-<td>line feed (newline)</td>
-<td>0x0A</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\r›</td>
-<td>carriage return</td>
-<td>0x0D</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\t›</td>
-<td>horizontal tab</td>
-<td>0x09</td>
-<td>.NET, Java, JavaScript, PCRE, Perl, Python, Ruby</td>
-</tr>
-<tr>
-<td>‹\v›</td>
-<td>vertical tab</td>
-<td>0x0B</td>
-<td>.NET, Java, JavaScript, Python, Ruby, Perl-5.10, PCRE-7.2</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\cG\x1B\cL\cJ\cM\cI\cK</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Ruby 1.9</li>
-</ul>
-<hr>
-<p><strong>The 7-bit character set</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\x07\x1B\x0C\x0A\x0D\x09\x0B</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/04/Match-literal-text/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/04/Match-literal-text/" class="post-title-link" itemprop="url">Match literal text</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-04 21:30:47" itemprop="dateCreated datePublished" datetime="2017-02-04T21:30:47+08:00">2017-02-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p><strong>Math these literal</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The punctuation characters in the ASCII table are: !&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~</span><br></pre></td></tr></table></figure></p>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">!&quot;#\$%&amp;&apos;\(\)\*\+,-\./:;&lt;=&gt;\?@\[\\]\^_`\&#123;\|&#125;~</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$()*+.?[\^&#123;|</span><br></pre></td></tr></table></figure>
-<ul>
-<li>these characters is key words, only <strong><em>matches itsself</em></strong></li>
-<li><strong><em>‘]’ and ‘}’</em></strong> is not</li>
-</ul>
-<hr>
-<h3 id="Variations"><a href="#Variations" class="headerlink" title="Variations"></a>Variations</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The●punctuation●characters●in●the●ASCII●table●are:●↵</span><br><span class="line">\Q!&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`&#123;|&#125;~\E</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Regex options: None</li>
-<li>Regex flavors: Java 6, PCRE, Perl</li>
-</ul>
-<p><strong>use \Q \E to suppresses the meaning<br>of all metacharacters, including the backslash</strong></p>
-<hr>
-<h3 id="Case-insensitive-matching"><a href="#Case-insensitive-matching" class="headerlink" title="Case-insensitive matching"></a>Case-insensitive matching</h3><p><strong>Outside the regex</strong><br><code>ascii</code></p>
+            <h3 id="Repeat-Certain-Number"><a href="#Repeat-Certain-Number" class="headerlink" title="Repeat Certain Number"></a>Repeat Certain Number</h3><h4 id="Hexadecimal-number"><a href="#Hexadecimal-number" class="headerlink" title="Hexadecimal number"></a>Hexadecimal number</h4><p><code>\b[a-f0-9]{1,8}\b</code></p>
 <ul>
 <li>Regex options: Case insensitive</li>
 <li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
 </ul>
-<p><strong>Inside the regex</strong><br><code>(?i)ascii</code></p>
+<h4 id="Floating-point-number"><a href="#Floating-point-number" class="headerlink" title="Floating-point number"></a>Floating-point number</h4><p><code>\d*\.\d+(e\d+)?</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<h2 id="Lazy-quantifiers"><a href="#Lazy-quantifiers" class="headerlink" title="Lazy quantifiers"></a>Lazy quantifiers</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*?</span><br><span class="line">+?</span><br><span class="line">??</span><br><span class="line">&#123;7,42&#125;?</span><br></pre></td></tr></table></figure>
+<ol>
+<li><em>any times</em>, one after another, the less the better</li>
+<li><em>more than one time</em>, one after another, the less the better</li>
+<li><em>have or not have</em>, not have first</li>
+<li><em>seven to fourtytwo times</em>, the less the better</li>
+</ol>
+<p>In <strong>default repeat</strong> like <code>*</code> <code>+</code> <code>?</code> <code>{}</code> after match unit are all greedy[<strong><em>greedy is not selfish</em></strong>]</p>
+<h2 id="Possessive-quantifiers"><a href="#Possessive-quantifiers" class="headerlink" title="Possessive quantifiers"></a>Possessive quantifiers</h2><p><strong><em>Possessive quantifiers is greedy and selfish</em></strong><br>It’s <strong>greedy and selfish</strong>, when it matches, it wouldn’t care other expressions’ express.<br>In other words, it <strong>wouldn’t Backtracking</strong> when matches.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*+</span><br><span class="line">++</span><br><span class="line">?+</span><br><span class="line">&#123;7,42&#125;+</span><br></pre></td></tr></table></figure>
+<ol>
+<li><em>any times</em>, block reduce to match, the more the better, no backtracking</li>
+<li><em>more than one time</em>, the more the better, no backtracking</li>
+<li><em>have or not have</em>, the more the better, no backtracking</li>
+<li><em>seven to fourtytwo times</em>, the more the better, no backtracking</li>
+</ol>
+<p><code>\b\d++\b</code></p>
 <ul>
 <li>Regex options: None</li>
-<li>Regex flavors: .NET, Java, XRegExp, PCRE, Perl, Python, Ruby</li>
+<li>Regex flavors: Java, PCRE, Perl 5.10, Ruby 1.9</li>
 </ul>
+<p><code>\b(?&gt;\d+)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p>ps. <code>(?&gt;\d+)</code> is an atomic group that essentially is a <strong>noncapturing group</strong>,<br>with the extra job of <strong>refusing to backtrack</strong>.</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p><code>\w++\d++</code> <strong>can’t mathes</strong> “123abc”<br>Because <code>\w++</code> <strong>selfishly occupy</strong> “123abc”, don’t care \d++ failed to match.<br>When use <code>(\w+)(\d+)</code> to match “123abc”, i found <em>gourp \1</em> matches “12”<br>and <em>group \2</em> matches “3”, <strong>so greedy works</strong>.<br>It’s <strong>not mean selfish is bad</strong>, but only unusual work in <strong>simply task</strong>.</p>
+<h2 id="Prevent-Runaway-Repetition"><a href="#Prevent-Runaway-Repetition" class="headerlink" title="Prevent Runaway Repetition"></a>Prevent Runaway Repetition</h2><p>Why prevent? because in some complex condition, expression will complex the same.<br>In these condition <code>Possessive quantifiers</code> is necessary.</p>
+<h3 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h3><p><em>Match a html’s origin code</em><br>Solution<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;(?&gt;.*?&lt;head&gt;)(?&gt;.*?&lt;title&gt;)(?&gt;.*?&lt;/title&gt;)↵</span><br><span class="line">(?&gt;.*?&lt;/head&gt;)(?&gt;.*?&lt;body[^&gt;]*&gt;)(?&gt;.*?&lt;/body&gt;).*?&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: Case insensitive, dot matches line breaks</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p>ps.If some <strong>tag properties</strong> need be matched, please modify expression.</p>
+<p>This regular expression has a worst-case complexity$^3$ of $O(n^7)$<br>If the file is <strong>twice the size</strong>, the regex can need up to <strong>128 times</strong><br>as many steps to figure out it doesn’t match.</p>
+<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h2><p><code>(x+x+)+y</code> to matches “xxxxxxxxxx”<br>It should not matches, watching the operation progress.<br>This regex is $O(2^n)$, if one more ‘x’ is added, the regex can need up to <strong>2times</strong></p>
 
           
         
@@ -1476,7 +570,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/03/github-style/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/14/Keyboard-special-characters/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1496,7 +590,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/02/03/github-style/" class="post-title-link" itemprop="url">github style</a>
+                <a href="/2017/02/14/Keyboard-special-characters/" class="post-title-link" itemprop="url">Keyboard special characters</a>
               
             
           </h1>
@@ -1521,7 +615,7 @@
                 
               
 
-              <time title="Created: 2017-02-03 22:12:08" itemprop="dateCreated datePublished" datetime="2017-02-03T22:12:08+08:00">2017-02-03</time>
+              <time title="Created: 2017-02-14 13:44:27" itemprop="dateCreated datePublished" datetime="2017-02-14T13:44:27+08:00">2017-02-14</time>
             
 
             
@@ -1538,7 +632,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-06-17 22:36:20" itemprop="dateModified" datetime="2020-06-17T22:36:20+08:00">2020-06-17</time>
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
               
             
           </span>
@@ -1592,645 +686,152 @@
       
         
           
-            <p><img src="/2017/02/03/github-style/095329_upMF_12.png" alt><br><strong>Top to down, left to right</strong></p>
-<ul>
-<li>XXX’s GitHub repository : “offical” page</li>
-<li>Your GitHub repository : “personal” page</li>
-<li>Working directory : “battlefield”</li>
-<li>Local repository : local project storage</li>
-<li>Index : cache space</li>
-</ul>
-<ol>
-<li><code>&quot;fork&quot;</code> : web “offical” -&gt; “personal”</li>
-<li><code>&quot;Pull request&quot;</code> : web handle to “offical”</li>
-<li><code>push</code> : local storage to remote storage</li>
-<li><code>fetch</code> : remote storage to local storage</li>
-<li><code>clone</code> : copy a remote git project</li>
-<li><code>pull XXX-github</code> : get “offical” update to local storage and merge to “battlefield”</li>
-<li><code>merge</code> : merge local storage to “battlefield”</li>
-<li><code>pull my-github</code> : get remote storage update to local storage</li>
-<li><code>checkout</code> : reset file or hash version to “battlefield” directly from local storage</li>
-<li><code>checkout</code> : reset file cover “battlefield” from cache</li>
-<li><code>commit -a</code> : handle to local storage and update to remote directly(push)</li>
-<li><code>commit</code> : handle to local storage</li>
-<li><code>add</code> : put add/delete/modify to cache</li>
-<li><code>reset</code> : reset file or hash version to cache from local storage</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/02/lucene-index-file-constructure-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/02/lucene-index-file-constructure-2/" class="post-title-link" itemprop="url">lucene index file constructure (2)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-02 18:27:21" itemprop="dateCreated datePublished" datetime="2017-02-02T18:27:21+08:00">2017-02-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-Prefix-amp-Suffix"><a href="#1-Prefix-amp-Suffix" class="headerlink" title="1. Prefix &amp; Suffix"></a>1. Prefix &amp; Suffix</h2><p>Lucene negative index will storage Term Dictionary. All Term sort by ‘dictionary sequence’, but Dictionary contain all word in documents, some words have long length and it’s <strong>occupy space</strong> will be astonish. In Lucene, when some word has same prefix with is privious <strong><code>word</code></strong>[may be it’s prefix is offset from it’s privious one], word storage it’s prefix’s offset in word then suffix.</p>
-<p><strong>Nature storage:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[VInt = 4] [t][e][r][m]</span><br><span class="line">[VInt = 10][t][e][r][m][a][g][a][n][c][y]</span><br><span class="line">[VInt = 9][t][e][r][m][a][g][a][n][t]</span><br><span class="line">[VInt = 8][t][e][r][m][i][n][a][l]</span><br></pre></td></tr></table></figure></p>
-<p><strong>Compress storage:</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[VInt = 4] [t][e][r][m]</span><br><span class="line">[VInt = 4 (offset)][VInt = 6][a][g][a][n][c][y]</span><br><span class="line">[VInt = 8 (offset)][VInt = 1][t]</span><br><span class="line">[VInt = 4(offset)][VInt = 4][i][n][a][l]</span><br></pre></td></tr></table></figure></p>
-<script type="math/tex; mode=display">4[term]\times3+4[agan]-3[offset]=13bytes</script><p><strong>Reduce occupy space, especially in dictionary sequence order condition, prefixs’ has big repeat probability</strong></p>
-<h2 id="2-Delta"><a href="#2-Delta" class="headerlink" title="2.Delta"></a>2.Delta</h2><p>Lucene negative index need to storage a lot of Integer number like Id, position, frequence and so on. For reduce the occupy space of Integer, when Integer increase, it only storage it’s <strong>difference value</strong>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">16386 16387 16388 16389</span><br><span class="line">[(1) 000, 0010][(1) 000, 0000][(0) 000, 0001]</span><br><span class="line">[(1) 000, 0011][(1) 000, 0000][(0) 000, 0001]</span><br><span class="line">[(1) 000, 0100][(1) 000, 0000][(0) 000, 0001]</span><br><span class="line">[(1) 000, 0101][(1) 000, 0000][(0) 000, 0001]</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">16386 16387 16388 16389</span><br><span class="line">[(1) 000, 0010][(1) 000, 0000][(0) 000, 0001]</span><br><span class="line">[(0) 000, 0001]</span><br><span class="line">[(0) 000, 0001]</span><br><span class="line">[(0) 000, 0001]</span><br></pre></td></tr></table></figure>
-<script type="math/tex; mode=display">2[high num bytes]\times3 = 6</script><h2 id="3-Flag-A-B"><a href="#3-Flag-A-B" class="headerlink" title="3. Flag (A, B?)"></a>3. Flag (A, B?)</h2><p>There are same condition in Lucene index constructure, after block maybe have another block , maybe not. Nature storage is add a byte to flag it’s boolean. Actually a bit is enough, put origin data <strong>move left</strong> a bit, save a bit to show it’s boolean. Data minuse 2 got it’s origin data.</p>
-<h3 id="Obey"><a href="#Obey" class="headerlink" title="Obey"></a>Obey</h3><ul>
-<li>.frq DocDelta[, Freq?], DocSkip[, PayloadLength?]</li>
-<li>.prx positionDelta[, Playload?](incomplete)</li>
-</ul>
-<h3 id="Not-obey"><a href="#Not-obey" class="headerlink" title="Not obey"></a>Not obey</h3><ul>
-<li>.frq SkipChildLevePointer multi skip, when last level no need flag.</li>
-<li>.tvf Positions, Offsets</li>
-</ul>
-<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><ul>
-<li>When A, B condition occur a lot, save 8 times space is economical.</li>
-<li>For not obey, cause have a global macro, it is effective in all Field even all index.</li>
-</ul>
-<h2 id="4-Skip-list"><a href="#4-Skip-list" class="headerlink" title="4.Skip list"></a>4.Skip list</h2><p>For inprove search performance Lucene use a lot of skip list data structure.</p>
-<ul>
-<li>Element is sequential, in lucene either number order or alphabet order.</li>
-<li>Skip have <strong>interval</strong>, it’s a config in advance, that is skip element number.</li>
-<li>Skip list have level, it’s config interve point it’s up level [12 -&gt; 5 -&gt; 2][interval 3]</li>
-</ul>
-<h3 id="Define-difference"><a href="#Define-difference" class="headerlink" title="Define difference"></a>Define difference</h3><ul>
-<li><p>the interval define :</p>
-<ul>
-<li>not contain up level two element</li>
-<li>contain head, not contain end[Lucene define]</li>
-<li>contain both it’s up level two element</li>
-</ul>
-</li>
-<li><p>the level define :</p>
-<ul>
-<li>contain origin list, start from 1, like 1, 2, 3</li>
-<li>contain origin list, start from 0, like 0, 1, 2</li>
-<li>not contain origin list, start from 0[Lucene define]</li>
-</ul>
-</li>
-</ul>
-<p><strong>Jump element &amp; Skip list</strong></p>
-<p><a href="http://lucene.apache.org/core/2_9_4/fileformats.html" target="_blank" rel="noopener">http://lucene.apache.org/core/2_9_4/fileformats.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/01/lucene-index-file-constructure-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/01/lucene-index-file-constructure-1/" class="post-title-link" itemprop="url">lucene index file constructure (1)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-01 18:59:24" itemprop="dateCreated datePublished" datetime="2017-02-01T18:59:24+08:00">2017-02-01</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li>Index<ul>
-<li>In Lucene an Index is in a directory</li>
-<li>All files constitute an Index</li>
-</ul>
-</li>
-<li>Segment<ul>
-<li>An Index could contain a lot of Segments, each Segment is independent.<br>The new added document could be build into a new Segment, different Segment can be merged.</li>
-<li>If files prefix is same, they belong to same Segment, like “_0”, “_1”, “_2”.</li>
-<li>segments.gen and segments_X is Segment’s metaldata, storage it’s propertites information.</li>
-</ul>
-</li>
-<li>Document<ul>
-<li>Document is the basic unit in building Index. Different Document storage in different Segment, a Segment can contain a lot of Documents.</li>
-<li>New added Document is in Segment new build, when Segment be merged, different document be merged into same Segment.</li>
-</ul>
-</li>
-<li>Field<ul>
-<li>A document may contain different type informations, like time, content, write and so on, it can be index separately, and be storage in different Term.</li>
-<li>Different Term’s Index way can be different, when analysis Term’s storage, we would explain it.</li>
-</ul>
-</li>
-<li>Term<ul>
-<li>Term is the basic unit in Index. It is the string after lexical analysis and language processing</li>
-</ul>
-</li>
-</ul>
+            <p><em><strong>sign</strong></em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br><span class="line">|</span><br></pre></td></tr></table></figure>
 <div class="table-container">
 <table>
 <thead>
 <tr>
-<th>名称</th>
-<th>文件拓展名</th>
-<th style="text-align:center">描述</th>
+<th>a</th>
+<th>b</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>段文件</td>
-<td>segments_N</td>
-<td style="text-align:center">保存了索引包含的多少段，每个段包含多少文档。</td>
+<td>`</td>
+<td>backquote 反引号</td>
 </tr>
 <tr>
-<td>段元数据</td>
-<td>.si</td>
-<td style="text-align:center">保存了索引段的元数据信息</td>
+<td>~</td>
+<td>tilde</td>
 </tr>
 <tr>
-<td>锁文件&nbsp;</td>
-<td>write.lock</td>
-<td style="text-align:center">防止多个IndexWriter同时写到一份索引文件中。</td>
+<td>!</td>
+<td>exclam</td>
 </tr>
 <tr>
-<td>复合索引文件</td>
-<td>.cfs, .cfe</td>
-<td style="text-align:center">把所有索引信息都存储到复合索引文件中。</td>
+<td>@</td>
+<td>at</td>
 </tr>
 <tr>
-<td>索引段的域信息</td>
-<td>.fnm</td>
-<td style="text-align:center">保存此段包含的域，以及域的名称和域的索引类型。</td>
+<td>#</td>
+<td>numbersign,英语国家是hash&lt;/br&gt;美语是pound&lt;/br&gt;音乐里作sharp,如C#</td>
 </tr>
 <tr>
-<td>索引段的文档信息</td>
-<td>.fdx, .fdt</td>
-<td style="text-align:center">保存此段包含的文档，每篇文档中包含的域以及每个域的信息。</td>
+<td>$</td>
+<td>dollar</td>
 </tr>
 <tr>
-<td>索引段Term信息</td>
-<td>.tim, .tip</td>
-<td style="text-align:center">.tim文件中存储着每个域中Term的统计信息且保存着指向  .doc, .pos, and .pay 索引文件的指针。  .tip文件保存着Term 字典的索引信息，可支持随机访问。</td>
+<td>%</td>
+<td>percent</td>
 </tr>
 <tr>
-<td>文档中Term词频和跳表信息</td>
-<td>.doc</td>
-<td style="text-align:center">保存此段中每个文档对应的Term频率信息。</td>
+<td>^</td>
+<td>caret</td>
 </tr>
 <tr>
-<td>文档中Term的位置信息</td>
-<td>.pos</td>
-<td style="text-align:center">保存此段中每个文档对应的Term位置信息。</td>
+<td>&amp;</td>
+<td>ampersand</td>
 </tr>
 <tr>
-<td>文档的有效载荷和部分位置信息</td>
-<td>.pay</td>
-<td style="text-align:center">保存此段中每个文档的有效载体(payload) 和 Term的位置信息(offsets)。 其中有一部分的Term位置信息存储在.pos文件中。</td>
+<td>*</td>
+<td>asterisk,star(美语),数学公式中作multiply</td>
 </tr>
 <tr>
-<td>索引字段加权因子</td>
-<td>.nvd, .nvm</td>
-<td style="text-align:center">.nvm 文件保存索引字段加权因子的元数据  .nvd 文件保存索引字段加权数据</td>
+<td>(</td>
+<td>parenleft,opening parentheses</td>
 </tr>
 <tr>
-<td>索引文档加权因子</td>
-<td>.dvd, .dvm</td>
-<td style="text-align:center">.dvm 文件保存索引文档加权因子的元数据  .dvd 文件保存索引文档加权数据</td>
+<td>)</td>
+<td>parenright,closing paretheses</td>
 </tr>
 <tr>
-<td>索引矢量数据</td>
-<td>.tvx, .tvd, .tvf</td>
-<td style="text-align:center">.tvd 存储此段文档的Term、Term频率、位置信息、有效载荷等信息。  .tvx 索引文件，用于把特定的文档加载到内存。  .tvf 保存索引字段的矢量信息。</td>
+<td>-</td>
+<td>minus;hyphen连字符,不读</td>
 </tr>
 <tr>
-<td>有效文档</td>
-<td>.liv</td>
-<td style="text-align:center">保存有效文档的索引文件信息</td>
+<td>_</td>
+<td>underscore</td>
+</tr>
+<tr>
+<td>+</td>
+<td>plus</td>
+</tr>
+<tr>
+<td>=</td>
+<td>equal</td>
+</tr>
+<tr>
+<td>[</td>
+<td>bracketleft,opening bracket</td>
+</tr>
+<tr>
+<td>]</td>
+<td>bracketright,closing bracket</td>
+</tr>
+<tr>
+<td>{</td>
+<td>braceleft</td>
+</tr>
+<tr>
+<td>}</td>
+<td>braceright</td>
+</tr>
+<tr>
+<td>;</td>
+<td>semicolon</td>
+</tr>
+<tr>
+<td>:</td>
+<td>colon</td>
+</tr>
+<tr>
+<td>‘</td>
+<td>quote</td>
+</tr>
+<tr>
+<td>“</td>
+<td>doublequote</td>
+</tr>
+<tr>
+<td>/</td>
+<td>slash</td>
+</tr>
+<tr>
+<td>\</td>
+<td>backslash 反斜杠</td>
+</tr>
+<tr>
+<td>&#124;</td>
+<td>bar</td>
+</tr>
+<tr>
+<td>,</td>
+<td>comma</td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>less  angle brackets</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>greater  angle brackets</td>
+</tr>
+<tr>
+<td>.</td>
+<td>period</td>
+</tr>
+<tr>
+<td>?</td>
+<td>question</td>
+</tr>
+<tr>
+<td></td>
+<td>space</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Extension</th>
-<th style="text-align:center">Brief Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Segments File</td>
-<td>segments.gen, segments_N</td>
-<td style="text-align:center">Stores information about segments</td>
-</tr>
-<tr>
-<td>Lock File</td>
-<td>write.lock</td>
-<td style="text-align:center">The Write lock prevents multiple IndexWriters from writing to the same file.</td>
-</tr>
-<tr>
-<td>Compound File</td>
-<td>.cfs</td>
-<td style="text-align:center">An optional “virtual” file consisting of all the other index files for systems that frequently run out of file handles.</td>
-</tr>
-<tr>
-<td>Fields</td>
-<td>.fnm</td>
-<td style="text-align:center">Stores information about the fields</td>
-</tr>
-<tr>
-<td>Field Index</td>
-<td>.fdx</td>
-<td style="text-align:center">Contains pointers to field data</td>
-</tr>
-<tr>
-<td>Field Data</td>
-<td>.fdt</td>
-<td style="text-align:center">The stored fields for documents</td>
-</tr>
-<tr>
-<td>Term Infos</td>
-<td>.tis</td>
-<td style="text-align:center">Part of the term dictionary, stores term info</td>
-</tr>
-<tr>
-<td>Term Info Index</td>
-<td>.tii</td>
-<td style="text-align:center">The index into the Term Infos file</td>
-</tr>
-<tr>
-<td>Frequencies</td>
-<td>.frq</td>
-<td style="text-align:center">Contains the list of docs which contain each term along with frequency</td>
-</tr>
-<tr>
-<td>Positions</td>
-<td>.prx</td>
-<td style="text-align:center">Stores position information about where a term occurs in the index</td>
-</tr>
-<tr>
-<td>Norms</td>
-<td>.nrm</td>
-<td style="text-align:center">Encodes length and boost factors for docs and fields</td>
-</tr>
-<tr>
-<td>Term Vector Index</td>
-<td>.tvx</td>
-<td style="text-align:center">Stores offset into the document data file</td>
-</tr>
-<tr>
-<td>Term Vector Documents</td>
-<td>.tvd</td>
-<td style="text-align:center">Contains information about each document that has term vectors</td>
-</tr>
-<tr>
-<td>Term Vector Fields</td>
-<td>.tvf</td>
-<td style="text-align:center">The field level info about term vectors</td>
-</tr>
-<tr>
-<td>Deleted Documents</td>
-<td>.del</td>
-<td style="text-align:center">Info about what files are deleted</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping"><a href="#Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping" class="headerlink" title="Lucene’s index not only storage positive mapping but also storage negative mapping"></a>Lucene’s index not only storage positive mapping but also storage negative mapping</h2><h3 id="Positive-mapping"><a href="#Positive-mapping" class="headerlink" title="Positive mapping"></a>Positive mapping</h3><ul>
-<li>From Index to Term : Index –&gt; segment –&gt; Document –&gt; Field –&gt; Term</li>
-<li>Each upper floor storage it’s children floors’ matedata. Like a province, a city, a county, they got it’s chilren’s info.<ul>
-<li>segments_N : how many segment the Index have, how many Documents each segment have.</li>
-<li>.fnm : how many Fields the segment contain, each Field’s name and Index way.</li>
-<li>.fdx , .fdt : all Documents the segment have, how many Fields each Document have, what information each field recorded.</li>
-<li>.tvx , .tvd , .tvf : how many Documents the segment have, how many Fields each Document have, how many words each Field have, every words’ string, position, and so on.<h3 id="Negative-mapping"><a href="#Negative-mapping" class="headerlink" title="Negative mapping"></a>Negative mapping</h3></li>
-</ul>
-</li>
-<li>Term -&gt; Document<ul>
-<li>.tis , .tii : Term dictionary, that is segment’s words sort by alphabet sequencely.</li>
-<li>.frq : posting sorted table, that is table that contain all words’ Document ID.</li>
-<li>.prx : the word position in Document at posting sorted table.</li>
-</ul>
-</li>
-</ul>
-<h2 id="Primary-Type"><a href="#Primary-Type" class="headerlink" title="Primary Type"></a>Primary Type</h2><ul>
-<li>Byte : the most basic type, 8 bits long.</li>
-<li>UInt32 : composed by 4 Bytes.</li>
-<li>UInt64 : composed by 8 Bytes.</li>
-<li>VInt :<ul>
-<li>May be composed by many Bytes.</li>
-<li>Front byte represent lower number bit.</li>
-<li>For example: 51271 - [1]1000111, [1]0010000, [0]0000011</li>
-</ul>
-</li>
-<li>Chars : UTF-8 encoding bytes.</li>
-<li>String : first a VInt represent Char numbers, then a series of Chars.</li>
-</ul>
 
           
         
@@ -2287,7 +888,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-2/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/13/Group-match/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -2307,7 +908,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/01/30/Full-text-retrieval-fundamental-2/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (2)</a>
+                <a href="/2017/02/13/Group-match/" class="post-title-link" itemprop="url">Group match</a>
               
             
           </h1>
@@ -2332,7 +933,7 @@
                 
               
 
-              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+              <time title="Created: 2017-02-13 15:01:25" itemprop="dateCreated datePublished" datetime="2017-02-13T15:01:25+08:00">2017-02-13</time>
             
 
             
@@ -2349,7 +950,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+                <time title="Modified: 2020-06-18 21:28:21" itemprop="dateModified" datetime="2020-06-18T21:28:21+08:00">2020-06-18</time>
               
             
           </span>
@@ -2366,7 +967,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
 
                 
                 
@@ -2403,285 +1004,63 @@
       
         
           
-            <h2 id="How-to-build-Index"><a href="#How-to-build-Index" class="headerlink" title="How to build Index"></a>How to build Index</h2><h3 id="1-Prepare-origin-Document"><a href="#1-Prepare-origin-Document" class="headerlink" title="1. Prepare origin Document"></a>1. Prepare origin Document</h3><ul>
-<li>file1: Researches of Chinese full-text search technologies based on word indexing is related to many fields.</li>
-<li>file2: The Index Data Service provides basic full-text functions for storage and retrieval of terms and indexed summary documents.<h3 id="2-Put-Document-TOKENIZER"><a href="#2-Put-Document-TOKENIZER" class="headerlink" title="2. Put Document TOKENIZER"></a>2. Put Document TOKENIZER</h3></li>
-</ul>
-<ol>
-<li>split Document into words</li>
-<li>separate <code>symbols</code></li>
-<li><p>separate <code>Stop word</code></p>
-<p>Stop word in english like: “like”, “a”, “this”…<br>After Tokenier got Token:<br>“Researches” “Chinese” “full” “text” “search” “technologies” “word” “indexing” “related” “many” “fields” “Index” “Data” “Service” “provides” “basic” “full” “text” “functions” “storage” “retrieval” “terms” “indexed” “summary” “documents”</p>
-</li>
-</ol>
-<h3 id="3-Put-TOKEN-to-LINGUISTIC-PROCESSOR"><a href="#3-Put-TOKEN-to-LINGUISTIC-PROCESSOR" class="headerlink" title="3. Put TOKEN to LINGUISTIC PROCESSOR"></a>3. Put TOKEN to LINGUISTIC PROCESSOR</h3><ol>
-<li>to Lowercase</li>
-<li>words reduce to root type like “fields” to “field” <code>stemming</code></li>
-<li><p>words to origin type like “indexed” to “index” <code>lemmatization</code></p>
-<p><strong><em>the difference between “Stemming” and “lemmatization”</em></strong></p>
+            <h3 id="Group-number-rules"><a href="#Group-number-rules" class="headerlink" title="Group number rules"></a>Group number rules</h3><p><code>\b(\d\d(\d\d))-\2-\2\b</code><br>From outer to inner , from left to right number increase start from 1.</p>
+<h3 id="Noncapturing-group"><a href="#Noncapturing-group" class="headerlink" title="Noncapturing group"></a>Noncapturing group</h3><p><code>\b(?i:Mary|Jane|Sue)\b</code></p>
 <ul>
-<li>same: make words to initial</li>
-<li><p>difference:</p>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p><code>(?i-sm:Mary.*?\r\n)</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Ruby</li>
+</ul>
+<p><strong>Inner config</strong> the group capture options<br>parentheses start like ‘?:’ ‘?xxx:’, means group <strong>match but no capture</strong>.</p>
+<h2 id="Match-Previously-Matched-Again"><a href="#Match-Previously-Matched-Again" class="headerlink" title="Match Previously Matched Again"></a>Match Previously Matched Again</h2><p><code>\b\d\d(\d\d)-\1-\1\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
 <blockquote>
-<ul>
-<li>Stemming is reduce</li>
-<li>lemmatization is change</li>
-</ul>
+<p>\01 is either an <em>octal escape</em> or an <em>error</em>, <strong>dont’t use it</strong>.<br>\xFF <em>hexadecimal</em> escapes are much easier to understand</p>
+<p>JavaScript if the <code>\1</code> appear in front of group it match like a zero-length<br><code>\d\d\1-\1-(\d\d)</code> can match <code>12--34</code><br>after ‘2’ and ‘-‘ two zero-length position matches.</p>
 </blockquote>
-</li>
-<li><p>difference in algorithm:</p>
-<blockquote>
+<h2 id="Name-the-capture-group"><a href="#Name-the-capture-group" class="headerlink" title="Name the capture group"></a>Name the capture group</h2><h3 id="Named-capture"><a href="#Named-capture" class="headerlink" title="Named capture"></a>Named capture</h3><p><code>\b(?&lt;year&gt;\d\d\d\d)-(?&lt;month&gt;\d\d)-(?&lt;day&gt;\d\d)\b</code></p>
 <ul>
-<li>Stemming is delete “s”, “ing”-&gt;”e”, “ational”-&gt;”ate”, “tional”-&gt; “tion”</li>
-<li>lemmatization is “drove” -&gt; “drive”</li>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java 7, XRegExp, PCRE 7, Perl 5.10, Ruby 1.9</li>
 </ul>
-</blockquote>
-</li>
-<li>they are not mutex, but mates</li>
-</ul>
-<p><strong><em>After linguistic processor result be call <code>Term</code>:</em></strong><br>“researche” “chinese” “full” “text” “search” “technologie” “word” “index” “relate” “many” “field” “index” “data” “service” “provide” “basic” “full” “text” “function” “storage” “retrieve” “term” “index” “summary” “document”</p>
-<p>Because the linguistic processor when search drove, drive’s documents can be found.</p>
-</li>
-</ol>
-<h3 id="4-Put-TERM-to-INDEXER"><a href="#4-Put-TERM-to-INDEXER" class="headerlink" title="4. Put TERM to INDEXER"></a>4. Put TERM to INDEXER</h3><ol>
-<li>Build a dictionary in Term</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th style="text-align:right">Document ID</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>researche</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>chinese</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>search</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>technologie</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>word</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>relate</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>many</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>field</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>data</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>service</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>provide</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>basic</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>function</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>storage</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>retrieve</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>term</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>summary</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>document</td>
-<td style="text-align:right">2</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ol>
-<li>sort table by key’s first letter</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th style="text-align:right">Document ID</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>basic</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>chinese</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>data</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>document</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>field</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>function</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>many</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>provide</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>relate</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>researche</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>retrieve</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>search</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>service</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>storage</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>summary</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>technologie</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>term</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>word</td>
-<td style="text-align:right">1</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ol>
-<li>merge same Term into Posting List<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Term-[Document Frequency] | DocumentID-Frequency</span><br><span class="line">basic-1        2-1</span><br><span class="line">chinese-1     1-1</span><br><span class="line">data-1        2-1</span><br><span class="line">document-1    2-1</span><br><span class="line">field-1       1-1</span><br><span class="line">full-2        1-1 -&gt; 2-1</span><br><span class="line">function-1    2-1</span><br><span class="line">index-2       2-2 -&gt; 1-1</span><br><span class="line">many-1        1-1</span><br><span class="line">provide-1     2-1</span><br><span class="line">relate-1      1-1</span><br><span class="line">researche-1   1-1</span><br><span class="line">retrieve-2    2-1</span><br><span class="line">search-1      1-1</span><br><span class="line">service-2     2-1</span><br><span class="line">storage-2     2-1</span><br><span class="line">summary-2     2-1</span><br><span class="line">technologie-1 1-1</span><br><span class="line">term-2        2-1</span><br><span class="line">text-2        2-1 -&gt; 1-1</span><br><span class="line">word-1        1-1</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
+<p><code>\b(?&#39;year&#39;\d\d\d\d)-(?&#39;month&#39;\d\d)-(?&#39;day&#39;\d\d)\b</code></p>
 <ul>
-<li>Document Frequency: Document appear times</li>
-<li>Frequency: Term appear times in Document</li>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, PCRE 7, Perl 5.10, Ruby 1.9</li>
 </ul>
-<p><strong><em> When searching “drive” “driving” “drove” “driven” will be processor to drive like build Index process </em></strong></p>
+<p><code>\b(?P&lt;year&gt;\d\d\d\d)-(?P&lt;month&gt;\d\d)-(?P&lt;day&gt;\d\d)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: PCRE 4 and later, Perl 5.10, Python</li>
+</ul>
+<h3 id="Named-backreferences"><a href="#Named-backreferences" class="headerlink" title="Named backreferences"></a>Named backreferences</h3><p><code>\b\d\d(?&lt;magic&gt;\d\d)-\k&lt;magic&gt;-\k&lt;magic&gt;\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java 7, XRegExp, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b\d\d(?&#39;magic&#39;\d\d)-\k&#39;magic&#39;-\k&#39;magic&#39;\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, PCRE 7, Perl 5.10, Ruby 1.9</li>
+</ul>
+<p><code>\b\d\d(?P&lt;magic&gt;\d\d)-(?P=magic)-(?P=magic)\b</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: PCRE 4 and later, Perl 5.10, Python</li>
+</ul>
+<p>Group’s <strong>name must</strong> consist of word characters matched by <code>\w</code></p>
+<p>Angle brackets not friend in xml style environment.<br>So some language support use in <code>&#39;</code> <strong>single quotes</strong> instead of angle brackets.</p>
+<p>Use <strong>same name</strong> in expression is not recommanded</p>
+<h2 id="Syntax-history"><a href="#Syntax-history" class="headerlink" title="Syntax history"></a>Syntax history</h2><p><em>Python</em> was the <strong>first</strong> regular expression flavor to support named capture.</p>
+<p>Perhaps due to .NET’s <strong>popularity over</strong> Python, the .NET syntax seems to be the one<br>that other regex library developers <strong>prefer to copy</strong>. <code>Perl 5.10</code> and later have it, and so<br>does the Oniguruma engine in <code>Ruby 1.9</code>. <code>Perl 5.10</code> and <code>Ruby 1.9</code> support both the syntax<br>using angle brackets and single quotes. <strong>Java 7</strong> also copied the <code>.NET syntax</code>, but only<br>the variant using angle brackets. Standard JavaScript does not support named capture.<br>XRegExp adds support for named capture using the .NET syntax, but only the variant<br>with angle brackets.</p>
+<p>PCRE copied Python’s syntax long ago, at a time when Perl did not support named<br>capture at all. <code>PCRE 7</code>, the version that adds the new features in <code>Perl 5.10</code>, supports<br><strong>both</strong> the .NET syntax and the Python syntax. Perhaps as a testament to the success of<br>PCRE, in a reverse compatibility move, <code>Perl 5.10</code> also supports the Python syntax. In<br>PCRE and Perl 5.10, <em>the functionality of the .NET syntax and the Python syntax for<br>named capture is identical.</em></p>
 
           
         
@@ -2738,7 +1117,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-3/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/11/Hello-Raspberry/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -2758,7 +1137,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/01/30/Full-text-retrieval-fundamental-3/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (3)</a>
+                <a href="/2017/02/11/Hello-Raspberry/" class="post-title-link" itemprop="url">Hello Raspberry</a>
               
             
           </h1>
@@ -2783,7 +1162,7 @@
                 
               
 
-              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+              <time title="Created: 2017-02-11 21:54:11" itemprop="dateCreated datePublished" datetime="2017-02-11T21:54:11+08:00">2017-02-11</time>
             
 
             
@@ -2817,7 +1196,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
 
                 
                 
@@ -2854,42 +1233,12 @@
       
         
           
-            <h2 id="How-to-search-in-Index"><a href="#How-to-search-in-Index" class="headerlink" title="How to search in Index"></a>How to search in Index</h2><p> <strong>How to find the result you want most, or the most relevant result with query phrase?</strong></p>
-<h3 id="1-first-User-input-query-pharse"><a href="#1-first-User-input-query-pharse" class="headerlink" title="1. first: User input query pharse"></a>1. first: User input query pharse</h3><p>  <em>The basic query grammar like “AND”, “OR”, “NOT”.</em><br>  <code>elephant and tiger or lion not sheep</code></p>
-<h3 id="2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing"><a href="#2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing" class="headerlink" title="2. second: Query pharse lexical analysis, syntax analysis, and language processing"></a>2. second: Query pharse lexical analysis, syntax analysis, and language processing</h3><ol>
-<li>lexical analysis used to distinguish words and key words</li>
-<li>syntax analysis used to build a grammar tree by syntax rule</li>
-<li>language processing just like the processe in building Index. check page 2</li>
-</ol>
-<h3 id="3-third-Traverse-Index-get-result-that-fit-syntax-tree"><a href="#3-third-Traverse-Index-get-result-that-fit-syntax-tree" class="headerlink" title="3. third: Traverse Index, get result that fit syntax tree"></a>3. third: Traverse Index, get result that fit syntax tree</h3><ol>
-<li>first find the documents contain words(elephant tiger lion) in the posting list.</li>
-<li>second merge documents contain both elephant, tiger or lion.</li>
-<li>third separate documents contain sheep, got result contain both elephant, tiger or lion not sheep.</li>
-</ol>
-<h3 id="4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result"><a href="#4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result" class="headerlink" title="4. fourth: Sort result by relevant between query pharse and search result"></a>4. fourth: Sort result by relevant between query pharse and search result</h3><p> <strong>How to calculate the relevance between documents and query pharse?</strong><br> Toke query pharse as a shot document, scoring relevance between documents, the higher score is the higher rank document is.<br> <em>How to score the relevance between documents?</em><br> <strong><em>It’s not easy a thing</em></strong></p>
-<ul>
-<li>Check what is the important factors between documents</li>
-<li>Check the relation between these factors</li>
-</ul>
-<hr>
-<ul>
-<li>The process of finding the importance of a word (Term) to a document is called the weight (Term) process.</li>
-<li>The process of judging the relationship between Term to get document relevance using an algorithm called <code>Vector Space Model</code></li>
-</ul>
-<hr>
-<h2 id="Term-weight-process"><a href="#Term-weight-process" class="headerlink" title="Term weight process"></a>Term weight process</h2><p><strong>This is a simple classic implementation, lucene’s have a little difference</strong></p>
-<script type="math/tex; mode=display">w_{t_\eta}{_d} = tf_{t_\eta}{_d} \times log(n/df_t)</script><ul>
-<li>$w<em>{t</em>\eta}{_d}$ = the weight of the term t in document d</li>
-<li>$tf<em>{t</em>\eta}{_d}$ = frequency of term t in document d</li>
-<li>$n$ = total number of documents</li>
-<li>$df_t$ = the number of documents that contain term t</li>
-</ul>
-<ul>
-<li>Term Frequency (tf): How many times this Term show in this document, the bigger tf is , the more importance this Term is.</li>
-<li>Document Frequency (df)：How many documents contain this Term, the bigger df is, the less importance this Term is.</li>
-</ul>
-<p><strong>Like programmer, the deeper technology you leanr is better(tf big), the less technology people know is better (df little). When finding job your competitive power would be grate. Man’s value is about unsubsititutability</strong></p>
-<h2 id="Vector-Space-Model"><a href="#Vector-Space-Model" class="headerlink" title="Vector Space Model"></a>Vector Space Model</h2><p><strong>Less the two vector’s angle is the more relevance is</strong><br><strong>We take two vector’s consine as the score point</strong></p>
+            <h3 id="First-Git-commit-by-raspberry"><a href="#First-Git-commit-by-raspberry" class="headerlink" title="First Git commit by raspberry"></a>First Git commit by raspberry</h3><p>Interesting! a lot of fun<br>Bug in 2017-02-02<br>Raspberry Pi -Read 20Mb/s Write 20Mb/s in board tf card</p>
+<h4 id="change-keyboard-layout"><a href="#change-keyboard-layout" class="headerlink" title="change keyboard layout"></a>change keyboard layout</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/default/keyboard</span><br><span class="line"></span><br><span class="line">XKBLAYOUT=&quot;us&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="setting-location-amp-timezone"><a href="#setting-location-amp-timezone" class="headerlink" title="setting location&amp;timezone"></a>setting location&amp;timezone</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
+<h4 id="wireless-ctl"><a href="#wireless-ctl" class="headerlink" title="wireless ctl"></a>wireless ctl</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</span><br><span class="line">network=&#123;</span><br><span class="line">	ssid=&quot;TP-LINK XXX&quot;</span><br><span class="line">	psk=&quot;i&apos;m password&quot;</span><br><span class="line">	key_mgmt=WPA-PSK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>if not work first check ssid &amp; passwd correct<br>then ckeck net card status<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iwconfig</span><br><span class="line">ifconfig wlan0</span><br></pre></td></tr></table></figure></p>
+<p>try manually restart the interface with<br><code>sudo ifdown wlan0</code> and <code>sudo ifup wlan0</code><br>at last try <code>sudo reboot</code></p>
 
           
         
@@ -2946,7 +1295,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Full-text-retrieval-fundamental-1/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/09/Version-of-javascript/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -2966,7 +1315,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2017/01/29/Full-text-retrieval-fundamental-1/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (1)</a>
+                <a href="/2017/02/09/Version-of-javascript/" class="post-title-link" itemprop="url">Version of javascript</a>
               
             
           </h1>
@@ -2991,7 +1340,7 @@
                 
               
 
-              <time title="Created: 2017-01-29 22:01:21" itemprop="dateCreated datePublished" datetime="2017-01-29T22:01:21+08:00">2017-01-29</time>
+              <time title="Created: 2017-02-09 22:39:41" itemprop="dateCreated datePublished" datetime="2017-02-09T22:39:41+08:00">2017-02-09</time>
             
 
             
@@ -3025,7 +1374,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
 
                 
                 
@@ -3062,30 +1411,969 @@
       
         
           
-            <h2 id="Introduce"><a href="#Introduce" class="headerlink" title="Introduce"></a>Introduce</h2><ul>
-<li>结构化数据: 指有规律结构固定格式长度的数据, 如数据库</li>
-<li>非结构化数据: 指无规律不定长不固定格式的数据, 如邮件</li>
-<li>半结构化数据: XML/HTML等, 可按需求以不同形式处理</li>
-</ul>
-<p>非结构化数据又一种叫法叫全文数据。</p>
-<p>全文检索大体分两个过程，索引创建(Indexing)和搜索索引(Search)。</p>
+            <div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Version</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JavaScript 1.0</td>
+<td style="text-align:left">The original version of the language. It was buggy and is now essentially obsolete. Implemented by Netscape 2.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.1</td>
+<td style="text-align:left">Introduced a true Array object; most serious bugs resolved. Implemented by Netscape 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.2</td>
+<td style="text-align:left">Introduced the <code>switch</code> statement, <strong>regular expressions</strong>, and a number of other features. Almost compliant with ECMA v1, but has some incompatibilities. Implemented by Netscape 4.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.3</td>
+<td style="text-align:left">Fixed incompatibilities of JavaScript 1.2. Compliant with ECMA v1. Implemented by Netscape 4.5.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.4</td>
+<td style="text-align:left">Implemented only in Netscape server products.</td>
+</tr>
+<tr>
+<td style="text-align:center">JavaScript 1.5</td>
+<td style="text-align:left">Introduced exception handling. Compliant with ECMA v3. Implemented by Mozilla and Netscape 6.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 1.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.0. Implemented by early releases of IE 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 2.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.1. Implemented by later releases of IE 3.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 3.0</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.3. Compliant with ECMA v1. Implemented by IE 4.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 4.0</td>
+<td style="text-align:left">Not implemented by any web browser.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 5.0</td>
+<td style="text-align:left">Supported exception handling. Partially compliant with ECMA v3. Implemented by IE 5.</td>
+</tr>
+<tr>
+<td style="text-align:center">JScript 5.5</td>
+<td style="text-align:left">Roughly equivalent to JavaScript 1.5. Fully compliant with ECMA v3. Implemented by IE 5.5 and IE 6. (IE 6 actually implements JScript 5.6, but 5.6 is not different from 5.5 in any way that is relevant to client-side JavaScript programmers.)</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v1</td>
+<td style="text-align:left">The first standard version of the language. Standardized the basic features of JavaScript 1.1 and added a few new features. Did not standardize the <code>switch</code> statement or regular expression support. Conformant implementations are JavaScript 1.3 and JScript 3.0.</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v2</td>
+<td style="text-align:left">A maintenance release of the standard that included clarifications but defined no new features.</td>
+</tr>
+<tr>
+<td style="text-align:center">ECMA v3</td>
+<td style="text-align:left">Standardized the <code>switch</code> statement, <strong>regular expressions</strong>, and exception handling. Conformant implementations are JavaScript 1.5 and JScript 5.5.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-cherry-pick-rebase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-cherry-pick-rebase/" class="post-title-link" itemprop="url">visual git cherry-pick & rebase</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:45:27" itemprop="dateCreated datePublished" datetime="2017-02-08T11:45:27+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:36:55" itemprop="dateModified" datetime="2020-06-17T22:36:55+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Cherry-Pick"><a href="#Cherry-Pick" class="headerlink" title="Cherry Pick"></a>Cherry Pick</h4><p>cherry-pick命令”复制”一个提交节点并在当前分支做一次完全一样的新提交。<br><img src="http://marklodato.github.io/visual-git-guide/cherry-pick.svg" alt></p>
+<h4 id="Rebase"><a href="#Rebase" class="headerlink" title="Rebase"></a>Rebase</h4><p>衍合是合并命令的另一种选择。合并把两个父分支合并进行一次提交，提交历史不是线性的。衍合在当前分支上重演另一个分支的历史，提交历史是线性的。 本质上，这是线性化的自动的 cherry-pick<br><img src="http://marklodato.github.io/visual-git-guide/rebase.svg" alt></p>
+<p>上面的命令都在topic分支中进行，而不是master分支，在master分支上重演，并且把分支指向新的节点。注意旧提交没有被引用，将被回收。</p>
+<p>要限制回滚范围，使用—onto选项。下面的命令在master分支上重演当前分支从169a6以来的最近几个提交，即2c33a。<br><img src="http://marklodato.github.io/visual-git-guide/rebase-onto.svg" alt><br>同样有git rebase —interactive让你更方便的完成一些复杂操作，比如丢弃、重排、修改、合并提交。没有图片体现这些，细节看这里:<a href="http://www.kernel.org/pub/software/scm/git/docs/git-rebase.html#_interactive_mode" target="_blank" rel="noopener">git-rebase(1)</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-reset-merge/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-reset-merge/" class="post-title-link" itemprop="url">visual git reset & merge</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:42:46" itemprop="dateCreated datePublished" datetime="2017-02-08T11:42:46+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:37:26" itemprop="dateModified" datetime="2020-06-17T22:37:26+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Reset"><a href="#Reset" class="headerlink" title="Reset"></a>Reset</h4><p>reset命令把当前分支指向另一个位置，并且有选择的变动工作目录和索引。也用来在从历史仓库中复制文件到索引，而不动工作目录。</p>
+<p>如果不给选项，那么当前分支指向到那个提交。如果用—hard选项，那么工作目录也更新，如果用—soft选项，那么都不变。<br><img src="http://marklodato.github.io/visual-git-guide/reset-commit.svg" alt><br>如果没有给出提交点的版本号，那么默认用HEAD。这样，分支指向不变，但是索引会回滚到最后一次提交，如果用—hard选项，工作目录也同样。<br><img src="http://marklodato.github.io/visual-git-guide/reset.svg" alt><br>如果给了文件名(或者 -p选项), 那么工作效果和带文件名的<a href="/2017/02/08/visual-git-checkout/">checkout</a>差不多，除了索引被更新。<br><img src="http://marklodato.github.io/visual-git-guide/reset-files.svg" alt></p>
+<h4 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h4><p>merge 命令把不同分支合并起来。合并前，索引必须和当前提交相同。如果另一个分支是当前提交的祖父节点，那么合并命令将什么也不做。 另一种情况是如果当前提交是另一个分支的祖父节点，就导致fast-forward合并。指向只是简单的移动，并生成一个新的提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge-ff.svg" alt><br>否则就是一次真正的合并。默认把当前提交(ed489 如下所示)和另一个提交(33104)以及他们的共同祖父节点(b325c)进行一次<code>三方合并</code>。结果是先保存当前目录和索引，然后和父节点33104一起做一次新提交。<br><img src="http://marklodato.github.io/visual-git-guide/merge.svg" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-checkout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-checkout/" class="post-title-link" itemprop="url">visual git checkout</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:41:11" itemprop="dateCreated datePublished" datetime="2017-02-08T11:41:11+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:36:40" itemprop="dateModified" datetime="2020-06-17T22:36:40+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="Checkout"><a href="#Checkout" class="headerlink" title="Checkout"></a>Checkout</h4><p>checkout命令用于从历史提交（或者暂存区域）中拷贝文件到工作目录，也可用于切换分支。</p>
+<p>当给定某个文件名（或者打开-p选项，或者文件名和-p选项同时打开）时，git会从指定的提交中拷贝文件到暂存区域和工作目录。比如，git checkout HEAD~ foo.c会将提交节点HEAD~(即当前提交节点的父节点)中的foo.c复制到工作目录并且加到暂存区域中。（如果命令中没有指定提交节点，则会从暂存区域中拷贝内容。）注意当前分支不会发生变化。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-files.svg" alt><br>当不指定文件名，而是给出一个（本地）分支时，那么HEAD标识会移动到那个分支（也就是说，我们“切换”到那个分支了），然后暂存区域和工作目录中的内容会和HEAD对应的提交节点一致。新提交节点（下图中的a47c3）中的所有文件都会被复制（到暂存区域和工作目录中）；只存在于老的提交节点（ed489）中的文件会被删除；不属于上述两者的文件会被忽略，不受影响。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-branch.svg" alt><br>如果既没有指定文件名，也没有指定分支名，而是一个标签、远程分支、SHA-1值或者是像master~3类似的东西，就得到一个匿名分支，称作detached HEAD（被分离的HEAD标识）。这样可以很方便地在历史版本之间互相切换。比如说你想要编译1.6.6.1版本的git，你可以运行git checkout v1.6.6.1（这是一个标签，而非分支名），编译，安装，然后切换回另一个分支，比如说git checkout master。然而，当提交操作涉及到“分离的HEAD”时，其行为会略有不同，详情见在下面。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-detached.svg" alt></p>
+<h3 id="HEAD标识处于分离状态时的提交操作"><a href="#HEAD标识处于分离状态时的提交操作" class="headerlink" title="HEAD标识处于分离状态时的提交操作"></a>HEAD标识处于分离状态时的提交操作</h3><p>当HEAD处于分离状态（不依附于任一分支）时，提交操作可以正常进行，但是不会更新任何已命名的分支。(你可以认为这是在更新一个匿名分支。)<br><img src="http://marklodato.github.io/visual-git-guide/commit-detached.svg" alt><br>一旦此后你切换到别的分支，比如说master，那么这个提交节点（可能）再也不会被引用到，然后就会被丢弃掉了。注意这个命令之后就不会有东西引用2eecb。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-after-detached.svg" alt><br>但是，如果你想保存这个状态，可以用命令git checkout -b name来创建一个新的分支。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-b-detached.svg" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-diff-commit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git-diff-commit/" class="post-title-link" itemprop="url">visual git diff & commit</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 11:36:20" itemprop="dateCreated datePublished" datetime="2017-02-08T11:36:20+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:37:10" itemprop="dateModified" datetime="2020-06-17T22:37:10+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Diff"><a href="#Diff" class="headerlink" title="Diff"></a>Diff</h3><p>有许多种方法查看两次提交之间的变动。下面是一些示例。</p>
+<p><img src="http://marklodato.github.io/visual-git-guide/diff.svg" alt></p>
+<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p>提交时，git用暂存区域的文件创建一个新的提交，并把此时的节点设为父节点。然后把当前分支指向新的提交节点。下图中，当前分支是master。 在运行命令之前，master指向ed489，提交后，master指向新的节点f0cec并以ed489作为父节点。<br><img src="http://marklodato.github.io/visual-git-guide/commit-master.svg" alt><br>即便当前分支是某次提交的祖父节点，git会同样操作。下图中，在master分支的祖父节点maint分支进行一次提交，生成了1800b。 这样，maint分支就不再是master分支的祖父节点。此时，<a href="/2017/02/08/visual-git-reset-merge/">合并</a> (或者 <a href="/2017/02/08/visual-git-cherry-pick-rebase/">衍合</a>) 是必须的。<br><img src="http://marklodato.github.io/visual-git-guide/commit-maint.svg" alt><br>如果想更改一次提交，使用 git commit —amend。git会使用与当前提交相同的父节点进行一次新提交，旧的提交会被取消。<br><img src="http://marklodato.github.io/visual-git-guide/commit-amend.svg" alt><br>另一个例子是<a href="/2017/02/08/visual-git-checkout/">分离HEAD</a>提交,后文讲。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/08/visual-git/" class="post-title-link" itemprop="url">visual git</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-08 10:39:10" itemprop="dateCreated datePublished" datetime="2017-02-08T10:39:10+08:00">2017-02-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:37:39" itemprop="dateModified" datetime="2020-06-17T22:37:39+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><p><img src="http://marklodato.github.io/visual-git-guide/basic-usage.svg" alt></p>
+<p>上面的四条命令在工作目录、暂存目录(也叫做索引)和仓库之间复制文件。</p>
 <ul>
-<li>索引创建：将现实世界中所有的结构化和非结构化数据提取信息，创建索引的过程。</li>
-<li>搜索索引：就是得到用户的查询请求，搜索创建的索引，然后返回结果的过程。</li>
+<li>git add files 把当前文件放入暂存区域。</li>
+<li>git commit 给暂存区域生成快照并提交。</li>
+<li>git reset — files 用来撤销最后一次git add files，你也可以用git reset 撤销所有暂存区域文件。</li>
+<li>git checkout — files 把文件从暂存区域复制到工作目录，用来丢弃本地修改。</li>
 </ul>
-<p>全文检索就存在三个重要问题：</p>
-<ol>
-<li>索引里面究竟存些什么？(Index)</li>
-<li>如何创建索引？(Indexing)</li>
-<li>如何对索引进行搜索？(Search)</li>
-</ol>
-<h2 id="What-fuck-in-these-Index"><a href="#What-fuck-in-these-Index" class="headerlink" title="What fuck in these Index"></a>What fuck in these Index</h2><ul>
-<li>存的是<strong> 符号表 </strong> 通俗的说是个映射表</li>
-<li>从字符串到文件的映射是文件到字符串映射的反向过程，于是保存这种信息的索引称为<strong> 反向索引 </strong> 。</li>
-<li>左边的一系列为词典也叫Key</li>
-<li>右边的一系列为倒排表也叫Value</li>
+<p>你可以用 <code>git reset -p</code>, <code>git checkout -p</code>, or <code>git add -p</code>进入交互模式。<br>也可以跳过暂存区域直接从仓库取出文件或者直接提交代码。</p>
+<p><img src="http://marklodato.github.io/visual-git-guide/basic-usage-2.svg" alt></p>
+<ul>
+<li>git commit -a 相当于运行 git add 把所有当前目录下的文件加入暂存区域再运行。git commit.</li>
+<li>git commit files 进行一次包含最后一次提交加上工作目录中文件快照的提交。并且文件被添加到暂存区域。</li>
+<li>git checkout HEAD — files 回滚到复制最后一次提交。</li>
 </ul>
-<p><em>建索引的好处是一次建立, 多次使用, 如果建索引的频率过于频繁反而会拖累整体性能</em></p>
+<h4 id="约定"><a href="#约定" class="headerlink" title="约定"></a>约定</h4><p>后文中以下面的形式使用图片。</p>
+<p><img src="http://marklodato.github.io/visual-git-guide/conventions.svg" alt></p>
+<p>绿色的5位字符表示提交的ID，分别指向父节点。分支用橘色显示，分别指向特定的提交。当前分支由附在其上的HEAD标识。 这张图片里显示最后5次提交，ed489是最新提交。 master分支指向此次提交，另一个maint分支指向祖父提交节点。</p>
 
           
         
@@ -3131,7 +2419,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -3173,7 +2461,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">212</span>
+                    <span class="site-state-item-count">227</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3222,7 +2510,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -3393,7 +2685,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">77</span>
+                      
+                    
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -3991,46 +3285,6 @@
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 
