@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/06/Replace-text-with-Perl-regular-expressions/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/13/Explore-the-redis-file-event/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2020/07/06/Replace-text-with-Perl-regular-expressions/" class="post-title-link" itemprop="url">Perl 正则表达式替换文本</a>
+                <a href="/2020/07/13/Explore-the-redis-file-event/" class="post-title-link" itemprop="url">探索redis 文件事件</a>
               
             
           </h1>
@@ -396,12 +396,24 @@
                 
               
 
-              <time title="Created: 2020-07-06 10:10:36 / Modified: 19:25:24" itemprop="dateCreated datePublished" datetime="2020-07-06T10:10:36+08:00">2020-07-06</time>
+              <time title="Created: 2020-07-13 18:46:03" itemprop="dateCreated datePublished" datetime="2020-07-13T18:46:03+08:00">2020-07-13</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-15 22:51:52" itemprop="dateModified" datetime="2020-07-15T22:51:52+08:00">2020-07-15</time>
               
             
           </span>
@@ -418,7 +430,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/perl/" itemprop="url" rel="index"><span itemprop="name">perl</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
 
                 
                 
@@ -455,133 +467,98 @@
       
         
           
-            <p>第一次接触”驼”语言，它的正则确实很强。</p>
-<h2 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h2><p>Perl的正则表达式的三种形式，分别是匹配，替换和转化:</p>
+            <h2 id="原初"><a href="#原初" class="headerlink" title="原初"></a>原初</h2><p>单线程的Redis为什么如此快?</p>
 <ul>
-<li>匹配：m//（还可以简写为//，略去m）</li>
-<li>替换：s///</li>
-<li>转化：tr///</li>
+<li>纯内存操作</li>
+<li>单线程操作，避免了频繁的上下文切换,</li>
+<li>采用了非阻塞I/O多路复用机制</li>
 </ul>
-<p>这里的 <code>/</code> 是界定符，并不是固定的，比如有表达式正好出现<code>/</code>，那界定符可改为 <code>#</code>或其他字符。<br>这个规则在 <code>sed</code> 里也适用，例如：<code>sed &#39;s#hello#world#&#39; hello.txt</code></p>
+<p>看到Redis高性能的原因里，有<code>IO多路复用</code>一项，感到非常好奇具体是怎么实现的呢。</p>
+<p>网上浏览了一圈，代码探索了一遍，发现复用发生在系统内核。<br>软件层面通过系统函数库<code>epoll</code> 、 <code>iocp</code>，把IO组织起来，我大致是这样理解的。</p>
+<p>在之前写  <a href="/2020/06/10/Explore-the-source-code-of-the-redis-key-hashing-process/">探索redis 键散列过程源码</a>  文章时，看到redis有用到事件机制。<br>这回，在查Redis多路复用时，也看到了这个机制，决定将事件粗略探索一下，范围就定在“文件事件”上。</p>
+<h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><p><img src="/2020/07/13/Explore-the-redis-file-event/20200713185944788325.png" alt="20200713185944788325.png"></p>
 <ul>
-<li><code>=~</code> 表示相匹配</li>
-<li><code>!~</code> 表示不匹配</li>
+<li>事件处理器用<code>multiplexing</code>监听多个套接字，根据行为的不同关联不同事件处理器</li>
+<li>被监听的套接字准备好执行 <code>accept</code>, <code>read</code>, <code>write</code>, <code>close</code>等操作时，会产生相对应的事件，触发事先关联的事件处理器(ps. 回调函数)处理</li>
 </ul>
-<h2 id="模式匹配修饰符"><a href="#模式匹配修饰符" class="headerlink" title="模式匹配修饰符"></a>模式匹配修饰符</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">修饰符</th>
-<th style="text-align:left">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">i</td>
-<td style="text-align:left">忽略模式中的大小写</td>
-</tr>
-<tr>
-<td style="text-align:left">m</td>
-<td style="text-align:left">多行模式</td>
-</tr>
-<tr>
-<td style="text-align:left">o</td>
-<td style="text-align:left">仅赋值一次</td>
-</tr>
-<tr>
-<td style="text-align:left">s</td>
-<td style="text-align:left">单行模式，”.”匹配”\n”（默认不匹配）</td>
-</tr>
-<tr>
-<td style="text-align:left">x</td>
-<td style="text-align:left">忽略模式中的空白</td>
-</tr>
-<tr>
-<td style="text-align:left">g</td>
-<td style="text-align:left">全局匹配</td>
-</tr>
-<tr>
-<td style="text-align:left">cg</td>
-<td style="text-align:left">全局匹配失败后，允许再次查找匹配串</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="替换操作修饰符"><a href="#替换操作修饰符" class="headerlink" title="替换操作修饰符"></a>替换操作修饰符</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">修饰符</th>
-<th style="text-align:left">描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">i</td>
-<td style="text-align:left">如果在修饰符中加上”i”，则正则将会取消大小写敏感性，即”a”和”A” 是一样的。</td>
-</tr>
-<tr>
-<td style="text-align:left">m</td>
-<td style="text-align:left">默认的正则开始”^”和结束”&#36;”只是对于正则字符串如果在修饰符中加上”m”，<br>那么开始和结束将会指字符串的每一行：每一行的开头就是”^”，结尾就是”$”。</td>
-</tr>
-<tr>
-<td style="text-align:left">o</td>
-<td style="text-align:left">表达式只执行一次。</td>
-</tr>
-<tr>
-<td style="text-align:left">s</td>
-<td style="text-align:left">如果在修饰符中加入”s”，那么默认的”.”代表除了换行符以外的任何字符将会变成任意字符，也就是包括换行符！</td>
-</tr>
-<tr>
-<td style="text-align:left">x</td>
-<td style="text-align:left">如果加上该修饰符，表达式中的空白字符将会被忽略，除非它已经被转义。</td>
-</tr>
-<tr>
-<td style="text-align:left">g</td>
-<td style="text-align:left">替换所有匹配的字符串。</td>
-</tr>
-<tr>
-<td style="text-align:left">e</td>
-<td style="text-align:left">替换字符串作为表达式</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>使用Perl将文件中所有的MathJax标签替换为<code>$</code>,并输出到指定文件：</p>
-<h3 id="输入参数"><a href="#输入参数" class="headerlink" title="输入参数"></a>输入参数</h3><ul>
-<li><code>$ARGV[0]</code> 代表输入</li>
-<li><p><code>$ARGV[1]</code> 代表输出</p>
-<h3 id="文件IO"><a href="#文件IO" class="headerlink" title="文件IO"></a>文件IO</h3><p>为一次性加载全部文件内容，安装 <code>Path:Tiny</code>模块</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">perl -MCPAN -e shell</span><br><span class="line">install Path:Tiny</span><br></pre></td></tr></table></figure>
-<p>或<br><code>perl -MCPAN -e &#39;install Path:Tiny&#39;</code></p>
-</li>
-<li><p>读取：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> Path::Tiny;</span><br><span class="line"><span class="keyword">my</span> $all_of_it = path($ARGV[<span class="number">0</span>])-&gt;slurp;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>写入：</p>
-<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span>(DATA, <span class="string">"&gt;"</span>.$ARGV[<span class="number">1</span>]) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file.txt 文件无法打开, $!"</span>;</span><br><span class="line"><span class="keyword">print</span> DATA $all_of_it;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="正则替换"><a href="#正则替换" class="headerlink" title="正则替换"></a>正则替换</h3>  <figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$all_of_it =~ <span class="keyword">s</span><span class="comment">#&lt;script type="math/tex; mode=display".*?&gt;(.*?)&lt;/script&gt;#\n\$\$\n\1\n\$\$\n#sg;</span></span><br><span class="line">$all_of_it =~ <span class="keyword">s</span><span class="comment">#&lt;script type="math/tex".*?&gt;(.*?)&lt;/script&gt;#\$\1\$#sg;</span></span><br></pre></td></tr></table></figure>
+<p>事件的定义，在头文件<code>ae.h</code>里，我猜文件名是 <code>a event</code>的缩写。</p>
+<p>在源码里，经常出现<code>fd</code>，比如 <code>ipfd</code>, <code>aof_fd</code>, <code>fd</code>，经查是文件描述符 <code>file description</code> 的缩写。<br>想来在linux系统的世界观里，一切皆文件，IO相关的事物和文件有密切联系再正常不过。</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae.h</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* File event structure */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFileEvent</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> mask; <span class="comment">/* one of AE_(READABLE|WRITABLE|BARRIER) */</span></span><br><span class="line">    aeFileProc *rfileProc;</span><br><span class="line">    aeFileProc *wfileProc;</span><br><span class="line">    <span class="keyword">void</span> *clientData;</span><br><span class="line">&#125; aeFileEvent;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>当事件就绪时，需要知道文件事件的 <code>文件描述符</code> 还有 <code>事件类型</code> 才能对于锁定该事件，因此定义了 <code>aeFiredEvent</code> 结构统一管理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* A fired event */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFiredEvent</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="keyword">int</span> mask;</span><br><span class="line">&#125; aeFiredEvent;</span><br></pre></td></tr></table></figure>
+<hr>
+<p><code>aeEventLoop</code> 结构保存了一个 <code>void *</code> 类型的万能指针 <code>apidata</code> ，是用来保存轮询事件的状态的，也就是保存底层调用的多路复用库的事件状态<br><code>*beforesleep</code> 会在启动时指向预设的回调方法，之后在<code>ae.c</code> 的 <code>aeMain</code>里不断循环</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* State of an event based program */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeEventLoop</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> maxfd;   <span class="comment">/* highest file descriptor currently registered */</span></span><br><span class="line">    <span class="keyword">int</span> setsize; <span class="comment">/* max number of file descriptors tracked */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> timeEventNextId;</span><br><span class="line">    <span class="keyword">time_t</span> lastTime;     <span class="comment">/* Used to detect system clock skew */</span></span><br><span class="line">    aeFileEvent *events; <span class="comment">/* Registered events */</span></span><br><span class="line">    aeFiredEvent *fired; <span class="comment">/* Fired events */</span></span><br><span class="line">    aeTimeEvent *timeEventHead;</span><br><span class="line">    <span class="keyword">int</span> stop;</span><br><span class="line">    <span class="keyword">void</span> *apidata; <span class="comment">/* This is used for polling API specific data */</span></span><br><span class="line">    aeBeforeSleepProc *beforesleep;</span><br><span class="line">    aeBeforeSleepProc *aftersleep;</span><br><span class="line">    <span class="keyword">int</span> flags;</span><br><span class="line">&#125; aeEventLoop;</span><br></pre></td></tr></table></figure>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">4917</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    ....</span><br><span class="line">    line:<span class="number">5075</span></span><br><span class="line">    initServer();</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    line:<span class="number">5123</span></span><br><span class="line">    aeSetBeforeSleepProc(server.el,beforeSleep);</span><br><span class="line">    aeSetAfterSleepProc(server.el,afterSleep);</span><br><span class="line">    aeMain(server.el);</span><br><span class="line">    aeDeleteEventLoop(server.el);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li><code>s</code> 替换模式</li>
-<li>将展示模式的MathJax，替换为 &#36;&#36;exp&#36;&#36; 形式</li>
-<li>将单行模式的MathJax，替换为 &#36;exp&#36; 形式</li>
-<li><code>sg</code> 替换修饰符，<code>.</code>匹配所有字符、替换所有匹配的字符串</li>
+<li><code>initServer</code> 初始化事件轮询、端口监听、连接应答注册等</li>
+<li><code>aeSetBeforeSleepProc</code> 将<code>beforeSleep</code>函数关联到<code>event loop</code>上，函数<code>beforeSleep</code>中有<code>回复处理</code>的代码。</li>
+<li><code>aeMain</code> 正常运行时，将一直循环处理事件</li>
 </ul>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>input.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=&quot;math/tex; mode=display&quot; id=&quot;MathJax-Element-50&quot;&gt;\begin&#123;equation&#125;</span><br><span class="line">f&apos;(c)=\frac&#123;f(b)-f(a)&#125;&#123;b-a&#125;.\tag2</span><br><span class="line">\end&#123;equation&#125;&lt;/script&gt;</span><br></pre></td></tr></table></figure></p>
-<p>demo.pl<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/perl</span></span><br><span class="line"><span class="keyword">use</span> Path::Tiny;</span><br><span class="line"><span class="keyword">my</span> $all_of_it = path($ARGV[<span class="number">0</span>])-&gt;slurp;</span><br><span class="line">$all_of_it =~ <span class="keyword">s</span><span class="comment">#&lt;script type="math/tex; mode=display".*?&gt;(.*?)&lt;/script&gt;#\n\$\$\n\1\n\$\$\n#sg;</span></span><br><span class="line">$all_of_it =~ <span class="keyword">s</span><span class="comment">#&lt;script type="math/tex".*?&gt;(.*?)&lt;/script&gt;#\$\1\$#sg;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">open</span>(DATA, <span class="string">"&gt;"</span>.$ARGV[<span class="number">1</span>]) <span class="keyword">or</span> <span class="keyword">die</span> <span class="string">"file.txt 文件无法打开, $!"</span>;</span><br><span class="line"><span class="keyword">print</span> DATA $all_of_it;</span><br><span class="line"><span class="keyword">close</span> DATA;</span><br></pre></td></tr></table></figure></p>
-<p>command: <code>perl demo.pl input.txt output.txt</code></p>
-<p>output.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$$</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">f&apos;(c)=\frac&#123;f(b)-f(a)&#125;&#123;b-a&#125;.\tag2</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line">$$</span><br></pre></td></tr></table></figure></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>相比于 <code>sed</code> <code>gawk</code>，<code>perl</code> 明显有更强、更灵活的文本控制力</li>
-<li>在<code>grep</code>的匹配器选项中，可以用 <code>-P, --perl-regexp</code> 选项来使用更强的 <code>PCRE</code> 匹配器</li>
+<hr>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">2702</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">initServer</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">2743</span></span><br><span class="line">    server.el = aeCreateEventLoop(server.maxclients+CONFIG_FDSET_INCR);</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    line:<span class="number">2752</span></span><br><span class="line">    <span class="comment">/* Open the TCP listening socket for the user commands. */</span></span><br><span class="line">    <span class="keyword">if</span> (server.port != <span class="number">0</span> &amp;&amp;</span><br><span class="line">        listenToPort(server.port,server.ipfd,&amp;server.ipfd_count) == C_ERR)</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    ....</span><br><span class="line"></span><br><span class="line">    line:<span class="number">2845</span></span><br><span class="line">    <span class="comment">/* Create an event handler for accepting new connections in TCP and Unix</span></span><br><span class="line"><span class="comment">     * domain sockets. */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; server.ipfd_count; j++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (aeCreateFileEvent(server.el, server.ipfd[j], AE_READABLE,</span><br><span class="line">            acceptTcpHandler,<span class="literal">NULL</span>) == AE_ERR)</span><br><span class="line">            &#123;</span><br><span class="line">                serverPanic(</span><br><span class="line">                    <span class="string">"Unrecoverable error creating server.ipfd file event."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>aeCreateEventLoop</code> 创建事件循环、IO多路复用</li>
+<li><code>listenToPort</code> 监听端口</li>
+<li><code>aeCreateFileEvent</code> 创建TCP、TLS监听事件，其中会给<code>server.ipfd[j]</code> 的 <code>rfileProc</code>赋予回调函数 <code>acceptTcpHandler</code></li>
+</ul>
+<hr>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">line:522</span><br><span class="line">void aeMain(aeEventLoop *eventLoop) &#123;</span><br><span class="line">    eventLoop-&gt;stop = 0;</span><br><span class="line">    while (!eventLoop-&gt;stop) &#123;</span><br><span class="line">        if (eventLoop-&gt;beforesleep != NULL)</span><br><span class="line">            eventLoop-&gt;beforesleep(eventLoop);</span><br><span class="line">        aeProcessEvents(eventLoop, AE_ALL_EVENTS|AE_CALL_AFTER_SLEEP);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>beforeSleep</code> 的循环调用，会执行接收、回复处理等操作</li>
+<li><code>aeProcessEvents</code> 的循环调用，会执行等待epoll中发生事件，并交由事先注册的处理器处理。</li>
+</ul>
+<h2 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h2><p>多路复用函数库定义在：<code>ae_xxx.c</code>中，库底层可相互替换，这里以<code>ae_epoll.c</code>做探索。</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae_epoll.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae_epoll.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">39</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiCreate</span><span class="params">(aeEventLoop *eventLoop)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">48</span></span><br><span class="line">    state-&gt;epfd = epoll_create(<span class="number">1024</span>); <span class="comment">/* 1024 is just a hint for the kernel */</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">73</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiAddEvent</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">int</span> fd, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">86</span></span><br><span class="line">    <span class="keyword">if</span> (epoll_ctl(state-&gt;epfd,op,fd,&amp;ee) == <span class="number">-1</span>) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">108</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiPoll</span><span class="params">(aeEventLoop *eventLoop, struct timeval *tvp)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">112</span></span><br><span class="line">    retval = epoll_wait(state-&gt;epfd,state-&gt;events,eventLoop-&gt;setsize,</span><br><span class="line">            tvp ? (tvp-&gt;tv_sec*<span class="number">1000</span> + tvp-&gt;tv_usec/<span class="number">1000</span>) : <span class="number">-1</span>);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>epoll_create</code> 建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。</li>
+<li><code>epoll_ctl</code> 可以操作上面建立的epoll，例如，将刚建立的socket加入到epoll中让其监控，或者把 epoll正在监控的某个socket句柄移出epoll，不再监控它等等。</li>
+<li><code>epoll_wait</code> 在调用时，在给定的timeout时间内，当在监控的所有句柄中有事件发生时，就返回用户态的进程。</li>
 </ul>
 <blockquote>
-<p>尽管PCRE声称与Perl兼容，但现代版本的Perl和PCRE之间存在足够多的差异，可以认为它们具有不同的正则风味。Perl的最新版本甚至在Perl收录前，从PCRE那复制了，PCRE从别的编程语言那复制的功能，目的是使Perl与PCRE更加兼容。如今，PCRE比Perl更加广泛地使用，因为PCRE是众多库和应用程序的组成部分。</p>
+<p>server.c:main:initServer -&gt; server.c:initServer:aeCreateEventLoop -&gt; ae.c:*aeCreateEventLoop:aeApiCreate -&gt; ae_epoll.c:aeApiCreate:epoll_create</p>
 </blockquote>
-<p><a href="https://www.runoob.com/perl/perl-regular-expressions.html" target="_blank" rel="noopener">Perl 正则表达式</a><br><a href="https://www.cnblogs.com/f-ck-need-u/p/9557041.html" target="_blank" rel="noopener">Perl的命令行参数和ARGV</a><br><a href="https://www.v2ex.com/t/316771" target="_blank" rel="noopener">问下 perl 怎么读取整个文件里的内容（包括所有换行）？</a><br><a href="https://perldoc.perl.org/perlfaq5.html#How-do-I-print-to-more-than-one-file-at-once%3f" target="_blank" rel="noopener">How can I read in an entire file all at once?</a><br><a href="https://www.jianshu.com/p/40b12429e28f" target="_blank" rel="noopener">各个平台下 Perl 模块安装总结
-</a><br><a href="https://www.regular-expressions.info/pcre.html" target="_blank" rel="noopener">The PCRE Open Source Regex Library</a></p>
+<hr>
+<blockquote>
+<p>server.c:main:initServer -&gt; server.c:initServer:aeCreateFileEvent -&gt; ae.c:aeCreateFileEvent:aeCreateFileEvent -&gt; ae_epoll.c:aeApiAddEvent:epoll_ctl</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>server.c:main:aeMain -&gt; ae.c:aeMain:aeProcessEvents -&gt; ae.c:aeProcessEvents:aeApiPoll -&gt; ae_epoll.c:aeApiPoll:epoll_wait</p>
+</blockquote>
+<p>可见在程序启动的过程里，已经通过事件库<code>ae.c</code>完整的调用了多路复用函数，并完成了事件处理器的注册。</p>
+<h2 id="事件处理器"><a href="#事件处理器" class="headerlink" title="事件处理器"></a>事件处理器</h2><h3 id="连接应答处理器"><a href="#连接应答处理器" class="headerlink" title="连接应答处理器"></a>连接应答处理器</h3><p>在上文的，redis启动阶段，已为事件关联acceptTcpHandler回调。</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">944</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">acceptTcpHandler</span><span class="params">(aeEventLoop *el, <span class="keyword">int</span> fd, <span class="keyword">void</span> *privdata, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cport, cfd, max = MAX_ACCEPTS_PER_CALL;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(max--) &#123;</span><br><span class="line">        cfd = anetTcpAccept(server.neterr, fd, cip, <span class="keyword">sizeof</span>(cip), &amp;cport);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    acceptCommonHandler(connCreateAcceptedSocket(cfd),<span class="number">0</span>,cip);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>anetTcpAccept</code> 用于对连接服务器监听套接字的客户端进行应答</li>
+<li><code>acceptCommonHandler</code> 注册命令请求处理器</li>
+</ul>
+<hr>
+<p>其主要调用<code>anet.c</code>中<code>anetTcpAccept</code>函数实现，具体实现为<code>sys/socket.h/accept</code>函数的包装<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/anet.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/anet.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">562</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">anetTcpAccept</span><span class="params">(<span class="keyword">char</span> *err, <span class="keyword">int</span> s, <span class="keyword">char</span> *ip, <span class="keyword">size_t</span> ip_len, <span class="keyword">int</span> *port)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> ((fd = anetGenericAccept(err,s,(struct sockaddr*)&amp;sa,&amp;salen)) == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> ANET_ERR;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> fd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">545</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">anetGenericAccept</span><span class="params">(<span class="keyword">char</span> *err, <span class="keyword">int</span> s, struct sockaddr *sa, <span class="keyword">socklen_t</span> *len)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    fd = accept(s,sa,len);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当Redis服务器进行初始化的时候，程序会将这个连接应答处理器和服务器监听套接字的AE_READABLE事件关联起来。<br>当有客户端用sys/socket.h/connect函数连接服务器监听套接字的时候，套接字就会产生AE_READABLE事件，引发连接应答处理器执行，并执行相应的套接字应答操作。</p>
+<h3 id="命令请求处理器"><a href="#命令请求处理器" class="headerlink" title="命令请求处理器"></a>命令请求处理器</h3><blockquote>
+<p>networking.c:acceptTcpHandler:acceptCommonHandler -&gt; networking.c:acceptCommonHandler:createClient -&gt; networking.c:*createClient:readQueryFromClient</p>
+</blockquote>
+<p>在连接处理器中，会关联命令处理函数<br>它负责从套接字中读入客户端发送的命令请求内容，具体实现为unistd.h/read函数的包装</p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">1858</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">1887</span></span><br><span class="line">    nread = connRead(c-&gt;conn, c-&gt;querybuf+qblen, readlen);</span><br><span class="line">    ...</span><br><span class="line">    processInputBuffer(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p><code>connRead</code> 该函数定义在<code>connection.h</code>中，最终映射至<code>connection.c</code>的<code>connSocketRead</code>函数<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/connection.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/connection.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"server.h"</span></span></span><br><span class="line">...</span><br><span class="line">line:<span class="number">173</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">connSocketRead</span><span class="params">(connection *conn, <span class="keyword">void</span> *buf, <span class="keyword">size_t</span> buf_len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ret = read(conn-&gt;fd, buf, buf_len);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>当一个客户端通过连接应答处理器成功连接到服务器之后，服务器会将客户端套接字的AE_READABLE事件和命令请求处理器关联起来。<br>当客户端向服务器发送命令请求的时候，套接字就会产生AE_READABLE事件，引发命令请求处理器执行，并执行相应的套接字读入操作；</p>
+<p>在客户端连接服务器的整个过程中，服务器都会一直为客户端套接字的AE_READABLE事件关联命令请求处理器。</p>
+<h3 id="命令回复处理器"><a href="#命令回复处理器" class="headerlink" title="命令回复处理器"></a>命令回复处理器</h3><p>在启动阶段，<code>aeSetBeforeSleepProc</code>给事件循环关联了<code>beforeSleep</code>回调<br><code>beforeSleep</code> 中 <code>handleClientsWithPendingWritesUsingThreads</code> 将设置回复处理器 <code>sendReplyToClient</code></p>
+<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">handleClientsWithPendingWritesUsingThreads</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3052</span></span><br><span class="line">    <span class="keyword">while</span>((ln = listNext(&amp;li))) &#123;</span><br><span class="line">        client *c = listNodeValue(ln);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Install the write handler if there are pending writes in some</span></span><br><span class="line"><span class="comment">         * of the clients. */</span></span><br><span class="line">        <span class="keyword">if</span> (clientHasPendingReplies(c) &amp;&amp;</span><br><span class="line">                connSetWriteHandler(c-&gt;conn, sendReplyToClient) == AE_ERR)</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1357</span></span><br><span class="line"><span class="comment">/* Write event handler. Just send data to the client. */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sendReplyToClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    client *c = connGetPrivateData(conn);</span><br><span class="line">    writeToClient(c,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1261</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">writeToClient</span><span class="params">(client *c, <span class="keyword">int</span> handler_installed)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">1346</span></span><br><span class="line">    <span class="keyword">if</span> (handler_installed) connSetWriteHandler(c-&gt;conn, <span class="literal">NULL</span>);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p><code>connSetWriteHandler</code> 该函数定义在<code>connection.h</code>中，<br>最终映射至<code>connection.c</code>的<code>connSocketSetWriteHandler</code>函数。</p>
+<p>当服务器有命令回复需要传送给客户端的时候，服务器会将客户端套接字的AE_WRITABLE事件和命令回复处理器关联起来。<br>当客户端准备好接收服务器传回的命令回复时，就会产生AE_WRITABLE事件，引发命令回复处理器执行，并执行相应的套接字写入操作。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>在<code>ae.c</code>的注释里有这样一段话，感叹作者积累的深厚</p>
+<blockquote>
+<p>A simple event-driven programming library. Originally I wrote this code<br>  for the Jim’s event-loop (Jim is a Tcl interpreter) but later translated<br>  it in form of a library for easy reuse.</p>
+</blockquote>
+<p>粗略的记了记redis里事件机制初始化、事件处理器<br>关于事件状态变化、时间事件、线程等还有待探索。</p>
+<p><code>epoll</code> 也是一个有趣的点，对它内部的实现感到好奇。</p>
+<p><a href="https://blog.csdn.net/bohu83/article/details/84964656" target="_blank" rel="noopener">《redis设计与实现》-12事件event</a><br><a href="https://blog.csdn.net/men_wen/article/details/71514524" target="_blank" rel="noopener">Redis源码剖析和注释（十九）—- Redis 事件处理实现</a><br><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a><br><a href="https://blog.csdn.net/fujibao/article/details/81490687" target="_blank" rel="noopener">epoll模型详解</a><br><a href="https://blog.csdn.net/sparkliang/article/details/4770655" target="_blank" rel="noopener">Linux Epoll介绍和程序实例</a></p>
 
           
         
@@ -638,7 +615,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-6-Derivatives-of-Higher-Order/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-8-Hydrostatic-Force/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -658,7 +635,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2020/07/05/Stroll-calculus-3-6-Derivatives-of-Higher-Order/" class="post-title-link" itemprop="url">漫步微积分3.6 - 高阶导数</a>
+                <a href="/2020/07/09/Stroll-calculus-7-8-Hydrostatic-Force/" class="post-title-link" itemprop="url">漫步微积分7.8 - 流体静力学</a>
               
             
           </h1>
@@ -683,7 +660,7 @@
                 
               
 
-              <time title="Created: 2020-07-05 13:06:51 / Modified: 13:28:48" itemprop="dateCreated datePublished" datetime="2020-07-05T13:06:51+08:00">2020-07-05</time>
+              <time title="Created: 2020-07-09 07:45:00 / Modified: 08:10:34" itemprop="dateCreated datePublished" datetime="2020-07-09T07:45:00+08:00">2020-07-09</time>
             
 
             
@@ -741,1061 +718,22 @@
 
       
         
-          <p>$y=x^4$的导数是$y’=4x^3$。但是$4x^3$依然可导，$12x^2$。用$y’’$表示，叫做原函数的二阶导。对二阶导$y’’=12x^2$求导得到三阶导$y’’’=24x$，一直这样做知道没有定义为止。对于高阶导，有些符号是共用的，我们都应该熟悉他们。对函数$u=f(x)$逐次求导得</p>
+          <p><strong>声明：单变量微积分的内容到这里就结束了，衷心希望可以帮到大家，再次谢谢大家的支持。</strong></p>
+<p>前面的文章中我们已经看到如何使用积分来解决几何和基本物理中产生的问题。</p>
+<p>本节，我们简短介绍一下流体静力学，它主要关注液体的行为，尤其是，我们计算一个开口容器内部的水向外的作用力。我们可以考虑任何容器，可以是一个很小的鱼缸，也可是巨型大坝水库。之所以将它，是因为它更好的解释了前几篇文章的主题(将要计算的量划分为许多方便的小块，然后添加计算也就是积分得到要计算的量)。</p>
+<p>有一个底面是矩形的盒子，里面的水深为$h$(图1)，那么底部受到向下的力等于盒内水的重量。如果$A$是底部的面积，那么由公式给出</p>
 <script type="math/tex; mode=display">
 \begin{equation}
-\begin{array}{ccccc}
-一阶导数 &f'(x)&y'&\frac{dy}{dx}&\frac{d}{dx}f(x)\\
-二阶导数&f''(x)&y''&\frac{d^2y}{dx^2}&\frac{d^2}{dx^2}f(x)\\ \
-三阶导数&f'''(x)&y'''&\frac{d^3y}{dx^3}&\frac{d^3}{dx^3}f(x)\\
-n阶导数&f^{n}(x)&y^{(n)}&\frac{d^ny}{dx^n}&\frac{d^n}{dx^n}f(x)
-\end{array}\notag
-\end{equation}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/05/Stroll-calculus-3-6-Derivatives-of-Higher-Order/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-5-Implicit-Functions-and-Fractional-Exponents/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/05/Stroll-calculus-3-5-Implicit-Functions-and-Fractional-Exponents/" class="post-title-link" itemprop="url">漫步微积分3.5 - 隐函数、分数指数</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-05 13:06:43 / Modified: 15:21:08" itemprop="dateCreated datePublished" datetime="2020-07-05T13:06:43+08:00">2020-07-05</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>目前我们遇到的大部分函数形式都是$y=f(x)$，$y$直接或明确的表示成$x$的形式。然而，我们常常看到如下形式的定义</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-F(x,y)=0\tag1
-\end{equation}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/05/Stroll-calculus-3-5-Implicit-Functions-and-Fractional-Exponents/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-4-Some-Trigonometric-Derivatives/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/05/Stroll-calculus-3-4-Some-Trigonometric-Derivatives/" class="post-title-link" itemprop="url">漫步微积分3.4 - 三角函数求导</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-05 13:06:31 / Modified: 13:28:25" itemprop="dateCreated datePublished" datetime="2020-07-05T13:06:31+08:00">2020-07-05</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>目前为止，我们求导的最基本函数是幂函数$x^n$：</p>
-<script type="math/tex; mode=display">
-
-\frac{d}{dx}x^n=nx^{n-1}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/05/Stroll-calculus-3-4-Some-Trigonometric-Derivatives/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/" class="post-title-link" itemprop="url">漫步微积分3.3 - 复合函数和链式法则</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-05 13:06:20 / Modified: 13:28:18" itemprop="dateCreated datePublished" datetime="2020-07-05T13:06:20+08:00">2020-07-05</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>考虑下面函数的导数</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-y=(x^3+2)^5\tag1
-\end{equation}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/" class="post-title-link" itemprop="url">漫步微积分3.2 - 乘法和除法法则</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-05 13:05:50 / Modified: 13:28:12" itemprop="dateCreated datePublished" datetime="2020-07-05T13:05:50+08:00">2020-07-05</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>上篇文章中，我们学习了如何对和函数，差函数和常数乘函数进行求导。现在考虑</p>
-<script type="math/tex; mode=display">
-
-products\ uv\quad quotions\ \frac{u}{v}.</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/" class="post-title-link" itemprop="url">漫步微积分3.1 - 多项式求导</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-04 21:22:39 / Modified: 21:28:24" itemprop="dateCreated datePublished" datetime="2020-07-04T21:22:39+08:00">2020-07-04</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>微分学有其自身的独特性和重要性，已被应用到物理、生物和社会科学中。它能够快速渗入到应用中，并得到问题的核心。然而，从整体效率的角度看，它的具体内容推迟一下，我们先花一点时间学习如何快速而准确的求导。</p>
-<p>我们已经知道，对函数求导的过程称作微分。这个过程直接依赖于导数的极限定义，</p>
-<script type="math/tex; mode=display">
-f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等价的</p>
-<script type="math/tex; mode=display">
-\frac{dy}{dx}=\lim_{\Delta x\to 0}\frac{\Delta y}{\Delta x}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/" class="post-title-link" itemprop="url">漫步微积分2.6 - 连续函数</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-04 12:26:30" itemprop="dateCreated datePublished" datetime="2020-07-04T12:26:30+08:00">2020-07-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-07-05 15:16:12" itemprop="dateModified" datetime="2020-07-05T15:16:12+08:00">2020-07-05</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>随着我们进一步深入主题，知道什么是连续函数就变得非常重要。在日常用语中，一个连续的过程表示处理中没有空隙或中断或突然的变化。大体说来，如果一个函数显示相似的行为那它就是连续的，也就是说，如果$x$发生小的变化，相应的$f(x)$值也发生小的变化。图1所示的函数在点$a$处是连续，因为$x$趋近$a$时，$f(x)$趋近$f(a)$。或更确切地说，$x$充分趋近$a$时，$f(x)$要多接近就多接近$f(a)$。用极限的语言说就是</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-\lim_{x\to a}f(x)=f(a).\tag1
-\end{equation}</script><p>目前为止，我们对于连续的陈述非常松散和直观，更像是在解释而不是定义。现在，我们将等式(1)作为函数$f(x)$在点$a$处连续的定义。我们发现，函数$f(x)$在点$a$处连续需要满足三个条件：$a$必须在$f(x)$定义域内，这样的话$f(a)$就存在；$f(x)$在$x$趋近$a$时有极限；这个极限值必须等于$f(a)$。我们通过图1可以更好的理解这些条件，函数在点$b,c,d$处不连续，并且不连续的方式也不同。在点$b$处，$\lim<em>{x\to c}f(x)$存在但是$f(b)$不存在；点$c$，$f(c)$存在但$\lim</em>{x\to c}f(x)$不存在；点$d$，$f(d),\lim_{x\to d}f(x)$都存在但值不相同。这个函数图存在三种不同情况的空隙或洞。</p>
+F=whA\tag1
+\end{equation}</script><p>其中$w$是水的质量密度，近似为$62.5\ lb/ft^3$或者$\frac{1}{32}ton/ft^3$。很明显(1)中的度量单位需要兼容。我们用$feet$度量$h$，$square\ feet$度量$A$，$pounds$或者$tons\ per-\ cubic\ foot$度量$w$。那么力$F$就是$pounds\ or\ tons$。</p>
 <center>
-<img src="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/20160719094242625" alt="这里写图片描述" title>
+<img src="/2020/07/09/Stroll-calculus-7-8-Hydrostatic-Force/20160906211647038" alt="这里写图片描述" title>
 图1
 </center>
           <!--noindex-->
           
             <div class="post-button text-center">
-              <a class="btn" href="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/#more" rel="contents">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-8-Hydrostatic-Force/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1855,7 +793,7 @@ f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-6-The-Area-of-a-Surface-of-Revolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -1875,7 +813,7 @@ f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等�
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/" class="post-title-link" itemprop="url">漫步微积分2.5 - 极限的概念</a>
+                <a href="/2020/07/09/Stroll-calculus-7-6-The-Area-of-a-Surface-of-Revolution/" class="post-title-link" itemprop="url">漫步微积分7.6 曲面的面积</a>
               
             
           </h1>
@@ -1900,24 +838,12 @@ f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等�
                 
               
 
-              <time title="Created: 2020-07-04 12:21:04" itemprop="dateCreated datePublished" datetime="2020-07-04T12:21:04+08:00">2020-07-04</time>
+              <time title="Created: 2020-07-09 07:44:59 / Modified: 08:10:34" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:59+08:00">2020-07-09</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-07-05 15:12:39" itemprop="dateModified" datetime="2020-07-05T15:12:39+08:00">2020-07-05</time>
               
             
           </span>
@@ -1970,207 +896,1237 @@ f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等�
 
       
         
-          <p>前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。</p>
-<p>考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-\lim_{x\to a}f(x)=L.\tag1
-\end{equation}</script><center>
-<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718182913134" alt="这里写图片描述" title>
-图1
-</center>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/" class="post-title-link" itemprop="url">漫步微积分2.4 - 速度和变化率</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-04 12:14:07" itemprop="dateCreated datePublished" datetime="2020-07-04T12:14:07+08:00">2020-07-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-07-05 15:05:17" itemprop="dateModified" datetime="2020-07-05T15:05:17+08:00">2020-07-05</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>导数的概念与运动物体速度的计算密切相关。正是由于这一个事实，在牛顿努力寻找动力学定理并理解行星运动的思考中将微积分作为他基本的工具。看起来似乎只有物理系的学生有必要关注对于速度准确的想法。但是，这些想法对变化率这个广泛概念提供了非常简单的说明，这个概念在其他研究领域也非常重要，包括生物和社会科学。</p>
-<p>在本节中，我们考虑速度问题的一个特殊情况:所讨论的对象可以看成沿着一条直行运动的点，所以它的位置由一个坐标(图1) 确定。如果我们知道每一时刻点的位置，那么真个运动轨迹就都已知，也就是说，如果我们知道位置$S$关于时间$t$的函数，</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-s=f(t)\tag1
-\end{equation}</script><p>为了方便，$t$的初始值通常从$0$开始。</p>
+          <p>让我们考虑$x$轴上方的平滑曲线，如图1左边所示。当这条曲线绕$x$轴旋转时，它会生成一个曲面。现在我们开始解决曲面的表面积问题。</p>
 <center>
-<img src="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/20160717211431023" alt="这里写图片描述" title>
+<img src="/2020/07/09/Stroll-calculus-7-6-The-Area-of-a-Surface-of-Revolution/20160904164308371" alt="这里写图片描述" title>
 图1
 </center>
           <!--noindex-->
           
             <div class="post-button text-center">
-              <a class="btn" href="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/#more" rel="contents">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-6-The-Area-of-a-Surface-of-Revolution/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-7-Work-and-Energy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-7-Work-and-Energy/" class="post-title-link" itemprop="url">漫步微积分7.7 - 力和功</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:59 / Modified: 08:10:34" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:59+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>首先提一个常识，在移动的对象上施加一个发力，如举起一块很沉的石头，我们感觉需要很大的力气或做功。在我们定义物理上功的概念之前，我们深信移动相同的距离，举起20磅的石头所做的功是l0磅的两倍，并且俱到3英尺所做的功是1 英尺的三倍。这些想法给出了我们基本的定义：如果恒力$F$作用的距离为$d$，那么这个过程中完成的功为力和它作用距离的乘积</p>
+<script type="math/tex; mode=display">
+
+{work\ =force\ \cdot distance}</script><p>或者</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+W=F\cdot d\tag1
+\end{equation}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-7-Work-and-Energy/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-5-Arc-Length/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-5-Arc-Length/" class="post-title-link" itemprop="url">漫步微积分7.5 - 弧长</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:58 / Modified: 08:10:03" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:58+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>弧是介于曲线上两个特定点$A$和点$B$之间的一部分，如图1 左边所示。物理上，弧长是一个非常简单的概念。数学上，它是稍微有点复杂。从物理观点看，我们只是折弯了一根绳子来拟合从$A$到$B$的曲线，标记下对应的点$A$和$B$，将绳子伸直然后用尺子量出长度。</p>
+<p>这一过程可以用如下的逼近过程(适合于数学处理)来解决。弧$AB$用点$P_0=A,P_1,P-2,\ldots,P_n=B$分成$n$部分；将针放在这些点上；让该线段沿着这些一个个短针得到的路径延伸。我们在图1右边用$n=3$的情况说明了这个想法。$A,B$之间的长度明显短于弧长，因为两个点之间直线最短。然而，如果我们采取更大的$n$值，同时要求针之间放置的足够近，那么线的长度应该接近弧的长度。我们现在用数学语言表达它并推导出用积分计算弧长的实用方法。</p>
+<center>
+<img src="/2020/07/09/Stroll-calculus-7-5-Arc-Length/20160903164335373" alt="这里写图片描述" title>
+图1
+</center>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-5-Arc-Length/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-4-Volumes-The-Method-of-Cylindrical-Shells/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-4-Volumes-The-Method-of-Cylindrical-Shells/" class="post-title-link" itemprop="url">漫步微积分7.4 - 体积计算：圆柱壳法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:57 / Modified: 08:10:03" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:57+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>还有一种去体积的方法，往往它比上篇文章的方法更加方便。</p>
+<p>为了理解这种方法，考虑图1左边所示的区域，也就是，第一象限数轴和所示示曲线$y=f(x)$围成的区域。如果这个区域绕$x$轴旋转，那么图中的垂直窄带生成一个圆盘，我们能够从$x=0$到$x=b$区间上积分这些圆盘的体积得到总体积。当然，这是上篇文章中描述的圆盘法。然而，如果区域绕$y$轴旋转，就像图中间的那样，那么我们获得完全不同的物体，垂直窄带产生了很薄的圆柱壳。这个壳可以看做一个罐头，只是其顶部和底部已被去掉，或者很薄的纸板。其体积$dV$本质上是内圆柱表面积$(2\pi xy)$乘以厚度$(dx)$，所以</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+dV=2\pi xydx\tag1
+\end{equation}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-4-Volumes-The-Method-of-Cylindrical-Shells/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-2-The-Area-between-Two-Curves/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-2-The-Area-between-Two-Curves/" class="post-title-link" itemprop="url">漫步微积分7.2 - 两条曲线间的面积</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:56 / Modified: 08:09:27" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:56+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>假设我们给出了两条曲线$y=f(x),yg(x)$，如图1所示，在$x=a,b$处有交点并且在区间$[a,b]$内第一条曲线位于第二条的上方，为了求出曲线之间的面积，很自然地想法是使用如图所示垂直的细条。在$x$处的高度为低点的曲线与高点之间的距离$f(x)-g(x)$，其底是$dx$。因此，面积的单元是</p>
+<script type="math/tex; mode=display">
+
+dA=[f(x)-g(x)]dx</script><p>总面积为</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+A=\int dA=\int_a^b[f(x)-g(x)]dx\tag1
+\end{equation}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-2-The-Area-between-Two-Curves/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-3-Volumes-The-Disk-Method/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-3-Volumes-The-Disk-Method/" class="post-title-link" itemprop="url">漫步微积分7.3 - 体积计算：圆盘法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:56 / Modified: 08:09:35" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:56+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在$x=a,x=b$之间的曲线$y=f(x)$绕$x$轴旋转产生一个区域，这是一个三维图像。这种对称形状的面积相对比较容易计算。</p>
+<p>这种情况如图1所示。左边是我们展示了区域本身以及底在$x$轴上宽为$dx$的摘窄带。当该区域绕$x$轴旋转时，这条窄带生成了薄的圆盘，形如一枚硬币如图右边所示，它的半径是$y=f(x)$厚度为$dx$。此圆盘的体积是我们体积$dV$的元素。因为圆盘是一个圆柱体，所以它的体积是圆盘表面积乘以厚度，</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+dV=\pi y^2dx=\pi f(x)^2dx\tag1
+\end{equation}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-3-Volumes-The-Disk-Method/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/" class="post-title-link" itemprop="url">漫步微积分7.1 - 定积分的直观含义</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-09 07:44:55 / Modified: 08:09:37" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:55+08:00">2020-07-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>前面的文章中，我们完成了两个主要目的。首先，我们将面积近似为给定曲线下的面积，并利用他们和的极限求出确切的面积值。第二，通过使用更强大的方法微积分基本定理，我们学会了如何计算极限的数值解。几乎前几篇文章的整个内容可以被压缩成下面的命题：如果$f(x)$在$[a,b]$上是连续的，那么</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\lim_{ {\rm max}\Delta x\to 0}\sum_{k=1}^nf(x_k^*)\Delta x_k
+&=\int_a^bf(x)dx\nonumber\\
+&=F(x)\big|_a^b=F(b)-F(a)\tag1
+\end{align}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/08/Stroll-calculus-6-7-Properties-of-Definite-Integrals/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/08/Stroll-calculus-6-7-Properties-of-Definite-Integrals/" class="post-title-link" itemprop="url">漫步微积分6.7 - 定积分的性质</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-08 09:16:53" itemprop="dateCreated datePublished" datetime="2020-07-08T09:16:53+08:00">2020-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-09 07:44:46" itemprop="dateModified" datetime="2020-07-09T07:44:46+08:00">2020-07-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="代数和几何面积"><a name="t0"></a><a name="t0"></a>代数和几何面积</h2>
+
+<p>在前面的章节我们考虑了曲线$y=f(x)$下方和$x=a,x-b$之间围成区域的面积，还有两个假设分别是$(1)f(x)\geq 0;(2)a&lt;b$。然而通过逼近和的极限来定义定积分的公式即</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int_a^bf(x)dx=\lim_{ {\rm max\ \Delta x_k}\to\infty}\sum_{k=1}^nf(x_k^*)\Delta x_k\tag1
+\end{equation}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/08/Stroll-calculus-6-7-Properties-of-Definite-Integrals/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -2219,7 +2175,7 @@ s=f(t)\tag1
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2261,7 +2217,7 @@ s=f(t)\tag1
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">227</span>
+                    <span class="site-state-item-count">253</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

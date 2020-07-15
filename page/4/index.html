@@ -351,7 +351,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/15/TDengine-in-docker/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -371,7 +371,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/10/15/TDengine-in-docker/" class="post-title-link" itemprop="url">TDengine in docker</a>
+                <a href="/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/" class="post-title-link" itemprop="url">漫步微积分3.3 - 复合函数和链式法则</a>
               
             
           </h1>
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="Created: 2019-10-15 08:28:18 / Modified: 21:38:58" itemprop="dateCreated datePublished" datetime="2019-10-15T08:28:18+08:00">2019-10-15</time>
+              <time title="Created: 2020-07-05 13:06:20 / Modified: 13:28:18" itemprop="dateCreated datePublished" datetime="2020-07-05T13:06:20+08:00">2020-07-05</time>
             
 
             
@@ -418,7 +418,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
 
                 
                 
@@ -454,53 +454,1479 @@
 
       
         
+          <p>考虑下面函数的导数</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+y=(x^3+2)^5\tag1
+\end{equation}</script>
+          <!--noindex-->
           
-            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><h3 id="prepare-base-image"><a href="#prepare-base-image" class="headerlink" title="prepare base image"></a>prepare base image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image pull centos</span><br></pre></td></tr></table></figure>
-<h3 id="prepare-source-code"><a href="#prepare-source-code" class="headerlink" title="prepare source code"></a>prepare source code</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:taosdata/TDengine.git</span><br><span class="line">cd TDengine</span><br></pre></td></tr></table></figure>
-<p>or download release version package and unpackage</p>
-<h3 id="prepare-Dockerfile-file"><a href="#prepare-Dockerfile-file" class="headerlink" title="prepare Dockerfile file"></a>prepare <code>Dockerfile</code> file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># Compile image</span><br><span class="line">FROM centos as compile</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY src/ ./src/</span><br><span class="line">COPY deps/ ./deps/</span><br><span class="line">COPY packaging/ ./packaging/</span><br><span class="line">COPY CMakeLists.txt ./</span><br><span class="line"></span><br><span class="line">RUN yum update -y</span><br><span class="line"></span><br><span class="line">RUN yum group install -y &quot;Development Tools&quot;</span><br><span class="line"></span><br><span class="line">Run yum install -y cmake</span><br><span class="line"></span><br><span class="line">WORKDIR /root/build</span><br><span class="line">RUN cmake .. &amp;&amp; cmake --build .</span><br><span class="line"></span><br><span class="line">CMD [&quot;bash&quot;]</span><br><span class="line"></span><br><span class="line"># Final image</span><br><span class="line">FROM centos</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY --from=compile /root/build/build/bin /usr/bin/</span><br><span class="line">COPY --from=compile /root/build/build/lib/libtaos.so /usr/lib/</span><br><span class="line">COPY packaging/cfg/taos.cfg /etc/taos/</span><br><span class="line"></span><br><span class="line">RUN echo &quot;charset UTF-8&quot; &gt;&gt; /etc/taos/taos.cfg</span><br><span class="line"></span><br><span class="line">ENV LD_LIBRARY_PATH=&quot;$LD_LIBRARY_PATH:/usr/lib&quot;</span><br><span class="line">ENV LC_CTYPE=&quot;en_US.UTF-8&quot;</span><br><span class="line"></span><br><span class="line"># origin blog missing this</span><br><span class="line">ENV LC_ALL=&quot;C&quot;</span><br><span class="line"></span><br><span class="line">CMD [&quot;taosd&quot;]</span><br></pre></td></tr></table></figure>
-<h3 id="create-TDengine-image"><a href="#create-TDengine-image" class="headerlink" title="create TDengine image"></a>create TDengine image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t tdtest .</span><br></pre></td></tr></table></figure>
-<h2 id="start-service"><a href="#start-service" class="headerlink" title="start service"></a>start service</h2><h3 id="create-volumn"><a href="#create-volumn" class="headerlink" title="create volumn"></a>create volumn</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume create td_log_vol</span><br><span class="line">docker volume create td_data_vol</span><br></pre></td></tr></table></figure>
-<h3 id="start"><a href="#start" class="headerlink" title="start"></a>start</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest</span><br></pre></td></tr></table></figure>
-<p>if service start fail then check logs</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a</span><br><span class="line">docker logs -f -t --tail 50 tdtest_run</span><br></pre></td></tr></table></figure>
-<p>Error info like this</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2019-10-15T00:51:45.614929519Z TDengine:[1]: Starting TDengine service...</span><br><span class="line">2019-10-15T00:51:45.614966105Z 10/15 00:51:45.614216 7f6a24ce1b80 UTL timezone not configured, set to system default: (UTC, +0000)</span><br><span class="line">2019-10-15T00:51:45.614975483Z 10/15 00:51:45.614410 7f6a24ce1b80 ERROR UTL can&apos;t get locale from system</span><br><span class="line">2019-10-15T00:51:45.614981522Z 10/15 00:51:45.614486 7f6a24ce1b80 UTL Invalid locale:, please set the valid locale in config file</span><br><span class="line">2019-10-15T00:51:45.770437005Z Invalid locale:, please set the valid locale in config file</span><br></pre></td></tr></table></figure>
-<p>the 1th process is not <code>/sbin/init</code>, so <code>systemctl</code> command can’t execute.<br>for fix this need option <code>--privileged=true</code> and parameter <code>/sbin/init</code>, it’s not right.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run --privileged=true -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest /sbin/init</span><br></pre></td></tr></table></figure>
-<p>I met a problem here, the docker process started, but <code>taosd</code> server process start failed.<br>At first i thought the <code>datetimectl</code> command can fix this, i try to add<br><code>RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &#39;Asia/Shanghai&#39; &gt; /etc/timezone</code><br>in <code>Dockerfile</code> and rebuild image but failed.</p>
-<p>Then i try to find the source code where the exception be throw.<br>It’s in <code>TDengine/src/util/src/tglobalcfg.c</code> , the c function <code>setlocale()</code> read location failed.<br>I write a simple c file, to valid this problem, then search in internet.<br>Finally, find a similar problem in other software, the answer is very obviously : caused by environment variable.</p>
-<p>When add the variable <code>export LC_ALL=C</code>, the client part <code>taos</code> can start up, the demo c file can printf locale normally.<br>So, add <code>ENV LC_ALL=&quot;C&quot;</code> in <code>Dockerfile</code> and rebuild image, start the container <code>taosd</code> successfully.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest</span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/weixin_34038652/article/details/86236240" target="_blank" rel="noopener">https://blog.csdn.net/weixin_34038652/article/details/86236240</a><br><a href="http://c.biancheng.net/ref/setlocale.html" target="_blank" rel="noopener">http://c.biancheng.net/ref/setlocale.html</a><br><a href="https://www.runoob.com/cprogramming/c-function-setlocale.html" target="_blank" rel="noopener">https://www.runoob.com/cprogramming/c-function-setlocale.html</a></p>
-<h3 id="check"><a href="#check" class="headerlink" title="check"></a>check</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># visit container</span><br><span class="line">docker exec -it tdtest_run /bin/bash</span><br><span class="line"># start tdengine client</span><br><span class="line">taos</span><br></pre></td></tr></table></figure>
-<h2 id="Experiment"><a href="#Experiment" class="headerlink" title="Experiment"></a>Experiment</h2><h3 id="code-prepare"><a href="#code-prepare" class="headerlink" title="code prepare"></a>code prepare</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker cp test.tar.gz tdtest_run:/root</span><br><span class="line">docker exec -it tdtest_run bash</span><br><span class="line">cd /root</span><br><span class="line">tar -zxvf test.tar.gz</span><br><span class="line">cd test</span><br></pre></td></tr></table></figure>
-<p><a href="/2019/10/15/TDengine-in-docker/test.tar.gz">test.tar.gz</a></p>
-<h3 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h3><p>modify <code>config/config.sh</code>, modify table num, table record num<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test.sh -F config/config.sh -f config/tdengine.sh</span><br></pre></td></tr></table></figure></p>
-<p>result:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">You are testing TDengine...</span><br><span class="line">TEST INFORMATION</span><br><span class="line">======================================</span><br><span class="line">Databse              : TDENGINE</span><br><span class="line">Action               : Insert</span><br><span class="line">Schema file          : /root/test/data/schema.txt</span><br><span class="line">Sample file          : /root/test/data/sample.txt</span><br><span class="line">Insert thread        : 10</span><br><span class="line">Detectors            : 10000</span><br><span class="line">Records per detector : 10000</span><br><span class="line">Start time           : 01/01/2015 00:00:00</span><br><span class="line">Time interval        : 900000</span><br><span class="line"></span><br><span class="line">Config dir           : /etc/taos/</span><br><span class="line">Host                 :</span><br><span class="line">User name            : root</span><br><span class="line">Password             : taosdata</span><br><span class="line">DB name              : meterInfo</span><br><span class="line">Table prefix         : meter</span><br><span class="line">STable               : meters</span><br><span class="line">DB property          : days 30 tblocks 500 tables 5000</span><br><span class="line">Records per request  : 200</span><br><span class="line">Insert mode          : 0</span><br><span class="line">Real situation       : 0</span><br><span class="line">======================================</span><br><span class="line">Starting to test...</span><br><span class="line">days 30 tblocks 500 tables 5000</span><br><span class="line">Creating 10000 tables......</span><br><span class="line">TDengine tables are created. Sleep 2 seconds and starting to insert data...</span><br><span class="line"></span><br><span class="line">Inserting data......</span><br><span class="line">ThreadID: 0 start table ID: 0 end table ID: 999</span><br><span class="line">ThreadID: 1 start table ID: 1000 end table ID: 1999</span><br><span class="line">ThreadID: 2 start table ID: 2000 end table ID: 2999</span><br><span class="line">ThreadID: 3 start table ID: 3000 end table ID: 3999</span><br><span class="line">ThreadID: 4 start table ID: 4000 end table ID: 4999</span><br><span class="line">ThreadID: 5 start table ID: 5000 end table ID: 5999</span><br><span class="line">ThreadID: 6 start table ID: 6000 end table ID: 6999</span><br><span class="line">ThreadID: 7 start table ID: 7000 end table ID: 7999</span><br><span class="line">ThreadID: 8 start table ID: 8000 end table ID: 8999</span><br><span class="line">ThreadID: 9 start table ID: 9000 end table ID: 9999</span><br><span class="line">Done! Spent    70.6098 seconds to insert 100000000 records, speed:   1416233.89 R/s</span><br><span class="line">Test done!</span><br></pre></td></tr></table></figure></p>
-<h3 id="query"><a href="#query" class="headerlink" title="query"></a>query</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it tdtest_run bash</span><br><span class="line">taos</span><br></pre></td></tr></table></figure>
-<p>result:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the TDengine shell from linux, client version:1.6.2.2, server version:1.6.2.2</span><br><span class="line">Copyright (c) 2017 by TAOS Data, Inc. All rights reserved.</span><br><span class="line"></span><br><span class="line">taos&gt; select count(*) from meterinfo.meters;</span><br><span class="line">      count(*)       |</span><br><span class="line">======================</span><br><span class="line">            100000000|</span><br><span class="line">Query OK, 1 row(s) in set (0.135594s)</span><br><span class="line"></span><br><span class="line">taos&gt; select count(*) from meterinfo.meters group by loc;</span><br><span class="line">      count(*)       |                  loc                   |</span><br><span class="line">===============================================================</span><br><span class="line">             40000000|                                        |</span><br><span class="line">             20000000|                                        |</span><br><span class="line">             10000000|                                        |</span><br><span class="line">             30000000|                                        |</span><br><span class="line">Query OK, 4 row(s) in set (0.163399s)</span><br></pre></td></tr></table></figure></p>
-<h3 id="parameter"><a href="#parameter" class="headerlink" title="parameter"></a>parameter</h3><p><code>config/config.sh</code> data config</p>
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/05/Stroll-calculus-3-3-Composite-Functions-and-the-Chain-Rule/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/" class="post-title-link" itemprop="url">漫步微积分3.2 - 乘法和除法法则</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-05 13:05:50 / Modified: 13:28:12" itemprop="dateCreated datePublished" datetime="2020-07-05T13:05:50+08:00">2020-07-05</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>上篇文章中，我们学习了如何对和函数，差函数和常数乘函数进行求导。现在考虑</p>
+<script type="math/tex; mode=display">
+
+products\ uv\quad quotions\ \frac{u}{v}.</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/05/Stroll-calculus-3-2-The-Product-and-Quotient-Rules/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/" class="post-title-link" itemprop="url">漫步微积分3.1 - 多项式求导</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 21:22:39 / Modified: 21:28:24" itemprop="dateCreated datePublished" datetime="2020-07-04T21:22:39+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>微分学有其自身的独特性和重要性，已被应用到物理、生物和社会科学中。它能够快速渗入到应用中，并得到问题的核心。然而，从整体效率的角度看，它的具体内容推迟一下，我们先花一点时间学习如何快速而准确的求导。</p>
+<p>我们已经知道，对函数求导的过程称作微分。这个过程直接依赖于导数的极限定义，</p>
+<script type="math/tex; mode=display">
+f(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}</script><p>或等价的</p>
+<script type="math/tex; mode=display">
+\frac{dy}{dx}=\lim_{\Delta x\to 0}\frac{\Delta y}{\Delta x}</script>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/04/Stroll-calculus-3-1-Derivatives-of-Polynomials/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/" class="post-title-link" itemprop="url">漫步微积分2.6 - 连续函数</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 12:26:30" itemprop="dateCreated datePublished" datetime="2020-07-04T12:26:30+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:16:12" itemprop="dateModified" datetime="2020-07-05T15:16:12+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>随着我们进一步深入主题，知道什么是连续函数就变得非常重要。在日常用语中，一个连续的过程表示处理中没有空隙或中断或突然的变化。大体说来，如果一个函数显示相似的行为那它就是连续的，也就是说，如果$x$发生小的变化，相应的$f(x)$值也发生小的变化。图1所示的函数在点$a$处是连续，因为$x$趋近$a$时，$f(x)$趋近$f(a)$。或更确切地说，$x$充分趋近$a$时，$f(x)$要多接近就多接近$f(a)$。用极限的语言说就是</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\lim_{x\to a}f(x)=f(a).\tag1
+\end{equation}</script><p>目前为止，我们对于连续的陈述非常松散和直观，更像是在解释而不是定义。现在，我们将等式(1)作为函数$f(x)$在点$a$处连续的定义。我们发现，函数$f(x)$在点$a$处连续需要满足三个条件：$a$必须在$f(x)$定义域内，这样的话$f(a)$就存在；$f(x)$在$x$趋近$a$时有极限；这个极限值必须等于$f(a)$。我们通过图1可以更好的理解这些条件，函数在点$b,c,d$处不连续，并且不连续的方式也不同。在点$b$处，$\lim<em>{x\to c}f(x)$存在但是$f(b)$不存在；点$c$，$f(c)$存在但$\lim</em>{x\to c}f(x)$不存在；点$d$，$f(d),\lim_{x\to d}f(x)$都存在但值不相同。这个函数图存在三种不同情况的空隙或洞。</p>
+<center>
+<img src="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/20160719094242625" alt="这里写图片描述" title>
+图1
+</center>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/04/Stroll-calculus-2-6-Continuous-Functions/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/" class="post-title-link" itemprop="url">漫步微积分2.5 - 极限的概念</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 12:21:04" itemprop="dateCreated datePublished" datetime="2020-07-04T12:21:04+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:12:39" itemprop="dateModified" datetime="2020-07-05T15:12:39+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>前面给出的导数定义都依赖于函数极限的概念，我们对极限只做了最简短的解释。现在，我们已经知道了这一概念的目的，接下来关心一下它的意义。</p>
+<p>考虑函数$f(x)$，自变量在点$a$的领域内都有定义，但是$a$ 点本身没定义。假设存在一个实数值$L$，当$x$越来越接近$a$时，$f(x)$越来越接近$L$(图1)。对于这种情况我们说$L$是$x$趋近$a$时$f(x)$的极限，用符号表示为</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\lim_{x\to a}f(x)=L.\tag1
+\end{equation}</script><center>
+<img src="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/20160718182913134" alt="这里写图片描述" title>
+图1
+</center>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/04/Stroll-calculus-2-5-The-Concept-of-a-Limit/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/" class="post-title-link" itemprop="url">漫步微积分2.4 - 速度和变化率</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 12:14:07" itemprop="dateCreated datePublished" datetime="2020-07-04T12:14:07+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:05:17" itemprop="dateModified" datetime="2020-07-05T15:05:17+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>导数的概念与运动物体速度的计算密切相关。正是由于这一个事实，在牛顿努力寻找动力学定理并理解行星运动的思考中将微积分作为他基本的工具。看起来似乎只有物理系的学生有必要关注对于速度准确的想法。但是，这些想法对变化率这个广泛概念提供了非常简单的说明，这个概念在其他研究领域也非常重要，包括生物和社会科学。</p>
+<p>在本节中，我们考虑速度问题的一个特殊情况:所讨论的对象可以看成沿着一条直行运动的点，所以它的位置由一个坐标(图1) 确定。如果我们知道每一时刻点的位置，那么真个运动轨迹就都已知，也就是说，如果我们知道位置$S$关于时间$t$的函数，</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+s=f(t)\tag1
+\end{equation}</script><p>为了方便，$t$的初始值通常从$0$开始。</p>
+<center>
+<img src="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/20160717211431023" alt="这里写图片描述" title>
+图1
+</center>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/04/Stroll-calculus-2-4-Velocity-and-Rates-of-Change/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/04/Stroll-calculus-2-3-The-Definition-of-the-Derivative/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/04/Stroll-calculus-2-3-The-Definition-of-the-Derivative/" class="post-title-link" itemprop="url">漫步微积分2.3 - 导数的定义</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-04 11:37:21" itemprop="dateCreated datePublished" datetime="2020-07-04T11:37:21+08:00">2020-07-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:08:56" itemprop="dateModified" datetime="2020-07-05T15:08:56+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>从几何上考虑，我们利用2.2，并丢掉下标$x_0$，就得到导数的基本定义：给定任意函数$f(x)$，导数$f′(x)$是新的函数，在点$x$处的值定义为</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+f'(x)=\lim_{\Delta x\to 0}\frac{f(x+\Delta x)-f(x)}{\Delta x}\tag1
+\end{equation}</script><p>在计算它的极限时，$x$是固定的，而$\Delta x$是变化的且接近于零。某些$x$存在极限值，某些却不存在。如果$x=a$的极限值存在，就说函数在点$a$处可导。如果一个函数在其定义域内的每个点均可导，那么该函数是可导函数。这本书讨论的大部分函数都有此性质。<br>我们知道$f′(x)$可以像图1那样可视化，在图中$f(x)$是曲线上动点$P$的高度。然而，严格意义上讲，上述的导数定义不依赖于任何几何想法。图1构成一种几何解释，对理解导数来说非常重要，可以作为一种辅助手段，但它不是导数概念的基本组成部分。下一节我们将看到其他与几何无关的解释，那些解释跟几何解释同等重要。因此，我们必须将$f′(x)$作为纯粹的函数，并且需要认识到它有多种解释，但与其中任何之一都没有必要的联系。</p>
+<p><img src="/2020/07/04/Stroll-calculus-2-3-The-Definition-of-the-Derivative/2.8.jpg" alt="figure 2.8"></p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/04/Stroll-calculus-2-3-The-Definition-of-the-Derivative/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/02/Stroll-calculus-2-2-How-to-Calculate-the-Slope-of-the-Tangent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/02/Stroll-calculus-2-2-How-to-Calculate-the-Slope-of-the-Tangent/" class="post-title-link" itemprop="url">漫步微积分2.2 - 如何计算切线的斜率</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-02 20:14:41" itemprop="dateCreated datePublished" datetime="2020-07-02T20:14:41+08:00">2020-07-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:08:58" itemprop="dateModified" datetime="2020-07-05T15:08:58+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>各种想法都有自己的一席之地，但是时间会剔除许多细节。</p>
+<p>$P＝(x_0,y_0)$ 是抛物线$y＝x_2$上的任意一个定点，如图2.4所示。作为基本思想的第一个图例，给定抛物线上一点P，计算切线的斜率。首先，我们选择曲线上的一个临近点 $Q=(x_1,y_1)$。接下来，我们画出由这两点确定的割线$PQ$，割线的斜率明显是：</p>
+<script type="math/tex; mode=display">
+m_{sec}={\rm slope\ of} \ PQ=\frac{y_1-y_0}{x_1-x_0}\tag 1</script><p><img src="/2020/07/02/Stroll-calculus-2-2-How-to-Calculate-the-Slope-of-the-Tangent/2.4.jpg" alt="Figure 2.4"></p>
+<p align="center">图一</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/02/Stroll-calculus-2-2-How-to-Calculate-the-Slope-of-the-Tangent/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/01/Stroll-calculus-2-1-What-is-Calculus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/07/01/Stroll-calculus-2-1-What-is-Calculus/" class="post-title-link" itemprop="url">漫步微积分2.1 - 微积分是什么？是切线问题</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-01 22:19:48" itemprop="dateCreated datePublished" datetime="2020-07-01T22:19:48+08:00">2020-07-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-05 15:08:19" itemprop="dateModified" datetime="2020-07-05T15:08:19+08:00">2020-07-05</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>大家都知道，我们生活的世界是以运动和变化为主导的。地球绕着太阳转动；向上扔一块石头，它的速度会慢慢变小停下，然后返回地面，并且速度一直增加；印度的人口每年增加，并且增长的速度也在增加；放射性元素的衰变。这些都是无数现象中的沧海一粟，而数学是沟通和理解他们最自然的媒介。伽利略在三百多年前就说过，“大自然最伟大的书籍都被写进了数学符号里”</p>
+</blockquote>
+<p>我们以微积分是什么以及它为什么的重要来这两个主题开始我们微积分之旅。鸟瞰前方的道路可以让我们清晰的看到目的和把握方向，还将让我们更好的理解许多技术细节，而这些技术细节做成了我们微积分课程的大体内容。</p>
+<p>&ensp;&ensp;&ensp;&ensp;微积分通常分为两个部分，微分学和积分学。每部分都有各自的术语，繁多的符号和特定的计算方法。习惯这些需要大量的时间和练习，就像学习一门新语言一样。然而，这个事实不应把我们欺骗了，这门课核心问题真的很简单、很清晰，它们并不奇怪和神秘。</p>
+<p>&emsp;&emsp;几乎所有微积分解决的问题和想法，都围绕着两个非常容易理解的几何问题。它们都是关于函数 $y=f(x)$ 的图形。为避免复杂性，我们假设图像完全在x轴之上，如图2.1所示。</p>
 <ul>
-<li>SCHEMA_FILE:          schema config file, test/data/schema.txt。</li>
-<li>SAMPLE_FILE:          sample data file, need echo each other with schema.txt, test program will loop write in these data.</li>
-<li>NDETECTORS:           table number</li>
-<li>INSERT_THREAD:        thread number</li>
-<li>RECORDS_PER_DETECTOR: records number in one table</li>
-<li>START_TIME:           start time</li>
-<li>TIME_INTERVAL:        data collect interval, unit in millisecond.</li>
+<li>问题一 基础微分问题，切线问题：计算切线在函数图像给定点 $P$ 上的斜率</li>
+<li>问题二 基础积分问题，面积问题：计算在$x=a$、$x=b$之间 函数图像下的面积<br><img src="/2020/07/01/Stroll-calculus-2-1-What-is-Calculus/2.1.jpg" alt="Figure 2.1"></li>
 </ul>
-<p><code>config/tdengine.sh</code> engine config</p>
-<ul>
-<li>INSERT_DB_NAME:       db name</li>
-<li>TB_PREFIX:            table name = prefix + num</li>
-<li>STABLE:               super table name</li>
-<li>DB_PROPERTY:          database option</li>
-<li>RECORDS_PER_REQUEST:  recored num in one insert command, insert limit in 64K</li>
-</ul>
-<p><a href="https://github.com/taosdata/TDengine" target="_blank" rel="noopener">https://github.com/taosdata/TDengine</a><br><a href="https://github.com/taosdata/TDengine/blob/v1.6/src/util/src/tglobalcfg.c" target="_blank" rel="noopener">https://github.com/taosdata/TDengine/blob/v1.6/src/util/src/tglobalcfg.c</a><br><a href="https://blog.csdn.net/qishidiguadan/article/details/96284529" target="_blank" rel="noopener">https://blog.csdn.net/qishidiguadan/article/details/96284529</a><br><a href="https://blog.csdn.net/u013829518/article/details/99681154" target="_blank" rel="noopener">https://blog.csdn.net/u013829518/article/details/99681154</a><br><a href="https://blog.csdn.net/u012954706/article/details/82588687" target="_blank" rel="noopener">https://blog.csdn.net/u012954706/article/details/82588687</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/01/Stroll-calculus-2-1-What-is-Calculus/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -555,7 +1981,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/09/26/proxy-in-docker/">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/01/Stroll-calculus-To-the-Student/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leon">
@@ -575,7 +2001,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/09/26/proxy-in-docker/" class="post-title-link" itemprop="url">proxy in docker</a>
+                <a href="/2020/07/01/Stroll-calculus-To-the-Student/" class="post-title-link" itemprop="url">漫步微积分 - 引言</a>
               
             
           </h1>
@@ -600,7 +2026,7 @@
                 
               
 
-              <time title="Created: 2019-09-26 19:21:13" itemprop="dateCreated datePublished" datetime="2019-09-26T19:21:13+08:00">2019-09-26</time>
+              <time title="Created: 2020-07-01 21:31:14" itemprop="dateCreated datePublished" datetime="2020-07-01T21:31:14+08:00">2020-07-01</time>
             
 
             
@@ -617,7 +2043,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+                <time title="Modified: 2020-07-02 20:17:29" itemprop="dateModified" datetime="2020-07-02T20:17:29+08:00">2020-07-02</time>
               
             
           </span>
@@ -634,7 +2060,7 @@
                 <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
 
                 
                 
@@ -671,1500 +2097,17 @@
       
         
           
-            <ol>
-<li>Create directory</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /etc/systemd/system/docker.service.d</span><br></pre></td></tr></table></figure>
-<ol>
-<li>create proxy file</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/systemd/system/docker.service.d/http-proxy.conf</span><br></pre></td></tr></table></figure>
-<ol>
-<li>modify file</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment=&quot;HTTPS_PROXY=http://username:password@192.168.1.1:8080&quot; &quot;NO_PROXY=localhost,127.0.0.1&quot;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>save &amp; flush</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br></pre></td></tr></table></figure>
-<ol>
-<li>verify</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl show --property=Environment docker</span><br></pre></td></tr></table></figure>
-<p><a href="https://www.cnblogs.com/atuotuo/p/7298673.html" target="_blank" rel="noopener">https://www.cnblogs.com/atuotuo/p/7298673.html</a><br><a href="https://docs.docker.com/config/daemon/systemd/#httphttps-proxy" target="_blank" rel="noopener">https://docs.docker.com/config/daemon/systemd/#httphttps-proxy</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/09/11/Learning-jackson/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/09/11/Learning-jackson/" class="post-title-link" itemprop="url">Learning jackson</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-09-11 19:41:49" itemprop="dateCreated datePublished" datetime="2019-09-11T19:41:49+08:00">2019-09-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="JS-number-type-accuracy-problem"><a href="#JS-number-type-accuracy-problem" class="headerlink" title="JS number type accuracy problem"></a>JS number type accuracy problem</h2><p>In js number type is 53 bit, if backgroud response 64 bit long type,<br>js will lose accuracy, number will not be the origin number.</p>
-<p>53 bit in decimal system length is about 16(2^52),but in java long type is about 20(2^64).<br>So backgroud return type in string is a better choice to void accuracy problem.</p>
-<h2 id="JsonSerializer-JsonDeserializer"><a href="#JsonSerializer-JsonDeserializer" class="headerlink" title="JsonSerializer JsonDeserializer"></a>JsonSerializer JsonDeserializer</h2><p>Avoiding JS loss of accuracy<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(Long value, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String text = (value == <span class="keyword">null</span> ? <span class="keyword">null</span> : String.valueOf(value));</span><br><span class="line">        <span class="keyword">if</span> (text != <span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeString(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Deserialize input model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">Long</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">deserialize</span><span class="params">(JsonParser jsonParser, DeserializationContext deserializationContext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String value = jsonParser.getText();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value == <span class="keyword">null</span> ? <span class="keyword">null</span> : Long.parseLong(value);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">            log.error(<span class="string">"Deserialize long type error: &#123;&#125;"</span>, value);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>Annotate the target property<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using = LongJsonSerializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">JsonDeserialize</span>(<span class="title">using</span> </span>= LongJsonDeserializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">private</span> <span class="title">Long</span> <span class="title">id</span></span>;</span><br></pre></td></tr></table></figure></p>
-<h2 id="Data-Binding-Commonly-used"><a href="#Data-Binding-Commonly-used" class="headerlink" title="Data Binding [Commonly used]"></a>Data Binding [Commonly used]</h2><h3 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--jackson--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Country</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String countryName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Province&gt; provinces;</span><br><span class="line">    <span class="keyword">private</span> String[] lakes;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Province</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String provinceName;</span><br><span class="line">    <span class="keyword">private</span> List&lt;City&gt; cities;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String cityName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Bean2JsonStr"><a href="#Bean2JsonStr" class="headerlink" title="Bean2JsonStr"></a>Bean2JsonStr</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Bean2JsonStr</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">// Convert the object to Json</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    <span class="comment">// set format</span></span><br><span class="line">    SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>);</span><br><span class="line">    mapper.setDateFormat(dateFormat);</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    Province province = <span class="keyword">new</span> Province();</span><br><span class="line">    province.setId(<span class="number">1</span>);</span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;City&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line">    province.setCities(cities);</span><br><span class="line"></span><br><span class="line">    Country country = <span class="keyword">new</span> Country();</span><br><span class="line">    country.setCountryName(<span class="string">"China"</span>);</span><br><span class="line">    country.setId(<span class="number">1</span>);</span><br><span class="line">    country.setLakes(<span class="keyword">new</span> String[]&#123;<span class="string">"Qinghai Lake"</span>, <span class="string">"Poyang Lake"</span>, <span class="string">"Dongting Lake"</span>, <span class="string">"Taihu Lake"</span>&#125;);</span><br><span class="line">    List&lt;Province&gt; provinces = <span class="keyword">new</span> ArrayList&lt;Province&gt;();</span><br><span class="line">    provinces.add(province);</span><br><span class="line">    country.setProvinces(provinces);</span><br><span class="line">    <span class="comment">// set true make json readable, no need in produce environment</span></span><br><span class="line">    mapper.configure(SerializationFeature.INDENT_OUTPUT, <span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// ignore null property</span></span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    <span class="comment">// java property as key in default, customize key name in @JsonProperty annotation</span></span><br><span class="line">    mapper.writeValue(<span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>), country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;id&quot; : 1,</span><br><span class="line">  &quot;countryName&quot; : &quot;China&quot;,</span><br><span class="line">  &quot;provinces&quot; : [ &#123;</span><br><span class="line">    &quot;id&quot; : 1,</span><br><span class="line">    &quot;cities&quot; : [ &#123;</span><br><span class="line">      &quot;id&quot; : 1,</span><br><span class="line">      &quot;cityName&quot; : &quot;hangzhou&quot;</span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      &quot;id&quot; : 2,</span><br><span class="line">      &quot;cityName&quot; : &quot;taizhou&quot;</span><br><span class="line">    &#125; ]</span><br><span class="line">  &#125; ],</span><br><span class="line">  &quot;lakes&quot; : [ &quot;Qinghai Lake&quot;, &quot;Poyang Lake&quot;, &quot;Dongting Lake&quot;, &quot;Taihu Lake&quot; ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="JsonStr2Bean"><a href="#JsonStr2Bean" class="headerlink" title="JsonStr2Bean"></a>JsonStr2Bean</h3><p>string -&gt; object<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2Bean</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    File jsonFile = <span class="keyword">new</span> File(<span class="string">"country-demo.json"</span>);</span><br><span class="line">    <span class="comment">// not interrupt unknown properties</span></span><br><span class="line">    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);</span><br><span class="line">    Country country = mapper.readValue(jsonFile, Country<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">    log.info(country.getCountryName());</span><br><span class="line">    List&lt;Province&gt; provinces = country.getProvinces();</span><br><span class="line">    <span class="keyword">for</span> (Province province : provinces) &#123;</span><br><span class="line">        <span class="keyword">for</span> (City city : province.getCities()) &#123;</span><br><span class="line">            log.info(city.getId() + <span class="string">" "</span> + city.getCityName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:05.570 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:05.574 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:05.575 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
-<h3 id="JsonStr2List"><a href="#JsonStr2List" class="headerlink" title="JsonStr2List"></a>JsonStr2List</h3><p>string -&gt; list<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">JsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City(<span class="number">1</span>, <span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line">    List&lt;City&gt; list = mapper.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">09:52:15.610 [main] INFO jackson.JacksonDemoTester - China</span><br><span class="line">09:52:15.612 [main] INFO jackson.JacksonDemoTester - 1 hangzhou</span><br><span class="line">09:52:15.613 [main] INFO jackson.JacksonDemoTester - 2 taizhou</span><br></pre></td></tr></table></figure>
-<h2 id="Streaming-API-high-performence"><a href="#Streaming-API-high-performence" class="headerlink" title="Streaming API [high performence]"></a>Streaming API [high performence]</h2><p>self define paser</p>
-<h3 id="JsonSerializer"><a href="#JsonSerializer" class="headerlink" title="JsonSerializer"></a>JsonSerializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonSerializer</span> <span class="keyword">extends</span> <span class="title">JsonSerializer</span>&lt;<span class="title">City</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">serialize</span><span class="params">(City city, JsonGenerator jsonGenerator, SerializerProvider arg2)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        jsonGenerator.writeStartObject();</span><br><span class="line">        <span class="keyword">if</span> ( city.getId()!=<span class="keyword">null</span>)</span><br><span class="line">            jsonGenerator.writeNumberField(<span class="string">"id"</span>, city.getId());</span><br><span class="line">        jsonGenerator.writeStringField(<span class="string">"cityName"</span>, city.getCityName());</span><br><span class="line">        jsonGenerator.writeEndObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="JsonDeserializer"><a href="#JsonDeserializer" class="headerlink" title="JsonDeserializer"></a>JsonDeserializer</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityJsonDeserializer</span> <span class="keyword">extends</span> <span class="title">JsonDeserializer</span>&lt;<span class="title">List</span>&lt;<span class="title">City</span>&gt;&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;City&gt; <span class="title">deserialize</span><span class="params">(JsonParser parser, DeserializationContext deserializationcontext)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        List&lt;City&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="comment">// deserialize array, fist token must be JsonToken.START_ARRAY '['</span></span><br><span class="line">        <span class="keyword">if</span> (!JsonToken.START_ARRAY.equals(parser.getCurrentToken())) &#123;</span><br><span class="line">            log.info(parser.getCurrentToken().asString());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// until the EOF</span></span><br><span class="line">        <span class="keyword">while</span> (!parser.isClosed()) &#123;</span><br><span class="line">            <span class="comment">// loop until the target token</span></span><br><span class="line">            JsonToken token = parser.nextToken();</span><br><span class="line">            <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">// every element in array is object, so the nect JsonToken is JsonToken.START_OBJECT '&#123;'</span></span><br><span class="line">            <span class="keyword">if</span> (!JsonToken.START_OBJECT.equals(token)) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            City city = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.START_OBJECT.equals(token))</span><br><span class="line">                    city = <span class="keyword">new</span> City();</span><br><span class="line"></span><br><span class="line">                token = parser.nextToken();</span><br><span class="line">                <span class="keyword">if</span> (token == <span class="keyword">null</span>) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (JsonToken.FIELD_NAME.equals(token)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"id"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setId(parser.getIntValue());</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"cityName"</span>.equals(parser.getCurrentName())) &#123;</span><br><span class="line">                        token = parser.nextToken();</span><br><span class="line">                        city.setCityName(parser.getText());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (JsonToken.END_OBJECT.equals(token))</span><br><span class="line">                    list.add(city);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="StreamJsonStr2List"><a href="#StreamJsonStr2List" class="headerlink" title="StreamJsonStr2List"></a>StreamJsonStr2List</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">StreamJsonStr2List</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    City city1 = <span class="keyword">new</span> City();</span><br><span class="line">    city1.setCityName(<span class="string">"hangzhou"</span>);</span><br><span class="line">    City city2 = <span class="keyword">new</span> City(<span class="number">2</span>, <span class="string">"taizhou"</span>);</span><br><span class="line"></span><br><span class="line">    List&lt;City&gt; cities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    cities.add(city1);</span><br><span class="line">    cities.add(city2);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule <span class="keyword">module</span> = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    <span class="keyword">module</span>.addSerializer(City<span class="class">.<span class="keyword">class</span>, <span class="title">new</span> <span class="title">CityJsonSerializer</span>())</span>;</span><br><span class="line">    mapper.registerModule(<span class="keyword">module</span>);</span><br><span class="line">    String listJsonStr = mapper.writeValueAsString(cities);</span><br><span class="line"></span><br><span class="line">    log.info(listJsonStr);</span><br><span class="line"></span><br><span class="line">    ObjectMapper mapper2 = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    SimpleModule module2 = <span class="keyword">new</span> SimpleModule();</span><br><span class="line">    module2.addDeserializer(List<span class="class">.<span class="keyword">class</span>, <span class="title">new</span> <span class="title">CityJsonDeserializer</span>())</span>;</span><br><span class="line">    mapper2.registerModule(module2);</span><br><span class="line">    List&lt;City&gt; list = mapper2.readValue(listJsonStr, <span class="keyword">new</span> TypeReference&lt;List&lt;City&gt;&gt;() &#123;&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (City city : list) &#123;</span><br><span class="line">        log.info(<span class="string">"id:"</span> + city.getId() + <span class="string">" cityName:"</span> + city.getCityName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10:15:03.874 [main] INFO jackson.JacksonDemoTester - [&#123;&quot;cityName&quot;:&quot;hangzhou&quot;&#125;,&#123;&quot;id&quot;:2,&quot;cityName&quot;:&quot;taizhou&quot;&#125;]</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:null cityName:hangzhou</span><br><span class="line">10:15:03.889 [main] INFO jackson.JacksonDemoTester - id:2 cityName:taizhou</span><br></pre></td></tr></table></figure>
-<p>use annotation to avoid module in code<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonSerialize</span>(using=CityJsonSerializer<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">City</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="Tree-Model-flexible"><a href="#Tree-Model-flexible" class="headerlink" title="Tree Model [flexible]"></a>Tree Model [flexible]</h2><h3 id="TreeMode2Json"><a href="#TreeMode2Json" class="headerlink" title="TreeMode2Json"></a>TreeMode2Json</h3><p>no java class/ pojo, create model by tree model<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeMode2Json</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create a factory provide node</span></span><br><span class="line">    JsonNodeFactory factory = <span class="keyword">new</span> JsonNodeFactory(<span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// create a factory to convert tree model to json</span></span><br><span class="line">    JsonFactory jsonFactory = <span class="keyword">new</span> JsonFactory();</span><br><span class="line">    <span class="comment">//create a json generator</span></span><br><span class="line">    JsonGenerator generator = jsonFactory.createGenerator(<span class="keyword">new</span> FileWriter(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>)));</span><br><span class="line"></span><br><span class="line">    ArrayNode cities = factory.arrayNode();</span><br><span class="line">    cities.add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"cityName"</span>, <span class="string">"hangzhou"</span>))</span><br><span class="line">            .add(factory.objectNode().put(<span class="string">"id"</span>, <span class="number">2</span>).put(<span class="string">"cityName"</span>, <span class="string">"taizhou"</span>));</span><br><span class="line"></span><br><span class="line">    ArrayNode provinces = factory.arrayNode();</span><br><span class="line">    ObjectNode province = factory.objectNode();</span><br><span class="line">    province.put(<span class="string">"cities"</span>, cities);</span><br><span class="line">    province.put(<span class="string">"provinceName"</span>, <span class="string">"zhejiang"</span>);</span><br><span class="line">    provinces.add(province);</span><br><span class="line"></span><br><span class="line">    ObjectNode country = factory.objectNode();</span><br><span class="line">    country.put(<span class="string">"id"</span>, <span class="number">1</span>).put(<span class="string">"countryName"</span>, <span class="string">"China"</span>);</span><br><span class="line">    country.put(<span class="string">"provinces"</span>, provinces);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// caution! in default mapper not set root node</span></span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span><br><span class="line">    mapper.writeTree(generator, country);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="TreeModeReadJson"><a href="#TreeModeReadJson" class="headerlink" title="TreeModeReadJson"></a>TreeModeReadJson</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">TreeModeReadJson</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">    ObjectMapper mapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">    JsonNode node = mapper.readTree(<span class="keyword">new</span> File(<span class="string">"country-demo2.json"</span>));</span><br><span class="line">    <span class="comment">// show node type</span></span><br><span class="line">    log.info(<span class="string">"node JsonNodeType:"</span>+node.getNodeType());</span><br><span class="line">    log.info(<span class="string">"----------------sub node name----------------------"</span>);</span><br><span class="line">    Iterator&lt;String&gt; fieldNames = node.fieldNames();</span><br><span class="line">    <span class="keyword">while</span> (fieldNames.hasNext()) &#123;</span><br><span class="line">        String fieldName = fieldNames.next();</span><br><span class="line">        log.info(fieldName+<span class="string">" "</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    log.info(<span class="string">"---------------------------------------------------"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">10:58:44.995 [main] INFO jackson.JacksonDemoTester - node JsonNodeType:OBJECT</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - ----------------sub node name----------------------</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - id</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - countryName</span><br><span class="line">10:58:44.999 [main] INFO jackson.JacksonDemoTester - provinces</span><br><span class="line">10:58:45.000 [main] INFO jackson.JacksonDemoTester - ---------------------------------------------------</span><br></pre></td></tr></table></figure>
-<p><a href="https://www.cnblogs.com/lvgg/p/7475140.html" target="_blank" rel="noopener">https://www.cnblogs.com/lvgg/p/7475140.html</a><br><a href="https://www.cnblogs.com/williamjie/p/9242451.html" target="_blank" rel="noopener">https://www.cnblogs.com/williamjie/p/9242451.html</a><br><a href="https://blog.csdn.net/gjb724332682/article/details/51586701" target="_blank" rel="noopener">https://blog.csdn.net/gjb724332682/article/details/51586701</a><br><a href="https://blog.csdn.net/java_huashan/article/details/46375857" target="_blank" rel="noopener">https://blog.csdn.net/java_huashan/article/details/46375857</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/28/docker-in-centeros7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/28/docker-in-centeros7/" class="post-title-link" itemprop="url">docker in centeros7</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-28 18:39:27" itemprop="dateCreated datePublished" datetime="2019-08-28T18:39:27+08:00">2019-08-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>update yum package first<br><code>yum update</code></p>
-<p>remove old version<br><code>yum remove docker  docker-common docker-selinux docker-engine</code></p>
-<p>install dependency and <code>yum-config-manager</code> in <code>yum-utils</code></p>
-<p><code>yum install -y yum-utils device-mapper-persistent-data lvm2</code></p>
-<p>set yum repository<br><code>yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo</code></p>
-<p>install<br><code>yum install docker-ce docker-ce-cli containerd.io</code></p>
-<h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p>Requires: container-selinux &gt;= 2.7.4</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br><span class="line">yum install epel-release</span><br><span class="line">yum install container-selinux</span><br></pre></td></tr></table></figure>
-<p><a href="https://docs.docker.com/install/linux/docker-ce/centos/" target="_blank" rel="noopener">https://docs.docker.com/install/linux/docker-ce/centos/</a><br><a href="https://blog.csdn.net/cai454692590/article/details/83479000" target="_blank" rel="noopener">https://blog.csdn.net/cai454692590/article/details/83479000</a><br><a href="https://blog.csdn.net/renzhixin1314/article/details/88604096" target="_blank" rel="noopener">https://blog.csdn.net/renzhixin1314/article/details/88604096</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/27/proxy-in-linux/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/27/proxy-in-linux/" class="post-title-link" itemprop="url">proxy in linux</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-27 23:49:27" itemprop="dateCreated datePublished" datetime="2019-08-27T23:49:27+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h2><p>in file <code>/etc/profile</code> set<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export proxy=&quot;http://user:pwd1@192.168.3.1:8848&quot;</span><br><span class="line">export http_proxy=$proxy</span><br><span class="line">export https_proxy=$proxy</span><br><span class="line">export ftp_proxy=$proxy</span><br><span class="line">export no_proxy=&quot;localhost, 127.0.0.1, ::1&quot;</span><br></pre></td></tr></table></figure></p>
-<p>unset command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">unset http_proxy</span><br><span class="line">unset https_proxy</span><br><span class="line">unset ftp_proxy</span><br><span class="line">unset no_proxy</span><br></pre></td></tr></table></figure></p>
-<p>load variables<br><code>source /etc/profile</code></p>
-<h2 id="yum-proxy"><a href="#yum-proxy" class="headerlink" title="yum proxy"></a>yum proxy</h2><p>in file <code>/etc/yum.conf</code> set</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy=http://192.168.3.1:8848</span><br><span class="line">proxy_username=user</span><br><span class="line">proxy_password=pwd</span><br></pre></td></tr></table></figure>
-<h2 id="npm-proxy"><a href="#npm-proxy" class="headerlink" title="npm proxy"></a>npm proxy</h2><p>set command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config set proxy http://user:pwd@192.168.3.1:8848</span><br><span class="line">npm confit set https-proxy http://user:pwd@192.168.3.1:8848</span><br></pre></td></tr></table></figure></p>
-<p>unset command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config delete proxy</span><br><span class="line">npm config delete https-proxy</span><br></pre></td></tr></table></figure></p>
-<p>npm setting<br><a href="https://segmentfault.com/a/1190000002589144" target="_blank" rel="noopener">https://segmentfault.com/a/1190000002589144</a></p>
-<h2 id="maven-proxy"><a href="#maven-proxy" class="headerlink" title="maven proxy"></a>maven proxy</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;proxy&gt;</span><br><span class="line">    &lt;id&gt;optional&lt;/id&gt;</span><br><span class="line">    &lt;active&gt;true&lt;/active&gt;</span><br><span class="line">    &lt;protocol&gt;http&lt;/protocol&gt;</span><br><span class="line">    &lt;username&gt;user&lt;/username&gt;</span><br><span class="line">    &lt;password&gt;pwd&lt;/password&gt;</span><br><span class="line">    &lt;host&gt;192.168.3.1&lt;/host&gt;</span><br><span class="line">    &lt;port&gt;8080&lt;/port&gt;</span><br><span class="line">    &lt;nonProxyHosts&gt;localhost|127.0.0.1&lt;/nonProxyHosts&gt;</span><br><span class="line">  &lt;/proxy&gt;</span><br><span class="line">&lt;/proxies&gt;</span><br></pre></td></tr></table></figure>
-<p><a href="https://www.cnblogs.com/EasonJim/p/9826681.html" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/9826681.html</a><br><a href="https://blog.csdn.net/yanzi1225627/article/details/80247758" target="_blank" rel="noopener">https://blog.csdn.net/yanzi1225627/article/details/80247758</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/23/Hello-jenkins/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/23/Hello-jenkins/" class="post-title-link" itemprop="url">Hello jenkins</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-23 11:27:14" itemprop="dateCreated datePublished" datetime="2019-08-23T11:27:14+08:00">2019-08-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="install-jenkins"><a href="#install-jenkins" class="headerlink" title="install jenkins"></a>install jenkins</h2><p>Download jenkins.war, tomcat 8<br>if install suggested plugins report error like this<br>“No such plugin: cloudbees-folder”</p>
-<p>install <code>cloudbees-folder.hpi</code> first</p>
-<h2 id="install-plugins"><a href="#install-plugins" class="headerlink" title="install plugins"></a>install plugins</h2><p>install <code>Maven Integration</code>, if error then in plugin management<br>upload plugin package manually.</p>
-<h2 id="proxy-server"><a href="#proxy-server" class="headerlink" title="proxy server"></a>proxy server</h2><p>if jenkins server can’t visit internet then use proxy, and have a try again.<br><a href="https://github.com/adamfisk/LittleProxy" target="_blank" rel="noopener">https://github.com/adamfisk/LittleProxy</a><br>username:user1<br>password:user2</p>
-<h2 id="maven-setting"><a href="#maven-setting" class="headerlink" title="maven setting"></a>maven setting</h2><p>maven can set proxy too, modify <code>setting.xml</code>, add proxy setting<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;proxy&gt;</span><br><span class="line">    &lt;id&gt;optional&lt;/id&gt;</span><br><span class="line">    &lt;active&gt;true&lt;/active&gt;</span><br><span class="line">    &lt;protocol&gt;http&lt;/protocol&gt;</span><br><span class="line">    &lt;username&gt;user1&lt;/username&gt;</span><br><span class="line">    &lt;password&gt;user2&lt;/password&gt;</span><br><span class="line">    &lt;host&gt;192.168.1.2&lt;/host&gt;</span><br><span class="line">    &lt;port&gt;8080&lt;/port&gt;</span><br><span class="line">    &lt;nonProxyHosts&gt;localhost|127.0.0.1&lt;/nonProxyHosts&gt;</span><br><span class="line">  &lt;/proxy&gt;</span><br><span class="line">&lt;/proxies&gt;</span><br></pre></td></tr></table></figure></p>
-<h2 id="git-setting"><a href="#git-setting" class="headerlink" title="git setting"></a>git setting</h2><p>save git account in linux server<br><code>vim .git-credentials</code><br>add <code>http(s)://{username}:{password}@serverAddress</code><br>add setting<br><code>git config --global credential.helper store</code></p>
-<h2 id="prevent-preocess-be-killed"><a href="#prevent-preocess-be-killed" class="headerlink" title="prevent preocess be killed"></a>prevent preocess be killed</h2><ol>
-<li>add command <code>BUILD_ID=DONTKILLME</code> in every shell input</li>
-<li>add param <code>-Dhudson.util.ProcessTree.disable=true</code> in java command</li>
-<li>add setting <code>JAVA_OPTS=&quot;$JAVA_OPTS -Dhudson.util.ProcessTree.disable=true&quot;</code> in <code>catalina.sh</code></li>
-</ol>
-<h3 id="install-jenkins-1"><a href="#install-jenkins-1" class="headerlink" title="install jenkins"></a>install jenkins</h3><p><a href="https://blog.csdn.net/utopiaofartoria/article/details/79612754" target="_blank" rel="noopener">https://blog.csdn.net/utopiaofartoria/article/details/79612754</a><br><a href="https://blog.csdn.net/ming19951224/article/details/80958761" target="_blank" rel="noopener">https://blog.csdn.net/ming19951224/article/details/80958761</a></p>
-<h3 id="jenkins-experience"><a href="#jenkins-experience" class="headerlink" title="jenkins experience"></a>jenkins experience</h3><p><a href="https://www.jianshu.com/p/06d2c7fda227" target="_blank" rel="noopener">https://www.jianshu.com/p/06d2c7fda227</a></p>
-<h3 id="setting-of-tools"><a href="#setting-of-tools" class="headerlink" title="setting of tools"></a>setting of tools</h3><p><a href="https://www.cnblogs.com/wkrbky/p/6351243.html" target="_blank" rel="noopener">https://www.cnblogs.com/wkrbky/p/6351243.html</a><br><a href="https://www.cnblogs.com/zhuiluoyu/p/7723949.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhuiluoyu/p/7723949.html</a></p>
-<h3 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h3><p><a href="https://www.cnblogs.com/EasonJim/p/9826681.html" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/9826681.html</a></p>
-<h2 id="resources"><a href="#resources" class="headerlink" title="resources"></a>resources</h2><p><a href="http://ftp.icm.edu.pl/packages/jenkins/plugins" target="_blank" rel="noopener">http://ftp.icm.edu.pl/packages/jenkins/plugins</a><br><a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/12/mysql-5-7-json-type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/12/mysql-5-7-json-type/" class="post-title-link" itemprop="url">mysql 5.7 json type</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-12 19:21:15" itemprop="dateCreated datePublished" datetime="2019-08-12T19:21:15+08:00">2019-08-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="none-structure-data-in-mysql"><a href="#none-structure-data-in-mysql" class="headerlink" title="none structure data in mysql"></a>none structure data in mysql</h2><p>in mysql 5.7 , support store data in json type.</p>
-<h3 id="create-table-with-virtual-column"><a href="#create-table-with-virtual-column" class="headerlink" title="create table with virtual column."></a>create table with virtual column.</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> players (  </span><br><span class="line">   <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> primary <span class="keyword">key</span> auto_increment,</span><br><span class="line">   player <span class="keyword">JSON</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">   <span class="comment">-- name virtual column</span></span><br><span class="line">   vname <span class="built_in">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">GENERATED</span> <span class="keyword">ALWAYS</span> <span class="keyword">AS</span> (<span class="string">`player`</span> -&gt;&gt; <span class="string">'$.name'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">COLUMNS</span> <span class="keyword">FROM</span> <span class="string">`players`</span>;</span><br></pre></td></tr></table></figure>
-<h3 id="prepare-save-progress"><a href="#prepare-save-progress" class="headerlink" title="prepare save progress"></a>prepare save progress</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- check whether store procedure open</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'log_bin_trust_function_creators'</span>;</span><br><span class="line"><span class="comment">-- open store procedure in mysql</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_bin_trust_function_creators=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">delimiter $$</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> insert_player(<span class="keyword">in</span> max_num <span class="built_in">int</span>(<span class="number">10</span>))</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line"> <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line"> <span class="keyword">declare</span> json_data <span class="built_in">varchar</span>(<span class="number">2000</span>) <span class="keyword">default</span> <span class="string">'1'</span>;</span><br><span class="line"> <span class="keyword">set</span> autocommit= <span class="number">0</span>;</span><br><span class="line"> repeat</span><br><span class="line"> <span class="keyword">set</span> i=i+<span class="number">1</span>;</span><br><span class="line"> <span class="keyword">set</span> json_data = <span class="keyword">concat</span>(<span class="keyword">concat</span>(<span class="string">'&#123;"name":"xxx-'</span>,i),<span class="string">'","age":34&#125;'</span>);</span><br><span class="line"> <span class="keyword">insert</span> <span class="keyword">into</span> players (<span class="keyword">id</span>,player) <span class="keyword">values</span>(<span class="literal">null</span>,json_data);</span><br><span class="line"> until i=max_num <span class="keyword">end</span> <span class="keyword">repeat</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="keyword">end</span> $$</span><br></pre></td></tr></table></figure>
-<h3 id="test-data-and-try"><a href="#test-data-and-try" class="headerlink" title="test data, and try"></a>test data, and try</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> insert_player(<span class="number">2000000</span>);</span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="string">`name_idx`</span> <span class="keyword">ON</span> <span class="string">`players`</span>(<span class="string">`vname`</span>);</span><br></pre></td></tr></table></figure>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/bugs4j/article/details/79932538" target="_blank" rel="noopener">https://blog.csdn.net/bugs4j/article/details/79932538</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/10/Hello-rabbit/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/10/Hello-rabbit/" class="post-title-link" itemprop="url">Hello rabbit</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-08-10 16:44:45 / Modified: 16:58:08" itemprop="dateCreated datePublished" datetime="2019-08-10T16:44:45+08:00">2019-08-10</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install-rabbitmq-in-ubuntu-16-04-1"><a href="#Install-rabbitmq-in-ubuntu-16-04-1" class="headerlink" title="Install rabbitmq in ubuntu 16.04.1"></a>Install rabbitmq in ubuntu 16.04.1</h2><p>prepare Ubuntu Server 16.04.1 LTS 64 first</p>
-<p><code>apt-get install rabbitmq-server</code></p>
-<p>check service status<br><code>systemctl status rabbitmq-server</code></p>
-<p>daily command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service rabbitmq-server start</span><br><span class="line">service rabbitmq-server stop</span><br><span class="line">service rabbitmq-server restart</span><br></pre></td></tr></table></figure></p>
-<h2 id="manage-interface"><a href="#manage-interface" class="headerlink" title="manage interface"></a>manage interface</h2><p>enable management interface<br><code>rabbitmq-plugins enable rabbitmq_management</code></p>
-<p><code>127.0.0.1:15672</code> is the default address, <code>guest/guest</code> is the default account.</p>
-<h2 id="out-account"><a href="#out-account" class="headerlink" title="out account"></a>out account</h2><p>add user<br><code>rabbitmqctl add_user root yourpassword</code><br>add role<br><code>rabbitmqctl set_user_tags root administrator</code><br>add permission<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl  set_permissions  -p  VHostPath  User  ConfP  WriteP  ReadP</span><br><span class="line">rabbitmqctl  set_permissions  -p  &quot;/&quot; root &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure></p>
-<h2 id="enjoy-route"><a href="#enjoy-route" class="headerlink" title="enjoy route :)"></a>enjoy route :)</h2><p><code>exchange</code> bind <code>queue</code> route by <code>key</code> in same <code>arguments</code></p>
-<p><a href="https://blog.csdn.net/qq_22638399/article/details/81704372" target="_blank" rel="noopener">https://blog.csdn.net/qq_22638399/article/details/81704372</a><br><a href="https://www.cnblogs.com/feixiablog/articles/8317605.html" target="_blank" rel="noopener">https://www.cnblogs.com/feixiablog/articles/8317605.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/30/spring-cloud-feign-support-file-upload/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/30/spring-cloud-feign-support-file-upload/" class="post-title-link" itemprop="url">spring cloud feign support file upload</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-07-30 10:53:23" itemprop="dateCreated datePublished" datetime="2019-07-30T10:53:23+08:00">2019-07-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-08-10 16:41:37" itemprop="dateModified" datetime="2019-08-10T16:41:37+08:00">2019-08-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="phenomenon"><a href="#phenomenon" class="headerlink" title="phenomenon"></a>phenomenon</h2><p>Spring Cloud Feign component not support file upload between micron service.<br>it may throw exception like this:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feign.codec.EncodeException: class [Lorg.springframework.web.multipart.MultipartFile; is not a type supported by this encoder.</span><br><span class="line">    at feign.codec.Encoder$Default.encode(Encoder.java:<span class="number">90</span>) ~[feign-core-<span class="number">9.5</span><span class="number">.1</span>.jar:na]</span><br><span class="line">    at feign.form.FormEncoder.encode(FormEncoder.java:<span class="number">87</span>) ~[feign-form-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br><span class="line">    at feign.form.spring.SpringFormEncoder.encode(SpringFormEncoder.java:<span class="number">64</span>) ~[feign-form-spring-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br></pre></td></tr></table></figure>
-<h2 id="add-dependencies"><a href="#add-dependencies" class="headerlink" title="add dependencies"></a>add dependencies</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><a href="https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring" target="_blank" rel="noopener">https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring</a></p>
-<p>be careful the <code>feign-form-spring</code> depend on <code>spring-web</code> it may have conflict with your project.<br>for example in  <code>spring-boot:2.0.5.RELEASE</code> <code>spring-cloud:Finchley.SR1</code> project has already import<br><code>spring-web:5.0.9.RELEASE</code>, if import <code>feign-form-spring:3.3.0</code> it will import <code>spring-web:4.3.18.RELEASE</code> too,<br>it cause spring bean creation exception.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="file-receive-part"><a href="#file-receive-part" class="headerlink" title="file receive part"></a>file receive part</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation</span>(<span class="string">"file upload receive part"</span>)</span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                MultipartFile[] files,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                Long userId,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                String userName)</span>&#123;</span><br><span class="line">                ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>be careful <code>consumes</code> property must add to the annotation <code>RequestMapping</code><br><code>method</code> property must be <code>POST</code>, <code>RequestPart</code> is working.</p>
-<h2 id="feign-client-part"><a href="#feign-client-part" class="headerlink" title="feign client part"></a>feign client part</h2><p>client part is a little complex.</p>
-<h3 id="add-configuration-class"><a href="#add-configuration-class" class="headerlink" title="add configuration class:"></a>add configuration class:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MultipartSupportConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ObjectFactory&lt;HttpMessageConverters&gt; messageConverters;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Scope</span>(<span class="string">"prototype"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Encoder <span class="title">feignEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//        return new SpringFormEncoder();</span></span><br><span class="line"><span class="comment">//        return new SpringFormEncoder(new SpringEncoder(messageConverters));</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FeignSpringFormEncoder(<span class="keyword">new</span> SpringEncoder(messageConverters));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> feign.Logger.<span class="function">Level <span class="title">multipartLoggerLevel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> feign.Logger.Level.FULL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>SpringFormEncoder</code> support single file upload.</li>
-<li><code>FeignSpringFormEncoder</code> support file array upload.</li>
-<li><code>SpringEncoder</code> avoid project make <code>RequestBody</code> encoding error.</li>
-</ul>
-<h3 id="add-form-encoder"><a href="#add-form-encoder" class="headerlink" title="add form encoder"></a>add form encoder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignSpringFormEncoder</span> <span class="keyword">extends</span> <span class="title">FormEncoder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with the default Feign's encoder as a delegate.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Default());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with specified delegate encoder.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delegate delegate encoder, if this encoder couldn't encode object.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">(Encoder delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">        MultipartFormContentProcessor processor = (MultipartFormContentProcessor) getContentProcessor(ContentType.MULTIPART);</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringSingleMultipartFileWriter());</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringManyMultipartFilesWriter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(Object object, Type bodyType, RequestTemplate template)</span> <span class="keyword">throws</span> EncodeException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bodyType.equals(MultipartFile<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile file = (MultipartFile) object;</span><br><span class="line">            Map data = Collections.singletonMap(file.getName(), object);</span><br><span class="line">            <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bodyType.equals(MultipartFile[]<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile[] file = (MultipartFile[]) object;</span><br><span class="line">            <span class="keyword">if</span>(file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Map data = Collections.singletonMap(file.length == <span class="number">0</span> ? <span class="string">""</span> : file[<span class="number">0</span>].getName(), object);</span><br><span class="line">                <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.encode(object, bodyType, template);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="add-interface"><a href="#add-interface" class="headerlink" title="add interface:"></a>add interface:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"upload-example"</span>, configuration = MultipartSupportConfig<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">CloudUploadService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiOperation</span>(<span class="string">"文件上传"</span>)</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line">    <span class="function">List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                    MultipartFile[] files,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    Long userId,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    String userName)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>in annotation <code>FeignClient</code> add configuration property, point to the encoding support class.</p>
-<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">UploadTester</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CloudUploadService uploadService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testHandleFileUpload</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"upload.txt"</span>);</span><br><span class="line">        DiskFileItem fileItem = (DiskFileItem) <span class="keyword">new</span> DiskFileItemFactory().createItem(<span class="string">"file"</span>,</span><br><span class="line">                MediaType.TEXT_PLAIN_VALUE, <span class="keyword">true</span>, file.getName());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (InputStream input = <span class="keyword">new</span> FileInputStream(file); OutputStream os = fileItem.getOutputStream()) &#123;</span><br><span class="line">            IOUtils.copy(input, os);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid file: "</span> + e, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultipartFile multi = <span class="keyword">new</span> CommonsMultipartFile(fileItem);</span><br><span class="line"></span><br><span class="line">        log.info(uploadService.handleFileUpload(<span class="keyword">new</span> MultipartFile[]&#123;multi&#125;, <span class="number">1L</span>, <span class="string">"tester"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="https://github.com/OpenFeign/feign-form" target="_blank" rel="noopener">https://github.com/OpenFeign/feign-form</a><br><a href="https://www.jianshu.com/p/4f4d9d084b1d" target="_blank" rel="noopener">https://www.jianshu.com/p/4f4d9d084b1d</a><br><a href="http://blog.didispace.com/spring-cloud-starter-dalston-2-4/" target="_blank" rel="noopener">http://blog.didispace.com/spring-cloud-starter-dalston-2-4/</a><br><a href="https://blog.csdn.net/gududedabai/article/details/79895893" target="_blank" rel="noopener">https://blog.csdn.net/gududedabai/article/details/79895893</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/05/maintain-log-files-by-shell/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/05/maintain-log-files-by-shell/" class="post-title-link" itemprop="url">maintain log files by shell</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-07-05 10:19:28" itemprop="dateCreated datePublished" datetime="2019-07-05T10:19:28+08:00">2019-07-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="move-log-file-to-another-device"><a href="#move-log-file-to-another-device" class="headerlink" title="move log file to another device"></a>move log file to another device</h3><p>scheduled move specific file to target directory<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># move log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># file name</span></span><br><span class="line">default=<span class="string">"/logs/common-default.log."</span><span class="variable">$&#123;date&#125;</span><span class="string">".log"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$default</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$date</span><span class="string">' move '</span><span class="variable">$default</span><span class="string">' to /data0/backup'</span> &gt;&gt; /logs/backup.log</span><br><span class="line">    `mv <span class="variable">$default</span> /data0/backup`</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
-<p><code>crontab -e</code> add schedule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 0 * * * sh /move.sh</span><br></pre></td></tr></table></figure></p>
-<h3 id="delete-log-file-by-function"><a href="#delete-log-file-by-function" class="headerlink" title="delete log file by function"></a>delete log file by function</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># delete log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># find files modify 1 month ago</span></span><br><span class="line">files=find /data0/backup -<span class="built_in">type</span> f -not -newermt <span class="variable">$date</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> delete_log_files</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">test</span> <span class="variable">$#</span> -gt 0</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        `rm -f <span class="variable">$1</span>`</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">'$date clean $1'</span> &gt;&gt; /logs/cleanup.log</span><br><span class="line">        <span class="built_in">shift</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete_log_files <span class="variable">$files</span></span><br></pre></td></tr></table></figure>
-<h3 id="delete-log-file-by-command"><a href="#delete-log-file-by-command" class="headerlink" title="delete log file by command"></a>delete log file by command</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">find /logs/ -<span class="built_in">type</span> f -mtime +30 -name <span class="string">'*.log'</span> -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-<p><code>{}</code> is placeholder of the file be found<br><code>\;</code> mean exec command finish</p>
-<hr>
-<p>process every line in a multi-line variable<br><a href="https://cloud.tencent.com/developer/ask/46222" target="_blank" rel="noopener">https://cloud.tencent.com/developer/ask/46222</a></p>
-<p>‘crontab’ schedule<br><a href="https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="noopener">https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a></p>
-<p>‘find’ command -exec<br><a href="https://blog.csdn.net/u010900754/article/details/83020378" target="_blank" rel="noopener">https://blog.csdn.net/u010900754/article/details/83020378</a></p>
-<p>‘find’ command useage<br><a href="https://blog.csdn.net/h106140873/article/details/72874455" target="_blank" rel="noopener">https://blog.csdn.net/h106140873/article/details/72874455</a></p>
+            <p>Appearances to the contrary, no writer deliberately sets out to produce an un­ readable book; we all do what we can and hope for the best. Naturally, I hope that my language will be clear and helpful to students, and in the end only they are qualified to judge. However, it would be a great advantage to all of us­ teachers and students alike-if student users of mathematics textbooks could somehow be given a few hints on the art of reading mathematics, which is a very different thing from reading novels or magazines or newspapers.</p>
+<p>没有哪位作家会故意写没有可读性的书;我们也尽我们能做并抱以最好的希望。当然，我希望我的语言对于学生来说是清晰的，而最终也只有他们有资格来评判。但是，对所有教师和学生一样，如果学生的数学教科书在某种程度上给出一些读数学的方法，那将是非常有益的事。当然这与阅读小说或杂志或报纸并不是一回事。</p>
+<p>In high school mathematics courses, most students are accustomed to tackling their homework problems first, out of impatience to have the whole burdensome task over and done with as soon as possible. These students read the explana­ tions in the text only as a last resort, if at all. This is a grotesque reversal of rea­ sonable procedure, and makes about as much sense as trying to put on one’s shoes before one’s socks. I suggest that students should read the text first, and when this has been thoroughly assimilated, then and only then turn to the home­ work problems. After all, the purpose of these problems is to nail down the ideas and methods described and illustrated in the text.</p>
+<p>在高中数学课程中，大多数学生都习惯于首先处理家庭作业，对整体的课程任务没有耐心也希望尽快结束。这些学生只有在万不得已的时候才会阅读书上的解释。这真是完全颠倒的方法，相当于教一个人穿袜子之前先穿鞋。我建议学生首先阅读书本，当只是被彻底理解了，再转到作业上的问题。毕竟，这些问题的目的是为了确定书中描述与说明的想法与方法。</p>
+<p>How should a student read the text in a book like this? Slowly and carefully, and in full awareness that a great many details have been deliberately omitted. If this book contained every detail of every discussion, it would be five times as long, which God forbid! There is a saying of Voltaire: “The secret of being a bore is to tell everything.” Every writer of a book of this kind tries to walk a nar­ row path between saying too much and saying too little.</p>
+<p>学生想这样读书将会如何呢？慢慢地，会意识到许多细节被故意省略了。如果这本书写下讨论的所有细节，那么它会有现在的五倍之多。伏尔泰曾说:”无聊的秘诀在于告诉他一切”。每个作家试图在说得太多和太少选择折中的做法。</p>
+<p>The words “clearly,” “it is easy to see,” and similar expressions are not in­ tended to be taken literally, and should never be interpreted by any student as a putdown on his or her abilities. These are code-phrases that have been used in mathematical writing for hundreds ofyears. Their purpose is to give a signal to the careful reader that in this particular place, the exposition is somewhat con­ densed, and perhaps a few details of calculations have been omitted. Any phrase like this amounts to a friendly hint to the student that it might be a good idea to read even more carefully and thoughtfully in order to fill in omissions in the ex­ position, or perhaps get out a piece of scratch paper to verify omitted details of calculations. Or better yet, make full use of the margins of this book to empha­ size points, raise questions, perform little computations, and correct misprints.</p>
+<p>单词”很明显”“很容易看出”以及类似的表达式不应作就字面意思来理解，学生也不该理解为不需要去思考证明。这些是代码短语，曾出在数百年来的数学写作中。他们的目的是在那个特别的地方向细心的读者发出一个信号，（the exposition is somewhat condensed）计算的一些细节也许被省略。任何此类短语是对更细心学生的友好提示，或许需要拿出一张草稿纸验证省略的细节部分，或者可以充分利用这本书的空白地方，提出问题，简单计算一下或写出没有打印的部分。</p>
+<p align="right">George F. Simmons</p>
+
+<p><a href="https://b-ok.cc/book/2328903/e25a3f" target="_blank" rel="noopener">CALCULUS WITH ANALYTIC GEOMETRY</a><br><a href="https://blog.csdn.net/u010182633/article/details/51864044" target="_blank" rel="noopener">漫步微积分一 —— 引言</a></p>
 
           
         
@@ -2210,7 +2153,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2252,7 +2195,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">227</span>
+                    <span class="site-state-item-count">253</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3055,6 +2998,8 @@
   
     
       
+        
+      
     
       
     
@@ -3076,6 +3021,46 @@
     
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 
