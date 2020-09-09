@@ -351,6 +351,236 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/24/Mybatis-parameterType/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/24/Mybatis-parameterType/" class="post-title-link" itemprop="url">Mybatis parameterType</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-24 19:04:52" itemprop="dateCreated datePublished" datetime="2017-02-24T19:04:52+08:00">2017-02-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Primary-data-type"><a href="#Primary-data-type" class="headerlink" title=". Primary data type"></a>. Primary data type</h2><ul>
+<li><p>mapper interface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User selectByPrimaryKey(Integer id);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql mapping</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;selectByPrimaryKey&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;java.lang.Integer&quot; &gt;</span><br><span class="line">  select</span><br><span class="line">  &lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">  from user</span><br><span class="line">  where id = #&#123;id,jdbcType=INTEGER&#125;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>The <code>id</code> in this condition can be <strong>any name</strong>, it all represent the Integer parameter.</p>
+<h3 id="Discuss"><a href="#Discuss" class="headerlink" title="Discuss"></a>Discuss</h3><p>if Integer argument need be judge use <code>_parameter</code> represent it in tag <code>&lt;if&gt;</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;selectByPrimaryKey&quot; resultMap=&quot;BaseResultMap&quot; parameterType=&quot;java.lang.Integer&quot; &gt;</span><br><span class="line">  select</span><br><span class="line">  &lt;include refid=&quot;Base_Column_List&quot; /&gt;</span><br><span class="line">  from tb_user</span><br><span class="line">  &lt;if test=&quot;_parameter != 0&quot;&gt;</span><br><span class="line">  where id = #&#123;id,jdbcType=INTEGER&#125;</span><br><span class="line">  &lt;/if&gt;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Object-data-type"><a href="#Object-data-type" class="headerlink" title="Object data type"></a>Object data type</h2><ul>
+<li><p>mapper interface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int insert(User user);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql mapping</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;insert&quot; parameterType=&quot;User&quot; useGeneratedKeys=&quot;true&quot; keyProperty=&quot;id&quot;&gt;</span><br><span class="line">  insert into tb_user (name)</span><br><span class="line">  values (#&#123;name,jdbcType=CHAR&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>The <strong>name</strong> in value must be the User object’s property name</p>
+</li>
+<li>If <code>&lt;if&gt;</code> tag want to judge whether user is null, <code>_parameter</code> variable need be used. like above discuss content.</li>
+</ul>
+<h2 id="Map-data-type"><a href="#Map-data-type" class="headerlink" title="Map data type"></a>Map data type</h2><ul>
+<li><p>mapper interface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int updateByExample(@Param(&quot;user&quot;) User user, @Param(&quot;condition&quot;) Condition condition);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql mapping</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;update id=&quot;updateByCondition&quot; parameterType=&quot;map&quot; &gt;</span><br><span class="line">  update tb_user</span><br><span class="line">  set id = #&#123;user.id,jdbcType=INTEGER&#125;,</span><br><span class="line">  ...</span><br><span class="line">  &lt;if test=&quot;condition != null&quot; &gt;</span><br><span class="line">    &lt;include refid=&quot;Update_By_Condition_Where_Clause&quot; /&gt;</span><br><span class="line">  &lt;/if&gt;</span><br><span class="line">  &lt;if test=&quot;_parameter != null&quot; &gt;</span><br><span class="line">    &lt;include refid=&quot;Update_By_Default_Where_Clause&quot; /&gt;</span><br><span class="line">  &lt;/if&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>use <code>#{keyname}</code> to reference target</p>
+</li>
+<li>@Param(“…”) is alias manule point the map key name</li>
+<li>Multi argument will auto box into a map</li>
+</ul>
+<h2 id="Collection-data-type"><a href="#Collection-data-type" class="headerlink" title="Collection data type"></a>Collection data type</h2><blockquote>
+<p>You can pass a List instance or an Array to MyBatis as a parameter object. When you do, MyBatis will <strong>automatically wrap it in a Map</strong>, and key it <strong>by name</strong>. List instances will be keyed to <strong>the name “list”</strong> and array instances will be keyed to <strong>the name “array”</strong>.</p>
+</blockquote>
+<hr>
+<ul>
+<li><p>mapper interface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; selectUserInList(List&lt;Interger&gt; ids);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql mapping</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;selectUserInList&quot; resultType=&quot;User&quot;&gt;</span><br><span class="line">  select * from user</span><br><span class="line">  where id in</span><br><span class="line">  &lt;foreach item=&quot;item&quot; index=&quot;index&quot; collection=&quot;list&quot;</span><br><span class="line">      open=&quot;(&quot; separator=&quot;,&quot; close=&quot;)&quot;&gt;</span><br><span class="line">        #&#123;item&#125;</span><br><span class="line">  &lt;/foreach&gt;</span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Object’s-collection"><a href="#Object’s-collection" class="headerlink" title="Object’s collection"></a>Object’s collection</h2><ul>
+<li><p>mapper interface</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; selectByCondition(Condition condition)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql mapping</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;where &gt;</span><br><span class="line">  &lt;foreach collection=&quot;threshold&quot; item=&quot;limit&quot; separator=&quot;or&quot; &gt;</span><br><span class="line">    &lt;if test=&quot;limit.value &gt; 10&quot; &gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>threshold</code> is a collection property in condition</p>
+</li>
+<li><code>limit</code> represent the item in collection</li>
+</ul>
+<hr>
+<p><strong>link:</strong><br><a href="http://openwares.net/database/mybatis_parametertype.html" target="_blank" rel="noopener"> MyBatis input argument and parameterType</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/22/Hello-crawler/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2316,184 +2546,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/11/Hello-Raspberry/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/11/Hello-Raspberry/" class="post-title-link" itemprop="url">Hello Raspberry</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-11 21:54:11" itemprop="dateCreated datePublished" datetime="2017-02-11T21:54:11+08:00">2017-02-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="First-Git-commit-by-raspberry"><a href="#First-Git-commit-by-raspberry" class="headerlink" title="First Git commit by raspberry"></a>First Git commit by raspberry</h3><p>Interesting! a lot of fun<br>Bug in 2017-02-02<br>Raspberry Pi -Read 20Mb/s Write 20Mb/s in board tf card</p>
-<h4 id="change-keyboard-layout"><a href="#change-keyboard-layout" class="headerlink" title="change keyboard layout"></a>change keyboard layout</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/default/keyboard</span><br><span class="line"></span><br><span class="line">XKBLAYOUT=&quot;us&quot;</span><br></pre></td></tr></table></figure>
-<h4 id="setting-location-amp-timezone"><a href="#setting-location-amp-timezone" class="headerlink" title="setting location&amp;timezone"></a>setting location&amp;timezone</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
-<h4 id="wireless-ctl"><a href="#wireless-ctl" class="headerlink" title="wireless ctl"></a>wireless ctl</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</span><br><span class="line">network=&#123;</span><br><span class="line">	ssid=&quot;TP-LINK XXX&quot;</span><br><span class="line">	psk=&quot;i&apos;m password&quot;</span><br><span class="line">	key_mgmt=WPA-PSK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>if not work first check ssid &amp; passwd correct<br>then ckeck net card status<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iwconfig</span><br><span class="line">ifconfig wlan0</span><br></pre></td></tr></table></figure></p>
-<p>try manually restart the interface with<br><code>sudo ifdown wlan0</code> and <code>sudo ifup wlan0</code><br>at last try <code>sudo reboot</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2540,7 +2592,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">253</span>
+                    <span class="site-state-item-count">254</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3389,5 +3441,9 @@
 
   
 
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
 </body>
 </html>

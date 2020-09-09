@@ -351,6 +351,218 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/27/ZK-barrier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/27/ZK-barrier/" class="post-title-link" itemprop="url">ZK barrier</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-27 22:06:47" itemprop="dateCreated datePublished" datetime="2017-05-27T22:06:47+08:00">2017-05-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Zookeeper just like a cow boy, he know how to feed cattle.<br><img src="/2017/05/27/ZK-barrier/01.jpg" alt></p>
+<p>Make a crowd of cattle move synchronized is not a easy thing.<br><img src="/2017/05/27/ZK-barrier/02.jpg" alt></p>
+<p>To hold cattle, cowboy need barriers.<br><img src="/2017/05/27/ZK-barrier/03.jpg" alt></p>
+<h3 id="Barrier"><a href="#Barrier" class="headerlink" title="Barrier"></a>Barrier</h3><ul>
+<li><strong>Define</strong></li>
+</ul>
+<p><code>static public class Barrier extends SyncPrimitive</code></p>
+<p>class define in SyncPrimitive, it’s inner static class.</p>
+<p>It take it’s outter class as template, take outter class’s<br>static variable as common space.</p>
+<ul>
+<li><p><strong>Properties</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// max cow number</span><br><span class="line">int size;</span><br><span class="line">// the barrier&apos;s name</span><br><span class="line">String name;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Constructor</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Barrier(String address, String root, <span class="keyword">int</span> size) &#123;</span><br><span class="line">    <span class="comment">// Create barrier node</span></span><br><span class="line">    <span class="keyword">super</span>(address);</span><br><span class="line">    <span class="keyword">this</span>.root = root;</span><br><span class="line">    <span class="keyword">this</span>.size = size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (zk != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Stat s = zk.exists(root, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">              <span class="comment">//path, no data, no privilege control, not temple node</span></span><br><span class="line">                zk.create(root, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">                    Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// My node name</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        name = <span class="keyword">new</span> String(InetAddress.getLocalHost()</span><br><span class="line">            .getCanonicalHostName().toString());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (UnknownHostException e) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Used to create a barrier node in zookeeper.<br><code>super()</code> used to create the zk client object.</p>
+<ul>
+<li><strong>In</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enter</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    String path = zk.create(root + <span class="string">"/"</span> + name, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">        Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">            CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line">    name = path.substring(path.lastIndexOf(<span class="string">"/"</span>) + <span class="number">1</span>, path.length());</span><br><span class="line">    <span class="comment">// keep check</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            <span class="comment">// get current cattles out</span></span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            System.out.println(Thread.currentThread()</span><br><span class="line">                .getName() + <span class="string">" "</span> + list.size());</span><br><span class="line">            <span class="comment">// enter when reach the threshold</span></span><br><span class="line">            <span class="keyword">if</span> (list.size() &lt; size) &#123;</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Once a cow, check the threshold.<br>If not reach, wait for more cow come, or enter barrier.<br>Loop checking, when wake up the threshold should reached.</p>
+<p><code>CreateMode.EPHEMERAL_SEQUENTIAL</code> like this  <code>_1, _2</code></p>
+<ul>
+<li><strong>Out</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">leave</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException </span>&#123;</span><br><span class="line">    zk.delete(root + <span class="string">"/"</span> + name, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// keep check</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (list.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Once a cow, check the space empty or not.<br>If not empty, wait for more cow leave, or leave barrier.<br>Loop checking, when wake up the threshold should reached.</p>
+<h3 id="Test-one-barrier"><a href="#Test-one-barrier" class="headerlink" title="Test one barrier"></a>Test one barrier</h3><ul>
+<li>In main<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            barrierTest(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Simulate three cows.</p>
+<ul>
+<li>Test method<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">barrierTest</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">    Barrier b = <span class="keyword">new</span> Barrier(args[<span class="number">1</span>], <span class="string">"/b1"</span>, <span class="keyword">new</span> Integer(args[<span class="number">2</span>]));</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> flag = b.enter();</span><br><span class="line">        System.out.println(<span class="string">"Entered barrier: "</span> +</span><br><span class="line">            Thread.currentThread().getName());</span><br><span class="line">        <span class="keyword">if</span>(!flag) System.out.println(<span class="string">"Error when entering the barrier"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// simulate cow sleep</span></span><br><span class="line">        Thread.sleep(<span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line">        b.leave();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (KeeperException e)&#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e)&#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"Left barrier "</span> +</span><br><span class="line">        Thread.currentThread().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>This test’s synchroniz is base on cow notify another.<br>So it must make sure when cowboy[zookeeper] tiggered,<br>the transaction have bean done.</p>
+<p>In other word, cattles should all enter then all out.<br>If run too fast, the last cattle can’t be notify, keep waiting.<br>If the number equal to the threshold, cattles can’t leave as well.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/26/Hello-ActiveMq/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2159,192 +2371,6 @@ p2region&gt;&gt; 101.105.35.57
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/14/How-to-close-port-in-windows/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/14/How-to-close-port-in-windows/" class="post-title-link" itemprop="url">How to close port in windows</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-14 22:51:52" itemprop="dateCreated datePublished" datetime="2017-05-14T22:51:52+08:00">2017-05-14</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Control-port-in-linux"><a href="#Control-port-in-linux" class="headerlink" title="Control port in linux"></a>Control port in linux</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -anp</span><br><span class="line"></span><br><span class="line"># close</span><br><span class="line">iptables -A INPUT -p tcp --drop 8080 -j DROP</span><br><span class="line">iptables -A OUTPUT -p tcp --dport 8080 -j DROP</span><br><span class="line"></span><br><span class="line"># open</span><br><span class="line">iptables -A INPUT -ptcp --dport 8080 -j ACCEPT</span><br></pre></td></tr></table></figure>
-<h3 id="Control-port-in-windows"><a href="#Control-port-in-windows" class="headerlink" title="Control port in windows"></a>Control port in windows</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># status</span><br><span class="line">netstat -ano</span><br><span class="line"></span><br><span class="line"># find program name</span><br><span class="line">tasklist|findstr &quot;3624&quot;</span><br><span class="line"></span><br><span class="line"># kill it</span><br><span class="line">taskkill /f /t /im Dandelion.exe</span><br></pre></td></tr></table></figure>
-<ol>
-<li><p>open <code>control-panel -&gt; manage-tool</code> open <code>local safety policy</code><br>choose <code>Ip safety policy</code> to create a new ip policy.</p>
-</li>
-<li><p>remove <code>use add guide</code>, click <code>add new rule</code>, then add a new filter.</p>
-</li>
-<li><p>edit filter properties, src is <code>any ip address</code>, target is <code>my id address</code>.<br>in <code>protocol</code> tab, <code>protocol type</code> choose <code>TCP</code>, <code>to this port</code> input <code>135</code>.</p>
-</li>
-<li>repeat <code>UDP</code> port in [135, 139, 445]<br><code>TCP</code> port in [135, 137, 139, 445, 593, 1025, 2745, 3127, 6129, 3389]</li>
-<li>in new <code>rule</code> dialog, the <code>filter operation</code> choose <strong>forbidden</strong>.</li>
-<li>confirm new <code>rule</code>, in <code>ip policy</code> right click <code>rule</code> choose <code>dispatch</code>.</li>
-<li>restart computer.</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2391,7 +2417,7 @@ p2region&gt;&gt; 101.105.35.57
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">253</span>
+                    <span class="site-state-item-count">254</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3240,5 +3266,9 @@ p2region&gt;&gt; 101.105.35.57
 
   
 
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
 </body>
 </html>

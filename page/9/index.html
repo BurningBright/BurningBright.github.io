@@ -351,6 +351,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/22/Lucene-fmn-index-output-format/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/02/22/Lucene-fmn-index-output-format/" class="post-title-link" itemprop="url">Lucene fmn index & output type</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-02-22 15:31:10" itemprop="dateCreated datePublished" datetime="2019-02-22T15:31:10+08:00">2019-02-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-09 13:33:26" itemprop="dateModified" datetime="2019-03-09T13:33:26+08:00">2019-03-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Start-fmn-index"><a href="#Start-fmn-index" class="headerlink" title="Start fmn index"></a>Start fmn index</h2><p><strong>IndexWriter:addDocument -&gt; DocumentWriter:addDocument</strong></p>
+<p>Document object in lucene store origin target’s properties<br>The property <code>fieldInfos</code> in <code>DocumentWriter</code> store fields</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> FieldInfos fieldInfos;</span><br><span class="line"></span><br><span class="line">fieldInfos = <span class="keyword">new</span> FieldInfos();</span><br><span class="line">fieldInfos.add(doc);</span><br><span class="line">fieldInfos.write(directory, segment + <span class="string">".fnm"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="Build-fmn-index"><a href="#Build-fmn-index" class="headerlink" title="Build fmn index"></a>Build fmn index</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(IndexOutput output)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    output.writeVInt(size());</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size(); i++) &#123;</span><br><span class="line">        FieldInfo fi = fieldInfo(i);</span><br><span class="line">        <span class="keyword">byte</span> bits = <span class="number">0x0</span>;</span><br><span class="line">        <span class="comment">// option bit setting</span></span><br><span class="line">        ...</span><br><span class="line">        output.writeString(fi.name);</span><br><span class="line">        output.writeByte(bits);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>write field size before loop<br>write field’s name in loop<br>write field’s setting in loop</p>
+<p>If a document field’s name is <code>name</code> store in index and  tokenized<br>then <code>xxx.fmn</code> will be like this</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">01 04 6e 61 6d 65 01</span><br></pre></td></tr></table></figure>
+<p><code>01</code> is fields size<br><code>04</code> is field length<br><code>6e 61 6d 65</code> is ASCII of <code>name</code><br><code>01</code> is field setting</p>
+<p>[size][01 lenght][01][01 setting][02 lenght][02][02 setting]……</p>
+<h2 id="Lucene-type"><a href="#Lucene-type" class="headerlink" title="Lucene type"></a>Lucene type</h2><p>In abstract class <code>IndexOutput</code> self define type method<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeVInt</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> ((i &amp; ~<span class="number">0x7F</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        writeByte((<span class="keyword">byte</span>)((i &amp; <span class="number">0x7f</span>) | <span class="number">0x80</span>));</span><br><span class="line">        i &gt;&gt;&gt;= <span class="number">7</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    writeByte((<span class="keyword">byte</span>)i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeVLong</span><span class="params">(<span class="keyword">long</span> i)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The variable int/long format, smaller values take fewer bytes<br><code>int</code> writes between one and five bytes.<br><code>long</code> writes between one and nine bytes.</p>
+<p><code>0x7F</code> filt origin type no longer than 1 byte.<br><code>(i &amp; 0x7F) | 0x80</code> make byte first bit is <code>1</code>.</p>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeString</span><span class="params">(String s)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> length = s.length();</span><br><span class="line">    writeVInt(length);</span><br><span class="line">    writeChars(s, <span class="number">0</span>, length);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>Write string’s length first.<br>Write String’s char array then.</p>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeChars</span><span class="params">(String s, <span class="keyword">int</span> start, <span class="keyword">int</span> length)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> end = start + length;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = start; i &lt; end; i++) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> code = (<span class="keyword">int</span>) s.charAt(i);</span><br><span class="line">        <span class="keyword">if</span> (code &gt;= <span class="number">0x01</span> &amp;&amp; code &lt;= <span class="number">0x7F</span>)</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) code);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (((code &gt;= <span class="number">0x80</span>) &amp;&amp; (code &lt;= <span class="number">0x7FF</span>)) || code == <span class="number">0</span>) &#123;</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) (<span class="number">0xC0</span> | (code &gt;&gt; <span class="number">6</span>)));</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) (<span class="number">0x80</span> | (code &amp; <span class="number">0x3F</span>)));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) (<span class="number">0xE0</span> | (code &gt;&gt;&gt; <span class="number">12</span>)));</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) (<span class="number">0x80</span> | ((code &gt;&gt; <span class="number">6</span>) &amp; <span class="number">0x3F</span>)));</span><br><span class="line">            writeByte((<span class="keyword">byte</span>) (<span class="number">0x80</span> | (code &amp; <span class="number">0x3F</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Write ASCII directly [1 byte]<br>Write UTF-8 two bytes [2 byte]<br>Write UTF-8 three bytes [3 byte]</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/21/download-outside-GFW/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2153,197 +2343,6 @@ a-\frac{1}{a}=1+\frac{1}{a}
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/11/06/kafka-consumer-group/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/11/06/kafka-consumer-group/" class="post-title-link" itemprop="url">kafka consumer group</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-11-06 19:01:00" itemprop="dateCreated datePublished" datetime="2018-11-06T19:01:00+08:00">2018-11-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Consumer-group"><a href="#Consumer-group" class="headerlink" title="Consumer group"></a>Consumer group</h2><p>How to make multi-worker in same consumer-group all recieve same topic’s message?</p>
-<p><img src="/2018/11/06/kafka-consumer-group/20181106190805256.png" alt="20181106190805256.png"><br>In kafka the topic <strong>only send one</strong> worker in consumer-group per partition(randomly?).</p>
-<p>It’s better set the partition number multiple of consumer group’s number</p>
-<p>So if you need pulish/subscribe mode, make sure consumer in different group id.</p>
-<h2 id="How-do-I-choose-the-number-of-partitions-for-a-topic"><a href="#How-do-I-choose-the-number-of-partitions-for-a-topic" class="headerlink" title="How do I choose the number of partitions for a topic?"></a>How do I choose the number of partitions for a topic?</h2><p>The partition count determines the <strong>maximum consumer parallelism</strong> and so<br>you should set a partition count based on the maximum consumer parallelism you would expect to need</p>
-<h2 id="Partition"><a href="#Partition" class="headerlink" title="Partition"></a>Partition</h2><ul>
-<li>A partition is basically a directory of log files.</li>
-<li>Each partition must fit entirely on one machine.</li>
-<li>Each partition is totally ordered.</li>
-<li>Each partition is <strong>not consumed by more than one</strong> consumer thread/process in each consumer group.</li>
-<li>Many partitions can be consumed by a single process(randomly?)</li>
-<li>Another way to say the above is that the partition count is a bound on the maximum consumer parallelism.<br>parallelism mean different group can consume different partitions</li>
-<li>More partitions will mean more files and more machine restrict.</li>
-<li>Each partition corresponds to several znodes in zookeeper.</li>
-<li>More partitions means longer leader fail-over time.Synchronize <strong>thousands of znodes</strong> is not a easy job.</li>
-<li>More partitions the more expensive the position checkpoint is.</li>
-<li>Expand more partitions need manually synchronize data from old partitions</li>
-</ul>
-<p><a href="https://www.oschina.net/question/2558468_2145935" target="_blank" rel="noopener">https://www.oschina.net/question/2558468_2145935</a><br><a href="https://blog.csdn.net/gezilan/article/details/80412490" target="_blank" rel="noopener">https://blog.csdn.net/gezilan/article/details/80412490</a><br><a href="https://cwiki.apache.org/confluence/display/KAFKA/FAQ#FAQ-HowmanytopicscanIhave?" target="_blank" rel="noopener">https://cwiki.apache.org/confluence/display/KAFKA/FAQ#FAQ-HowmanytopicscanIhave?</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2390,7 +2389,7 @@ a-\frac{1}{a}=1+\frac{1}{a}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">253</span>
+                    <span class="site-state-item-count">254</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3201,9 +3200,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
       
     
       
-        
-      
     
+      
+        
       
     
       
@@ -3281,5 +3280,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
 
   
 
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
 </body>
 </html>
