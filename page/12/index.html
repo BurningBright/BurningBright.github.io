@@ -351,6 +351,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/20/Java-exec/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/04/20/Java-exec/" class="post-title-link" itemprop="url">Java exec</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-04-20 16:53:42" itemprop="dateCreated datePublished" datetime="2018-04-20T16:53:42+08:00">2018-04-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h2><ol>
+<li><code>Runtime.getRuntime()</code> is the only method can get jvm runing environment</li>
+<li>Most method in Runtime is implements method</li>
+<li>Runtime.exit() is the only method exit current jvm. <code>System.exit()</code></li>
+<li><code>0</code> represent normal execute, !<code>0</code> represent exception</li>
+<li><code>Runtime.addShutdownHook()</code> can recieve a thread object as a handle</li>
+<li><code>public Process exec(String[] cmdarray, String[] envp, File dir)</code><br>when sub process use current process environment variable, envp is null.</li>
+</ol>
+<h2 id="Call"><a href="#Call" class="headerlink" title="Call"></a>Call</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.exitValue();</span><br></pre></td></tr></table></figure>
+<p>Process call exitValue is not block, if needed add a loop call</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
+<p>correct call process need set process’s stream setting, make sure thread will not block.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello &gt; hi"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
+<p>in command line can’t execute bash sign like <code>&gt;</code> <code>&gt;&gt;</code> <code>&lt;</code> <code>&amp;</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"/bin/bash"</span>, <span class="string">"-c"</span>, <span class="string">"java hello &gt; hi"</span>&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
+<p>if need these local operation, you can write these in a shell script, or load bash in java.</p>
+<h2 id="Call-in-windows"><a href="#Call-in-windows" class="headerlink" title="Call in windows"></a>Call in windows</h2><p>if you want call in windows you need install bash first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
+<p>if jvm execute path is not the <code>exec</code> path, you need add specific path<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">new</span> File(workPath));</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
+<p>ps. <code>-c</code> mean read parameter in string format, not directly %0 %1</p>
+<h2 id="Another-way"><a href="#Another-way" class="headerlink" title="Another way"></a>Another way</h2><p>If you want jvm do standard in /out, use another thread read or write data<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello"</span>);</span><br><span class="line"><span class="comment">// add pip stream thread setting</span></span><br><span class="line">StreamThread director = <span class="keyword">new</span> StreamThread(proc.getInputStream()，proc.getOutputStream());</span><br><span class="line">director.start();</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://blog.csdn.net/mengxingyuanlove/article/details/50707746" target="_blank" rel="noopener">https://blog.csdn.net/mengxingyuanlove/article/details/50707746</a><br><a href="https://blog.csdn.net/timo1160139211/article/details/75006938" target="_blank" rel="noopener">https://blog.csdn.net/timo1160139211/article/details/75006938</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/05/Gif-camera/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2748,493 +2941,6 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/01/12/jvm-memory-tool/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/01/12/jvm-memory-tool/" class="post-title-link" itemprop="url">jvm memory tool</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-01-12 15:20:41" itemprop="dateCreated datePublished" datetime="2018-01-12T15:20:41+08:00">2018-01-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2018/01/12/jvm-memory-tool/vm-memory.png" alt></p>
-<h2 id="jps-JVM-Process-Status-Tool"><a href="#jps-JVM-Process-Status-Tool" class="headerlink" title="jps (JVM Process Status Tool)"></a>jps (JVM Process Status Tool)</h2><p>Used to check  progress id/ start path/ start argument.<br>If remote machine running <code>jstat</code>, <code>jps</code> can query remote vm progress.<br>define:<br><code>jps [-q] [-mlvV] [&lt;hostid&gt;]</code></p>
-<ul>
-<li>-m arguments that input into main</li>
-<li>-v arguments that input into jvm</li>
-<li>-l main class package path or jar file path</li>
-</ul>
-<h2 id="jmap-Memory-Map-for-Java"><a href="#jmap-Memory-Map-for-Java" class="headerlink" title="jmap( Memory Map for Java)"></a>jmap( Memory Map for Java)</h2><p>mapping jvm’s object/ reference<br>define:<br><code>jmap [option] &lt;pid&gt;</code></p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>-heap</td>
-<td>heat info</td>
-</tr>
-<tr>
-<td>-histo[:live]</td>
-<td>default in live</td>
-</tr>
-<tr>
-<td>-dump</td>
-<td><br>live         dump only live objects<br>format=b     binary format<br>file=path  dump heap to</td>
-</tr>
-<tr>
-<td>-permstat</td>
-<td>permanent generation</td>
-</tr>
-<tr>
-<td>-finalizerinfo</td>
-<td>object waiting finaliz</td>
-</tr>
-<tr>
-<td>-F</td>
-<td>force all object dump or histo</td>
-</tr>
-</tbody>
-</table>
-</div>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap -histo 20836</span><br><span class="line">jmap -permstat 20836</span><br><span class="line">jmap -dump:live,format=b,file=data.hprof 20836</span><br></pre></td></tr></table></figure>
-<h2 id="jhat-JVM-Heap-Analysis-Tool"><a href="#jhat-JVM-Heap-Analysis-Tool" class="headerlink" title="jhat(JVM Heap Analysis Tool)"></a>jhat(JVM Heap Analysis Tool)</h2><p>offline dump file analysis, check memory info.<br>But Visual interface is much more better like <code>jvisualvm</code> <code>jconsole</code></p>
-<h2 id="jinfo-Configuration-Info-for-Java"><a href="#jinfo-Configuration-Info-for-Java" class="headerlink" title="jinfo(Configuration Info for Java)"></a>jinfo(Configuration Info for Java)</h2><p>print or modify java progress’s options(flag). print system properties<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jinfo -sysprops 20836</span><br><span class="line">jinfo -flags 20836</span><br></pre></td></tr></table></figure></p>
-<h2 id="jstat-JVM-statistics-Monitoring-Tool"><a href="#jstat-JVM-statistics-Monitoring-Tool" class="headerlink" title="jstat(JVM statistics Monitoring Tool)"></a>jstat(JVM statistics Monitoring Tool)</h2><p>monitor jvm grogress’s resource and performence<br>define:<br><code>jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]</code></p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>-class</td>
-<td>class’ mateinfo in jvm</td>
-</tr>
-<tr>
-<td>-compiler</td>
-<td>compiler info in jvm</td>
-</tr>
-<tr>
-<td>-gc</td>
-<td>current jvm global info</td>
-</tr>
-<tr>
-<td>-gccapacity</td>
-<td>similar as above</td>
-</tr>
-<tr>
-<td>-gccause</td>
-<td>reason cause gc option</td>
-</tr>
-<tr>
-<td>-gcnew</td>
-<td>youny generation (eden + servivor)</td>
-</tr>
-<tr>
-<td>-gcnewcapacity</td>
-<td></td>
-</tr>
-<tr>
-<td>-gcold</td>
-<td>old generation</td>
-</tr>
-<tr>
-<td>-gcoldcapacity</td>
-<td>old capacity</td>
-</tr>
-<tr>
-<td>-gcpermcapacity</td>
-<td>perm capacity <br>1.6 in method space<br>1.8 in true memory</td>
-</tr>
-<tr>
-<td>-gcutil</td>
-<td>static class ?</td>
-</tr>
-<tr>
-<td>-printcompilation</td>
-<td>compile summary</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>S0</td>
-<td>年轻代中第一个survivor（幸存区）已使用的占当前容量百分比</td>
-</tr>
-<tr>
-<td>S1</td>
-<td>年轻代中第二个survivor（幸存区）已使用的占当前容量百分比</td>
-</tr>
-<tr>
-<td>S0C</td>
-<td>年轻代中第一个survivor（幸存区）的容量 (字节)</td>
-</tr>
-<tr>
-<td>S1C</td>
-<td>年轻代中第二个survivor（幸存区）的容量 (字节)</td>
-</tr>
-<tr>
-<td>S0U</td>
-<td>年轻代中第一个survivor（幸存区）目前已使用空间 (字节)</td>
-</tr>
-<tr>
-<td>S1U</td>
-<td>年轻代中第二个survivor（幸存区）目前已使用空间 (字节)</td>
-</tr>
-<tr>
-<td>S0CMX</td>
-<td>年轻代中第一个survivor（幸存区）的最大容量 (字节)</td>
-</tr>
-<tr>
-<td>S1CMX</td>
-<td>年轻代中第二个survivor（幸存区）的最大容量 (字节)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>E</td>
-<td>年轻代中Eden（伊甸园）已使用的占当前容量百分比</td>
-</tr>
-<tr>
-<td>EC</td>
-<td>年轻代中Eden（伊甸园）的容量 (字节)</td>
-</tr>
-<tr>
-<td>EU</td>
-<td>年轻代中Eden（伊甸园）目前已使用空间 (字节)</td>
-</tr>
-<tr>
-<td>NGCMN</td>
-<td>年轻代(young)中初始化(最小)的大小 (字节)</td>
-</tr>
-<tr>
-<td>NGCMX</td>
-<td>年轻代(young)的最大容量 (字节)</td>
-</tr>
-<tr>
-<td>NGC</td>
-<td>年轻代(young)中当前的容量 (字节)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>O</td>
-<td>old代已使用的占当前容量百分比</td>
-</tr>
-<tr>
-<td>OC</td>
-<td>Old代的容量 (字节)</td>
-</tr>
-<tr>
-<td>OU</td>
-<td>Old代目前已使用空间 (字节)</td>
-</tr>
-<tr>
-<td>OGCMN</td>
-<td>old代中初始化(最小)的大小 (字节)</td>
-</tr>
-<tr>
-<td>OGCMX</td>
-<td>old代的最大容量 (字节)</td>
-</tr>
-<tr>
-<td>OGC</td>
-<td>old代当前新生成的容量 (字节)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>P</td>
-<td>perm代已使用的占当前容量百分比</td>
-</tr>
-<tr>
-<td>PC</td>
-<td>Perm(持久代)的容量 (字节)</td>
-</tr>
-<tr>
-<td>PU</td>
-<td>Perm(持久代)目前已使用空间 (字节)</td>
-</tr>
-<tr>
-<td>PGCMN</td>
-<td>perm代中初始化(最小)的大小 (字节)</td>
-</tr>
-<tr>
-<td>PGCMX</td>
-<td>perm代的最大容量 (字节)</td>
-</tr>
-<tr>
-<td>PGC</td>
-<td>perm代当前新生成的容量 (字节)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>YGC</td>
-<td>从应用程序启动到采样时年轻代中gc次数</td>
-</tr>
-<tr>
-<td>YGCT</td>
-<td>从应用程序启动到采样时年轻代中gc所用时间(s)</td>
-</tr>
-<tr>
-<td>FGC</td>
-<td>从应用程序启动到采样时old代(全gc)gc次数</td>
-</tr>
-<tr>
-<td>FGCT</td>
-<td>从应用程序启动到采样时old代(全gc)gc所用时间(s)</td>
-</tr>
-<tr>
-<td>GCT</td>
-<td>从应用程序启动到采样时gc用的总时间(s)</td>
-</tr>
-<tr>
-<td>DSS</td>
-<td>当前需要survivor（幸存区）的容量 (字节)（Eden区已满）</td>
-</tr>
-<tr>
-<td>TT</td>
-<td>持有次数限制</td>
-</tr>
-<tr>
-<td>MTT</td>
-<td>最大持有次数限制</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><p>Local Applications Cannot Be Monitored (Error Dialog On Startup)<br>Description: An error dialog saying that local applications cannot be monitored<br>is shown immediately after VisualVM startup. Locally running Java applications<br>are displayed as <unknown application> (pid ###).</unknown></p>
-<p>Resolution:  This can happen on Windows systems if the username contains capitalized letters.<br>In this case, username is UserName but the jvmstat directory created by JDK is %TMP%\hsperfdata_username.<br>To workaround the problem, exit all Java applications, delete the %TMP%\hsperfdata_username directory<br>and create new %TMP%\hsperfdata_UserName directory.</p>
-<p>In windows platform if jconsole.exe interface, the local vm disenable, check user name, and directory name:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># If user name is Administrator</span><br><span class="line">C:\Users\Administrator\AppData\Local\Temp\hsperfdata_administrator</span><br><span class="line"># change to</span><br><span class="line">C:\Users\Administrator\AppData\Local\Temp\hsperfdata_Administrator</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://visualvm.github.io/troubleshooting.html#jpswin2" target="_blank" rel="noopener">https://visualvm.github.io/troubleshooting.html#jpswin2</a></p>
-<h2 id="jstack-Stack-Trace-for-Java"><a href="#jstack-Stack-Trace-for-Java" class="headerlink" title="jstack(Stack Trace for Java)"></a>jstack(Stack Trace for Java)</h2><p>print specific progress’s or remote jvm’s stack info</p>
-<h2 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h2><p><a href="http://blog.sina.com.cn/s/blog_b0e3dfe30102wfl5.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_b0e3dfe30102wfl5.html</a></p>
-<p><a href="http://www.bubuko.com/infodetail-792105.html" target="_blank" rel="noopener">http://www.bubuko.com/infodetail-792105.html</a></p>
-<p><a href="https://www.cnblogs.com/lishijia/p/5897236.html" target="_blank" rel="noopener">https://www.cnblogs.com/lishijia/p/5897236.html</a></p>
-<p><a href="http://www.talkwithtrend.com/Article/161055" target="_blank" rel="noopener">http://www.talkwithtrend.com/Article/161055</a></p>
-<p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-JVMGarbageCollection/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/j-lo-JVMGarbageCollection/</a></p>
-<p><a href="https://www.ibm.com/developerworks/cn/java/l-JavaMemoryLeak/" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/l-JavaMemoryLeak/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3281,7 +2987,7 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">254</span>
+                    <span class="site-state-item-count">255</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -4088,9 +3794,9 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
       
     
       
-        
-      
     
+      
+        
       
     
       

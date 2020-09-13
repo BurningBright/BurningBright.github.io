@@ -351,6 +351,198 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/11/12/How-to-choose-the-number-of-topics-partitions-in-a-Kafka-cluster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/11/12/How-to-choose-the-number-of-topics-partitions-in-a-Kafka-cluster/" class="post-title-link" itemprop="url">How to choose the number of topics/partitions in a Kafka cluster?</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-11-12 14:58:30" itemprop="dateCreated datePublished" datetime="2018-11-12T14:58:30+08:00">2018-11-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>This is a common question asked by many Kafka users.<br>The goal of this post is to explain a few important determining factors and provide a few simple formulas.</p>
+<h2 id="More-Partitions-Lead-to-Higher-Throughput"><a href="#More-Partitions-Lead-to-Higher-Throughput" class="headerlink" title="More Partitions Lead to Higher Throughput"></a>More Partitions Lead to Higher Throughput</h2><p>The first thing to understand is that <strong>a topic partition is the unit of parallelism in Kafka</strong>.<br>On both the producer and the broker side, writes to different partitions can be done fully in parallel.<br>So expensive operations such as compression can utilize more hardware resources.<br>On the consumer side, Kafka always gives a single partition’s data to one consumer thread.<br>Thus, the degree of parallelism in the consumer (within a consumer group) is bounded by the number of partitions being consumed.<br>Therefore, in general, <strong>the more partitions</strong> there are in a Kafka cluster, <strong>the higher the throughput</strong> one can achieve.</p>
+<p>A rough formula for picking the number of partitions is based on throughput.<br>You measure the throughout that you can achieve on a single partition for production (call it p) and consumption (call it c).<br>Let’s say your target throughput is t.<br>Then you need to have at least max(t/p, t/c) partitions.<br>The per-partition throughput that one can achieve on the producer depends on configurations such as the batching size, compression codec, type of acknowledgement, replication factor, etc.<br>However, in general, <strong>one can produce at 10s of MB/sec on just a single partition</strong> as shown in this benchmark.<br>The consumer throughput is often application dependent since it corresponds to how fast <strong>the consumer logic can process each message</strong>.<br>So, you really need to measure it.</p>
+<p>Although it’s possible to increase the number of partitions over time, one has to be careful if messages are produced with keys.<br>When publishing a keyed message, Kafka deterministically maps the message to a partition based on the hash of the key.<br>This provides a guarantee that <strong>messages with the same key are always routed to the same partition</strong>.<br>This guarantee can be important for certain applications since messages within a partition are always delivered in order to the consumer.<br>If the number of partitions changes, such a guarantee may no longer hold.<br>To avoid this situation, a common practice is to over-partition a bit.<br><strong>Basically, you determine the number of partitions based on a future target throughput, say for one or two years later.</strong><br>Initially, you can just have a small Kafka cluster based on your current throughput.<br>Over time, you can add more brokers to the cluster and proportionally move a subset of the existing partitions to the new brokers (which can be done online).<br>This way, you can keep up with the throughput growth without breaking the semantics in the application when keys are used.</p>
+<p>In addition to throughput, there are a few other factors that are worth considering when choosing the number of partitions.<br>As you will see, in some cases, having too many partitions may also have negative impact.</p>
+<h2 id="More-Partitions-Requires-More-Open-File-Handles"><a href="#More-Partitions-Requires-More-Open-File-Handles" class="headerlink" title="More Partitions Requires More Open File Handles"></a>More Partitions Requires More Open File Handles</h2><p>Each partition maps to a directory in the file system in the broker.<br>Within that log directory, there will be two files (one for the index and another for the actual data) per log segment.<br>Currently, in Kafka, each broker opens a file handle of both the index and the data file of every log segment.<br>So, the more partitions, the higher that one needs to configure the open file handle limit in the underlying operating system.<br>This is mostly just a configuration issue.<br>We have seen production Kafka clusters running with more than 30 thousand open file handles per broker.</p>
+<h2 id="More-Partitions-May-Increase-Unavailability"><a href="#More-Partitions-May-Increase-Unavailability" class="headerlink" title="More Partitions May Increase Unavailability"></a>More Partitions May Increase Unavailability</h2><p>Kafka supports intra-cluster replication, which provides higher availability and durability.<br><strong>A partition can have multiple replicas</strong>, each stored on a different broker.<br>One of the replicas is designated as the leader and the rest of the replicas are followers.<br>Internally, Kafka manages all those replicas automatically and makes sure that they are kept in sync.<br>Both the producer and the consumer requests to a partition are served on the leader replica.<br>When a broker fails, partitions with a leader on that broker become temporarily unavailable.<br>Kafka will automatically move the leader of those unavailable partitions to some other replicas to continue serving the client requests.<br>This process is done by one of the Kafka brokers designated as the controller.<br>It involves reading and writing some metadata for each affected partition in ZooKeeper.<br>Currently, operations to ZooKeeper are done serially in the controller.</p>
+<p>In the common case when a broker is shut down cleanly, the controller will proactively move the leaders off the shutting down broker one at a time.<br>The moving of a single leader takes only a few milliseconds.<br>So, from the clients perspective, there is only a small window of unavailability during a clean broker shutdown.</p>
+<p>However, when a broker is shut down uncleanly (e.g., kill -9), the observed unavailability could be proportional to the number of partitions.<br>Suppose that a broker has a total of 2000 partitions, each with 2 replicas.<br>Roughly, this broker will be the leader for about 1000 partitions.<br>When this broker fails uncleanly, all those 1000 partitions become unavailable at exactly the same time.<br>Suppose that it takes 5 ms to elect a new leader for a single partition.<br>It will take up to 5 seconds to elect the new leader for all 1000 partitions.<br>So, for some partitions, their observed unavailability can be 5 seconds plus the time taken to detect the failure.</p>
+<p>If one is unlucky, the failed broker may be the controller.<br>In this case, the process of electing the new leaders won’t start until the controller fails over to a new broker.<br>The controller failover happens automatically, but requires the new controller to read some metadata for every partition from ZooKeeper during initialization.<br>For example, if there are 10,000 partitions in the Kafka cluster and initializing the metadata from ZooKeeper takes 2 ms per partition, this can add 20 more seconds to the unavailability window.</p>
+<p>In general, unclean failures are rare.<br>However, if one cares about availability in those rare cases, it’s probably better to limit the number of partitions per broker to two to four thousand and the total number of partitions in the cluster to low tens of thousand.</p>
+<h2 id="More-Partitions-May-Increase-End-to-end-Latency"><a href="#More-Partitions-May-Increase-End-to-end-Latency" class="headerlink" title="More Partitions May Increase End-to-end Latency"></a>More Partitions May Increase End-to-end Latency</h2><p>The end-to-end latency in Kafka is defined by the time from when a message is published by the producer to when the message is read by the consumer.<br>Kafka only exposes a message to a consumer after it has been committed, i.e., when the message is replicated to all the in-sync replicas.<br>So, the time to commit a message can be a significant portion of the end-to-end latency.<br>By default, a Kafka broker only uses a single thread to replicate data from another broker, for all partitions that share replicas between the two brokers.<br>Our experiments show that replicating 1000 partitions from one broker to another can add about 20 ms latency, which implies that the end-to-end latency is at least 20 ms.<br>This can be too high for some real-time applications.</p>
+<p>Note that this issue is alleviated on a larger cluster.<br>For example, suppose that there are 1000 partition leaders on a broker and there are 10 other brokers in the same Kafka cluster.<br>Each of the remaining 10 brokers only needs to fetch 100 partitions from the first broker on average.<br>Therefore, the added latency due to committing a message will be just a few ms, instead of tens of ms.</p>
+<p>As a rule of thumb, if you care about latency, it’s probably a good idea to limit the number of partitions per broker to 100 x b x r, where b is the number of brokers in a Kafka cluster and r is the replication factor.</p>
+<h2 id="More-Partitions-May-Require-More-Memory-In-the-Client"><a href="#More-Partitions-May-Require-More-Memory-In-the-Client" class="headerlink" title="More Partitions May Require More Memory In the Client"></a>More Partitions May Require More Memory In the Client</h2><p>In the most recent 0.8.2 release which we ship with the Confluent Platform 1.0, we have developed a more efficient Java producer.<br>One of the nice features of the new producer is that it allows users to set an upper bound on the amount of memory used for buffering incoming messages.<br>Internally, the producer buffers messages per partition.<br>After enough data has been accumulated or enough time has passed, the accumulated messages are removed from the buffer and sent to the broker.</p>
+<p>If one increases the number of partitions, message will be accumulated in more partitions in the producer.<br>The aggregate amount of memory used may now exceed the configured memory limit.<br>When this happens, the producer has to either block or drop any new message, neither of which is ideal.<br>To prevent this from happening, one will need to reconfigure the producer with a larger memory size.</p>
+<p>As a rule of thumb, to achieve good throughput, one should allocate at least a few tens of KB per partition being produced in the producer and adjust the total amount of memory if the number of partitions increases significantly.</p>
+<p>A similar issue exists in the consumer as well.<br>The consumer fetches a batch of messages per partition.<br>The more partitions that a consumer consumes, the more memory it needs.<br>However, this is typically only an issue for consumers that are not real time.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>In general, more partitions in a Kafka cluster leads to higher throughput.<br>However, one does have to be aware of the potential impact of having too many partitions in total or per broker on things like availability and latency.<br>In the future, we do plan to improve some of those limitations to make Kafka more scalable in terms of the number of partitions.</p>
+<p><a href="https://blog.csdn.net/kwengelie/article/details/51150114" target="_blank" rel="noopener">https://blog.csdn.net/kwengelie/article/details/51150114</a><br><a href="https://www.confluent.io/blog/author/jun-rao/" target="_blank" rel="noopener">https://www.confluent.io/blog/author/jun-rao/</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/11/06/kafka-consumer-group/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2000,189 +2192,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/25/Springboot-Schedule/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/07/25/Springboot-Schedule/" class="post-title-link" itemprop="url">Springboot Schedule</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-07-25 14:59:21" itemprop="dateCreated datePublished" datetime="2018-07-25T14:59:21+08:00">2018-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Maven-config"><a href="#Maven-config" class="headerlink" title="Maven config"></a>Maven config</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
-<p>Add <code>@EnableScheduling</code> annotation in application main or configuration class</p>
-<h2 id="Thread-pool"><a href="#Thread-pool" class="headerlink" title="Thread pool"></a>Thread pool</h2><p>In <code>org.springframework.scheduling.config.ScheduledTaskRegistrar</code><br>after the after properties set, spring set a default single thread excutor.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">scheduleTasks</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.taskScheduler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.localExecutor = Executors.newSingleThreadScheduledExecutor();</span><br><span class="line">        <span class="keyword">this</span>.taskScheduler = <span class="keyword">new</span> ConcurrentTaskScheduler(<span class="keyword">this</span>.localExecutor);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>When the program’s schedules need time to deal with the job.<br>Single Thread excutor may cause job be blocked, then the job’s excuted time might be wrong.</p>
-<p>So when the single node have hard works need be done precisely, we need a selfdefine threadpool.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScheduleConfig</span> <span class="keyword">implements</span> <span class="title">SchedulingConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureTasks</span><span class="params">(ScheduledTaskRegistrar taskRegistrar)</span> </span>&#123;</span><br><span class="line">        taskRegistrar.setScheduler(taskExecutor());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(destroyMethod=<span class="string">"shutdown"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">taskExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newScheduledThreadPool(<span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Close"><a href="#Close" class="headerlink" title="Close"></a>Close</h2><p>When the web application closed, the threadpool is still alive, we need actively close it.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class MyTask implements DisposableBean&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void destroy() throws Exception &#123;</span><br><span class="line">        ThreadPoolTaskScheduler scheduler =</span><br><span class="line">            (ThreadPoolTaskScheduler)applicationContext.getBean(&quot;scheduler&quot;);</span><br><span class="line">        scheduler.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h2><p>If the schedule needs enterprise level structure, a schedule cluster is needed.<br>Use consistency middle ware/[DB]/[Cache] control the schedule node’s behaviour.<br>Use Message queue control the job’s status/ corn, even add/ remove jobs.<br>Spring schedule not support the persistency feature, but through mechanism it still can be resolved.<br>If the requirement is that level, use spring schedule may not be a good choice.</p>
-<p><a href="https://www.cnblogs.com/skychenjiajun/p/9057379.html" target="_blank" rel="noopener">https://www.cnblogs.com/skychenjiajun/p/9057379.html</a><br><a href="https://blog.csdn.net/qq_34125349/article/details/77430956" target="_blank" rel="noopener">https://blog.csdn.net/qq_34125349/article/details/77430956</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2229,7 +2238,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">254</span>
+                    <span class="site-state-item-count">255</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

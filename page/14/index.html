@@ -351,6 +351,227 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/09/27/find-command/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/09/27/find-command/" class="post-title-link" itemprop="url">find command</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-09-27 09:09:05" itemprop="dateCreated datePublished" datetime="2017-09-27T09:09:05+08:00">2017-09-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>find [-H] [-L] [-P] [-D debugopts] [-Olevel] [path…] [expression]</p>
+<p>find <path> [path path …] <option> <action></action></option></path></p>
+<h3 id="Option"><a href="#Option" class="headerlink" title="Option"></a>Option</h3><ul>
+<li><p>-depth step into sub files first, then current directory<br>.The -delete action also implies -depth</p>
+</li>
+<li><p>-name [-iname] find file by name<br><code>find /etc /root -name passwd</code></p>
+</li>
+<li><p>-type</p>
+<ul>
+<li><code>d</code>      directory</li>
+<li><code>f</code>      regular file</li>
+</ul>
+</li>
+<li><p>-size</p>
+<ul>
+<li><code>b</code>    for 512-byte blocks (this is the default if no suffix is used)</li>
+<li><code>c</code>    for bytes</li>
+<li><code>w</code>    for two-byte words</li>
+<li><code>k</code>    for Kilobytes (units of 1024 bytes)</li>
+<li><code>M</code>    for Megabytes (units of 1048576 bytes)</li>
+<li><code>G</code>    for Gigabytes (units of 1073741824 bytes)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># find files bigger than 30 kilobytes</span><br><span class="line"># %k %b in printf represent different block size</span><br><span class="line"></span><br><span class="line">find -size +30k -printf &apos;%p %k %b \r\n&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-a[and] -o[or] -not logic option</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># find files name end with sh, and belong to user</span><br><span class="line"># ubuntu or group id is 1000</span><br><span class="line">find /usr -name &apos;*.sh&apos; -a -user ubuntu -o -gid 1000</span><br><span class="line"></span><br><span class="line"># find files name not end with class</span><br><span class="line">find . -not -name &apos;*.class&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-atime -mtime -ctime -amin -mmin -cmin<br><code>a</code> access file<br><code>m</code> modify file<br><code>c</code> change property<br><code>time</code> days<br><code>min</code> minutes</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># find files be accessed in last 19 days</span><br><span class="line">find -atime -19 -printf &apos;%p %a %t \r\n&apos;</span><br><span class="line"></span><br><span class="line"># find files not be accessed in last 19 days</span><br><span class="line">find -atime +19 -printf &apos;%p %a %t \r\n&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-newer -anewer -cnewer<br>based on parameter file modify time<br><code>-newer</code> File was modified more recently than file<br><code>-anewer</code> File was last accessed more recently than file was modified.<br><code>-cnewer</code> File’s status was last changed more recently than file was modified.</p>
+</li>
+<li><p>-perm<br>find files based on privilege</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># find files in current directory which</span><br><span class="line"># permissions is -rwxr-xr-x</span><br><span class="line">find -perm 755</span><br><span class="line"></span><br><span class="line"># at least a kind of user have write privilege</span><br><span class="line">find -perm +444</span><br><span class="line"></span><br><span class="line"># all kind user have write privilege</span><br><span class="line">find -perm -444</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h3><ul>
+<li><p>-printf format out put</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#   name  depth  space[512-kbytes]  space[1024-kbytes]</span><br><span class="line">#   permissions  access_time  change_time  modify_time</span><br><span class="line">find -user ubuntu -printf &apos;%p %d %b %k %M %a %c %t \r\n&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-ls<br>list in <code>ls</code> command</p>
+</li>
+<li><p>-ok<br>ask user yes/no execute command</p>
+</li>
+<li><p>-exec command {} +<br>execute command no asking</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># delete files in current directory no accessed in 30 days</span><br><span class="line">find . -atime +30 –exec rm –rf &#123;&#125;</span><br><span class="line"># same effect</span><br><span class="line">find . -atime +30 | xargs rm -rf</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><a href="http://blog.csdn.net/yanxuex/article/details/17681475" target="_blank" rel="noopener">linux find</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/09/20/Tomcat-Container/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2326,184 +2547,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/21/python-edit-file/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/08/21/python-edit-file/" class="post-title-link" itemprop="url">python edit file</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-08-21 20:51:38" itemprop="dateCreated datePublished" datetime="2017-08-21T20:51:38+08:00">2017-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> os.path</span><br><span class="line"></span><br><span class="line">dirpath = <span class="string">'F:\\Users'</span></span><br><span class="line">pattern = <span class="string">'&lt;/head&gt;'</span></span><br><span class="line">css = <span class="string">'&lt;link rel="stylesheet" href="./style.css"&gt;&lt;/head&gt;'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> file <span class="keyword">in</span> os.listdir(dirpath):</span><br><span class="line">    <span class="comment"># read all text</span></span><br><span class="line">    origin = open(os.path.join(dirpath, file), <span class="string">'r+'</span>).readlines()</span><br><span class="line">    <span class="comment"># edit target line</span></span><br><span class="line">    origin[<span class="number">0</span>] = re.compile(pattern).sub(css, origin[<span class="number">0</span>])</span><br><span class="line">    <span class="comment"># rewrite whole file</span></span><br><span class="line">    open(os.path.join(dirpath, file), <span class="string">'w+'</span>).writelines(origin)</span><br></pre></td></tr></table></figure>
-<ol>
-<li><code>os.listdir(dir)</code> list single node’s sub directory</li>
-<li><code>os.path.join(a, b)</code> conbine two path string</li>
-<li><code>re.compile(pattern).sub(result, src)</code> replace string</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2550,7 +2593,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">254</span>
+                    <span class="site-state-item-count">255</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
