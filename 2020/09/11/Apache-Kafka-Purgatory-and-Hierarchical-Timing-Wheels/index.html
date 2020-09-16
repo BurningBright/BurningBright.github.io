@@ -74,7 +74,7 @@
     root: '/',
     scheme: 'Muse',
     version: '7.1.2',
-    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
     back2top: true,
     back2top_sidebar: false,
     fancybox: false,
@@ -112,7 +112,7 @@
 <meta property="og:image" content="http://linchenguang.com/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/cms_time.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/parnew_time.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/cms_time.png">
-<meta property="og:updated_time" content="2020-09-12T02:17:21.597Z">
+<meta property="og:updated_time" content="2020-09-16T23:47:16.917Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="卡夫卡，炼狱和分层时间轮【译】">
 <meta name="twitter:description" content="Apache Kafka具有称为“请求炼狱”的数据结构。炼狱将保留所有尚未满足其成功条件但还没有导致错误的请求。问题是“我们如何有效地跟踪集群中其他活动异步满足的成千上万个请求？” Kafka实现了几种请求类型，这些请求类型无法立即通过响应进行响应。例子：  在所有同步副本都确认该写入之前，不能将acks = all的生产请求视为已完成，如此我们可以保证，如果领导者失败，该请求也不会丢失。 直到至">
@@ -422,7 +422,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-09-12 10:17:21" itemprop="dateModified" datetime="2020-09-12T10:17:21+08:00">2020-09-12</time>
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
               
             
           </span>
@@ -484,6 +484,7 @@
 <p>在任何时候，运行中的这些异步操作的数量与连接的数量成比例，对于卡夫卡而言，连接的数量通常为数万。</p>
 <p>请求炼狱是为如此大规模的请求处理而设计的，但是旧的实现有许多缺陷。</p>
 <p>在此博客中，我想解释旧实现的问题以及新实现如何解决它。我还将介绍基准测试结果。</p>
+<a id="more"></a>
 <h1 id="Old-Purgatory-Design"><a href="#Old-Purgatory-Design" class="headerlink" title="Old Purgatory Design"></a>Old Purgatory Design</h1><p>请求炼狱由超时计时器和用于事件驱动处理的观察者列表的哈希图组成。当由于条件未满足而无法立即满足请求时，将请求放入炼狱。满足条件后，炼狱中的请求将在稍后完成，或者超过请求的<code>timeout</code>参数指定的时间后，被强制完成（超时）。在旧的设计中，它使用Java <em>DelayQueue</em>实现计时器。</p>
 <p>请求完成后，不会立即从计时器或观察者列表中删除该请求。相反，将在条件检查期间删除发现的已完成请求。如果删除没有跟上，服务器可能耗尽JVM堆并导致<em>OutOfMemoryError</em>。</p>
 <p>为了缓解这种情况，当炼狱中的请求数（未决或已完成）超过配置的数目时，称为收割者线程的单独线程将从炼狱中清除已完成的请求。清除操作将扫描计时器队列和所有观察者列表，以查找已完成的请求并将其删除。</p>
@@ -861,7 +862,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">78</span>
+                      
+                    
+                    <span class="site-state-item-count">53</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -968,6 +971,8 @@
 
     </div>
   </aside>
+  
+    <div id="sidebar-dimmer"></div>
   
 
 

@@ -74,7 +74,7 @@
     root: '/',
     scheme: 'Muse',
     version: '7.1.2',
-    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
     back2top: true,
     back2top_sidebar: false,
     fancybox: false,
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-09-12 10:17:21" itemprop="dateModified" datetime="2020-09-12T10:17:21+08:00">2020-09-12</time>
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
               
             
           </span>
@@ -466,8 +466,7 @@
 
       
         
-          
-            <p>Apache Kafka具有称为“请求炼狱”的数据结构。炼狱将保留所有尚未满足其成功条件但还没有导致错误的请求。问题是“我们如何有效地跟踪集群中其他活动异步满足的成千上万个请求？”</p>
+          <p>Apache Kafka具有称为“请求炼狱”的数据结构。炼狱将保留所有尚未满足其成功条件但还没有导致错误的请求。问题是“我们如何有效地跟踪集群中其他活动异步满足的成千上万个请求？”</p>
 <p>Kafka实现了几种请求类型，这些请求类型无法立即通过响应进行响应。例子：</p>
 <ul>
 <li>在所有同步副本都确认该写入之前，不能将<code>acks = all</code>的生产请求视为已完成，如此我们可以保证，如果领导者失败，该请求也不会丢失。</li>
@@ -477,46 +476,15 @@
 <p>在任何时候，运行中的这些异步操作的数量与连接的数量成比例，对于卡夫卡而言，连接的数量通常为数万。</p>
 <p>请求炼狱是为如此大规模的请求处理而设计的，但是旧的实现有许多缺陷。</p>
 <p>在此博客中，我想解释旧实现的问题以及新实现如何解决它。我还将介绍基准测试结果。</p>
-<h1 id="Old-Purgatory-Design"><a href="#Old-Purgatory-Design" class="headerlink" title="Old Purgatory Design"></a>Old Purgatory Design</h1><p>请求炼狱由超时计时器和用于事件驱动处理的观察者列表的哈希图组成。当由于条件未满足而无法立即满足请求时，将请求放入炼狱。满足条件后，炼狱中的请求将在稍后完成，或者超过请求的<code>timeout</code>参数指定的时间后，被强制完成（超时）。在旧的设计中，它使用Java <em>DelayQueue</em>实现计时器。</p>
-<p>请求完成后，不会立即从计时器或观察者列表中删除该请求。相反，将在条件检查期间删除发现的已完成请求。如果删除没有跟上，服务器可能耗尽JVM堆并导致<em>OutOfMemoryError</em>。</p>
-<p>为了缓解这种情况，当炼狱中的请求数（未决或已完成）超过配置的数目时，称为收割者线程的单独线程将从炼狱中清除已完成的请求。清除操作将扫描计时器队列和所有观察者列表，以查找已完成的请求并将其删除。</p>
-<p>通过将此配置参数<code>timeout</code>设置为低，服务器实际上可以避免内存问题。但是，如果服务器过于频繁地扫描所有列表，则必须付出重大的性能损失。</p>
-<h1 id="New-Purgatory-Design"><a href="#New-Purgatory-Design" class="headerlink" title="New Purgatory Design"></a>New Purgatory Design</h1><p>新设计的目标是允许立即删除已完成的请求，并显著减少重要清除过程的负担。 它需要在计时器和请求中交叉引用条目。 另外，由于插入/删除操作是针对每个请求/完成发生的，因此强烈希望具有O(1) 插入/删除成本。</p>
-<p>为了满足这些要求，我们设计了一种基于 <a href="http://www.cs.columbia.edu/~nahum/w6998/papers/ton97-timing-wheels.pdf" target="_blank" rel="noopener">Hierarchical Timing Wheels</a> [1]. 的新炼狱实现。</p>
-<h2 id="Hierarchical-Timing-Wheel"><a href="#Hierarchical-Timing-Wheel" class="headerlink" title="Hierarchical Timing Wheel"></a>Hierarchical Timing Wheel</h2><p>一个简单的计时轮是一系列计时任务的循环列表。让<strong>u</strong>成为时间单位。大小为 <strong>n</strong> 的计时轮有 <strong>n</strong> 个存储桶，可以在 <script type="math/tex">n * u</script> 个时间间隔内保存计时器任务。每个存储桶都包含属于相应时间范围的计时器任务。首先，第一个存储桶保存 <script type="math/tex">[0, u)</script> 的任务，第二个存储桶保存 <script type="math/tex">[u, 2u)</script>, … 的任务，第 <strong>n</strong> 个存储桶 <script type="math/tex">[u * (n - 1), u * n)</script> 。在时间单位<strong>u</strong>的每个间隔中，计时器都会计时并移动到下一个存储桶，然后使其中的所有计时器任务到期。因此，计时器永远不会在当前时间将任务插入存储桶中，因为它已经过期。计时器立即运行过期的任务。然后清空的存储桶可用于下一个回合，因此如果当前存储桶的时间为<strong>t</strong>，则在滴答之后它将成为 <script type="math/tex">[t + u * n, t + (n + 1) * u)</script> 的存储桶。计时轮的插入/删除（开始计时器/停止计时器）成本为O(1)，而基于优先级队列的计时器（例如<em>java.util.concurrent.DelayQueue</em> 和 <em>java.util.Timer</em>）的成本为 O(log n)插入/删除消耗。请注意，<em>DelayQueue</em> 或 <em>Timer</em>都不支持随机删除。</p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/TimingWheels1.png" alt="TimingWheels1"></p>
-<p>简单计时轮的主要缺点在于，它假定计时器请求在距当前时间 <script type="math/tex">n * u</script> 的时间间隔内。如果计时器请求超出此时间间隔，则为溢出。分层的定时轮处理此类溢出。它是按层次结构组织的定时轮，将溢出委托给上一级轮。最低级别具有最佳时间分辨率。随着我们向上移动层次结构，时间分辨率变得更粗糙。如果时间轮在一个级别上的分辨率为 <strong>u</strong> 并且大小为 <strong>n</strong>，则第二个级别的分辨率应为 <script type="math/tex">n * u</script>，第三个级别的分辨率应为 <script type="math/tex">n2 * u</script>，依此类推。在每个级别上，溢出都被委托给更高一级的时间轮。当较高级别的时间轮滴答作响时，它将计时器任务重新插入较低级别。可以按需创建溢流轮。当溢出存储桶中的存储桶到期时，该存储桶中的所有任务都将递归地重新插入到计时器中。然后将任务移至更细的时间轮(finer grain wheels)或执行任务。插入（启动计时器）成本为O(m)，其中 <strong>m</strong> 是时间轮的数量，与系统中的请求数量相比通常很小，而删除（停止计时器）成本仍为O(1)。</p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/TimingWheels2.png" alt="TimingWheels2"></p>
-<h2 id="Doubly-Linked-List-for-Buckets-in-Timing-Wheels"><a href="#Doubly-Linked-List-for-Buckets-in-Timing-Wheels" class="headerlink" title="Doubly Linked List for Buckets in Timing Wheels"></a>Doubly Linked List for Buckets in Timing Wheels</h2><p>在新设计中，我们对计时轮中的桶使用自己的双向链表实现。 双链列表的优点是，如果我们在列表中有访问链表单元的能力，则它允许O(1)插入/删除列表项。</p>
-<p>排队到计时器队列时，计时器任务实例将自身保存链表单元。 任务完成或取消后，将使用任务本身中保存的链表单元更新列表。</p>
-<h2 id="Driving-Clock-using-DelayQueue"><a href="#Driving-Clock-using-DelayQueue" class="headerlink" title="Driving Clock using DelayQueue"></a>Driving Clock using DelayQueue</h2><p>一个简单的实现可以使用一个线程，该线程每单位时间唤醒一次并执行轮转，轮转会检查存储桶中是否有任何任务。 炼狱的单位时间为1毫秒（<strong>u</strong> = 1毫秒）。 如果最低级别的请求稀少，这可能是浪费的。 通常是这种情况，因为大多数请求在插入最低级别的时间轮之前就已得到满足。 如果线程仅在有非空存储桶到期时才唤醒，这将是很好的。 新炼狱使用类似于旧实现的方式使用 <em>java.util.concurrent.DelayQueue</em> 来执行此操作，但是我们将任务存储区入队，而不是将单个任务加入队列。 这种设计具有性能优势。 <em>DelayQueue</em> 中的项目数由存储桶数限制，通常比任务数小得多，因此，对 <em>DelayQueue</em> 内部的优先级队列的报价/轮询操作数将大大减少。</p>
-<h2 id="Purging-Watcher-Lists"><a href="#Purging-Watcher-Lists" class="headerlink" title="Purging Watcher Lists"></a>Purging Watcher Lists</h2><p>在旧的实现中，监视者列表的清除操作由监视者列表的总大小触发。问题在于，即使没有太多清除请求，观察者列表也可能超过阈值。发生这种情况时，会大大增加CPU负载。理想情况下，清除操作应由观察者列出的已完成请求数触发。</p>
-<p>在新设计中，将立即以O(1)成本将完成的请求从计时器队列中删除。这意味着计时器队列中的请求数就是在任何时候的未决请求数。因此，如果我们知道炼狱中不同请求的总数，包括未决请求数和已完成但仍受监视的请求数之和，则可以避免不必要的清除操作。跟踪炼狱中不同请求的确切数量并非易事，因为可能会或可能不会看到请求。在新设计中，我们估计炼狱中的请求总数，而不是尝试保持确切的数目。</p>
-<p>请求的估计数量保持如下。</p>
-<ol>
-<li>每当观察到新请求时，估计的请求总数<strong>E</strong>都会增加。</li>
-<li>在开始清除操作之前，我们将估计的请求总数重置为计时器队列的大小。这是当前待处理的请求数。如果在清除期间没有向炼狱添加任何请求，则<strong>E</strong>是清除后正确的请求数。</li>
-<li>如果在清除期间向炼狱添加了一些请求，则<strong>E</strong>递增为<strong>E+新监视的请求数</strong>。这可能是一个高估，因为在清除操作期间，某些新请求可能已完成，并已从观察者列表中删除。我们期望被高估的机会和被高估的机会很小。</li>
-</ol>
-<h1 id="Benchmark"><a href="#Benchmark" class="headerlink" title="Benchmark"></a>Benchmark</h1><p>我们比较了两个炼狱实现，旧实现和新实现的入队性能。这是一个微观基准。它仅测量炼狱入队表现。炼狱与系统的其余部分分离，并且还使用了虚假请求，没有任何用处。因此，在实际系统中炼狱的吞吐量可能低于测试所示的数量。</p>
-<p>在测试中，假设请求的间隔遵循指数分布。每个请求都需要一个从对数正态分布中得出的时间。通过调整对数正态分布的形状，我们可以测试不同的超时率。</p>
-<p>刻度大小为1ms，转轮大小为20。超时设置为200ms。请求的数据大小为100字节。对于低超时率情况，我们选择75percentile = 60ms和50percentile =20。对于高超时率情况，我们选择75percentile = 400ms和50percentile = 200ms。每次运行总共排队一百万个请求。</p>
-<p>请求由单独的线程主动完成。本应在超时之前完成的请求会排队到另一个 <em>DelayQueue</em> 中。并且有一个单独的线程保持轮询并完成它们。不能保证实际完成时间的准确性。</p>
-<p>JVM堆大小设置为200m，以重现内存不足的情况。</p>
-<p>结果表明，在高入队率区域中存在巨大差异。随着目标速率的提高，这两种实现方式最初都跟上了请求。但是，在低超时情况下，旧实现的饱和度约为40000 RPS（每秒请求数），而新实现则未表现出任何明显的性能下降，而在高超时场景中，旧实现的饱和度约为25000 RPS，而新实现在此基准测试中，实施达到了105000 RPS。</p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/enq_rate.png" alt="enq_rate"></p>
-<p>此外，在新的实现中，CPU使用率明显更好。 请注意，由于其可扩展性限制，旧版实现的数据点不高于〜40000 RPS。 还要注意，在新实现中它的CPU时间稳定增长的同时，它的CPU时间大约为1.2。 它表明旧的实现可能由于同步而遇到了并发问题。</p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/cms_time.png" alt="cms_time"></p>
-<p>最后，我们测量了ParNew收集和CMS收集的总GC时间（毫秒）。 在旧的实施方式和新的实施方式之间，在旧的实施方式可以维持的入队率方面没有太大差异。 再次注意，由于其可扩展性限制，旧的实现的数据点不高于〜40000 RPS。</p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/parnew_time.png" alt="parnew_time"></p>
-<p><img src="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/cms_time.png" alt="cms_time"></p>
-<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>在新设计中，我们将分层定时轮用于超时定时器，并使用定时器桶的 <em>DelayQueue</em> 来按需提前时钟。 立即将完成的请求从计时器队列中删除，费用为O(1)。 这些存储桶保留在延迟队列中，但是，存储桶的数量是有限制的。 而且，在运行正常的系统中，大多数请求在超时之前就已得到满足，并且许多存储桶在拉出延迟队列之前就变空了。 因此，计时器应该很少具有较低间隔的时段。 这种设计的优点是计时器队列中的请求数就是在任何时候的待处理请求数。 这使我们能够估计需要清除的请求数。 我们可以避免对观察者列表进行不必要的清除操作。 结果，我们在请求率方面实现了更高的可伸缩性，并具有更好的CPU使用率。</p>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><p><a href="https://www.confluent.io/blog/apache-kafka-purgatory-hierarchical-timing-wheels/" target="_blank" rel="noopener">Apache Kafka, Purgatory, and Hierarchical Timing Wheels</a></p>
-<p><a href="https://archive.apache.org/dist/kafka/0.8.2.0/RELEASE_NOTES.html" target="_blank" rel="noopener">Release Notes - Kafka - Version 0.8.2.0</a></p>
-<p><a href="https://issues.apache.org/jira/browse/KAFKA-1430" target="_blank" rel="noopener">Purgatory redesign</a></p>
-<p><a href="http://www.cs.columbia.edu/~nahum/w6998/papers/ton97-timing-wheels.pdf" target="_blank" rel="noopener">George Varghese , Anthony Lauck, Hashed and hierarchical timing wheels: efficient data structures for implementing a timer facility, IEEE/ACM Transactions on Networking (TON), v.5 n.6, p.824-834, Dec. 1997</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -616,12 +584,24 @@
                 
               
 
-              <time title="Created: 2020-09-09 15:18:23 / Modified: 19:43:37" itemprop="dateCreated datePublished" datetime="2020-09-09T15:18:23+08:00">2020-09-09</time>
+              <time title="Created: 2020-09-09 15:18:23" itemprop="dateCreated datePublished" datetime="2020-09-09T15:18:23+08:00">2020-09-09</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
               
             
           </span>
@@ -674,29 +654,18 @@
 
       
         
-          
-            <h2 id="The-begining"><a href="#The-begining" class="headerlink" title="The begining"></a>The begining</h2><p><a href="https://kafka-tutorials.confluent.io/kafka-console-consumer-producer-basics/kafka.html" target="_blank" rel="noopener">https://kafka-tutorials.confluent.io/kafka-console-consumer-producer-basics/kafka.html</a><br>i saw <code>confluent.io</code>‘s code block is great.<br>it have feature like clipboard/ collapsible, even font looke good.<br>so i want add clipboard function to my blog at first.</p>
+          <h2 id="The-begining"><a href="#The-begining" class="headerlink" title="The begining"></a>The begining</h2><p><a href="https://kafka-tutorials.confluent.io/kafka-console-consumer-producer-basics/kafka.html" target="_blank" rel="noopener">https://kafka-tutorials.confluent.io/kafka-console-consumer-producer-basics/kafka.html</a><br>i saw <code>confluent.io</code>‘s code block is great.<br>it have feature like clipboard/ collapsible, even font looke good.<br>so i want add clipboard function to my blog at first.</p>
 <p>at first i search by <code>markdown code block copy</code>, but no article helps.<br>then i search by <code>hexo next theme code block</code>, finally find the article i want.</p>
 <p><a href="https://www.jianshu.com/p/3e9d614c1e77" target="_blank" rel="noopener">Hexo NexT 代码块复制功能</a></p>
-<h2 id="implement"><a href="#implement" class="headerlink" title="implement"></a>implement</h2><h3 id="Download-clipboard-js"><a href="#Download-clipboard-js" class="headerlink" title="Download clipboard.js"></a>Download <code>clipboard.js</code></h3><p>Download js file from <a href="https://github.com/zenorocha/clipboard.js" target="_blank" rel="noopener">https://github.com/zenorocha/clipboard.js</a></p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/zenorocha/clipboard.js/master/dist/clipboard.js" target="_blank" rel="noopener">clipboard.js</a></li>
-<li><a href="https://raw.githubusercontent.com/zenorocha/clipboard.js/master/dist/clipboard.min.js" target="_blank" rel="noopener">clipboard.min.js</a> (recommend)</li>
-</ul>
-<p>save file to <code>themes\next\source\js\</code></p>
-<p>or use cdn resource directly:<br><a href="https://github.com/zenorocha/clipboard.js/wiki/CDN-Providers" target="_blank" rel="noopener">https://github.com/zenorocha/clipboard.js/wiki/CDN-Providers</a></p>
-<h3 id="Use-clipboard-js"><a href="#Use-clipboard-js" class="headerlink" title="Use clipboard.js"></a>Use <code>clipboard.js</code></h3><p>create file <code>clipboard-use.js</code> in <code>themes\next\source\js\</code> as well.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*create copy button when page loaded*/</span></span><br><span class="line">!<span class="function"><span class="keyword">function</span> (<span class="params">e, t, a</span>) </span>&#123;</span><br><span class="line">  <span class="comment">/* code */</span></span><br><span class="line">  <span class="keyword">var</span> initCopyCode = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> copyHtml = <span class="string">''</span>;</span><br><span class="line">    copyHtml += <span class="string">'&lt;button class="btn-copy" data-clipboard-snippet&gt;'</span>;</span><br><span class="line">    copyHtml += <span class="string">'  &lt;i class="fa fa-globe"&gt;&lt;/i&gt;&lt;span&gt;copy&lt;/span&gt;'</span>;</span><br><span class="line">    copyHtml += <span class="string">'&lt;/button&gt;'</span>;</span><br><span class="line">    $(<span class="string">".highlight .code pre"</span>).before(copyHtml);</span><br><span class="line">    <span class="keyword">new</span> ClipboardJS(<span class="string">'.btn-copy'</span>, &#123;</span><br><span class="line">        target: <span class="function"><span class="keyword">function</span>(<span class="params">trigger</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> trigger.nextElementSibling;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  initCopyCode();</span><br><span class="line">&#125;(<span class="built_in">window</span>, <span class="built_in">document</span>);</span><br></pre></td></tr></table></figure>
-<p>append style in <code>themes\next\source\css\_custom\custom.styl</code><br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">//copy button in code block</span><br><span class="line"><span class="selector-class">.highlight</span>&#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.btn-copy</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">cursor</span>: pointer;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#eee</span>;</span><br><span class="line">    <span class="attribute">background-image</span>: <span class="built_in">linear-gradient</span>(#fcfcfc,#eee);</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#d5d5d5</span>;</span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">3px</span>;</span><br><span class="line">    <span class="attribute">-webkit-user-select</span>: none;</span><br><span class="line">    <span class="attribute">-moz-user-select</span>: none;</span><br><span class="line">    <span class="attribute">-ms-user-select</span>: none;</span><br><span class="line">    <span class="attribute">user-select</span>: none;</span><br><span class="line">    <span class="attribute">-webkit-appearance</span>: none;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">13px</span>;</span><br><span class="line">    <span class="attribute">font-weight</span>: <span class="number">700</span>;</span><br><span class="line">    <span class="attribute">line-height</span>: <span class="number">20px</span>;</span><br><span class="line">    <span class="attribute">color</span>: <span class="number">#333</span>;</span><br><span class="line">    <span class="attribute">-webkit-transition</span>: opacity .<span class="number">3s</span> ease-in-out;</span><br><span class="line">    <span class="attribute">-o-transition</span>: opacity .<span class="number">3s</span> ease-in-out;</span><br><span class="line">    <span class="attribute">transition</span>: opacity .<span class="number">3s</span> ease-in-out;</span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">2px</span> <span class="number">6px</span>;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">right</span>: <span class="number">5px</span>;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">5px</span>;</span><br><span class="line">    <span class="attribute">opacity</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.btn-copy</span> <span class="selector-tag">span</span> &#123;</span><br><span class="line">    <span class="attribute">margin-left</span>: <span class="number">5px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.highlight</span><span class="selector-pseudo">:hover</span> <span class="selector-class">.btn-copy</span>&#123;</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h2><p>modify <code>themes\next\layout\_layout.swig</code>, add tag before <code>&lt;/body&gt;</code><br>if you use cdn resource, replace it with cdn src.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 代码块复制功能 --&gt;</span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">"/js/clipboard.min.js"</span>&gt;&lt;<span class="regexp">/script&gt;  </span></span><br><span class="line"><span class="regexp">&lt;script type="text/</span>javascript<span class="string">" src="</span>/js/clipboard-use.js<span class="string">"&gt;&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="defects"><a href="#defects" class="headerlink" title="defects"></a>defects</h2><ul>
-<li>the button style is not very harmonious with blog</li>
-<li>when copy success no remind tip <code>copyed!</code><br>the offical recommend use <a href="https://github.com/primer/css" target="_blank" rel="noopener">https://github.com/primer/css</a>, but it’s not easy for me to get started.</li>
-<li>when copy success the paragraph well be selected, it’s not what i want.</li>
-</ul>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/09/09/Add-clipboard-to-next-code-block/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -813,7 +782,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-07-15 22:51:52" itemprop="dateModified" datetime="2020-07-15T22:51:52+08:00">2020-07-15</time>
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
               
             
           </span>
@@ -866,8 +835,7 @@
 
       
         
-          
-            <h2 id="原初"><a href="#原初" class="headerlink" title="原初"></a>原初</h2><p>单线程的Redis为什么如此快?</p>
+          <h2 id="原初"><a href="#原初" class="headerlink" title="原初"></a>原初</h2><p>单线程的Redis为什么如此快?</p>
 <ul>
 <li>纯内存操作</li>
 <li>单线程操作，避免了频繁的上下文切换,</li>
@@ -881,86 +849,15 @@
 <li>事件处理器用<code>multiplexing</code>监听多个套接字，根据行为的不同关联不同事件处理器</li>
 <li>被监听的套接字准备好执行 <code>accept</code>, <code>read</code>, <code>write</code>, <code>close</code>等操作时，会产生相对应的事件，触发事先关联的事件处理器(ps. 回调函数)处理</li>
 </ul>
-<p>事件的定义，在头文件<code>ae.h</code>里，我猜文件名是 <code>a event</code>的缩写。</p>
-<p>在源码里，经常出现<code>fd</code>，比如 <code>ipfd</code>, <code>aof_fd</code>, <code>fd</code>，经查是文件描述符 <code>file description</code> 的缩写。<br>想来在linux系统的世界观里，一切皆文件，IO相关的事物和文件有密切联系再正常不过。</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae.h</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* File event structure */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFileEvent</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> mask; <span class="comment">/* one of AE_(READABLE|WRITABLE|BARRIER) */</span></span><br><span class="line">    aeFileProc *rfileProc;</span><br><span class="line">    aeFileProc *wfileProc;</span><br><span class="line">    <span class="keyword">void</span> *clientData;</span><br><span class="line">&#125; aeFileEvent;</span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>当事件就绪时，需要知道文件事件的 <code>文件描述符</code> 还有 <code>事件类型</code> 才能对于锁定该事件，因此定义了 <code>aeFiredEvent</code> 结构统一管理</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* A fired event */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFiredEvent</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="keyword">int</span> mask;</span><br><span class="line">&#125; aeFiredEvent;</span><br></pre></td></tr></table></figure>
-<hr>
-<p><code>aeEventLoop</code> 结构保存了一个 <code>void *</code> 类型的万能指针 <code>apidata</code> ，是用来保存轮询事件的状态的，也就是保存底层调用的多路复用库的事件状态<br><code>*beforesleep</code> 会在启动时指向预设的回调方法，之后在<code>ae.c</code> 的 <code>aeMain</code>里不断循环</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* State of an event based program */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeEventLoop</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> maxfd;   <span class="comment">/* highest file descriptor currently registered */</span></span><br><span class="line">    <span class="keyword">int</span> setsize; <span class="comment">/* max number of file descriptors tracked */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> timeEventNextId;</span><br><span class="line">    <span class="keyword">time_t</span> lastTime;     <span class="comment">/* Used to detect system clock skew */</span></span><br><span class="line">    aeFileEvent *events; <span class="comment">/* Registered events */</span></span><br><span class="line">    aeFiredEvent *fired; <span class="comment">/* Fired events */</span></span><br><span class="line">    aeTimeEvent *timeEventHead;</span><br><span class="line">    <span class="keyword">int</span> stop;</span><br><span class="line">    <span class="keyword">void</span> *apidata; <span class="comment">/* This is used for polling API specific data */</span></span><br><span class="line">    aeBeforeSleepProc *beforesleep;</span><br><span class="line">    aeBeforeSleepProc *aftersleep;</span><br><span class="line">    <span class="keyword">int</span> flags;</span><br><span class="line">&#125; aeEventLoop;</span><br></pre></td></tr></table></figure>
-<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">4917</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    ....</span><br><span class="line">    line:<span class="number">5075</span></span><br><span class="line">    initServer();</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    line:<span class="number">5123</span></span><br><span class="line">    aeSetBeforeSleepProc(server.el,beforeSleep);</span><br><span class="line">    aeSetAfterSleepProc(server.el,afterSleep);</span><br><span class="line">    aeMain(server.el);</span><br><span class="line">    aeDeleteEventLoop(server.el);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>initServer</code> 初始化事件轮询、端口监听、连接应答注册等</li>
-<li><code>aeSetBeforeSleepProc</code> 将<code>beforeSleep</code>函数关联到<code>event loop</code>上，函数<code>beforeSleep</code>中有<code>回复处理</code>的代码。</li>
-<li><code>aeMain</code> 正常运行时，将一直循环处理事件</li>
-</ul>
-<hr>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/server.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/server.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">2702</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">initServer</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">2743</span></span><br><span class="line">    server.el = aeCreateEventLoop(server.maxclients+CONFIG_FDSET_INCR);</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    line:<span class="number">2752</span></span><br><span class="line">    <span class="comment">/* Open the TCP listening socket for the user commands. */</span></span><br><span class="line">    <span class="keyword">if</span> (server.port != <span class="number">0</span> &amp;&amp;</span><br><span class="line">        listenToPort(server.port,server.ipfd,&amp;server.ipfd_count) == C_ERR)</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    ....</span><br><span class="line"></span><br><span class="line">    line:<span class="number">2845</span></span><br><span class="line">    <span class="comment">/* Create an event handler for accepting new connections in TCP and Unix</span></span><br><span class="line"><span class="comment">     * domain sockets. */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; server.ipfd_count; j++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (aeCreateFileEvent(server.el, server.ipfd[j], AE_READABLE,</span><br><span class="line">            acceptTcpHandler,<span class="literal">NULL</span>) == AE_ERR)</span><br><span class="line">            &#123;</span><br><span class="line">                serverPanic(</span><br><span class="line">                    <span class="string">"Unrecoverable error creating server.ipfd file event."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>aeCreateEventLoop</code> 创建事件循环、IO多路复用</li>
-<li><code>listenToPort</code> 监听端口</li>
-<li><code>aeCreateFileEvent</code> 创建TCP、TLS监听事件，其中会给<code>server.ipfd[j]</code> 的 <code>rfileProc</code>赋予回调函数 <code>acceptTcpHandler</code></li>
-</ul>
-<hr>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae.c</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">line:522</span><br><span class="line">void aeMain(aeEventLoop *eventLoop) &#123;</span><br><span class="line">    eventLoop-&gt;stop = 0;</span><br><span class="line">    while (!eventLoop-&gt;stop) &#123;</span><br><span class="line">        if (eventLoop-&gt;beforesleep != NULL)</span><br><span class="line">            eventLoop-&gt;beforesleep(eventLoop);</span><br><span class="line">        aeProcessEvents(eventLoop, AE_ALL_EVENTS|AE_CALL_AFTER_SLEEP);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>beforeSleep</code> 的循环调用，会执行接收、回复处理等操作</li>
-<li><code>aeProcessEvents</code> 的循环调用，会执行等待epoll中发生事件，并交由事先注册的处理器处理。</li>
-</ul>
-<h2 id="多路复用"><a href="#多路复用" class="headerlink" title="多路复用"></a>多路复用</h2><p>多路复用函数库定义在：<code>ae_xxx.c</code>中，库底层可相互替换，这里以<code>ae_epoll.c</code>做探索。</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae_epoll.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae_epoll.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">39</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiCreate</span><span class="params">(aeEventLoop *eventLoop)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">48</span></span><br><span class="line">    state-&gt;epfd = epoll_create(<span class="number">1024</span>); <span class="comment">/* 1024 is just a hint for the kernel */</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">73</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiAddEvent</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">int</span> fd, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">86</span></span><br><span class="line">    <span class="keyword">if</span> (epoll_ctl(state-&gt;epfd,op,fd,&amp;ee) == <span class="number">-1</span>) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">108</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">aeApiPoll</span><span class="params">(aeEventLoop *eventLoop, struct timeval *tvp)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">112</span></span><br><span class="line">    retval = epoll_wait(state-&gt;epfd,state-&gt;events,eventLoop-&gt;setsize,</span><br><span class="line">            tvp ? (tvp-&gt;tv_sec*<span class="number">1000</span> + tvp-&gt;tv_usec/<span class="number">1000</span>) : <span class="number">-1</span>);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>epoll_create</code> 建立一个epoll对象。参数size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。</li>
-<li><code>epoll_ctl</code> 可以操作上面建立的epoll，例如，将刚建立的socket加入到epoll中让其监控，或者把 epoll正在监控的某个socket句柄移出epoll，不再监控它等等。</li>
-<li><code>epoll_wait</code> 在调用时，在给定的timeout时间内，当在监控的所有句柄中有事件发生时，就返回用户态的进程。</li>
-</ul>
-<blockquote>
-<p>server.c:main:initServer -&gt; server.c:initServer:aeCreateEventLoop -&gt; ae.c:*aeCreateEventLoop:aeApiCreate -&gt; ae_epoll.c:aeApiCreate:epoll_create</p>
-</blockquote>
-<hr>
-<blockquote>
-<p>server.c:main:initServer -&gt; server.c:initServer:aeCreateFileEvent -&gt; ae.c:aeCreateFileEvent:aeCreateFileEvent -&gt; ae_epoll.c:aeApiAddEvent:epoll_ctl</p>
-</blockquote>
-<hr>
-<blockquote>
-<p>server.c:main:aeMain -&gt; ae.c:aeMain:aeProcessEvents -&gt; ae.c:aeProcessEvents:aeApiPoll -&gt; ae_epoll.c:aeApiPoll:epoll_wait</p>
-</blockquote>
-<p>可见在程序启动的过程里，已经通过事件库<code>ae.c</code>完整的调用了多路复用函数，并完成了事件处理器的注册。</p>
-<h2 id="事件处理器"><a href="#事件处理器" class="headerlink" title="事件处理器"></a>事件处理器</h2><h3 id="连接应答处理器"><a href="#连接应答处理器" class="headerlink" title="连接应答处理器"></a>连接应答处理器</h3><p>在上文的，redis启动阶段，已为事件关联acceptTcpHandler回调。</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">944</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">acceptTcpHandler</span><span class="params">(aeEventLoop *el, <span class="keyword">int</span> fd, <span class="keyword">void</span> *privdata, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cport, cfd, max = MAX_ACCEPTS_PER_CALL;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(max--) &#123;</span><br><span class="line">        cfd = anetTcpAccept(server.neterr, fd, cip, <span class="keyword">sizeof</span>(cip), &amp;cport);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    acceptCommonHandler(connCreateAcceptedSocket(cfd),<span class="number">0</span>,cip);</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>anetTcpAccept</code> 用于对连接服务器监听套接字的客户端进行应答</li>
-<li><code>acceptCommonHandler</code> 注册命令请求处理器</li>
-</ul>
-<hr>
-<p>其主要调用<code>anet.c</code>中<code>anetTcpAccept</code>函数实现，具体实现为<code>sys/socket.h/accept</code>函数的包装<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/anet.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/anet.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">562</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">anetTcpAccept</span><span class="params">(<span class="keyword">char</span> *err, <span class="keyword">int</span> s, <span class="keyword">char</span> *ip, <span class="keyword">size_t</span> ip_len, <span class="keyword">int</span> *port)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> ((fd = anetGenericAccept(err,s,(struct sockaddr*)&amp;sa,&amp;salen)) == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> ANET_ERR;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> fd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">545</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">anetGenericAccept</span><span class="params">(<span class="keyword">char</span> *err, <span class="keyword">int</span> s, struct sockaddr *sa, <span class="keyword">socklen_t</span> *len)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    fd = accept(s,sa,len);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>当Redis服务器进行初始化的时候，程序会将这个连接应答处理器和服务器监听套接字的AE_READABLE事件关联起来。<br>当有客户端用sys/socket.h/connect函数连接服务器监听套接字的时候，套接字就会产生AE_READABLE事件，引发连接应答处理器执行，并执行相应的套接字应答操作。</p>
-<h3 id="命令请求处理器"><a href="#命令请求处理器" class="headerlink" title="命令请求处理器"></a>命令请求处理器</h3><blockquote>
-<p>networking.c:acceptTcpHandler:acceptCommonHandler -&gt; networking.c:acceptCommonHandler:createClient -&gt; networking.c:*createClient:readQueryFromClient</p>
-</blockquote>
-<p>在连接处理器中，会关联命令处理函数<br>它负责从套接字中读入客户端发送的命令请求内容，具体实现为unistd.h/read函数的包装</p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">line:<span class="number">1858</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">1887</span></span><br><span class="line">    nread = connRead(c-&gt;conn, c-&gt;querybuf+qblen, readlen);</span><br><span class="line">    ...</span><br><span class="line">    processInputBuffer(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<hr>
-<p><code>connRead</code> 该函数定义在<code>connection.h</code>中，最终映射至<code>connection.c</code>的<code>connSocketRead</code>函数<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/connection.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/connection.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"server.h"</span></span></span><br><span class="line">...</span><br><span class="line">line:<span class="number">173</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">connSocketRead</span><span class="params">(connection *conn, <span class="keyword">void</span> *buf, <span class="keyword">size_t</span> buf_len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ret = read(conn-&gt;fd, buf, buf_len);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>当一个客户端通过连接应答处理器成功连接到服务器之后，服务器会将客户端套接字的AE_READABLE事件和命令请求处理器关联起来。<br>当客户端向服务器发送命令请求的时候，套接字就会产生AE_READABLE事件，引发命令请求处理器执行，并执行相应的套接字读入操作；</p>
-<p>在客户端连接服务器的整个过程中，服务器都会一直为客户端套接字的AE_READABLE事件关联命令请求处理器。</p>
-<h3 id="命令回复处理器"><a href="#命令回复处理器" class="headerlink" title="命令回复处理器"></a>命令回复处理器</h3><p>在启动阶段，<code>aeSetBeforeSleepProc</code>给事件循环关联了<code>beforeSleep</code>回调<br><code>beforeSleep</code> 中 <code>handleClientsWithPendingWritesUsingThreads</code> 将设置回复处理器 <code>sendReplyToClient</code></p>
-<p><a href="https://github.com/antirez/redis/blob/6.0.0/src/networking.c" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/networking.c</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">handleClientsWithPendingWritesUsingThreads</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">3052</span></span><br><span class="line">    <span class="keyword">while</span>((ln = listNext(&amp;li))) &#123;</span><br><span class="line">        client *c = listNodeValue(ln);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Install the write handler if there are pending writes in some</span></span><br><span class="line"><span class="comment">         * of the clients. */</span></span><br><span class="line">        <span class="keyword">if</span> (clientHasPendingReplies(c) &amp;&amp;</span><br><span class="line">                connSetWriteHandler(c-&gt;conn, sendReplyToClient) == AE_ERR)</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1357</span></span><br><span class="line"><span class="comment">/* Write event handler. Just send data to the client. */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sendReplyToClient</span><span class="params">(connection *conn)</span> </span>&#123;</span><br><span class="line">    client *c = connGetPrivateData(conn);</span><br><span class="line">    writeToClient(c,<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">line:<span class="number">1261</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">writeToClient</span><span class="params">(client *c, <span class="keyword">int</span> handler_installed)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    line:<span class="number">1346</span></span><br><span class="line">    <span class="keyword">if</span> (handler_installed) connSetWriteHandler(c-&gt;conn, <span class="literal">NULL</span>);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<hr>
-<p><code>connSetWriteHandler</code> 该函数定义在<code>connection.h</code>中，<br>最终映射至<code>connection.c</code>的<code>connSocketSetWriteHandler</code>函数。</p>
-<p>当服务器有命令回复需要传送给客户端的时候，服务器会将客户端套接字的AE_WRITABLE事件和命令回复处理器关联起来。<br>当客户端准备好接收服务器传回的命令回复时，就会产生AE_WRITABLE事件，引发命令回复处理器执行，并执行相应的套接字写入操作。</p>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>在<code>ae.c</code>的注释里有这样一段话，感叹作者积累的深厚</p>
-<blockquote>
-<p>A simple event-driven programming library. Originally I wrote this code<br>  for the Jim’s event-loop (Jim is a Tcl interpreter) but later translated<br>  it in form of a library for easy reuse.</p>
-</blockquote>
-<p>粗略的记了记redis里事件机制初始化、事件处理器<br>关于事件状态变化、时间事件、线程等还有待探索。</p>
-<p><code>epoll</code> 也是一个有趣的点，对它内部的实现感到好奇。</p>
-<p><a href="https://blog.csdn.net/bohu83/article/details/84964656" target="_blank" rel="noopener">《redis设计与实现》-12事件event</a><br><a href="https://blog.csdn.net/men_wen/article/details/71514524" target="_blank" rel="noopener">Redis源码剖析和注释（十九）—- Redis 事件处理实现</a><br><a href="https://segmentfault.com/a/1190000015246793" target="_blank" rel="noopener">［Redis源码阅读］当你输入get/set命令的时候，Redis做了什么</a><br><a href="https://blog.csdn.net/fujibao/article/details/81490687" target="_blank" rel="noopener">epoll模型详解</a><br><a href="https://blog.csdn.net/sparkliang/article/details/4770655" target="_blank" rel="noopener">Linux Epoll介绍和程序实例</a></p>
-
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/07/13/Explore-the-redis-file-event/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
@@ -2485,7 +2382,9 @@ dV=\pi y^2dx=\pi f(x)^2dx\tag1
                     
                       
                     
-                    <span class="site-state-item-count">78</span>
+                      
+                    
+                    <span class="site-state-item-count">53</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2575,6 +2474,8 @@ dV=\pi y^2dx=\pi f(x)^2dx\tag1
 
     </div>
   </aside>
+  
+    <div id="sidebar-dimmer"></div>
   
 
 

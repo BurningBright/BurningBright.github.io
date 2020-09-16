@@ -74,7 +74,7 @@
     root: '/',
     scheme: 'Muse',
     version: '7.1.2',
-    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
     back2top: true,
     back2top_sidebar: false,
     fancybox: false,
@@ -107,7 +107,7 @@
 <meta property="og:description" content="原初单线程的Redis为什么如此快?  纯内存操作 单线程操作，避免了频繁的上下文切换, 采用了非阻塞I/O多路复用机制  看到Redis高性能的原因里，有IO多路复用一项，感到非常好奇具体是怎么实现的呢。 网上浏览了一圈，代码探索了一遍，发现复用发生在系统内核。软件层面通过系统函数库epoll 、 iocp，把IO组织起来，我大致是这样理解的。 在之前写  探索redis 键散列过程源码  文章">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://linchenguang.com/2020/07/13/Explore-the-redis-file-event/20200713185944788325.png">
-<meta property="og:updated_time" content="2020-07-15T14:51:52.565Z">
+<meta property="og:updated_time" content="2020-09-16T23:47:16.915Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索redis 文件事件">
 <meta name="twitter:description" content="原初单线程的Redis为什么如此快?  纯内存操作 单线程操作，避免了频繁的上下文切换, 采用了非阻塞I/O多路复用机制  看到Redis高性能的原因里，有IO多路复用一项，感到非常好奇具体是怎么实现的呢。 网上浏览了一圈，代码探索了一遍，发现复用发生在系统内核。软件层面通过系统函数库epoll 、 iocp，把IO组织起来，我大致是这样理解的。 在之前写  探索redis 键散列过程源码  文章">
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-07-15 22:51:52" itemprop="dateModified" datetime="2020-07-15T22:51:52+08:00">2020-07-15</time>
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
               
             
           </span>
@@ -483,6 +483,7 @@
 <li>事件处理器用<code>multiplexing</code>监听多个套接字，根据行为的不同关联不同事件处理器</li>
 <li>被监听的套接字准备好执行 <code>accept</code>, <code>read</code>, <code>write</code>, <code>close</code>等操作时，会产生相对应的事件，触发事先关联的事件处理器(ps. 回调函数)处理</li>
 </ul>
+<a id="more"></a>
 <p>事件的定义，在头文件<code>ae.h</code>里，我猜文件名是 <code>a event</code>的缩写。</p>
 <p>在源码里，经常出现<code>fd</code>，比如 <code>ipfd</code>, <code>aof_fd</code>, <code>fd</code>，经查是文件描述符 <code>file description</code> 的缩写。<br>想来在linux系统的世界观里，一切皆文件，IO相关的事物和文件有密切联系再正常不过。</p>
 <p><a href="https://github.com/antirez/redis/blob/6.0.0/src/ae.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/ae.h</a><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* File event structure */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">aeFileEvent</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> mask; <span class="comment">/* one of AE_(READABLE|WRITABLE|BARRIER) */</span></span><br><span class="line">    aeFileProc *rfileProc;</span><br><span class="line">    aeFileProc *wfileProc;</span><br><span class="line">    <span class="keyword">void</span> *clientData;</span><br><span class="line">&#125; aeFileEvent;</span><br></pre></td></tr></table></figure></p>
@@ -904,7 +905,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">78</span>
+                      
+                    
+                    <span class="site-state-item-count">53</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1011,6 +1014,8 @@
 
     </div>
   </aside>
+  
+    <div id="sidebar-dimmer"></div>
   
 
 
