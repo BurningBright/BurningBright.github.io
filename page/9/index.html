@@ -351,6 +351,587 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/29/compile-spring-5-x-in-idea/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/29/compile-spring-5-x-in-idea/" class="post-title-link" itemprop="url">compile spring 5.x in idea</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-29 14:16:36 / Modified: 20:18:57" itemprop="dateCreated datePublished" datetime="2019-04-29T14:16:36+08:00">2019-04-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><ol>
+<li>source code spring5.x</li>
+<li>gradle 4.9</li>
+<li>jdk1.8_131</li>
+<li>ideaIC-2019.1.1.exe (IntelliJ IDEA Community Edition 2019.1.1 x64)</li>
+</ol>
+<p>Download source code in:<br><a href="https://github.com/spring-projects/spring-framework/tree/5.0.x" target="_blank" rel="noopener">https://github.com/spring-projects/spring-framework/tree/5.0.x</a><br>Download gradle in:<br><a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a><br>Download idea in:<br><a href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">https://www.jetbrains.com/idea/download/</a><br>Download jdk in oracle website</p>
+<p>the versions of these things are important</p>
+<ul>
+<li>gradle version should bigger than 4.2 and no big than 5.0<br>i use 4.6/ 5.1/ 5.4 gradle compile project failed.</li>
+<li>jdk version should in 1.8, and no bigger than 1.8_131<br>the blog of csdn editor has such experience.</li>
+<li>idea version the newer the better, i use idea 2017.1.2 failed in junit test.</li>
+</ul>
+<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>JAVA_HOME: D:\jdk1.8.0_131<br>CLASSPATH: .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;</p>
+<p>GRADLE_HOME: D:\gradle-4.6<br>GRADLE_USER_HOME: D:.gradle</p>
+<p>Add to path</p>
+<p>at setting of idea, set sdk/gradle path.<br>set gradle parameters <code>-XX:MaxPermSize=1024m -Xmx1024m -XX:MaxHeapSize=1024m</code></p>
+<p><img src="/2019/04/29/compile-spring-5-x-in-idea/20190429143526.png" alt="20190429143526.png"></p>
+<h2 id="compile"><a href="#compile" class="headerlink" title="compile"></a>compile</h2><p>import source code of spring5.x, import as a gradle project.<br>wait for gradle solve project sync.</p>
+<p>comment no use depend in <code>spring-beans.gradle</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//compileGroovy.dependsOn = compileGroovy.taskDependencies.values - &quot;compileJava&quot;</span><br></pre></td></tr></table></figure></p>
+<p>if meet dependency problem like this<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Circular dependency between the following tasks:</span><br><span class="line">  ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></p>
+<p>add <code>org.gradle.configureondemand = true</code> in gradle.properties</p>
+<h2 id="test"><a href="#test" class="headerlink" title="test"></a>test</h2><p>project is ready :)</p>
+<p><code>org.springframework.beans.factory.xml.BeanNameGenerationTests</code></p>
+<p><a href="https://blog.csdn.net/baomw/article/details/83956300" target="_blank" rel="noopener">https://blog.csdn.net/baomw/article/details/83956300</a><br><a href="https://www.jianshu.com/p/d6e3ec44f99a" target="_blank" rel="noopener">https://www.jianshu.com/p/d6e3ec44f99a</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/11/Bayes-theorem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/11/Bayes-theorem/" class="post-title-link" itemprop="url">Bayes' theorem</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-04-11 11:02:28" itemprop="dateCreated datePublished" datetime="2019-04-11T11:02:28+08:00">2019-04-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="conditional-probability"><a href="#conditional-probability" class="headerlink" title="conditional probability"></a>conditional probability</h2><p>A/B are event, when <code>B</code> happen, <code>A</code>‘s conditional probability. ps.P(B) &gt; 0</p>
+<script type="math/tex; mode=display">
+P(A|B) = \frac{P(AB)}{P(B)}</script><p><img src="/2019/04/11/Bayes-theorem/NB_3.png" alt="NB_3.png"></p>
+<p>seven ball in <code>p1</code> <code>p2</code><br>two white ball in <code>p1</code><br>one white ball in <code>p2</code><br>What’s the probability when fetch white from B bucket.</p>
+<p>Event <code>A</code> is fetch white<br>Event <code>B</code> is fetch from <code>P2</code> bucket</p>
+<script type="math/tex; mode=display">
+P(white|bucketB) = \frac{P(white and bucketB)}{P(bucketB)}
+= \frac{\frac{1}{7}}{\frac{3}{7}}=\frac{1}{3}</script><h2 id="Multiplication-formula"><a href="#Multiplication-formula" class="headerlink" title="Multiplication formula"></a>Multiplication formula</h2><ol>
+<li><p>formula</p>
+<script type="math/tex; mode=display">
+P(AB) = P(A|B)P(B) = P(B|A)P(A)</script></li>
+<li><p>when n &gt;= 2 :</p>
+<script type="math/tex; mode=display">
+P(A_{1}A_{2}...A_{n-1}A_{n})=P(A_{1})P(A_{2}|A_{1})P(A_{3}|A_{1}A_{2})...P(A_{n}|A_{1}A_{2}...A_{n-1})</script></li>
+<li><p>full probability formula<br>if event array B1, B2, B3, … satisfying</p>
+</li>
+</ol>
+<ul>
+<li><script type="math/tex; mode=display">
+B_{i} \cap B_{j} = \varnothing</script></li>
+<li>i ≠ j</li>
+<li>i,j=1 2 ….</li>
+<li><script type="math/tex; mode=display">
+P(B_{i})>0,i=1,2,....</script></li>
+<li><script type="math/tex; mode=display">
+B_{1} \cap B_{2} \cap .... = \Omega</script></li>
+</ul>
+<p>then array event is a divide of sample space <code>Ω</code> .</p>
+<script type="math/tex; mode=display">
+P(A) = \displaystyle\sum_{i=1}^nP(B_{i})P(A|B_{i})</script><p>this formula mean no interference event array can calculate target sample space in divide.<br>It’s called <code>prior probability</code></p>
+<p>For example: spot check a set of different products’ good rate</p>
+<h2 id="bayes-formula"><a href="#bayes-formula" class="headerlink" title="bayes formula"></a>bayes formula</h2><p>bayes formula is the reverse process of full probability formula.<br>It research a happened event cause factor, not forcast it.<br>It’s called <code>posterior probability</code></p>
+<script type="math/tex; mode=display">
+P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j})}</script><p>For example:<br>find killer in criminal suspect<br>spam filtering in e-mail system</p>
+<p><a href="https://www.cnblogs.com/ohshit/p/5629581.html" target="_blank" rel="noopener">https://www.cnblogs.com/ohshit/p/5629581.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/03/29/thread-pool-anaylsis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/29/thread-pool-anaylsis/" class="post-title-link" itemprop="url">thread pool anaylsis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-03-29 18:32:27" itemprop="dateCreated datePublished" datetime="2019-03-29T18:32:27+08:00">2019-03-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-04-29 20:18:57" itemprop="dateModified" datetime="2019-04-29T20:18:57+08:00">2019-04-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2019/03/29/thread-pool-anaylsis/queue1.gif" alt="queue1.gif"><br><img src="/2019/03/29/thread-pool-anaylsis/queue2.gif" alt="queue2.gif"><br><img src="/2019/03/29/thread-pool-anaylsis/queue3.jpg" alt="queue3.jpg"></p>
+<h2 id="properties"><a href="#properties" class="headerlink" title="properties"></a>properties</h2><p>private final BlockingQueue<runnable> workQueue;</runnable></p>
+<p>private final ReentrantLock mainLock = new ReentrantLock();</p>
+<p>private volatile long  keepAliveTime;</p>
+<p>private volatile boolean allowCoreThreadTimeOut;</p>
+<p>private volatile int   corePoolSize;</p>
+<p>private volatile int   maximumPoolSize;</p>
+<p>private volatile int   poolSize;</p>
+<h2 id="execute-judgement"><a href="#execute-judgement" class="headerlink" title="execute judgement"></a>execute judgement</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">if</span> (poolSize &gt;= corePoolSize || !addIfUnderCorePoolSize(command)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (runState == RUNNING &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (runState != RUNNING || poolSize == <span class="number">0</span>)</span><br><span class="line">                ensureQueuedTaskHandled(command);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!addIfUnderMaximumPoolSize(command))</span><br><span class="line">            reject(command); <span class="comment">// is shutdown or saturated</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="thread-judgement"><a href="#thread-judgement" class="headerlink" title="thread judgement"></a>thread judgement</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">addIfUnderCorePoolSize</span><span class="params">(Runnable firstTask)</span> </span>&#123;</span><br><span class="line">    Thread t = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock mainLock = <span class="keyword">this</span>.mainLock;</span><br><span class="line">    mainLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (poolSize &lt; corePoolSize &amp;&amp; runState == RUNNING)</span><br><span class="line">            t = addThread(firstTask);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        mainLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t != <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="add-thread"><a href="#add-thread" class="headerlink" title="add thread"></a>add thread</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Thread <span class="title">addThread</span><span class="params">(Runnable firstTask)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// similar to new Thread(Runnable);</span></span><br><span class="line">    Worker w = <span class="keyword">new</span> Worker(firstTask);</span><br><span class="line">    Thread t = threadFactory.newThread(w);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">int</span> nt = ++poolSize;</span><br><span class="line">    <span class="keyword">if</span> (nt &gt; largestPoolSize) largestPoolSize = nt;</span><br><span class="line">    ...</span><br><span class="line">    t.start();</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Inner-class-Worker"><a href="#Inner-class-Worker" class="headerlink" title="Inner class Worker"></a>Inner class Worker</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Worker</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">runTask</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        task.run();</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">while</span> (task != <span class="keyword">null</span> || (task = getTask()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            runTask(task);</span><br><span class="line">            task = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        workerDone(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="get-task-from-queue"><a href="#get-task-from-queue" class="headerlink" title="get task from queue"></a>get task from queue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Runnable <span class="title">getTask</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        ...</span><br><span class="line">        Runnable r;</span><br><span class="line">        <span class="keyword">if</span> (state == SHUTDOWN)  <span class="comment">// Help drain queue</span></span><br><span class="line">            r = workQueue.poll();</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (poolSize &gt; corePoolSize || allowCoreThreadTimeOut)</span><br><span class="line">            r = workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            r = workQueue.take();</span><br><span class="line">        <span class="keyword">if</span> (r != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> r;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="the-design-of-thread-pool"><a href="#the-design-of-thread-pool" class="headerlink" title="the design of thread pool"></a>the design of thread pool</h2><p>Has no specific thread to dispatch task.</p>
+<p>If still have task in QlockingQueue,<br>when thread’s task done, it will fetch task in queue itself.</p>
+<p>If still no task in QlockingQueue, and task has done.<br>In worker’s <code>run()</code> - <code>workerDone(this);</code> call to terminate itself.</p>
+<p><a href="https://www.cnblogs.com/heyanan/p/9261695.html" target="_blank" rel="noopener">https://www.cnblogs.com/heyanan/p/9261695.html</a><br><a href="http://www.cnblogs.com/dolphin0520/p/3932921.html" target="_blank" rel="noopener">http://www.cnblogs.com/dolphin0520/p/3932921.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/03/27/troubleshooting-high-cpu-occupancy-rate/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1785,561 +2366,6 @@ a-\frac{1}{a}=1+\frac{1}{a}
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/12/23/Phpstorm-debug-setting/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/12/23/Phpstorm-debug-setting/" class="post-title-link" itemprop="url">Phpstorm debug setting</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-12-23 18:42:50" itemprop="dateCreated datePublished" datetime="2018-12-23T18:42:50+08:00">2018-12-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:48:59" itemprop="dateModified" datetime="2020-06-17T22:48:59+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/php/" itemprop="url" rel="index"><span itemprop="name">php</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="xdebug-official-websit"><a href="#xdebug-official-websit" class="headerlink" title="xdebug official websit"></a>xdebug official websit</h2><p>windows download dll base on <code>localhost/phpinfo.php</code>:<br><a href="https://xdebug.org/download.php" target="_blank" rel="noopener">https://xdebug.org/download.php</a><br>linux download:<br><a href="https://xdebug.org/wizard.php" target="_blank" rel="noopener">https://xdebug.org/wizard.php</a></p>
-<h2 id="php-ini-edit"><a href="#php-ini-edit" class="headerlink" title="php.ini edit"></a>php.ini edit</h2><p>add xdebug setting at the end of <code>php.ini</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[xdebug]</span><br><span class="line">zend_extension  = &quot;D:/phpStudy/php56n/php_xdebug-2.2.7-5.6-vc11-nts-x86_64.dll&quot;</span><br><span class="line"></span><br><span class="line">xdebug.remote_enable = On</span><br><span class="line">xdebug.profiler_enable = On</span><br><span class="line">xdebug.profiler_enable_trigger = On</span><br><span class="line">xdebug.profiler_output_name = cachegrind.out.%t.%p</span><br><span class="line">xdebug.profiler_output_dir =&quot;D:/phpStudy/php56n/tmp&quot;</span><br><span class="line">xdebug.show_local_vars=0</span><br><span class="line"></span><br><span class="line">xdebug.var_display_max_children=128</span><br><span class="line">xdebug.var_display_max_data=512</span><br><span class="line">xdebug.var_display_max_depth=5</span><br><span class="line"></span><br><span class="line">xdebug.idekey=PhpStorm</span><br><span class="line">xdebug.remote_enable = On</span><br><span class="line">xdebug.remote_host=127.0.0.1</span><br><span class="line">xdebug.remote_port=9000</span><br><span class="line">xdebug.remote_handler=dbgp</span><br></pre></td></tr></table></figure></p>
-<p>checkout xdebug model is available <code>php -m</code> <code>php -i</code></p>
-<h2 id="Browser-setting"><a href="#Browser-setting" class="headerlink" title="Browser setting"></a>Browser setting</h2><p>chrome install <code>xdebug helper</code><br>firefox install <code>theeasiestxdebug</code></p>
-<p>IDE key set to the same as property in <code>php.ini</code></p>
-<h2 id="phpstorm-setting"><a href="#phpstorm-setting" class="headerlink" title="phpstorm setting"></a>phpstorm setting</h2><p>php CLI interpreter setting:<br><img src="/2018/12/23/Phpstorm-debug-setting/20181223185642.png" alt="20181223185642.png"></p>
-<p>set debug listen server ip or domain<br><img src="/2018/12/23/Phpstorm-debug-setting/20181223185503.png" alt="20181223185503.png"></p>
-<p>set DBGp key/port <strong>[same as property in php.ini]</strong><br><img src="/2018/12/23/Phpstorm-debug-setting/20181223185452.png" alt="20181223185452.png"></p>
-<p>build a local php debug server [skip if a remote server exists]<br><img src="/2018/12/23/Phpstorm-debug-setting/20181223185714.png" alt="20181223185714.png"></p>
-<p>add a server listener deal with debug session in php<br><img src="/2018/12/23/Phpstorm-debug-setting/20181223185724.png" alt="20181223185724.png"></p>
-<h2 id="fundamentals"><a href="#fundamentals" class="headerlink" title="fundamentals"></a>fundamentals</h2><p><img src="/2018/12/23/Phpstorm-debug-setting/20181223194910.png" alt="20181223194910.png"></p>
-<p><a href="https://www.cnblogs.com/anyeshe/p/5746404.html" target="_blank" rel="noopener">https://www.cnblogs.com/anyeshe/p/5746404.html</a></p>
-<p><a href="https://www.cnblogs.com/dongruiha/p/6739838.html" target="_blank" rel="noopener">https://www.cnblogs.com/dongruiha/p/6739838.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/11/24/spring-kafka-NoSuchMethodError-exception/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/11/24/spring-kafka-NoSuchMethodError-exception/" class="post-title-link" itemprop="url">spring-kafka NoSuchMethodError exception</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-11-24 18:17:50" itemprop="dateCreated datePublished" datetime="2018-11-24T18:17:50+08:00">2018-11-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">java.lang.NoSuchMethodError: org.springframework.messaging.handler.annotation.support.MessageMethodArgumentResolver: method &lt;init&gt;()V not found</span><br><span class="line">    at org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor$KafkaHandlerMethodFactoryAdapter.createDefaultMessageHandlerMethodFactory(KafkaListenerAnnotationBeanPostProcessor.java:<span class="number">639</span>)</span><br><span class="line">    at org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor$KafkaHandlerMethodFactoryAdapter.getMessageHandlerMethodFactory(KafkaListenerAnnotationBeanPostProcessor.java:<span class="number">616</span>)</span><br><span class="line">    at org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor$KafkaHandlerMethodFactoryAdapter.createInvocableHandlerMethod(KafkaListenerAnnotationBeanPostProcessor.java:<span class="number">611</span>)</span><br><span class="line">    at org.springframework.kafka.config.MethodKafkaListenerEndpoint.configureListenerAdapter(MethodKafkaListenerEndpoint.java:<span class="number">111</span>)</span><br><span class="line">    at org.springframework.kafka.config.MethodKafkaListenerEndpoint.createMessageListener(MethodKafkaListenerEndpoint.java:<span class="number">97</span>)</span><br><span class="line">    at org.springframework.kafka.config.MethodKafkaListenerEndpoint.createMessageListener(MethodKafkaListenerEndpoint.java:<span class="number">40</span>)</span><br><span class="line">    at org.springframework.kafka.config.AbstractKafkaListenerEndpoint.setupMessageListener(AbstractKafkaListenerEndpoint.java:<span class="number">277</span>)</span><br><span class="line">    at org.springframework.kafka.config.AbstractKafkaListenerEndpoint.setupListenerContainer(AbstractKafkaListenerEndpoint.java:<span class="number">262</span>)</span><br><span class="line">    at org.springframework.kafka.config.AbstractKafkaListenerContainerFactory.createListenerContainer(AbstractKafkaListenerContainerFactory.java:<span class="number">188</span>)</span><br><span class="line">    at org.springframework.kafka.config.AbstractKafkaListenerContainerFactory.createListenerContainer(AbstractKafkaListenerContainerFactory.java:<span class="number">46</span>)</span><br><span class="line">    at org.springframework.kafka.config.KafkaListenerEndpointRegistry.createListenerContainer(KafkaListenerEndpointRegistry.java:<span class="number">182</span>)</span><br><span class="line">    at org.springframework.kafka.config.KafkaListenerEndpointRegistry.registerListenerContainer(KafkaListenerEndpointRegistry.java:<span class="number">154</span>)</span><br><span class="line">    at org.springframework.kafka.config.KafkaListenerEndpointRegistry.registerListenerContainer(KafkaListenerEndpointRegistry.java:<span class="number">128</span>)</span><br><span class="line">    at org.springframework.kafka.config.KafkaListenerEndpointRegistrar.registerAllEndpoints(KafkaListenerEndpointRegistrar.java:<span class="number">138</span>)</span><br><span class="line">    at org.springframework.kafka.config.KafkaListenerEndpointRegistrar.afterPropertiesSet(KafkaListenerEndpointRegistrar.java:<span class="number">132</span>)</span><br><span class="line">    at org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor.afterSingletonsInstantiated(KafkaListenerAnnotationBeanPostProcessor.java:<span class="number">224</span>)</span><br><span class="line">    at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:<span class="number">796</span>)</span><br><span class="line">    at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:<span class="number">861</span>)</span><br><span class="line">    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:<span class="number">541</span>)</span><br><span class="line">    at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:<span class="number">122</span>)</span><br><span class="line">    at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:<span class="number">759</span>)</span><br><span class="line">    at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:<span class="number">369</span>)</span><br><span class="line">    at org.springframework.boot.SpringApplication.run(SpringApplication.java:<span class="number">313</span>)</span><br><span class="line">    at org.springframework.boot.SpringApplication.run(SpringApplication.java:<span class="number">1185</span>)</span><br><span class="line">    at org.springframework.boot.SpringApplication.run(SpringApplication.java:<span class="number">1174</span>)</span><br></pre></td></tr></table></figure>
-<p>exclude <code>spring-message</code> at <code>spring-kafka</code> in pom<br>add <code>spring-message</code></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-messaging<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.3.9.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><a href="https://www.oschina.net/question/2417189_2247108" target="_blank" rel="noopener">https://www.oschina.net/question/2417189_2247108</a><br><a href="https://blog.csdn.net/wangshuminjava/article/details/80241922" target="_blank" rel="noopener">https://blog.csdn.net/wangshuminjava/article/details/80241922</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/11/22/Spring-Boot-KafkaListener-concurrent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/11/22/Spring-Boot-KafkaListener-concurrent/" class="post-title-link" itemprop="url">Spring Boot KafkaListener concurrent</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-11-22 18:55:00" itemprop="dateCreated datePublished" datetime="2018-11-22T18:55:00+08:00">2018-11-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2018/11/22/Spring-Boot-KafkaListener-concurrent/20181122185719971.png" alt="20181122185719971.png"></p>
-<h2 id="Cocurrent-consume"><a href="#Cocurrent-consume" class="headerlink" title="Cocurrent consume"></a>Cocurrent consume</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; factory =</span><br><span class="line">      <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">factory.setConcurrency(<span class="number">7</span>);</span><br></pre></td></tr></table></figure>
-<p>Increase kafka consumer concurrent thread can increase out put speed.<br>Be careful,topic partition num may cause bottleneck.<br>The consumer groups worker should not bigger than partition num, otherwise thread be wasted.</p>
-<p>The system’s lowest part define the performence.<br>If consumer’s post order process is slow, thread may be block in a brief.<br>In more worse situation, the session can out of time, offset be reset.</p>
-<h2 id="Consume-in-batch"><a href="#Consume-in-batch" class="headerlink" title="Consume in batch"></a>Consume in batch</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ConcurrentKafkaListenerContainerFactory&lt;String, String&gt; factory =</span><br><span class="line">      <span class="keyword">new</span> ConcurrentKafkaListenerContainerFactory&lt;&gt;();</span><br><span class="line">factory.setBatchListener(<span class="keyword">true</span>);</span><br><span class="line">factory.getContainerProperties().setPollTimeout(pollTimeout);</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consumerConfig.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);</span><br></pre></td></tr></table></figure>
-<p>the default <code>max.poll.interval.ms=300000</code>, <code>max.poll.records=50</code> every batch fetch fifty messages.</p>
-<p>this may cause warn <code>Auto offset commit failed</code></p>
-<blockquote>
-<p>Commit cannot be completed since the group has already rebalanced and assigned the partitions to another member.<br> This means that the time between subsequent calls to poll() was longer than the configured <strong>max.poll.interval.ms</strong>,<br> which typically implies that <strong>the poll loop is spending too much time</strong> message processing.<br> You can address this either by increasing the session timeout or by reducing the maximum size of batches returned in poll() with max.poll.records.</p>
-</blockquote>
-<p>you can reduce <code>max.poll.records</code>, or increse <code>session.timeout.ms</code><br><code>heatbeat.interval.ms</code> must be lower than <code>session.timeout.ms</code>, and is usually set to a 1/3 of the timeout value.</p>
-<p>change <code>enable.auto.commit</code> to <code>false</code>, use <code>spring-kafka</code> internal mechanism manage message’s commit.<br>if <code>enable.auto.commit</code> is true, then if the processing time is lower then the <code>auto.commit.interval.ms</code><br>the ack[commit] will wait for the cycle come.</p>
-<h2 id="Increase-partitions"><a href="#Increase-partitions" class="headerlink" title="Increase partitions"></a>Increase partitions</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper localhost:2181 --alter --partitions 30 --topic demo</span><br></pre></td></tr></table></figure>
-<p>Partition can only increase not decrease, in sync increase the consumer groups’ worker number can increase output speed.<br>If kafka cluster run in three machine, then cluster have 3 brokers, create demo topic with 3 partitions.<br>For high availability, set every partition have 2 replication-factors, then every broker will have two kafka log files.</p>
-<p>If one machine deaded, ther two can still work.<br>If set replication-factors to 3, then every two machine deaded topic can still work.</p>
-<p>brokerA   partiton0/partiton1<br>brokerB   partiton1/partiton2<br>brokerC   partiton2/partiton0</p>
-<p>brokerA   partiton0/partiton1/partiton2<br>brokerB   partiton1/partiton2/partiton0<br>brokerC   partiton2/partiton0/partiton1</p>
-<hr>
-<p>modify replication-factor<br><a href="https://blog.csdn.net/russle/article/details/83421904" target="_blank" rel="noopener">https://blog.csdn.net/russle/article/details/83421904</a></p>
-<p>optimize consumer<br><a href="https://docs.spring.io/spring-kafka/reference/html/_reference.html" target="_blank" rel="noopener">https://docs.spring.io/spring-kafka/reference/html/_reference.html</a><br><a href="https://blog.csdn.net/zwgdft/article/details/54633105" target="_blank" rel="noopener">https://blog.csdn.net/zwgdft/article/details/54633105</a></p>
-<p>Warn:<br><a href="https://www.jianshu.com/p/4e00dff97f39" target="_blank" rel="noopener">https://www.jianshu.com/p/4e00dff97f39</a><br><a href="https://blog.csdn.net/zwx19921215/article/details/83269445" target="_blank" rel="noopener">https://blog.csdn.net/zwx19921215/article/details/83269445</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2386,7 +2412,7 @@ a-\frac{1}{a}=1+\frac{1}{a}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">255</span>
+                    <span class="site-state-item-count">258</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2455,58 +2481,6 @@ a-\frac{1}{a}=1+\frac{1}{a}
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -3195,17 +3169,17 @@ a-\frac{1}{a}=1+\frac{1}{a}
       
     
       
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
         
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
       
     
       

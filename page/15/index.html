@@ -351,6 +351,719 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/31/linux-process-job-session-control/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/31/linux-process-job-session-control/" class="post-title-link" itemprop="url">linux process job session control</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-31 19:45:47" itemprop="dateCreated datePublished" datetime="2017-08-31T19:45:47+08:00">2017-08-31</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Process-group"><a href="#Process-group" class="headerlink" title="Process group"></a>Process group</h2><p>Every process have a process id and a process group id<br>Every process group have a leader process[id is same as group]</p>
+<p>Each process in group have relations, like a family tree.</p>
+<p>All processes’ root is <code>init</code> process which id is <strong>1</strong><br>Process group will exist when process exist in group.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi:~ $ ps axj |grep &quot;\s1\s&quot;</span><br><span class="line">    0     1     1     1 ?           -1 Ss       0   2:25 /sbin/init</span><br><span class="line">    1   145   145   145 ?           -1 Ss       0   0:27 /lib/systemd/systemd-journald</span><br><span class="line">    1   150   150   150 ?           -1 Ss       0   0:00 /lib/systemd/systemd-udevd</span><br><span class="line">    ......</span><br><span class="line">    1   853   853   853 ?           -1 Ss       0   0:00 /usr/sbin/sshd -D</span><br></pre></td></tr></table></figure>
+<h2 id="Jobs"><a href="#Jobs" class="headerlink" title="Jobs"></a>Jobs</h2><p><code>Shell</code> control frontground and background by <code>job</code> or <code>process group</code> but not process.</p>
+<p>A job can be composed by one or more process group.</p>
+<p>A shell can run a frontground job and multi background jobs.</p>
+<p>Use pip command <code>|</code> run multi process, <code>&amp;</code> make job background.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">pi@raspberrypi:~ $ sleep 1000|more|less &amp;</span><br><span class="line">[1] 12033</span><br><span class="line">pi@raspberrypi:~ $ ps axj | head -n1</span><br><span class="line"> PPID   PID  PGID   SID TTY      TPGID STAT   UID   TIME COMMAND</span><br><span class="line">pi@raspberrypi:~ $ ps axj |grep 12033</span><br><span class="line">12031 12033 12033 12033 pts/0    12068 Ss    1000   0:00 -bash</span><br><span class="line">12033 12061 12061 12033 pts/0    12068 T     1000   0:00 sleep 1000</span><br><span class="line">12033 12062 12061 12033 pts/0    12068 T     1000   0:00 more</span><br><span class="line">12033 12063 12061 12033 pts/0    12068 T     1000   0:00 less</span><br><span class="line">12033 12068 12068 12033 pts/0    12068 R+    1000   0:00 ps axj</span><br><span class="line">12033 12069 12068 12033 pts/0    12068 S+    1000   0:00 grep --color=auto 12033</span><br><span class="line"></span><br><span class="line">pi@raspberrypi:~ $ ps axj |grep 12031</span><br><span class="line">12024 12031 12024 12024 ?           -1 S     1000   0:00 sshd: pi@pts/0      </span><br><span class="line">12031 12033 12033 12033 pts/0    12070 Ss    1000   0:00 -bash</span><br><span class="line">12033 12071 12070 12033 pts/0    12070 S+    1000   0:00 grep --color=auto 12031</span><br><span class="line"></span><br><span class="line">pi@raspberrypi:~ $ ps axj |grep 12024</span><br><span class="line">  853 12024 12024 12024 ?           -1 Ss       0   0:00 sshd: pi [priv]     </span><br><span class="line">12024 12031 12024 12024 ?           -1 S     1000   0:00 sshd: pi@pts/0      </span><br><span class="line">12033 12074 12073 12033 pts/0    12073 S+    1000   0:00 grep --color=auto 12024</span><br><span class="line"></span><br><span class="line">pi@raspberrypi:~ $ ps axj |grep 853</span><br><span class="line">    1   853   853   853 ?           -1 Ss       0   0:00 /usr/sbin/sshd -D</span><br><span class="line">  853 12024 12024 12024 ?           -1 Ss       0   0:00 sshd: pi [priv]     </span><br><span class="line">12033 12076 12075 12033 pts/0    12075 S+    1000   0:00 grep --color=auto 853</span><br></pre></td></tr></table></figure>
+<p>Difference between job and process group:<br>Sub process not belong to main process’s job alone.</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><p>Session composed by one or more process group.[job?]<br>A session can have control terminal.</p>
+<p>Builde a connection and connect with terminal’s session fist<br>process be called the <code>control process</code> <code>bash</code> in normal.</p>
+<ul>
+<li>one control process <code>bash</code></li>
+<li>one frontground process</li>
+<li>any number background process</li>
+</ul>
+<h2 id="Job-control"><a href="#Job-control" class="headerlink" title="Job control"></a>Job control</h2><p><code>job control</code> is new charcter be added in 1980 by BSD.<br>It allow terminal execute multi process group.</p>
+<ul>
+<li>need job control shell</li>
+<li>kernal’s terminal driver support job control</li>
+<li>kernal support job’s control signal</li>
+</ul>
+<h3 id="Signal"><a href="#Signal" class="headerlink" title="Signal"></a>Signal</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>opt</th>
+<th>signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interrupt</td>
+<td>Ctrl + c</td>
+<td>SIGINT</td>
+</tr>
+<tr>
+<td>Quit</td>
+<td>Ctrl + \</td>
+<td>SIGQUIT</td>
+</tr>
+<tr>
+<td>Hang up</td>
+<td>Ctrl + z</td>
+<td>SIGSTP</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Input-Output"><a href="#Input-Output" class="headerlink" title="Input Output"></a>Input Output</h2><p><strong>Only frontground process can read terminal’s input data.</strong></p>
+<p>When background process want to read data from terminal<br>it is not a error behaviour, just not be allowed.</p>
+<p>When kernal driver detected background process want read<br>it will send a <code>SIGTSTP</code> signal to background job to stop process.</p>
+<p>Then use <code>fg</code> command change process to front and run<br>[change to front and put <code>SIGCONT</code> signal to this group]</p>
+<p><strong>Background process write data to terminal can be selfdefine</strong><br><code>stty tostop</code> command formidden background write data to terminal.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> args[<span class="number">10</span>];</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">"%s"</span>,&amp;args);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%s\n"</span>,args);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/30/linux-execute-in-background/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/30/linux-execute-in-background/" class="post-title-link" itemprop="url">linux execute in background</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-30 20:34:43" itemprop="dateCreated datePublished" datetime="2017-08-30T20:34:43+08:00">2017-08-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="http://blog.csdn.net/zstu_zlj/article/details/51783937" target="_blank" rel="noopener">link</a></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Always meet problem like this:<br>Login in by <code>telnet/ssh</code>, run some time costs task<br>But be interrupted, cause by the net problem.</p>
+<p>How to deal this kind problem, let task run background</p>
+<h2 id="Command-nohup-setsid-amp"><a href="#Command-nohup-setsid-amp" class="headerlink" title="Command nohup/setsid/&amp;"></a>Command <code>nohup/setsid/&amp;</code></h2><ol>
+<li><strong>nohup</strong></li>
+</ol>
+<blockquote>
+<p>in early version UNIX terminal communicate with system by<br>modem[cat?]. when logout or disconnect, modem send a hang up<br>signal to system to close current session process and all sub processes.</p>
+</blockquote>
+<p>When terminal logout or connect broke, terminal recieves a ‘HUP[hangup]’ signal.<br>So we have two solutions</p>
+<ul>
+<li>let process ignore ‘HUP’ signal</li>
+<li>change process’s owner</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./sunny.sh clientid xxxxx &amp;</span><br><span class="line">nohup ./sunny.sh clientid &gt; sunny.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>setsid</strong></li>
+</ol>
+<p>Change process’s owner to process id ‘1’</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setid ./sunny.sh clientid xxxxx</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>&amp;</strong></li>
+</ol>
+<p>When command put in <code>()</code> , command can be run in sub shell.<br>Put <code>&amp;</code> into <code>()</code> as well, the commited job wouldn’t be add in job list.<br>So command can ignore the <code>HUP</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(./sunny.sh clientid xxxxx &amp;)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>disown</strong></li>
+</ol>
+<p>If a process already running</p>
+<ul>
+<li><code>disown -h</code> make a job ignore signal</li>
+<li><code>disown -ah</code> make all jobs ignore signal</li>
+<li><code>disown -rh</code> make running jobs ignore signal</li>
+</ul>
+<p>if job already run in background<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+<p>if job already run in front<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># [ctrl + z]</span><br><span class="line">[1]+  Stopped                 ./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># put to background</span><br><span class="line">bg %1</span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/22/Java-memory-anaylsis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/22/Java-memory-anaylsis/" class="post-title-link" itemprop="url">Java memory anaylsis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-22 22:06:09" itemprop="dateCreated datePublished" datetime="2017-08-22T22:06:09+08:00">2017-08-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Machine-addresses"><a href="#Machine-addresses" class="headerlink" title="Machine addresses"></a>Machine addresses</h3><p>Many data structures involve representation of machine addresses.</p>
+<p>The typical x64 architectures we widely used, need <strong>8 bytes</strong> to represent address.</p>
+<p>Many older machines use a 32-bit architecture that<br>would involve just <strong>4 bytes</strong> per machine address.</p>
+<h3 id="Primary-type"><a href="#Primary-type" class="headerlink" title="Primary type"></a>Primary type</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>byte</td>
+<td>1</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>1</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2</td>
+</tr>
+<tr>
+<td>int</td>
+<td>4</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h3><p><img src="/2017/08/22/Java-memory-anaylsis/object.svg" alt="Object"></p>
+<p>The <code>overhead</code> includes:</p>
+<ul>
+<li>a reference to the object’s class</li>
+<li>garbage collection information</li>
+<li>synchronization information</li>
+</ul>
+<hr>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList:"></a>LinkedList:</h4><p><img src="/2017/08/22/Java-memory-anaylsis/linkedlist.svg" alt="Object"></p>
+<p>Instance :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for first node reference</li>
+<li>4 bytes counter</li>
+<li>4 bytes padding</li>
+</ul>
+<p>Node :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for the <strong>references</strong> to the Item</li>
+<li>8 bytes for the <strong>next</strong> to the Item</li>
+<li>8 bytes for the extra overhead</li>
+</ul>
+<p>total :<br><strong>32 + (40 + size(Ojbect)) * N</strong></p>
+<h4 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h4><p><img src="/2017/08/22/Java-memory-anaylsis/array.svg" alt="Object"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int[N]</td>
+<td>24 + 4N</td>
+</tr>
+<tr>
+<td>Integer[N]</td>
+<td>24 + 32N</td>
+</tr>
+<tr>
+<td>int[M][N]</td>
+<td>24 + 8 * (24 + 4N)</td>
+</tr>
+<tr>
+<td>Integer[M][N]</td>
+<td>24 + 8 * (24 + 32N)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 16 bytes</span><br><span class="line">public class String &#123;</span><br><span class="line">  // reference 8 bytes</span><br><span class="line">  // 24 + 2N bytes</span><br><span class="line">  private char[] value;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int offset;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int count;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int hash;</span><br><span class="line">  ...</span><br><span class="line">  // padding 4 bytes</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Total : 64 + 2N</strong></p>
+<hr>
+<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p><img src="/2017/08/22/Java-memory-anaylsis/hashmap.svg" alt="Object"><br>array length : M<br>average node size : N<br><strong>Total[structure] : 64M + 48N</strong></p>
+<hr>
+<h3 id="Tree"><a href="#Tree" class="headerlink" title="Tree"></a>Tree</h3><p><img src="/2017/08/22/Java-memory-anaylsis/tree.svg" alt="Object"><br><strong>Total[structure] : 56N</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/21/python-edit-file/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1763,580 +2476,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/08/Quantum-machine/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/08/Quantum-machine/" class="post-title-link" itemprop="url">Quantum machine</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-07-08 22:05:23" itemprop="dateCreated datePublished" datetime="2017-07-08T22:05:23+08:00">2017-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2017/07/08/Quantum-machine/snow-hill.jpg" alt></p>
-<h3 id="Offical-introduce"><a href="#Offical-introduce" class="headerlink" title="Offical introduce"></a>Offical introduce</h3><p>In nature world, things tend to evolve toward their lowest energy.<br>hot thing cool down, snow slide down hills and so on.</p>
-<p>Image a kind of problem, which valley is the lowest?<br>or which space snowslide is the easiest?</p>
-<p>Classical algorithms seek the lowest valley by send traveler to landscape<br>and move base on logical. This is generally most efficient to move(best track), but he is easy be traped and<br>can’t see the global view, only got tiny space’s solution</p>
-<p>In contrast, quantum seek by a team, contact each other by a phenomenon called <code>Quantum superposition</code>.<br>They can <code>feel</code> each other, the solution is their <code>feeling</code><br>Another phenomenon called <code>Quantum tunneling</code>, they can <code>cross</code> the hill<br>rather than forced to climb them.</p>
-<p><img src="/2017/07/08/Quantum-machine/cooling-201508.png" alt></p>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p><code>Quantum tunneling</code> used this phenomenon to simulate nature[maybe god].<br><code>Quantum superposition</code> soldiers used to simulation.<br><code>Quantum annealing</code> is an algorithm to simulate the <code>rule</code> behind the problem.</p>
-<p>More qubits to simulate, quicker to find the turth.</p>
-<p>Maybe just like the snow on the hill, they contact with each other.<br>Theirself must know which space’s snow density is the lowest<br>and avalanche probability is the highest.</p>
-<p>Quantum machine maybe used special condition/ simulation device/ observe device to get a problem’s solution <strong>by watch</strong>.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/29/Hello-Ant/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/29/Hello-Ant/" class="post-title-link" itemprop="url">Hello Ant</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-29 22:49:12" itemprop="dateCreated datePublished" datetime="2017-06-29T22:49:12+08:00">2017-06-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Create-project"><a href="#Create-project" class="headerlink" title="Create project"></a>Create project</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir hello</span><br><span class="line">mkdir src</span><br><span class="line">cd src</span><br><span class="line">vim Hello.java</span><br></pre></td></tr></table></figure>
-<p>Say hello to ant.</p>
-<h3 id="Build-xml"><a href="#Build-xml" class="headerlink" title="Build.xml"></a>Build.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">vim Build.xml</span><br></pre></td></tr></table></figure>
-<p>Set up properties<br>the source file path/ class path/ jar path and so on.<br>the trigger target is <code>rerun</code><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"hello"</span> <span class="attr">default</span>=<span class="string">"rerun"</span> <span class="attr">basedir</span>=<span class="string">"."</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"src"</span> <span class="attr">value</span>=<span class="string">"src"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dest"</span> <span class="attr">value</span>=<span class="string">"classes"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jar_path"</span> <span class="attr">value</span>=<span class="string">"hello.jar"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>Define the init method<br>clean workspace first<br>print a log and make classes directory<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"init"</span> <span class="attr">depends</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| B U I L D I N G $&#123;dest&#125; |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>compile project use javac command<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"compile"</span> <span class="attr">depends</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">javac</span> <span class="attr">srcdir</span>=<span class="string">"$&#123;src&#125;"</span> <span class="attr">destdir</span>=<span class="string">"$&#123;dest&#125;"</span> <span class="attr">includeAntRuntime</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>package project target to a jar and execute<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"build"</span> <span class="attr">depends</span>=<span class="string">"compile"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">jar</span> <span class="attr">jarfile</span>=<span class="string">"$&#123;jar_path&#125;"</span> <span class="attr">basedir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"run"</span> <span class="attr">depends</span>=<span class="string">"build"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java</span> <span class="attr">classname</span>=<span class="string">"Hello"</span> <span class="attr">classpath</span>=<span class="string">"$&#123;jar_path&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>delete build files<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">file</span>=<span class="string">"$&#123;jar_path&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>x<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>rerun the process<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"rerun"</span> <span class="attr">depends</span>=<span class="string">"clean,run"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"run"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"clean"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">echo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="Procedure"><a href="#Procedure" class="headerlink" title="Procedure"></a>Procedure</h3><ol>
-<li>clean</li>
-<li>init</li>
-<li>compile</li>
-<li>build</li>
-<li>run</li>
-<li>1 -&gt; 5</li>
-<li>clean</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/21/Annotation-in-java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/21/Annotation-in-java/" class="post-title-link" itemprop="url">Annotation in java</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-21 23:03:12" itemprop="dateCreated datePublished" datetime="2017-06-21T23:03:12+08:00">2017-06-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Create-Annotation"><a href="#Create-Annotation" class="headerlink" title="Create Annotation"></a>Create Annotation</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> DBTable &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>Target and Retention is meta annotation</li>
-<li>Target point the annotation’s place in law[SOURCE in default]</li>
-<li>Retention point the annotation avaliable time</li>
-</ol>
-<h3 id="Create-More"><a href="#Create-More" class="headerlink" title="Create More"></a>Create More</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Constraints &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">primaryKey</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">nullable</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">unique</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>annotation interface’s method will become ture annotation’s <code>property</code></li>
-<li>interface need a default value</li>
-<li>type support <code>Primary Type</code> <code>Class</code> <code>String</code> <code>Enum</code> <code>Annotation</code></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ConstraintsMore &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span></span></span><br><span class="line"><span class="function">     @<span class="title">Constraints</span><span class="params">(nullable=<span class="keyword">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>Annotation not support inherit</strong><br>use default value implements inheritage</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlInteger &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlString &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p><code>Alternative way</code></p>
-<ol>
-<li><p>Use enumeration type to define the type in DB<br>but this way lose agility.</p>
-</li>
-<li><p>Use String to describe the type you want to define<br>but ths way bind handler with DB, if DB changes<br>java need to modify and recompile.</p>
-</li>
-<li><p>Define some annotation more, to describe what you want<br>this is good, but maybe a little confusion</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2383,7 +2522,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">255</span>
+                    <span class="site-state-item-count">258</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2452,58 +2591,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     

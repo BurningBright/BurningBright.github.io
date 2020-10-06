@@ -351,6 +351,550 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/09/05/springboot-multi-mybatis-datasource/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/09/05/springboot-multi-mybatis-datasource/" class="post-title-link" itemprop="url">springboot multi mybatis datasource</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-05 18:30:07" itemprop="dateCreated datePublished" datetime="2018-09-05T18:30:07+08:00">2018-09-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Add-configuration"><a href="#Add-configuration" class="headerlink" title="Add configuration"></a>Add configuration</h2><p>In <code>application.properties</code> file add data source configuration<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">spring.datasource.test1.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">spring.datasource.test1.url=jdbc:mysql://localhost:3306/test1</span><br><span class="line">spring.datasource.test1.username=root</span><br><span class="line">spring.datasource.test1.password=root</span><br><span class="line"></span><br><span class="line">spring.datasource.test2.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">spring.datasource.test2.url=jdbc:mysql://localhost:3306/test2</span><br><span class="line">spring.datasource.test2.username=root</span><br><span class="line">spring.datasource.test2.password=root</span><br><span class="line"></span><br><span class="line">mybatis.mapperLocations=classpath:sql-mappers/**/*.xml</span><br></pre></td></tr></table></figure></p>
+<h2 id="Self-define-data-source"><a href="#Self-define-data-source" class="headerlink" title="Self define data source"></a>Self define data source</h2><h3 id="New-configuration"><a href="#New-configuration" class="headerlink" title="New configuration"></a>New configuration</h3><p>Point out base package path, sql session reference.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@MapperScan</span>(basePackages=<span class="string">"com.burningbright.test1"</span>,</span><br><span class="line">              sqlSessionFactoryRef=<span class="string">"test1SqlSessionFactory"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Datasource1</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Inject-xml-path-properties"><a href="#Inject-xml-path-properties" class="headerlink" title="Inject xml path properties"></a>Inject xml path properties</h3><p>Put mapper xml location into configuration class<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Value</span>(<span class="string">"$&#123;mybatis.mapperLocations&#125;"</span>)</span><br><span class="line"><span class="keyword">private</span> String mapperLocation;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Add-properties-holder"><a href="#Add-properties-holder" class="headerlink" title="Add properties holder"></a>Add properties holder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> PropertySourcesPlaceholderConfigurer</span><br><span class="line">                  propertySourcesPlaceholderConfigurer() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PropertySourcesPlaceholderConfigurer();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-datasource"><a href="#Create-datasource" class="headerlink" title="Create datasource"></a>Create datasource</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1Datasource"</span>)</span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix=<span class="string">"spring.datasource.test1"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> DataSource <span class="title">testDatasource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> DataSourceBuilder.create().build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-session-factory"><a href="#Create-session-factory" class="headerlink" title="Create session factory"></a>Create session factory</h3><p>Make sure bean name is same as the class reference annotation<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1SqlSessionFactory"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">testSqlSessionFactory</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    @Qualifier(<span class="string">"test1Datasource"</span>)</span>DataSource dataSource)</span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    SqlSessionFactoryBean bean=<span class="keyword">new</span> SqlSessionFactoryBean();</span><br><span class="line">    bean.setDataSource(dataSource);</span><br><span class="line">    bean.setMapperLocations(</span><br><span class="line">      <span class="keyword">new</span> PathMatchingResourcePatternResolver().</span><br><span class="line">        getResources(mapperLocation));</span><br><span class="line">    <span class="keyword">return</span> bean.getObject();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Create-transaction-manager-bean"><a href="#Create-transaction-manager-bean" class="headerlink" title="Create transaction manager bean"></a>Create transaction manager bean</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1TransactionManager"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> DataSourceTransactionManager <span class="title">testTransactionManager</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        @Qualifier(<span class="string">"test1Datasource"</span>)</span>DataSource dataSource) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DataSourceTransactionManager(dataSource);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-session-template"><a href="#Create-session-template" class="headerlink" title="Create session template"></a>Create session template</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1SqlSessionTemplate"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionTemplate <span class="title">testSqlSessionTemplate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  @Qualifier(<span class="string">"test1SqlSessionFactory"</span>)</span>SqlSessionFactory sqlSessionFactory) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SqlSessionTemplate(sqlSessionFactory);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Use-data-source"><a href="#Use-data-source" class="headerlink" title="Use data source"></a>Use data source</h2><p>Add test data source test2 the same as above<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages=&#123;<span class="string">"com.burningbright.test1"</span>,<span class="string">"com.burningbright.test2"</span>&#125;)</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserMapper userMapper;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>Prefix must the same as properties keys’ prefix in application.properties</li>
+<li>If <code>@Primary</code> not be annotated, application will throw exception.<br> Unless the reseal framework level has a default primary datasource.</li>
+<li><code>@Qualifier</code> inject object by bean’s name.</li>
+<li><code>basePackages</code> is mapper file’s package path.</li>
+<li><code>sqlSessionTemplateRef</code> is the instance’s reference</li>
+</ol>
+<p><a href="https://blog.csdn.net/qq_37142346/article/details/78488452" target="_blank" rel="noopener">https://blog.csdn.net/qq_37142346/article/details/78488452</a><br><a href="https://blog.csdn.net/a123demi/article/details/74004499" target="_blank" rel="noopener">https://blog.csdn.net/a123demi/article/details/74004499</a><br><a href="https://blog.csdn.net/hongweigg/article/details/79104321" target="_blank" rel="noopener">https://blog.csdn.net/hongweigg/article/details/79104321</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/08/03/regex-modify-in-vim/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/03/regex-modify-in-vim/" class="post-title-link" itemprop="url">regex modify in vim</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-03 14:16:19" itemprop="dateCreated datePublished" datetime="2018-08-03T14:16:19+08:00">2018-08-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="built_in">print</span> <span class="string">'hello'</span> &gt; <span class="built_in">test</span></span><br><span class="line"><span class="built_in">echo</span> <span class="built_in">print</span> <span class="string">'hello'</span> &gt;&gt; <span class="built_in">test</span></span><br><span class="line"><span class="built_in">echo</span> <span class="built_in">print</span> <span class="string">'hello'</span> &gt;&gt; <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<p>use vim edit file <code>vim test</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shift</span> + :</span><br><span class="line"><span class="built_in">set</span> number</span><br><span class="line"></span><br><span class="line"><span class="built_in">shift</span> + :</span><br><span class="line">s/\vh(.*)o/y\1ow/g</span><br><span class="line"></span><br><span class="line"><span class="built_in">shift</span> + :</span><br><span class="line">2,3s/\vh(.*)o/y\1ow/gc</span><br><span class="line"></span><br><span class="line"><span class="built_in">shift</span> + :</span><br><span class="line">wq</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">more <span class="built_in">test</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">'yellow'</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">'yellow'</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">'yellow'</span></span><br></pre></td></tr></table></figure>
+<p><code>2,3</code> mean match scale in row 2 to 3.</p>
+<p>in <code>gc</code> mode, <code>y</code> confirm one match, <code>a</code> confirm all match.</p>
+<p><a href="https://blog.csdn.net/hongchangfirst/article/details/10400915" target="_blank" rel="noopener">https://blog.csdn.net/hongchangfirst/article/details/10400915</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/08/03/Hide-cmd-windows-in-MFC-console-program/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/08/03/Hide-cmd-windows-in-MFC-console-program/" class="post-title-link" itemprop="url">Hide cmd windows in MFC console program</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-03 09:45:06" itemprop="dateCreated datePublished" datetime="2018-08-03T09:45:06+08:00">2018-08-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> UNICODE</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment( linker, <span class="meta-string">"/subsystem:\"windows\" /entry:\"wmainCRTStartup\""</span>)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment( linker, <span class="meta-string">"/subsystem:\"windows\" /entry:\"mainCRTStartup\""</span>)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>In unicode environment the entry point is <code>wmainCRTStartup</code>.<br>MFC use <code>wmainCRTStartup</code> to start program’s <code>main</code>, the linker subsystem<br>can choose <code>CONSOLE|WINDOWS|NATIVE|POSIX</code>, if settle <code>WINDOWS</code> mean no console.</p>
+<p><img src="/2018/08/03/Hide-cmd-windows-in-MFC-console-program/TIM20180803095930.jpg" alt="TIM20180803095930.jpg"><br><img src="/2018/08/03/Hide-cmd-windows-in-MFC-console-program/TIM20180803095930.jpg" alt="TIM20180803095930.jpg"></p>
+<p><a href="https://blog.csdn.net/mdcire/article/details/53456673" target="_blank" rel="noopener">https://blog.csdn.net/mdcire/article/details/53456673</a><br><a href="https://blog.csdn.net/wenhao_ir/article/details/50897312" target="_blank" rel="noopener">https://blog.csdn.net/wenhao_ir/article/details/50897312</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/25/Springboot-Schedule/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1691,597 +2235,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/22/python-encode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/22/python-encode/" class="post-title-link" itemprop="url">python encode</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-22 16:10:13" itemprop="dateCreated datePublished" datetime="2018-05-22T16:10:13+08:00">2018-05-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Declare"><a href="#Declare" class="headerlink" title="Declare"></a>Declare</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br></pre></td></tr></table></figure>
-<p>make clare that the origin code context use utf-8 encoding.</p>
-<p>if not declate when unioncode sign appare in origin text, python throw exception:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SyntaxError: Non-ASCII character &apos;\xe4&apos; in file code_test.py on line 6,</span><br><span class="line">but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details</span><br></pre></td></tr></table></figure>
-<h2 id="Setting-default-encoding"><a href="#Setting-default-encoding" class="headerlink" title="Setting default encoding"></a>Setting default encoding</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br></pre></td></tr></table></figure>
-<p>told python use <code>utf8</code> as the default encoding to deal symbols<br>python’s type <code>str</code> use <code>ascii</code> as the default encoding ps. v2.7</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode character u&apos;\u4e07&apos; in position 0:</span><br><span class="line">ordinal not in range(128)</span><br></pre></td></tr></table></figure>
-<h2 id="Exception-in-db"><a href="#Exception-in-db" class="headerlink" title="Exception in db"></a>Exception in db</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError:&apos;latin-1&apos; codec can&apos;t encode character ...</span><br></pre></td></tr></table></figure>
-<p>declare the connection and the cursor’s encoding:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db = pymysql.connect(&quot;localhost&quot;, &quot;use&quot;, &quot;passwd&quot;, &quot;db_name&quot; , use_unicode=True,  charset=&quot;utf8&quot;)</span><br><span class="line">db = MySQLdb.connect(host=&quot;localhost&quot;, user = &quot;root&quot;, passwd = &quot;&quot;, db = &quot;testdb&quot;, use_unicode=True, charset=&quot;utf8&quot;)</span><br><span class="line">cursor.execute(&apos;SET NAMES utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET CHARACTER SET utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET character_set_connection=utf8;&apos;)</span><br></pre></td></tr></table></figure></p>
-<h2 id="Exception-in-wb"><a href="#Exception-in-wb" class="headerlink" title="Exception in wb"></a>Exception in wb</h2><p>If the web is encoded in <code>gbk</code> or <code>gb2312</code>, use <code>utf8</code> to show will case messy encoding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">html = unicode(html, &quot;gbk&quot;).encode(&quot;utf8&quot;)</span><br></pre></td></tr></table></figure>
-<p>turn the bytes stream to unicode first in <code>gbk</code> decoding, then encoding in <code>utf8</code></p>
-<h2 id="Encoding-transform"><a href="#Encoding-transform" class="headerlink" title="Encoding transform"></a>Encoding transform</h2><ol>
-<li>if in origin code <code>str</code> delcare has the prfix <code>u</code> then it is unicde encoding</li>
-<li>if origin code <code>str</code> has no prefix <code>u</code> then it use it’s text encoding</li>
-<li>use <code>unicode(str, codec)</code> to transform <code>str</code> to unicode</li>
-<li>most times use <code>str.decode(codec)</code> to decode to bytes stream</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(<span class="string">'utf8'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># u'\u4e07'</span></span><br><span class="line">a = <span class="string">u"万"</span></span><br><span class="line"><span class="keyword">print</span> a</span><br><span class="line"><span class="keyword">print</span> ord(a)</span><br><span class="line"><span class="keyword">print</span> unichr(ord(a))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"----------------"</span></span><br><span class="line"></span><br><span class="line">b = a.encode(<span class="string">'utf8'</span>)</span><br><span class="line"><span class="keyword">print</span> b</span><br><span class="line">c = a.encode(<span class="string">'gbk'</span>)</span><br><span class="line"><span class="keyword">print</span> c</span><br></pre></td></tr></table></figure>
-<p>in windows bash termianl’s encode is <code>utf8</code> , <code>gbk</code> is messy encoding<br><img src="/2018/05/22/python-encode/bash.png" alt="bash"><br>in windows dos terminal’s encode is <code>gbk</code> , <code>utf8</code> is messy encoding<br><img src="/2018/05/22/python-encode/dos.png" alt="dos"></p>
-<h2 id="Encoding-in-json"><a href="#Encoding-in-json" class="headerlink" title="Encoding in json"></a>Encoding in json</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">json.dumps # turn json object -&gt; string</span><br><span class="line">json.loads # turn json string -&gt; object</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># add encoding parameter</span><br><span class="line">json.loads(jStr, encoding=&quot;GB2312&quot;);</span><br><span class="line"># restrict the string in unicode encoding</span><br><span class="line">json.dumps(js, ensure_ascii=False)</span><br></pre></td></tr></table></figure>
-<p><a href="https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character" target="_blank" rel="noopener">https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character</a></p>
-<p><a href="https://blog.csdn.net/learn_tech/article/details/52982679" target="_blank" rel="noopener">https://blog.csdn.net/learn_tech/article/details/52982679</a></p>
-<p><a href="https://blog.csdn.net/xfyangle/article/details/60969522" target="_blank" rel="noopener">https://blog.csdn.net/xfyangle/article/details/60969522</a></p>
-<p><a href="https://blog.csdn.net/ran337287/article/details/56298949" target="_blank" rel="noopener">https://blog.csdn.net/ran337287/article/details/56298949</a></p>
-<p><a href="https://blog.csdn.net/chenzy945/article/details/18267905" target="_blank" rel="noopener">https://blog.csdn.net/chenzy945/article/details/18267905</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/20/Servlet-request/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/20/Servlet-request/" class="post-title-link" itemprop="url">Servlet request</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-20 11:08:32" itemprop="dateCreated datePublished" datetime="2018-05-20T11:08:32+08:00">2018-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><code>2017-09-05 17:05:47</code></p>
-<h3 id="Fetch-URL"><a href="#Fetch-URL" class="headerlink" title="Fetch URL"></a>Fetch URL</h3><p><code>request.getRequestURL()</code></p>
-<h3 id="Parameter-List"><a href="#Parameter-List" class="headerlink" title="Parameter List"></a>Parameter List</h3><ul>
-<li><p>Request in <code>GET</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8070/serverLab/hello?a=1&amp;b=2</span><br><span class="line">request.getQueryString()</span><br><span class="line">result: a=1&amp;b=2</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Request in <code>POST</code> or <code>GET</code></p>
-</li>
-</ul>
-<ol>
-<li><p><code>getParameter()</code><br>This method limited in form’s encoding<br>only used in <code>application/x- www-form-urlencoded</code><br>Advantage is very simple, disadvantage is not suit in big data.<br>When transfer big data block browser use <code>multipart/form-data</code></p>
-</li>
-<li><p><code>getInputStream()</code> <code>getReader()</code><br>Get context by stream, got bytes or characters</p>
-</li>
-</ol>
-<p>Stream way have conflict with parameter way<br>When <code>getParameter()</code> read a from encoded by <code>application/x- www-form-urlencoded</code> once<br><code>getInputStream()</code> can’t read data any more.vice versa.</p>
-<p>When <code>getParameter()</code> read a from encoded by <code>multipart/form-data</code>, can’t read data<br>So <code>multipart/form-data</code> encoding have no conflict.</p>
-<p>PS. <code>request.getInputStream()</code> <code>request.getReader()</code> can’t use in mix or throw exception</p>
-<h3 id="About-request-getAttribute"><a href="#About-request-getAttribute" class="headerlink" title="About request.getAttribute()"></a>About <code>request.getAttribute()</code></h3><ol>
-<li>Attribute is survive in container</li>
-<li>HttpServletRequest only have <code>setAttribute()</code> on <code>setParameter()</code></li>
-<li>Survive in one request, like <code>forward</code></li>
-<li><code>session.setAttribute()</code> have Affect in a progress</li>
-<li>If from’s data come’s from JS, use a hidden div parse data -_-!!!</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/18/aws-ec2-mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/18/aws-ec2-mysql/" class="post-title-link" itemprop="url">aws ec2 mysql</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-18 15:23:50" itemprop="dateCreated datePublished" datetime="2018-05-18T15:23:50+08:00">2018-05-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install mysql mysql-server mysql-libs</span><br><span class="line"></span><br><span class="line"># change owner &amp; group</span><br><span class="line">sudo chgrp -R mysql /var/lib/mysql</span><br><span class="line">chmod -R 770 /var/lib/mysql</span><br></pre></td></tr></table></figure>
-<h2 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &apos;character_set_%&apos;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">set character_set_server=utf8;</span><br><span class="line">set character_set_database=utf8;</span><br><span class="line">SHOW VARIABLES LIKE &apos;character_set_%&apos;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | utf8                       |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | utf8                       |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
-<h2 id="Passwd"><a href="#Passwd" class="headerlink" title="Passwd"></a>Passwd</h2><ol>
-<li><p>mysqladmin</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -u root password &apos;psswd&apos;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>update</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root</span><br><span class="line">　mysql&gt; use mysql;</span><br><span class="line">　mysql&gt; UPDATE user SET Password = PASSWORD(&apos;passwd&apos;) WHERE user = &apos;root&apos;;</span><br><span class="line">　mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>set</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MySQL -u root</span><br><span class="line">　　mysql&gt; SET PASSWORD FOR &apos;root&apos;@&apos;localhost&apos; = PASSWORD(&apos;passwd&apos;);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>skip</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/my.cnf</span><br><span class="line"># remove after the job</span><br><span class="line">add `skip-grant-tables`</span><br><span class="line">wq</span><br><span class="line">service mysqld restart</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysqld stop</span><br><span class="line">mysqld_safe --skip-grant-tables&amp;</span><br></pre></td></tr></table></figure>
-<h2 id="User-amp-Db"><a href="#User-amp-Db" class="headerlink" title="User &amp; Db"></a>User &amp; Db</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;test&apos;@&apos;localhost&apos; identified by &apos;123456&apos;;</span><br><span class="line">create database testdb default charset utf8 collate utf8_general_ci;</span><br><span class="line">grant all privileges on `testdb`.* to &apos;test&apos;@&apos;localhost&apos; identified by &apos;123456&apos;;</span><br><span class="line">flush privileges;</span><br><span class="line">mysql -u test -h 1.1.1.1 -p</span><br></pre></td></tr></table></figure>
-<h2 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h2><p><strong>ERROR 1227 (42000): Access denied; you need (at least one of) …</strong><br>If sign in mysql in localhost like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure></p>
-<p>no privileges on create user/ create db/ show process …<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">show grants for &apos;&apos;@&apos;localhost&apos;;</span><br><span class="line">+----------------------------------------------------------------------+</span><br><span class="line">| Grants for @localhost                                                |</span><br><span class="line">+----------------------------------------------------------------------+</span><br><span class="line">| GRANT USAGE ON *.* TO &apos;&apos;@&apos;localhost&apos; IDENTIFIED BY PASSWORD &lt;secret&gt; |</span><br><span class="line">+----------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
-<p>the command should be like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -h 127.0.0.1 -p</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://blog.csdn.net/qq1010885678/article/details/47955717" target="_blank" rel="noopener">Amazon EC2</a><br><a href="https://blog.csdn.net/u013252149/article/details/52794880" target="_blank" rel="noopener">AWS Linux MySQL Install</a><br><a href="https://blog.csdn.net/mchdba/article/details/10435883" target="_blank" rel="noopener">ERROR 1227 (42000)</a><br><a href="https://blog.csdn.net/hill_night/article/details/45029601" target="_blank" rel="noopener">ERROR 1045 (28000)</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2328,7 +2281,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">255</span>
+                    <span class="site-state-item-count">258</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2397,58 +2350,6 @@
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     

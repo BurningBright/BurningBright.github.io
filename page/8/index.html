@@ -351,6 +351,608 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/05/maintain-log-files-by-shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/maintain-log-files-by-shell/" class="post-title-link" itemprop="url">maintain log files by shell</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-05 10:19:28" itemprop="dateCreated datePublished" datetime="2019-07-05T10:19:28+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="move-log-file-to-another-device"><a href="#move-log-file-to-another-device" class="headerlink" title="move log file to another device"></a>move log file to another device</h3><p>scheduled move specific file to target directory<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># move log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># file name</span></span><br><span class="line">default=<span class="string">"/logs/common-default.log."</span><span class="variable">$&#123;date&#125;</span><span class="string">".log"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$default</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$date</span><span class="string">' move '</span><span class="variable">$default</span><span class="string">' to /data0/backup'</span> &gt;&gt; /logs/backup.log</span><br><span class="line">    `mv <span class="variable">$default</span> /data0/backup`</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
+<p><code>crontab -e</code> add schedule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 0 * * * sh /move.sh</span><br></pre></td></tr></table></figure></p>
+<h3 id="delete-log-file-by-function"><a href="#delete-log-file-by-function" class="headerlink" title="delete log file by function"></a>delete log file by function</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># delete log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># find files modify 1 month ago</span></span><br><span class="line">files=find /data0/backup -<span class="built_in">type</span> f -not -newermt <span class="variable">$date</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> delete_log_files</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">test</span> <span class="variable">$#</span> -gt 0</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        `rm -f <span class="variable">$1</span>`</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">'$date clean $1'</span> &gt;&gt; /logs/cleanup.log</span><br><span class="line">        <span class="built_in">shift</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete_log_files <span class="variable">$files</span></span><br></pre></td></tr></table></figure>
+<h3 id="delete-log-file-by-command"><a href="#delete-log-file-by-command" class="headerlink" title="delete log file by command"></a>delete log file by command</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">find /logs/ -<span class="built_in">type</span> f -mtime +30 -name <span class="string">'*.log'</span> -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<p><code>{}</code> is placeholder of the file be found<br><code>\;</code> mean exec command finish</p>
+<hr>
+<p>process every line in a multi-line variable<br><a href="https://cloud.tencent.com/developer/ask/46222" target="_blank" rel="noopener">https://cloud.tencent.com/developer/ask/46222</a></p>
+<p>‘crontab’ schedule<br><a href="https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="noopener">https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a></p>
+<p>‘find’ command -exec<br><a href="https://blog.csdn.net/u010900754/article/details/83020378" target="_blank" rel="noopener">https://blog.csdn.net/u010900754/article/details/83020378</a></p>
+<p>‘find’ command useage<br><a href="https://blog.csdn.net/h106140873/article/details/72874455" target="_blank" rel="noopener">https://blog.csdn.net/h106140873/article/details/72874455</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/30/linear-logistic-regression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/30/linear-logistic-regression/" class="post-title-link" itemprop="url">线性回归和逻辑回归</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-30 19:24:08" itemprop="dateCreated datePublished" datetime="2019-06-30T19:24:08+08:00">2019-06-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2019/06/30/linear-logistic-regression/AndrewNg-Headshot.jpg" alt="AndrewNg-Headshot"></p>
+<p>AndrewNg</p>
+<p>就我理解所谓的回归问题，就是做假设，完善这个假设，验证这个假设的过程。<br>有的假设本身很离谱，完善了也没有好的验证结果；有的问题本身很复杂，假设很难归纳问题。</p>
+<p>像西瓜书上说了：No Free Launch Theorem<br>要根据特定的问题，应用特定的算法，看算法本身的归纳偏好和问题是否匹配。</p>
+<h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>代价函数</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{i}))^2</script><p>其中 $h_{\theta}$ 是假设函数 $\theta^T X$</p>
+<p>也就是求目标函数方差最小的参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = sum((X * theta - y) .^ 2) / (2 * length(y));</span><br></pre></td></tr></table></figure>
+<h3 id="梯度下降法"><a href="#梯度下降法" class="headerlink" title="梯度下降法"></a>梯度下降法</h3><p>每一个参数就是一个维度，求各个维度上的函数变化率，组成向量即梯度。</p>
+<script type="math/tex; mode=display">\frac{\partial J(\theta)}{\partial \theta_{j}} =\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{(i)}))x_{j}^{(i))}</script><p>每一次迭代都向梯度方向前进一小步，其中 <code>alpha</code> 是学习率，最终达到收敛目的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theta = theta - (alpha * ((X&apos; * (X * theta - y))/ m));</span><br></pre></td></tr></table></figure>
+<h3 id="正规方程法"><a href="#正规方程法" class="headerlink" title="正规方程法"></a>正规方程法</h3><p>即解线性代数的解。</p>
+<script type="math/tex; mode=display">\theta = (X^T X)^{-1}X^T y</script><p>线性方程组的个数不够(样本不够)，或参数可相互线性表示(维度耦合度过高)<br>会导致参数矩阵是一个奇异矩阵，非方正，不可逆；矩阵的秩小于维数，方程组没有唯一解。</p>
+<h3 id="向量化"><a href="#向量化" class="headerlink" title="向量化"></a>向量化</h3><p>为简化代码，加速计算，需要将计算向量化<br>在线性回归计算中，将偏导项、损失函数计算向量化：<br>  将假设函数的变量参数当作向量 $\theta$，各个样本作为矩阵行，样本属性作为矩阵列，再在左侧并上偏移向量1。<br>  那么梯度可用 <script type="math/tex">X^T * (X * \theta - y)/m</script> 表示，其中 <script type="math/tex">X * \theta - y</script> 代表当前参数下的样本【误差向量】。<br>  特征向量转置 * 误差向量 / m 得到的标量即，函数在 $ \theta_j $ 维度上的偏导数。<br>  求得所有特征维度上的偏导数组成向量即梯度。</p>
+<h2 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a>逻辑回归</h2><p>逻辑回归是使用线性回归的思想，来处理分类问题。<br>使用<code>sigmoid</code>函数，让原线性方程约束到(0, 1)之间；原有的凸函数也变得非凸，二阶导不一定保持符号。</p>
+<script type="math/tex; mode=display">h_{\theta}=\frac{1}{1+e^{-\theta^T x}}</script><p>为了保证损失函数的凸性，需要对原损失函数做一次变换（极大似然法）</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{m} \sum_{i=1}^{m}[-y^{(i)}log(h_{\theta}(x^{(i)}) - (1-y^{(i)})log(1-h_{\theta}(x^{(i)}))]</script><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = -sum( y&apos; * log(sigmoid(X * theta)) + (1 - y)&apos; * log(1 - sigmoid(X * theta)) ) / m;</span><br></pre></td></tr></table></figure>
+<p>梯度方程也发生变化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad = X&apos; * (sigmoid(X * theta) - y) ./ m;</span><br></pre></td></tr></table></figure>
+<p>在“回归”时，数值 &gt;= 0.5 为正类， &lt; 0.5 为负类</p>
+<h2 id="正则化"><a href="#正则化" class="headerlink" title="正则化"></a>正则化</h2><p>算法的泛化能力非常重要，训练过度很可能过拟合，无法在验证集里获得好的效果。<br>正则化在线性回归中，相当于是在每步迭代中提前缩小了 $\theta$ (实际没变)<br>这样获得的参数向量不会在谷底，和训练集的拟合度能得到控制，泛化能力得到保障。</p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{m} \sum_{i=1}^{m}[-y^{(i)}log(h_{\theta}(x^{(i)}) - (1-y^{(i)})log(1-h_{\theta}(x^{(i)}))] + \frac{\lambda}{2m}\sum_{j=1}^{n}\theta_{j}^2</script><h3 id="梯度下降的正规化"><a href="#梯度下降的正规化" class="headerlink" title="梯度下降的正规化"></a>梯度下降的正规化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = -sum( y&apos; * log(sigmoid(X * theta)) + (1 - y)&apos; * log(1 - sigmoid(X * theta)) ) / m + (lambda/(2*m)) * sum(theta.^2);</span><br></pre></td></tr></table></figure>
+<p>正则化后的梯度为：</p>
+<script type="math/tex; mode=display">\frac{\partial J(\theta)}{\partial \theta_{j}} = （\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{(i)}))x_{j}^{(i)})+\frac{\lambda}{m}\theta_j</script><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad = X&apos; * (sigmoid(X * theta) - y) ./ m + (lambda / m) * theta;</span><br></pre></td></tr></table></figure>
+<h3 id="正规方程的正规化"><a href="#正规方程的正规化" class="headerlink" title="正规方程的正规化"></a>正规方程的正规化</h3><p>内部加上一个 $\lambda$ 倍的第一行全零的单位矩阵即可。这样还能消除参数矩阵的不可逆问题。</p>
+<script type="math/tex; mode=display">\theta = (X^T X + \lambda
+  \begin{pmatrix}
+  0 & 0 & ... & 0\\
+  0 & 1 & ...  & 0\\
+  ... & ... & 1 & ...\\
+  0 & 0 & ... & 1 \\
+  \end{pmatrix})^{-1}X^Ty</script><hr>
+<p><a href="https://www.coursera.org/learn/machine-learning" target="_blank" rel="noopener">https://www.coursera.org/learn/machine-learning</a><br><a href="https://study.163.com/course/courseMain.htm?courseId=1004570029" target="_blank" rel="noopener">https://study.163.com/course/courseMain.htm?courseId=1004570029</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/08/exercise-in-Euler-Lagrange-equation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/08/exercise-in-Euler-Lagrange-equation/" class="post-title-link" itemprop="url">欧拉-拉格朗日方程练习</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-08 10:24:45 / Modified: 19:18:24" itemprop="dateCreated datePublished" datetime="2019-06-08T10:24:45+08:00">2019-06-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="两点之间直线最短"><a href="#两点之间直线最短" class="headerlink" title="两点之间直线最短"></a>两点之间直线最短</h3><p>写出AB两点间距离的变分表达：</p>
+<script type="math/tex; mode=display">
+L = \int_{x_1}^{x_2} \sqrt {1+f'^2}dx</script><p>写表达式的E-L方程：</p>
+<script type="math/tex; mode=display">
+\frac{d}{dx}(\frac{1}{2} \frac{2f'}{\sqrt {1+f'^2}}) = 0</script><p>化简后可得：</p>
+<script type="math/tex; mode=display">
+\frac{f'}{\sqrt {1+f'^2}}= C_1</script><p>可以得知解函数的导数是一个常数 $f’= C_2$<br>即AB间最短的距离是一条直线</p>
+<h3 id="求使旋转双曲面面积最小的函数"><a href="#求使旋转双曲面面积最小的函数" class="headerlink" title="求使旋转双曲面面积最小的函数"></a>求使旋转双曲面面积最小的函数</h3><p>写出用<code>盘圆法</code>积分出面积的变分表达式：</p>
+<script type="math/tex; mode=display">
+S = \int 2 \pi x dl = \int 2 \pi \sqrt{1+f'^2} dx</script><p>写表达式的E-L方程：</p>
+<script type="math/tex; mode=display">
+\frac{d}{dx}(x \frac{1}{2} \frac{2f'}{\sqrt {1+f'^2}}) = 0</script><p>化简后可得：</p>
+<script type="math/tex; mode=display">
+\frac{xf'}{\sqrt {1+f'^2}}= a</script><p>继续化简可得：</p>
+<script type="math/tex; mode=display">
+f'= \pm \frac{a}{\sqrt{a^2-x}}</script><p>根据 $f’= \frac{1}{\sqrt{1-x^2}}$ 可得 $f = arc\cos(x)$<br>根据 $f’= \frac{1}{\sqrt{x^2-1}}$ 可得 $f = arc\cosh(x)$<br>重新规划 $x = x/a$ 可得 $f = a arc\cosh(\frac{x}{a}) + b$</p>
+<h3 id="线段能围出最大面积的形状是圆"><a href="#线段能围出最大面积的形状是圆" class="headerlink" title="线段能围出最大面积的形状是圆"></a>线段能围出最大面积的形状是圆</h3><p>需要用到泛函的拉格朗日乘子法：<br>有表达式$A_{min} = \int L(f, f’, x)dx$<br>在约束$B = \int G(f, f’, x)dx = Constant$下<br>构造 $C = (A - \lambda B)$ 求极值解</p>
+<p>写出线段围出面积的变分表达式：</p>
+<script type="math/tex; mode=display">
+A = \int_{x_1}^{x_2} f dx</script><p>写出约束的变分表达式：</p>
+<script type="math/tex; mode=display">
+B = \int_{x_1}^{x_2} \sqrt{1+f'^2} dx</script><script type="math/tex; mode=display">
+A - \lambda B = \int (f - \lambda \sqrt{1+f'^2}) dx</script><p>写表达式的E-L方程：</p>
+<script type="math/tex; mode=display">
+1=\frac{d}{dx} \frac{-\lambda f'}{\sqrt{a+f'^2}}</script><p>化简可得：</p>
+<script type="math/tex; mode=display">
+f' = \frac{a-x}{\sqrt{\lambda ^2 - (a-x)^2}}</script><p>即圆的微分方程，其中 $a-x$对应到 $\Delta x$， $\lambda$对应圆的半径。</p>
+<h3 id="最速降线问题"><a href="#最速降线问题" class="headerlink" title="最速降线问题"></a>最速降线问题</h3><p><img src="/2019/06/07/functional-variation-and-Euler-Lagrange-equation/20190607082634.png" alt="20190607082634.png"></p>
+<p>需要找到能使小球从A滚落B所需时间$T$最短的$f$</p>
+<p>写出滚落所需时间的变分表达式：</p>
+<script type="math/tex; mode=display">
+T = \int \frac{ \sqrt {1+y^{'2}})}{\sqrt {2gy}}dx</script><p>用引理写出的E-L方程：</p>
+<script type="math/tex; mode=display">
+\frac{\partial T}{\partial y'}y' - T = \frac{1}{(1+y'^2)^{\frac{1}{2}}(2gy)^{\frac{1}{2}}} = C</script><p>化简后有$y(1+y’^2) = C’$</p>
+<h4 id="解："><a href="#解：" class="headerlink" title="解："></a>解：</h4><p>上式是一个三角函数，设$x$是关于$x(\theta)$的函数，$y’ = \cot \theta = \frac{\cos \theta}{\sin \theta}$。<br>由于$y’$是关于x的微分，所以不能求出$y’$关于$\theta$的方程，把$y’$代入上式：</p>
+<script type="math/tex; mode=display">
+y(1+y'^2) = \frac{1}{\sin ^2 \theta } = C</script><script type="math/tex; mode=display">
+y = C \sin ^2 \theta = \frac{C}{2} (1-2\cos 2\theta)</script><hr>
+<h4 id="x-的-theta-表示"><a href="#x-的-theta-表示" class="headerlink" title="$x$的$\theta$表示"></a>$x$的$\theta$表示</h4><script type="math/tex; mode=display">
+y' = dy/dx = \frac{dy}{d\theta} / \frac{dx}{d\theta}</script><p>转换成$x$关于$\theta$微元的表达式</p>
+<script type="math/tex; mode=display">
+\frac{dx}{d\theta} = \frac{dy}{d\theta}/ y' = \frac{C\sin 2\theta}{\cot \theta} = 2C \sin^2 \theta = C(1-\cos 2\theta)</script><p>$x$关于$\theta$的积分有：</p>
+<script type="math/tex; mode=display">
+\int dx = \int C(1-\cos 2\theta) d \theta</script><p>积分可得：</p>
+<script type="math/tex; mode=display">
+x + C_1 = C(\theta - \frac{1}{2} \sin 2\theta) + C_2</script><p>化简得：</p>
+<script type="math/tex; mode=display">
+x = \frac{C}{2}(2\theta - \sin 2\theta) + C_1</script><hr>
+<h4 id="y-的-x-、-y-表示"><a href="#y-的-x-、-y-表示" class="headerlink" title="$y$的$x$、$y$表示"></a>$y$的$x$、$y$表示</h4><p>$\theta$角的变量表示</p>
+<script type="math/tex; mode=display">
+2 \theta = \frac{x - C_1 + 2a\sin \theta \cos \theta}{a}</script><p>用$a$来代替$\frac{C}{2}$，由于 $y = C \sin ^2 \theta$，有 $\sin \theta = \sqrt{\frac{y}{2a}}$、 $\cos \theta = \sqrt{\frac{2a-y}{2a}}$</p>
+<script type="math/tex; mode=display">
+2 \theta = \frac{x+\sqrt{y(2a-y)}}{a}</script><p>代回原式有：</p>
+<script type="math/tex; mode=display">
+\frac{y}{a} = 1 - \cos \frac{x+\sqrt{y(2a-y)}}{a}</script><p><a href="http://open.163.com/movie/2017/12/T/K/MD51CSAIT_MD55OF2TK.html" target="_blank" rel="noopener">2.4．Euler-lagrange方程的应用</a><br><a href="http://open.163.com/movie/2017/12/0/I/MD51CSAIT_MD55OCM0I.html" target="_blank" rel="noopener">3.1．拉格朗日乘子法</a><br><a href="http://open.163.com/movie/2017/12/S/L/MD51CSAIT_MD55OANSL.html" target="_blank" rel="noopener">3.2. 泛函拉格朗日乘子法（一）</a><br><a href="http://open.163.com/movie/2017/12/0/V/MD51CSAIT_MD55OGG0V.html" target="_blank" rel="noopener">3.3. 泛函拉格朗日乘子法（二）</a><br><a href="https://www.zybuluo.com/zsh-o/note/1090046" target="_blank" rel="noopener">最速降线 与 第一次接触泛函</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/07/functional-variation-and-Euler-Lagrange-equation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1762,587 +2364,6 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/29/compile-spring-5-x-in-idea/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/29/compile-spring-5-x-in-idea/" class="post-title-link" itemprop="url">compile spring 5.x in idea</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-29 14:16:36 / Modified: 20:18:57" itemprop="dateCreated datePublished" datetime="2019-04-29T14:16:36+08:00">2019-04-29</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><ol>
-<li>source code spring5.x</li>
-<li>gradle 4.9</li>
-<li>jdk1.8_131</li>
-<li>ideaIC-2019.1.1.exe (IntelliJ IDEA Community Edition 2019.1.1 x64)</li>
-</ol>
-<p>Download source code in:<br><a href="https://github.com/spring-projects/spring-framework/tree/5.0.x" target="_blank" rel="noopener">https://github.com/spring-projects/spring-framework/tree/5.0.x</a><br>Download gradle in:<br><a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a><br>Download idea in:<br><a href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">https://www.jetbrains.com/idea/download/</a><br>Download jdk in oracle website</p>
-<p>the versions of these things are important</p>
-<ul>
-<li>gradle version should bigger than 4.2 and no big than 5.0<br>i use 4.6/ 5.1/ 5.4 gradle compile project failed.</li>
-<li>jdk version should in 1.8, and no bigger than 1.8_131<br>the blog of csdn editor has such experience.</li>
-<li>idea version the newer the better, i use idea 2017.1.2 failed in junit test.</li>
-</ul>
-<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>JAVA_HOME: D:\jdk1.8.0_131<br>CLASSPATH: .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;</p>
-<p>GRADLE_HOME: D:\gradle-4.6<br>GRADLE_USER_HOME: D:.gradle</p>
-<p>Add to path</p>
-<p>at setting of idea, set sdk/gradle path.<br>set gradle parameters <code>-XX:MaxPermSize=1024m -Xmx1024m -XX:MaxHeapSize=1024m</code></p>
-<p><img src="/2019/04/29/compile-spring-5-x-in-idea/20190429143526.png" alt="20190429143526.png"></p>
-<h2 id="compile"><a href="#compile" class="headerlink" title="compile"></a>compile</h2><p>import source code of spring5.x, import as a gradle project.<br>wait for gradle solve project sync.</p>
-<p>comment no use depend in <code>spring-beans.gradle</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//compileGroovy.dependsOn = compileGroovy.taskDependencies.values - &quot;compileJava&quot;</span><br></pre></td></tr></table></figure></p>
-<p>if meet dependency problem like this<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Circular dependency between the following tasks:</span><br><span class="line">  ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></p>
-<p>add <code>org.gradle.configureondemand = true</code> in gradle.properties</p>
-<h2 id="test"><a href="#test" class="headerlink" title="test"></a>test</h2><p>project is ready :)</p>
-<p><code>org.springframework.beans.factory.xml.BeanNameGenerationTests</code></p>
-<p><a href="https://blog.csdn.net/baomw/article/details/83956300" target="_blank" rel="noopener">https://blog.csdn.net/baomw/article/details/83956300</a><br><a href="https://www.jianshu.com/p/d6e3ec44f99a" target="_blank" rel="noopener">https://www.jianshu.com/p/d6e3ec44f99a</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/11/Bayes-theorem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/11/Bayes-theorem/" class="post-title-link" itemprop="url">Bayes' theorem</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-11 11:02:28" itemprop="dateCreated datePublished" datetime="2019-04-11T11:02:28+08:00">2019-04-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="conditional-probability"><a href="#conditional-probability" class="headerlink" title="conditional probability"></a>conditional probability</h2><p>A/B are event, when <code>B</code> happen, <code>A</code>‘s conditional probability. ps.P(B) &gt; 0</p>
-<script type="math/tex; mode=display">
-P(A|B) = \frac{P(AB)}{P(B)}</script><p><img src="/2019/04/11/Bayes-theorem/NB_3.png" alt="NB_3.png"></p>
-<p>seven ball in <code>p1</code> <code>p2</code><br>two white ball in <code>p1</code><br>one white ball in <code>p2</code><br>What’s the probability when fetch white from B bucket.</p>
-<p>Event <code>A</code> is fetch white<br>Event <code>B</code> is fetch from <code>P2</code> bucket</p>
-<script type="math/tex; mode=display">
-P(white|bucketB) = \frac{P(white and bucketB)}{P(bucketB)}
-= \frac{\frac{1}{7}}{\frac{3}{7}}=\frac{1}{3}</script><h2 id="Multiplication-formula"><a href="#Multiplication-formula" class="headerlink" title="Multiplication formula"></a>Multiplication formula</h2><ol>
-<li><p>formula</p>
-<script type="math/tex; mode=display">
-P(AB) = P(A|B)P(B) = P(B|A)P(A)</script></li>
-<li><p>when n &gt;= 2 :</p>
-<script type="math/tex; mode=display">
-P(A_{1}A_{2}...A_{n-1}A_{n})=P(A_{1})P(A_{2}|A_{1})P(A_{3}|A_{1}A_{2})...P(A_{n}|A_{1}A_{2}...A_{n-1})</script></li>
-<li><p>full probability formula<br>if event array B1, B2, B3, … satisfying</p>
-</li>
-</ol>
-<ul>
-<li><script type="math/tex; mode=display">
-B_{i} \cap B_{j} = \varnothing</script></li>
-<li>i ≠ j</li>
-<li>i,j=1 2 ….</li>
-<li><script type="math/tex; mode=display">
-P(B_{i})>0,i=1,2,....</script></li>
-<li><script type="math/tex; mode=display">
-B_{1} \cap B_{2} \cap .... = \Omega</script></li>
-</ul>
-<p>then array event is a divide of sample space <code>Ω</code> .</p>
-<script type="math/tex; mode=display">
-P(A) = \displaystyle\sum_{i=1}^nP(B_{i})P(A|B_{i})</script><p>this formula mean no interference event array can calculate target sample space in divide.<br>It’s called <code>prior probability</code></p>
-<p>For example: spot check a set of different products’ good rate</p>
-<h2 id="bayes-formula"><a href="#bayes-formula" class="headerlink" title="bayes formula"></a>bayes formula</h2><p>bayes formula is the reverse process of full probability formula.<br>It research a happened event cause factor, not forcast it.<br>It’s called <code>posterior probability</code></p>
-<script type="math/tex; mode=display">
-P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j})}</script><p>For example:<br>find killer in criminal suspect<br>spam filtering in e-mail system</p>
-<p><a href="https://www.cnblogs.com/ohshit/p/5629581.html" target="_blank" rel="noopener">https://www.cnblogs.com/ohshit/p/5629581.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/03/29/thread-pool-anaylsis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/29/thread-pool-anaylsis/" class="post-title-link" itemprop="url">thread pool anaylsis</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-03-29 18:32:27" itemprop="dateCreated datePublished" datetime="2019-03-29T18:32:27+08:00">2019-03-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-04-29 20:18:57" itemprop="dateModified" datetime="2019-04-29T20:18:57+08:00">2019-04-29</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2019/03/29/thread-pool-anaylsis/queue1.gif" alt="queue1.gif"><br><img src="/2019/03/29/thread-pool-anaylsis/queue2.gif" alt="queue2.gif"><br><img src="/2019/03/29/thread-pool-anaylsis/queue3.jpg" alt="queue3.jpg"></p>
-<h2 id="properties"><a href="#properties" class="headerlink" title="properties"></a>properties</h2><p>private final BlockingQueue<runnable> workQueue;</runnable></p>
-<p>private final ReentrantLock mainLock = new ReentrantLock();</p>
-<p>private volatile long  keepAliveTime;</p>
-<p>private volatile boolean allowCoreThreadTimeOut;</p>
-<p>private volatile int   corePoolSize;</p>
-<p>private volatile int   maximumPoolSize;</p>
-<p>private volatile int   poolSize;</p>
-<h2 id="execute-judgement"><a href="#execute-judgement" class="headerlink" title="execute judgement"></a>execute judgement</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (command == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">if</span> (poolSize &gt;= corePoolSize || !addIfUnderCorePoolSize(command)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (runState == RUNNING &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">            <span class="keyword">if</span> (runState != RUNNING || poolSize == <span class="number">0</span>)</span><br><span class="line">                ensureQueuedTaskHandled(command);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!addIfUnderMaximumPoolSize(command))</span><br><span class="line">            reject(command); <span class="comment">// is shutdown or saturated</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="thread-judgement"><a href="#thread-judgement" class="headerlink" title="thread judgement"></a>thread judgement</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">addIfUnderCorePoolSize</span><span class="params">(Runnable firstTask)</span> </span>&#123;</span><br><span class="line">    Thread t = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock mainLock = <span class="keyword">this</span>.mainLock;</span><br><span class="line">    mainLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (poolSize &lt; corePoolSize &amp;&amp; runState == RUNNING)</span><br><span class="line">            t = addThread(firstTask);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        mainLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t != <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="add-thread"><a href="#add-thread" class="headerlink" title="add thread"></a>add thread</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Thread <span class="title">addThread</span><span class="params">(Runnable firstTask)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// similar to new Thread(Runnable);</span></span><br><span class="line">    Worker w = <span class="keyword">new</span> Worker(firstTask);</span><br><span class="line">    Thread t = threadFactory.newThread(w);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">int</span> nt = ++poolSize;</span><br><span class="line">    <span class="keyword">if</span> (nt &gt; largestPoolSize) largestPoolSize = nt;</span><br><span class="line">    ...</span><br><span class="line">    t.start();</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Inner-class-Worker"><a href="#Inner-class-Worker" class="headerlink" title="Inner class Worker"></a>Inner class Worker</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Worker</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">runTask</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        task.run();</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">while</span> (task != <span class="keyword">null</span> || (task = getTask()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            runTask(task);</span><br><span class="line">            task = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        workerDone(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="get-task-from-queue"><a href="#get-task-from-queue" class="headerlink" title="get task from queue"></a>get task from queue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Runnable <span class="title">getTask</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        ...</span><br><span class="line">        Runnable r;</span><br><span class="line">        <span class="keyword">if</span> (state == SHUTDOWN)  <span class="comment">// Help drain queue</span></span><br><span class="line">            r = workQueue.poll();</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (poolSize &gt; corePoolSize || allowCoreThreadTimeOut)</span><br><span class="line">            r = workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            r = workQueue.take();</span><br><span class="line">        <span class="keyword">if</span> (r != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> r;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="the-design-of-thread-pool"><a href="#the-design-of-thread-pool" class="headerlink" title="the design of thread pool"></a>the design of thread pool</h2><p>Has no specific thread to dispatch task.</p>
-<p>If still have task in QlockingQueue,<br>when thread’s task done, it will fetch task in queue itself.</p>
-<p>If still no task in QlockingQueue, and task has done.<br>In worker’s <code>run()</code> - <code>workerDone(this);</code> call to terminate itself.</p>
-<p><a href="https://www.cnblogs.com/heyanan/p/9261695.html" target="_blank" rel="noopener">https://www.cnblogs.com/heyanan/p/9261695.html</a><br><a href="http://www.cnblogs.com/dolphin0520/p/3932921.html" target="_blank" rel="noopener">http://www.cnblogs.com/dolphin0520/p/3932921.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2389,7 +2410,7 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">255</span>
+                    <span class="site-state-item-count">258</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2458,58 +2479,6 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
                     
                   
                     
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
                     
                       
                     
@@ -3196,9 +3165,9 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
   
     
       
-        
-      
     
+      
+        
       
     
       
