@@ -351,6 +351,207 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/12/02/Thread-security/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/12/02/Thread-security/" class="post-title-link" itemprop="url">Thread security</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-12-02 21:55:20" itemprop="dateCreated datePublished" datetime="2017-12-02T21:55:20+08:00">2017-12-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Security-problem-in-java-web"><a href="#Security-problem-in-java-web" class="headerlink" title="Security problem in java web"></a>Security problem in java web</h2><p>In tradition web develop, Servlet implement response to http request.<br>Servlet is one of the important standard of J2EE, it set how java response to Http request.<br>In project, classpath need relay on servlet-api.jar of j2ee.jar.<br>We can interact with web container through <code>HttpServletRequest</code> and <code>HttpServletResponse</code> object.</p>
+<p>When container receive a request, container will dispatch a thread that<br>define in advance from main thread(tomcat observer pattern), to deal the mapping servlet implement.<br>When another request come in, main thread will choose thread from threadpool to serve,<br>but it <strong>do not care</strong> is there other threads using this implement.</p>
+<p>So web container use <strong>singleton pattern</strong> to implement service object.<br>This pattern can reduce the servlet space waste, and improve response performance.<br>But it lead to security problem, the servlet in container is not thread security save.</p>
+<h2 id="HashMap-and-HashTable"><a href="#HashMap-and-HashTable" class="headerlink" title="HashMap and HashTable"></a>HashMap and HashTable</h2><ul>
+<li><code>HashMap</code> implement <code>Map</code> interface from java 1.2</li>
+<li>a light weight implement of  <code>HashTable</code>, no <code>contains</code> method(avoid confusion)</li>
+<li>All key / value in <code>HaspMap</code> entry are object(can be null).</li>
+<li><p>not security save</p>
+</li>
+<li><p><code>HashTable</code> is security save, it’s method is <code>Synchronized</code></p>
+</li>
+<li><code>HashTable</code> &amp; <code>HashMap</code> hash implement is same, so performance in <code>Synchronized</code> is same too.</li>
+</ul>
+<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><blockquote>
+<p>if multi-thread program run in same code result is same with single thread expect,<br>then thread secure. Thread security is caused by global  or static changeable variable.<br>If only read operation on these variable in program, then no thread security problem in regular.</p>
+</blockquote>
+<h3 id="Thread-security"><a href="#Thread-security" class="headerlink" title="Thread security"></a>Thread security</h3><p><strong>In multi-thread environment, a class execute method, obtain independent resource</strong></p>
+<ul>
+<li>method signature variable is save(???)</li>
+<li>local variable in method is save</li>
+</ul>
+<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><p>ThreadLocal is self is not a thread, it’s static class.<br>It maintain thread’s independent copy <code>ThreadLocalMap</code>.</p>
+<p>one side: all thread visit it’s own <code>ThreadLocalMap</code><br>another side: one thread visit it’s own <code>ThreadLocal</code></p>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><ul>
+<li><code>ThreadLocal</code> maintain thread’s variable, to deal visit conflict.</li>
+<li><code>Synchronized</code> use JVM lock mechanism to make sure resource atomicity(one thread visit in time).</li>
+</ul>
+<p><code>ThreadLocal</code> use space to exchange time, provide every thread a variable copy, make sure visit concurrent but no conflict.<br><code>Synchronized</code> use time to exchange space, monitor a target, to make thread visit in queue.</p>
+<p><a href="http://blog.51cto.com/dongisland/1369375" target="_blank" rel="noopener">http://blog.51cto.com/dongisland/1369375</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/11/15/sleep-in-c/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2272,195 +2473,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/09/07/Intellij-IDEA-Debug/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/09/07/Intellij-IDEA-Debug/" class="post-title-link" itemprop="url">Intellij IDEA Debug</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-09-07 14:15:47" itemprop="dateCreated datePublished" datetime="2017-09-07T14:15:47+08:00">2017-09-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:41:42" itemprop="dateModified" datetime="2020-06-17T22:41:42+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Customize-shortcut-keymap"><a href="#Customize-shortcut-keymap" class="headerlink" title="Customize shortcut keymap"></a>Customize shortcut keymap</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907141844.png" alt="change keymap"><br><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142511.png" alt="shortcut key"></p>
-<p>change intellij’s keymap to eclipse’s</p>
-<ul>
-<li><code>F5</code>        step into a method</li>
-<li><code>Ctrl + F5</code> smart step in</li>
-<li><code>F6</code>        step over a row</li>
-<li><code>F7</code>        step out a method</li>
-<li><code>Ctrl + R</code>  step to cursor’s raw</li>
-</ul>
-<h3 id="Samrt-step-in"><a href="#Samrt-step-in" class="headerlink" title="Samrt step in"></a>Samrt step in</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907144209.png" alt="smart step in"><br><code>Ctrl + F5</code><br>when a series method link a callback, smart step in debug is useful.</p>
-<h3 id="Thread-Block"><a href="#Thread-Block" class="headerlink" title="Thread Block"></a>Thread Block</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142036.png" alt="break point"><br>In default when current thread met breakpoint, other thread will be blocked.<br>Util current debug thread finished.<br>If project need to debug in multi thread, set breakpoint the suspend in thread.</p>
-<h3 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142731.png" alt="frame opt"><br>Java’s memory model is a thread have multi methods, a method corresponding a frame.<br>Every frame have a private variable array, it’s <code>0</code> index is <code>this</code>.[Stacks Link Invocate]<br>When drop the frame, debug will roll back.</p>
-<h3 id="Thread-List"><a href="#Thread-List" class="headerlink" title="Thread List"></a>Thread List</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142354.png" alt="thread list"><br>Show thread list, thread status.</p>
-<h3 id="Thread’s-Frames"><a href="#Thread’s-Frames" class="headerlink" title="Thread’s Frames"></a>Thread’s Frames</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907144107.png" alt="switch thread"><br>Used to switch thread, but it seem can’t debug a thread’s code alone.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class DebugTest &#123;</span><br><span class="line"></span><br><span class="line">  private static Object lock = new Object();</span><br><span class="line"></span><br><span class="line">  @Test</span><br><span class="line">  public void main() &#123;</span><br><span class="line">      try &#123;</span><br><span class="line">          for(int i=0; i&lt; 3; i++) &#123;</span><br><span class="line">              new Line().start();</span><br><span class="line">              Thread.sleep(1000);</span><br><span class="line">          &#125;</span><br><span class="line">          new LineAnother().start();</span><br><span class="line">          Thread.sleep(100000);</span><br><span class="line">      &#125; catch (InterruptedException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Line extends Thread &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        synchronized (lock) &#123;</span><br><span class="line">            // smart step in</span><br><span class="line">            if (Thread.currentThread().getContextClassLoader().equals(new Object()))</span><br><span class="line">                System.out.println(&quot;-_-!&quot;);</span><br><span class="line"></span><br><span class="line">            for (int i = 0; i &lt; 3; i++)</span><br><span class="line">                System.out.println(Thread.currentThread().getId() +</span><br><span class="line">                        &quot;\t&quot; + Thread.currentThread().getName() +</span><br><span class="line">                        &quot;\t&quot; + i);</span><br><span class="line">            test(5);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // sub frame</span><br><span class="line">    public int test(int i) &#123;</span><br><span class="line">        i -= 1;</span><br><span class="line">        return i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class LineAnother extends Thread &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;xxx&quot;);</span><br><span class="line">        System.out.println(&quot;ooo&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2507,7 +2519,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">258</span>
+                    <span class="site-state-item-count">259</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2560,7 +2572,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>

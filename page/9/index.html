@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/07/hide-csdn-ad-in-chrome/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/07/hide-csdn-ad-in-chrome/" class="post-title-link" itemprop="url">hide csdn ad in chrome</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-07 14:58:14" itemprop="dateCreated datePublished" datetime="2019-05-07T14:58:14+08:00">2019-05-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-05-20 22:16:02" itemprop="dateModified" datetime="2019-05-20T22:16:02+08:00">2019-05-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Create-manifest-json"><a href="#Create-manifest-json" class="headerlink" title="Create manifest.json"></a>Create manifest.json</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;CSDN Ad Blocker&quot;,</span><br><span class="line">  &quot;version&quot;: &quot;1.0&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;An simple extension to hide the ads from csdn website&quot;,</span><br><span class="line">  &quot;manifest_version&quot;: 2,</span><br><span class="line">  &quot;icons&quot;: &#123;</span><br><span class="line">    &quot;128&quot;: &quot;bb.ico&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;content_scripts&quot;: [&#123;</span><br><span class="line">    &quot;js&quot;: [&quot;content.js&quot;],</span><br><span class="line">    &quot;matches&quot;: [&quot;https://blog.csdn.net/*&quot;]</span><br><span class="line">  &#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>choose an icon you like like ‘bb.ico’<br>declare extension function, matches website …</p>
+<h2 id="Create-content-js"><a href="#Create-content-js" class="headerlink" title="Create content.js"></a>Create content.js</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">let adSelectors = [</span><br><span class="line">  &apos;iframe&apos;,</span><br><span class="line">  &apos;aside .csdn-tracking-statistics.mb8.box-shadow&apos;,</span><br><span class="line">  &apos;aside .right_box.footer_box.csdn-tracking-statistics&apos;,</span><br><span class="line">  &apos;.indexSuperise&apos;,</span><br><span class="line">  &apos;#adContent&apos;,</span><br><span class="line">  &apos;#reportContent&apos;,</span><br><span class="line">  &apos;.recommend-box&apos;,</span><br><span class="line">  &apos;.recommend-right&apos;,</span><br><span class="line">  &apos;.pulllog-box&apos;,</span><br><span class="line">  &apos;#article_content a img&apos;</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">document.querySelectorAll(adSelectors.join(&apos;,&apos;)).forEach(item =&gt; &#123;</span><br><span class="line">  item.style.display = &apos;none&apos;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">var readmore = document.getElementById(&quot;btn-readmore&quot;);</span><br><span class="line">readmore.removeAttribute(&apos;data-track-click&apos;);</span><br><span class="line">readmore.click();</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># ad frame</span><br><span class="line"># left up one</span><br><span class="line"># left down recruit</span><br><span class="line"># right superise</span><br><span class="line"># right vip</span><br><span class="line"># right report</span><br><span class="line"># recommend box</span><br><span class="line"># recommend right</span><br><span class="line"># botton button bar</span><br><span class="line"># login register bar</span><br><span class="line"># article content ad image</span><br></pre></td></tr></table></figure>
+<p>hide target ad dom.<br>if you like, you can adjust the main DOM.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">document.getElementsByTagName(&apos;main&apos;)[0].style.width = &apos;75%&apos;</span><br></pre></td></tr></table></figure>
+<p>this line in repository cause aside squeezed underneath the main dom<br>and i don’t like it, so i delete this line.</p>
+<h2 id="Install-extension"><a href="#Install-extension" class="headerlink" title="Install extension"></a>Install extension</h2><p>in chrome open this url <code>chrome://extensions/</code><br>open toggle <code>developer mode</code><br>clike <code>LOAD UNPACKED</code>, choose project folder.</p>
+<p>enjoy :-)</p>
+<p><a href="https://github.com/JerryYuanJ/demos/tree/master/02-simple-csdn-ad-blocker" target="_blank" rel="noopener">https://github.com/JerryYuanJ/demos/tree/master/02-simple-csdn-ad-blocker</a><br><a href="https://blog.csdn.net/qq_25324335/article/details/82595836" target="_blank" rel="noopener">https://blog.csdn.net/qq_25324335/article/details/82595836</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/29/compile-spring-5-x-in-idea/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2055,317 +2237,6 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/01/20/Vector-group-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/20/Vector-group-1/" class="post-title-link" itemprop="url">Vector group (1)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-20 10:07:38" itemprop="dateCreated datePublished" datetime="2019-01-20T10:07:38+08:00">2019-01-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="已知向量组，证明-B组能由A组线性表示，但A组不能由B组表示。"><a href="#已知向量组，证明-B组能由A组线性表示，但A组不能由B组表示。" class="headerlink" title="已知向量组，证明 B组能由A组线性表示，但A组不能由B组表示。"></a>已知向量组，证明 B组能由A组线性表示，但A组不能由B组表示。</h3><script type="math/tex; mode=display">
-A: a1=\begin{pmatrix}
-   0 \\
-   1 \\
-   2 \\
-   3
-\end{pmatrix},
-a2=\begin{pmatrix}
-   3 \\
-   0 \\
-   1 \\
-   2
-\end{pmatrix},
-a3=\begin{pmatrix}
-   2 \\
-   3 \\
-   0 \\
-   1
-\end{pmatrix};
-
-B: b1=\begin{pmatrix}
-   2 \\
-   1 \\
-   1 \\
-   2
-\end{pmatrix},
-b2=\begin{pmatrix}
-   0 \\
-   -2 \\
-   1 \\
-   1
-\end{pmatrix},
-b3=\begin{pmatrix}
-   4 \\
-   4 \\
-   1 \\
-   3
-\end{pmatrix};</script><script type="math/tex; mode=display">
-R(A,B)=\begin{pmatrix}
-   1 & 0 & 3 & 1 & -2 & 4  \\
-   0 & 1 & -6 & -1 & 5 & -7  \\
-   0 & 2 & -8 & -1 & 7 & -9  \\
-   0 & 3 & 2 & 2 & 0 & 4
-\end{pmatrix}
-=\begin{pmatrix}
-   1 & 0 & 3 & 1 & -2 & 4  \\
-   0 & 1 & -6 & -1 & 5 & -7  \\
-   0 & 0 & 0 & 0 & 0 & 0  \\
-   0 & 0 & 0 & 0 & 0 & 0
-\end{pmatrix}=2</script><script type="math/tex; mode=display">
-R(A)=\begin{pmatrix}
-   1 & 0 & 3  \\
-   0 & 1 & -6 \\
-   0 & 0 & 0 \\
-   0 & 0 & 0
-\end{pmatrix}=2</script><p>R(A, B) = R(A)<br>B 能由 A 线性表示</p>
-<script type="math/tex; mode=display">
-R(B,A)=\begin{pmatrix}
-   1 & 1 & 1 & 2 & 1 & 0  \\
-   0 & -1 & 1 & -1 & 0 & 1  \\
-   0 & -3 & 3 & -1 & -1 & 3  \\
-   0 & -2 & 2 & -4 & 1 & 2
-\end{pmatrix}
-=\begin{pmatrix}
-   1 & 1 & 1 & 2 & 1 & 4  \\
-   0 & 1 & 1 & 3 & -1 & 3  \\
-   0 & 0 & 1 & -2 & 0 & 0  \\
-   0 & 0 & 0 & 1 & 0 & 0
-\end{pmatrix}=4</script><script type="math/tex; mode=display">
-R(B)=\begin{pmatrix}
-   1 & 1 & 1  \\
-   0 & 1 & -1 \\
-   0 & 0 & 0 \\
-   0 & 0 & 0
-\end{pmatrix}=2</script><p>A 不能由 B 线性表示</p>
-<h3 id="已知向量组A、B-，证明A、B等价"><a href="#已知向量组A、B-，证明A、B等价" class="headerlink" title="已知向量组A、B ，证明A、B等价"></a>已知向量组A、B ，证明A、B等价</h3><script type="math/tex; mode=display">
-A: a1=\begin{pmatrix}
-   0 \\
-   1 \\
-   1
-\end{pmatrix},
-a2=\begin{pmatrix}
-   1 \\
-   1 \\
-   0
-\end{pmatrix};
-
-B: b1=\begin{pmatrix}
-   -1 \\
-   0 \\
-   1
-\end{pmatrix},
-b2=\begin{pmatrix}
-   1 \\
-   2 \\
-   1
-\end{pmatrix},
-b2=\begin{pmatrix}
-   3 \\
-   2 \\
-   -1
-\end{pmatrix};</script><p>观察可知 R（A) = 2</p>
-<script type="math/tex; mode=display">
-R(B)=\begin{pmatrix}
-   1 & 0 & 1  \\
-   0 & 1 & 1 \\
-   0 & 0 & 0
-\end{pmatrix}=2</script><p>R(A) = R(B) = R(A, B) 即A、B等价</p>
-<h3 id="问a取什么值时下列向量组线性相关"><a href="#问a取什么值时下列向量组线性相关" class="headerlink" title="问a取什么值时下列向量组线性相关"></a>问a取什么值时下列向量组线性相关</h3><script type="math/tex; mode=display">
-A: a1=\begin{pmatrix}
-   a \\
-   1 \\
-   1
-\end{pmatrix},
-a2=\begin{pmatrix}
-   1 \\
-   a \\
-   -1
-\end{pmatrix},
-a3=\begin{pmatrix}
-   1 \\
-   -1 \\
-   a
-\end{pmatrix};</script><p>最简形：</p>
-<script type="math/tex; mode=display">
-A: \begin{pmatrix}
-   1 & \frac{1}{a} & \frac{1}{a} \\
-   0 & a-\frac{1}{a} & -1-\frac{1}{a} \\
-   0 & -1-\frac{1}{a} & a-\frac{1}{a}
-\end{pmatrix}</script><p>向量组线性相关即 R(A)&lt;3，则有：</p>
-<script type="math/tex; mode=display">
-a-\frac{1}{a}=1+\frac{1}{a}
-(a+1)(a-2)=0</script><p>a = -1 或 a = 2</p>
-<h3 id="设a1-a2线性无关，a1-b-a2-b线性相关，求b用a1-a2线性表示的表示式"><a href="#设a1-a2线性无关，a1-b-a2-b线性相关，求b用a1-a2线性表示的表示式" class="headerlink" title="设a1,a2线性无关，a1+b,a2+b线性相关，求b用a1,a2线性表示的表示式"></a>设a1,a2线性无关，a1+b,a2+b线性相关，求b用a1,a2线性表示的表示式</h3><p>设 b 可由 <script type="math/tex">xa_1 + ya_2</script>表示</p>
-<p>因为a1+b,a2+b线性相关, 所以<script type="math/tex">(x + 1)a_1 + ya_2 = z(xa_1 + (y + 1)a_2)</script></p>
-<script type="math/tex; mode=display">
-(x + 1)a_1 + ya_2 = z(xa_1 + (y + 1)a_2)</script><p>有<script type="math/tex">\frac{a+1}{zx} = \frac{y}{y+1}</script></p>
-<p>设 x = c, 有 y = -(1+c), 可得<script type="math/tex">b = ca_1 - (1+c)a_2</script></p>
-<p><a href="https://katex.org/#demo" target="_blank" rel="noopener">https://katex.org/#demo</a><br><a href="https://katex.org/docs/supported.html" target="_blank" rel="noopener">https://katex.org/docs/supported.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2412,7 +2283,7 @@ a-\frac{1}{a}=1+\frac{1}{a}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">258</span>
+                    <span class="site-state-item-count">259</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2465,7 +2336,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -3169,9 +3042,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
       
     
       
-        
-      
     
+      
+        
       
     
       

@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/16/delete-docker-image-fail/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/10/16/delete-docker-image-fail/" class="post-title-link" itemprop="url">delete docker image failed</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-16 13:53:37" itemprop="dateCreated datePublished" datetime="2019-10-16T13:53:37+08:00">2019-10-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-11-30 10:58:27" itemprop="dateModified" datetime="2019-11-30T10:58:27+08:00">2019-11-30</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="problem"><a href="#problem" class="headerlink" title="problem"></a>problem</h2><p><code>docker images -a</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker images -a</span><br><span class="line">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              72dc10d3deba        22 hours ago        230MB</span><br><span class="line">tdtest              latest              e3ad759bb993        22 hours ago        230MB</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              820bc1802af7        22 hours ago        230MB</span><br><span class="line">...</span><br><span class="line">&lt;none&gt;              &lt;none&gt;              ac8cea40eaa0        22 hours ago        223MB</span><br><span class="line">centos              latest              0f3e07c0138f        2 weeks ago         220MB</span><br><span class="line">redis               latest              01a52b3b5cd1        2 weeks ago         98.2MB</span><br><span class="line">ubuntu              latest              2ca708c1c9cc        3 weeks ago         64.2MB</span><br><span class="line">redis               alpine              ed7d2ff5a623        8 weeks ago         29.3MB</span><br></pre></td></tr></table></figure>
+<p>when put command <code>docker rmi 820bc1802af7</code>, <code>&lt;none&gt;:&lt;none&gt;</code> image delete fail.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: conflict: unable to delete 820bc1802af7 (cannot be forced) - image has dependent child images</span><br></pre></td></tr></table></figure></p>
+<p>this is cause by has other images depend on this image <code>820bc1802af7</code>.<br>use <code>docker image inspect</code>, find current image’s child image, repository tag name.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@CN-BJI-D-de9f66 ~]# docker image inspect --format=&apos;&#123;&#123;.RepoTags&#125;&#125; &#123;&#123;.Id&#125;&#125; &#123;&#123;.Parent&#125;&#125;&apos; $(docker image ls -q --filter since=820bc1802af7)</span><br><span class="line">[tdtest:latest] sha256:e3ad759bb99351a4951df11113e0ad3914a26d55e99e5243e13ebac19373efae sha256:8abd1595d4dfc922b81825940c0f6d73034eeb10b3e2b12a78b3d0e33d78588e</span><br></pre></td></tr></table></figure></p>
+<h2 id="mechanism"><a href="#mechanism" class="headerlink" title="mechanism"></a>mechanism</h2><h3 id="kind-one"><a href="#kind-one" class="headerlink" title="kind one"></a>kind one</h3><p><code>&lt;none&gt;:&lt;none&gt;</code> images which be related to the image be deleted will be deleted as will.<br>this kind of <code>&lt;none&gt;:&lt;none&gt;</code> is <code>middle image</code>, it won’t occupy space.</p>
+<h3 id="kind-two"><a href="#kind-two" class="headerlink" title="kind two"></a>kind two</h3><p>make a docker image <code>docker build -t hello-world ./</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FROM centos:latest</span><br><span class="line">RUN echo &apos;hello world&apos;</span><br></pre></td></tr></table></figure></p>
+<p>when centos have a new release, build hello-world image again, it will depend on the latest centos.<br>the <code>hello-world</code> depend on older centos, will become <code>&lt;none&gt;:&lt;none&gt;</code> dangling image.<br>this kind of <code>&lt;none&gt;:&lt;none&gt;</code> occupy space, it was originally tag image.</p>
+<p>all docker file store at <code>/var/lib/docker/graph</code> in default, docker be called <code>graph layer database</code>.<br>use command <code>docker rmi $(docker images -f &quot;dangling=true&quot; -q)</code> to delete wandering image layer.</p>
+<h2 id="other-command"><a href="#other-command" class="headerlink" title="other command"></a>other command</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># stop all container</span><br><span class="line">docker ps -a | grep &quot;Exited&quot; | awk &apos;&#123;print $1 &#125;&apos;|xargs docker stop</span><br><span class="line"></span><br><span class="line"># delete all container</span><br><span class="line">docker ps -a | grep &quot;Exited&quot; | awk &apos;&#123;print $1 &#125;&apos;|xargs docker rm</span><br><span class="line"></span><br><span class="line"># delete all none container</span><br><span class="line">docker images|grep none|awk &apos;&#123;print $3 &#125;&apos;|xargs docker rmi</span><br></pre></td></tr></table></figure>
+<p><a href="http://www.ibloger.net/article/3217.html" target="_blank" rel="noopener">http://www.ibloger.net/article/3217.html</a><br><a href="https://segmentfault.com/a/1190000011153919" target="_blank" rel="noopener">https://segmentfault.com/a/1190000011153919</a><br><a href="https://blog.csdn.net/sin_geek/article/details/86736417" target="_blank" rel="noopener">https://blog.csdn.net/sin_geek/article/details/86736417</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/16/change-repository-in-centos-8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2012,198 +2194,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/30/spring-cloud-feign-support-file-upload/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/30/spring-cloud-feign-support-file-upload/" class="post-title-link" itemprop="url">spring cloud feign support file upload</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-07-30 10:53:23" itemprop="dateCreated datePublished" datetime="2019-07-30T10:53:23+08:00">2019-07-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-08-10 16:41:37" itemprop="dateModified" datetime="2019-08-10T16:41:37+08:00">2019-08-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="phenomenon"><a href="#phenomenon" class="headerlink" title="phenomenon"></a>phenomenon</h2><p>Spring Cloud Feign component not support file upload between micron service.<br>it may throw exception like this:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">feign.codec.EncodeException: class [Lorg.springframework.web.multipart.MultipartFile; is not a type supported by this encoder.</span><br><span class="line">    at feign.codec.Encoder$Default.encode(Encoder.java:<span class="number">90</span>) ~[feign-core-<span class="number">9.5</span><span class="number">.1</span>.jar:na]</span><br><span class="line">    at feign.form.FormEncoder.encode(FormEncoder.java:<span class="number">87</span>) ~[feign-form-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br><span class="line">    at feign.form.spring.SpringFormEncoder.encode(SpringFormEncoder.java:<span class="number">64</span>) ~[feign-form-spring-<span class="number">3.3</span><span class="number">.0</span>.jar:<span class="number">3.3</span><span class="number">.0</span>]</span><br></pre></td></tr></table></figure>
-<h2 id="add-dependencies"><a href="#add-dependencies" class="headerlink" title="add dependencies"></a>add dependencies</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-fileupload<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><a href="https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring" target="_blank" rel="noopener">https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring</a></p>
-<p>be careful the <code>feign-form-spring</code> depend on <code>spring-web</code> it may have conflict with your project.<br>for example in  <code>spring-boot:2.0.5.RELEASE</code> <code>spring-cloud:Finchley.SR1</code> project has already import<br><code>spring-web:5.0.9.RELEASE</code>, if import <code>feign-form-spring:3.3.0</code> it will import <code>spring-web:4.3.18.RELEASE</code> too,<br>it cause spring bean creation exception.</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.github.openfeign.form<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>feign-form-spring<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h2 id="file-receive-part"><a href="#file-receive-part" class="headerlink" title="file receive part"></a>file receive part</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation</span>(<span class="string">"file upload receive part"</span>)</span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                MultipartFile[] files,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                Long userId,</span></span><br><span class="line"><span class="function">        @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">        @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                String userName)</span>&#123;</span><br><span class="line">                ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>be careful <code>consumes</code> property must add to the annotation <code>RequestMapping</code><br><code>method</code> property must be <code>POST</code>, <code>RequestPart</code> is working.</p>
-<h2 id="feign-client-part"><a href="#feign-client-part" class="headerlink" title="feign client part"></a>feign client part</h2><p>client part is a little complex.</p>
-<h3 id="add-configuration-class"><a href="#add-configuration-class" class="headerlink" title="add configuration class:"></a>add configuration class:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MultipartSupportConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ObjectFactory&lt;HttpMessageConverters&gt; messageConverters;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Scope</span>(<span class="string">"prototype"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Encoder <span class="title">feignEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//        return new SpringFormEncoder();</span></span><br><span class="line"><span class="comment">//        return new SpringFormEncoder(new SpringEncoder(messageConverters));</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FeignSpringFormEncoder(<span class="keyword">new</span> SpringEncoder(messageConverters));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> feign.Logger.<span class="function">Level <span class="title">multipartLoggerLevel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> feign.Logger.Level.FULL;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>SpringFormEncoder</code> support single file upload.</li>
-<li><code>FeignSpringFormEncoder</code> support file array upload.</li>
-<li><code>SpringEncoder</code> avoid project make <code>RequestBody</code> encoding error.</li>
-</ul>
-<h3 id="add-form-encoder"><a href="#add-form-encoder" class="headerlink" title="add form encoder"></a>add form encoder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignSpringFormEncoder</span> <span class="keyword">extends</span> <span class="title">FormEncoder</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with the default Feign's encoder as a delegate.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Default());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Constructor with specified delegate encoder.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> delegate delegate encoder, if this encoder couldn't encode object.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FeignSpringFormEncoder</span><span class="params">(Encoder delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">        MultipartFormContentProcessor processor = (MultipartFormContentProcessor) getContentProcessor(ContentType.MULTIPART);</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringSingleMultipartFileWriter());</span><br><span class="line">        processor.addWriter(<span class="keyword">new</span> SpringManyMultipartFilesWriter());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">encode</span><span class="params">(Object object, Type bodyType, RequestTemplate template)</span> <span class="keyword">throws</span> EncodeException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bodyType.equals(MultipartFile<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile file = (MultipartFile) object;</span><br><span class="line">            Map data = Collections.singletonMap(file.getName(), object);</span><br><span class="line">            <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (bodyType.equals(MultipartFile[]<span class="class">.<span class="keyword">class</span>)) </span>&#123;</span><br><span class="line">            MultipartFile[] file = (MultipartFile[]) object;</span><br><span class="line">            <span class="keyword">if</span>(file != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Map data = Collections.singletonMap(file.length == <span class="number">0</span> ? <span class="string">""</span> : file[<span class="number">0</span>].getName(), object);</span><br><span class="line">                <span class="keyword">super</span>.encode(data, MAP_STRING_WILDCARD, template);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.encode(object, bodyType, template);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="add-interface"><a href="#add-interface" class="headerlink" title="add interface:"></a>add interface:</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient</span>(name = <span class="string">"upload-example"</span>, configuration = MultipartSupportConfig<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">interface</span> <span class="title">CloudUploadService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiOperation</span>(<span class="string">"文件上传"</span>)</span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/upload"</span>, method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span><br><span class="line">    <span class="function">List&lt;XXX&gt; <span class="title">uploadFile</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            @RequestPart(value = <span class="string">"files"</span>)</span></span></span><br><span class="line"><span class="function">                    MultipartFile[] files,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userId"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userId"</span>, value = <span class="string">"用户ID"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotNull</span><span class="params">(message = <span class="string">"用户ID不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    Long userId,</span></span><br><span class="line"><span class="function">            @<span class="title">RequestParam</span><span class="params">(name = <span class="string">"userName"</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">ApiParam</span><span class="params">(name = <span class="string">"userName"</span>, value = <span class="string">"用户名称"</span>, required = <span class="keyword">true</span>)</span></span></span><br><span class="line"><span class="function">            @<span class="title">NotBlank</span><span class="params">(message = <span class="string">"用户名不能为空"</span>)</span></span></span><br><span class="line"><span class="function">                    String userName)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>in annotation <code>FeignClient</code> add configuration property, point to the encoding support class.</p>
-<h2 id="Testing"><a href="#Testing" class="headerlink" title="Testing"></a>Testing</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@RunWith</span>(SpringJUnit4ClassRunner<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">SpringBootTest</span></span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">UploadTester</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> CloudUploadService uploadService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="meta">@SneakyThrows</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testHandleFileUpload</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"upload.txt"</span>);</span><br><span class="line">        DiskFileItem fileItem = (DiskFileItem) <span class="keyword">new</span> DiskFileItemFactory().createItem(<span class="string">"file"</span>,</span><br><span class="line">                MediaType.TEXT_PLAIN_VALUE, <span class="keyword">true</span>, file.getName());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (InputStream input = <span class="keyword">new</span> FileInputStream(file); OutputStream os = fileItem.getOutputStream()) &#123;</span><br><span class="line">            IOUtils.copy(input, os);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Invalid file: "</span> + e, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        MultipartFile multi = <span class="keyword">new</span> CommonsMultipartFile(fileItem);</span><br><span class="line"></span><br><span class="line">        log.info(uploadService.handleFileUpload(<span class="keyword">new</span> MultipartFile[]&#123;multi&#125;, <span class="number">1L</span>, <span class="string">"tester"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="https://github.com/OpenFeign/feign-form" target="_blank" rel="noopener">https://github.com/OpenFeign/feign-form</a><br><a href="https://www.jianshu.com/p/4f4d9d084b1d" target="_blank" rel="noopener">https://www.jianshu.com/p/4f4d9d084b1d</a><br><a href="http://blog.didispace.com/spring-cloud-starter-dalston-2-4/" target="_blank" rel="noopener">http://blog.didispace.com/spring-cloud-starter-dalston-2-4/</a><br><a href="https://blog.csdn.net/gududedabai/article/details/79895893" target="_blank" rel="noopener">https://blog.csdn.net/gududedabai/article/details/79895893</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2250,7 +2240,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">258</span>
+                    <span class="site-state-item-count">259</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2303,7 +2293,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>

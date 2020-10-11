@@ -110,10 +110,11 @@
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/20200930161836.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/RedBlackTree.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/HashMap.png">
+<meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/4d8022db.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/3cc9813a.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/377effbf.png">
 <meta property="og:image" content="http://linchenguang.com/2020/09/30/HashMap-in-java8/bd20c215.png">
-<meta property="og:updated_time" content="2020-09-30T16:06:27.915Z">
+<meta property="og:updated_time" content="2020-10-11T04:04:01.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java8 中的 HashMap">
 <meta name="twitter:description" content="JDK1.8 中对HashMap底层进行了改造，例如扩容重散列算法优化、加入链表过长转红黑树结构等。鉴于日常搬砖靠HashMap打天下，面试题基本跑不了，全面认知散列表必不可少。 结构散列表的实现方法有两种：  开放地址法(Hashing with linear probing) 链接地址法(Hashing with separate chaining)">
@@ -423,7 +424,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2020-10-01 00:06:27" itemprop="dateModified" datetime="2020-10-01T00:06:27+08:00">2020-10-01</time>
+                <time title="Modified: 2020-10-11 12:04:01" itemprop="dateModified" datetime="2020-10-11T12:04:01+08:00">2020-10-11</time>
               
             
           </span>
@@ -513,6 +514,11 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">resize</span><span class="params">(<span class="keyword">int</span> newCapacity)</span> </span>&#123;</span><br><span class="line">     Entry[] oldTable = table;                    <span class="comment">//引用扩容前的Entry数组</span></span><br><span class="line">     <span class="keyword">int</span> oldCapacity = oldTable.length;         </span><br><span class="line">     <span class="keyword">if</span> (oldCapacity == MAXIMUM_CAPACITY) &#123;       <span class="comment">//扩容前的数组大小如果已经达到最大(2^30)了</span></span><br><span class="line">         threshold = Integer.MAX_VALUE;           <span class="comment">//修改阈值为int的最大值(2^31-1)，这样以后就不会扩容了</span></span><br><span class="line">         <span class="keyword">return</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     Entry[] newTable = <span class="keyword">new</span> Entry[newCapacity];  <span class="comment">//初始化一个新的Entry数组</span></span><br><span class="line">     transfer(newTable);                         <span class="comment">//！！将数据转移到新的Entry数组里</span></span><br><span class="line">     table = newTable;                           <span class="comment">//HashMap的table属性引用新的Entry数组</span></span><br><span class="line">     threshold = (<span class="keyword">int</span>)(newCapacity * loadFactor);<span class="comment">//修改阈值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>基本逻辑就是用容量更大的数组来代替原数组，<code>transfer</code>方法将元素拷贝至新数组。</p>
 <h3 id="1-8的优化"><a href="#1-8的优化" class="headerlink" title="1.8的优化"></a>1.8的优化</h3><p>JDK1.8的优化点在于充分利用了2倍扩容机制，让拷贝过程不需要重算HashCode：</p>
+<p><img src="/2020/09/30/HashMap-in-java8/4d8022db.png" alt="4d8022db"></p>
+<ul>
+<li>图（a）表示扩容前key1和key2两种key确定索引位置的示例</li>
+<li>图（b）表示扩容后key1和key2两种key确定索引位置的示例</li>
+</ul>
 <p><img src="/2020/09/30/HashMap-in-java8/3cc9813a.png" alt="3cc9813a"></p>
 <ul>
 <li>假设在扩容前有随机的 Key1、Key2 键在同一桶位，有相同散列码</li>
@@ -586,6 +592,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2020/10/11/Stroll-keyboard-fan-community-The-begining/" rel="prev" title="漫步键圈 - 初始">
+                漫步键圈 - 初始 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -653,7 +663,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">258</span>
+                    <span class="site-state-item-count">259</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -706,7 +716,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">18</span>
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
