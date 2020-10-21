@@ -351,6 +351,195 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/30/raspberry-home-media/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/30/raspberry-home-media/" class="post-title-link" itemprop="url">raspberry home media</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-30 20:06:20" itemprop="dateCreated datePublished" datetime="2017-04-30T20:06:20+08:00">2017-04-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>umask=0000</code> mean to all user <code>rwx</code></li>
+<li><code>0</code> followed mean no backup</li>
+<li><code>0</code> at last mean no <code>fsck</code> sequential check.</li>
+</ul>
+<h2 id="Mount-disk"><a href="#Mount-disk" class="headerlink" title="Mount disk"></a>Mount disk</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /mnt/seagate_2.5_80</span><br><span class="line">sudo mount -o uid=pi,gid=pi /dev/sda1 /mnt/seagate_2.5_80</span><br><span class="line">sudo umount /mnt/seagate_2.5_80</span><br></pre></td></tr></table></figure>
+<p><code>sda1</code>:</p>
+<ul>
+<li><code>sd</code> mean usb equipment</li>
+<li><code>a</code> mean first equipment</li>
+<li><code>1</code> mean the first partition</li>
+</ul>
+<p><a href="http://elinux.org/RPi_Adding_USB_Drives" target="_blank" rel="noopener">http://elinux.org/RPi_Adding_USB_Drives</a><br><a href="http://shumeipai.nxez.com/2013/09/08/raspberry-pi-to-mount-the-removable-hard-disk.html#comments" target="_blank" rel="noopener">raspberry-pi-to-mount-the-removable-hard-disk</a></p>
+<h2 id="Install-MiniDLNA"><a href="#Install-MiniDLNA" class="headerlink" title="Install MiniDLNA"></a>Install MiniDLNA</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install minidlna</span><br></pre></td></tr></table></figure>
+<h3 id="config-file"><a href="#config-file" class="headerlink" title="config file"></a>config file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/minidlna.conf</span><br><span class="line">media_dir=/mnt/seagate_2.5_80</span><br><span class="line">db_dir=/var/lib/minidlna</span><br><span class="line">listening_ip=192.168.3.1</span><br><span class="line">port=8200</span><br><span class="line">friendly_name=DLNA</span><br></pre></td></tr></table></figure>
+<h3 id="commands"><a href="#commands" class="headerlink" title="commands"></a>commands</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># start</span><br><span class="line">sudo service minidlna start</span><br><span class="line"># stop</span><br><span class="line">sudo service minidlna stop</span><br><span class="line">sudo killall minidlna</span><br><span class="line"># uninstall</span><br><span class="line">sudo apt-get remove --purge minidlna</span><br><span class="line"># auto load</span><br><span class="line">sudo update-rc.d minidlna defaults</span><br><span class="line"># cancel auto load</span><br><span class="line">sudo update-rc.d -f minidlna remove</span><br><span class="line"># reflesh resouces</span><br><span class="line">sudo service minidlna force-reload</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/29/B-Tree-index-in-mysql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2071,196 +2260,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/19/Hello-elasticsearch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/19/Hello-elasticsearch/" class="post-title-link" itemprop="url">Hello elasticsearch</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-19 21:42:51" itemprop="dateCreated datePublished" datetime="2017-03-19T21:42:51+08:00">2017-03-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo tar -xzvf elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo chown -R pi:pi elasticsearch-5.2.2</span><br></pre></td></tr></table></figure>
-<p>If not change directory’s owner, user command <code>sudo -E ./bin/elasticsearch</code> execute the script, or the java path can’t be find.</p>
-<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>./bin/elasticsearch<br><strong>dispatch memory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ES_JAVA_OPTS=&quot;-Xms70m -Xmx70m&quot;</span><br></pre></td></tr></table></figure></p>
-<p>./config/elasticsearch.yml<br><strong>set bootstrap to single machine mode</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: elastic-pi</span><br><span class="line"></span><br><span class="line">bootstrap.memory_lock: false</span><br><span class="line">bootstrap.system_call_filter: false</span><br><span class="line"></span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line">#http.cors.enabled: true  </span><br><span class="line">#http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure></p>
-<p>If exception happen like this<br><code>max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]</code><br>In single machine mode looks like no this problem<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo echo &quot;vm.max_map_count=262144&quot; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sudo sysctl -p</span><br></pre></td></tr></table></figure></p>
-<h3 id="Plugin"><a href="#Plugin" class="headerlink" title="Plugin"></a>Plugin</h3><p><a href="https://github.com/medcl/elasticsearch-analysis-ik" target="_blank" rel="noopener">elasticsearch-analysis-ik</a></p>
-<p>Pharse process plugin<br><strong>release to plugin directory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v5.2.2/elasticsearch-analysis-ik-5.2.2.zip</span><br><span class="line"></span><br><span class="line">unzip elasticsearch-analysis-ik-5.2.2.zip</span><br></pre></td></tr></table></figure></p>
-<h4 id="head"><a href="#head" class="headerlink" title="head"></a>head</h4><p>install npm/ nodejs/ elasticsearch-head</p>
-<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><p><code>org.elasticsearch.indices.IndexClosedException: closed</code></p>
-<p>delete the origin index and rebuild index, it works.</p>
-<p><code>Could not find any executable java binary. Please install java in your PATH or set JAVA_HOME</code></p>
-<p>make sure java be right configed, and current user has privilege to use elasticsearch/ environment variable</p>
-<h3 id="Operate"><a href="#Operate" class="headerlink" title="Operate"></a>Operate</h3><ol>
-<li><p>start<br>nohup ./bin/elasticsearch&amp;<br>./bin/elasticsearch -d</p>
-</li>
-<li><p>stop<br>ps -ef|grep elastic<br>kill -9 51271</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2307,7 +2306,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">259</span>
+                    <span class="site-state-item-count">260</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

@@ -351,6 +351,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/19/Hello-elasticsearch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/19/Hello-elasticsearch/" class="post-title-link" itemprop="url">Hello elasticsearch</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-19 21:42:51" itemprop="dateCreated datePublished" datetime="2017-03-19T21:42:51+08:00">2017-03-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo tar -xzvf elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo chown -R pi:pi elasticsearch-5.2.2</span><br></pre></td></tr></table></figure>
+<p>If not change directory’s owner, user command <code>sudo -E ./bin/elasticsearch</code> execute the script, or the java path can’t be find.</p>
+<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>./bin/elasticsearch<br><strong>dispatch memory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ES_JAVA_OPTS=&quot;-Xms70m -Xmx70m&quot;</span><br></pre></td></tr></table></figure></p>
+<p>./config/elasticsearch.yml<br><strong>set bootstrap to single machine mode</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: elastic-pi</span><br><span class="line"></span><br><span class="line">bootstrap.memory_lock: false</span><br><span class="line">bootstrap.system_call_filter: false</span><br><span class="line"></span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line">#http.cors.enabled: true  </span><br><span class="line">#http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure></p>
+<p>If exception happen like this<br><code>max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]</code><br>In single machine mode looks like no this problem<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo echo &quot;vm.max_map_count=262144&quot; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sudo sysctl -p</span><br></pre></td></tr></table></figure></p>
+<h3 id="Plugin"><a href="#Plugin" class="headerlink" title="Plugin"></a>Plugin</h3><p><a href="https://github.com/medcl/elasticsearch-analysis-ik" target="_blank" rel="noopener">elasticsearch-analysis-ik</a></p>
+<p>Pharse process plugin<br><strong>release to plugin directory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v5.2.2/elasticsearch-analysis-ik-5.2.2.zip</span><br><span class="line"></span><br><span class="line">unzip elasticsearch-analysis-ik-5.2.2.zip</span><br></pre></td></tr></table></figure></p>
+<h4 id="head"><a href="#head" class="headerlink" title="head"></a>head</h4><p>install npm/ nodejs/ elasticsearch-head</p>
+<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><p><code>org.elasticsearch.indices.IndexClosedException: closed</code></p>
+<p>delete the origin index and rebuild index, it works.</p>
+<p><code>Could not find any executable java binary. Please install java in your PATH or set JAVA_HOME</code></p>
+<p>make sure java be right configed, and current user has privilege to use elasticsearch/ environment variable</p>
+<h3 id="Operate"><a href="#Operate" class="headerlink" title="Operate"></a>Operate</h3><ol>
+<li><p>start<br>nohup ./bin/elasticsearch&amp;<br>./bin/elasticsearch -d</p>
+</li>
+<li><p>stop<br>ps -ef|grep elastic<br>kill -9 51271</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/15/Hello-hbase/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2082,185 +2272,6 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/02/Python-write-file/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/02/Python-write-file/" class="post-title-link" itemprop="url">Python write file</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-02 23:47:35" itemprop="dateCreated datePublished" datetime="2017-03-02T23:47:35+08:00">2017-03-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-18 21:24:09" itemprop="dateModified" datetime="2020-06-18T21:24:09+08:00">2020-06-18</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">f = open(<span class="string">"out.txt"</span>, <span class="string">"a"</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">102</span>):</span><br><span class="line">	<span class="comment"># something before write here</span></span><br><span class="line">	<span class="keyword">if</span> i&lt;<span class="number">10</span>:</span><br><span class="line">		f.write(<span class="string">"00"</span>)</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">	<span class="keyword">elif</span> i&lt;<span class="number">100</span>:</span><br><span class="line">		f.write(<span class="string">"0"</span>)</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure>
-<ul>
-<li>open file get a file variable</li>
-<li>write data from range of int</li>
-<li>after written close file</li>
-</ul>
-<p>string -&gt; char bunch slice method<br><code>target = src[0:len(src)-5]</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2307,7 +2318,7 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">259</span>
+                    <span class="site-state-item-count">260</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3066,9 +3077,9 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
       
     
       
-        
-      
     
+      
+        
       
     
       

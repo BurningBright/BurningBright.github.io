@@ -351,6 +351,187 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/" class="post-title-link" itemprop="url">观察redis集群握手造成的带宽损耗</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-05-21 09:57:50" itemprop="dateCreated datePublished" datetime="2020-05-21T09:57:50+08:00">2020-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-20 11:22:00" itemprop="dateModified" datetime="2020-06-20T11:22:00+08:00">2020-06-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="被槽吸引"><a href="#被槽吸引" class="headerlink" title="被槽吸引"></a>被槽吸引</h2><p><a href="https://github.com/antirez/redis/issues/2576" target="_blank" rel="noopener">why redis-cluster use 16384 slots? #2576</a><br><a href="https://www.cnblogs.com/rjzheng/p/11430592.html" target="_blank" rel="noopener">【原创】为什么Redis集群有16384个槽</a><br>看到这位博主的文章，感觉redis作者的考量很有意思。</p>
+<p>打开集群的头文件，看了一下数据结构，不出所料是16384个槽<br><a href="https://github.com/antirez/redis/blob/6.0.0/src/cluster.h" target="_blank" rel="noopener">https://github.com/antirez/redis/blob/6.0.0/src/cluster.h</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*-----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Redis cluster data structures, defines, exported API.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CLUSTER_SLOTS 16384</span></span><br><span class="line"></span><br><span class="line">line:<span class="number">248</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">uint16_t</span> type;      <span class="comment">/* Message type */</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> myslots[CLUSTER_SLOTS/<span class="number">8</span>];</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">union</span> clusterMsgData data;</span><br><span class="line">&#125; clusterMsg;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/05/21/Observe-the-bandwidth-loss-caused-by-the-redis-cluster-handshake/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/04/10/Search-content-in-files-under-folder/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2068,242 +2249,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/19/cmake-tutorial/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/10/19/cmake-tutorial/" class="post-title-link" itemprop="url">cmake tutorial</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-10-19 09:17:31" itemprop="dateCreated datePublished" datetime="2019-10-19T09:17:31+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-02-27 15:23:52" itemprop="dateModified" datetime="2020-02-27T15:23:52+08:00">2020-02-27</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure>
-<p>main.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello World\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_executable(main main.c)</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# cmake .</span><br><span class="line">-- The C compiler identification is GNU 8.2.1</span><br><span class="line">-- The CXX compiler identification is GNU 8.2.1</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc</span><br><span class="line">-- Check for working C compiler: /usr/bin/cc -- works</span><br><span class="line">-- Detecting C compiler ABI info</span><br><span class="line">-- Detecting C compiler ABI info - done</span><br><span class="line">-- Detecting C compile features</span><br><span class="line">-- Detecting C compile features - done</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++</span><br><span class="line">-- Check for working CXX compiler: /usr/bin/c++ -- works</span><br><span class="line">-- Detecting CXX compiler ABI info</span><br><span class="line">-- Detecting CXX compiler ABI info - done</span><br><span class="line">-- Detecting CXX compile features</span><br><span class="line">-- Detecting CXX compile features - done</span><br><span class="line">-- Configuring done</span><br><span class="line">-- Generating done</span><br><span class="line">-- Build files have been written to: /root/labc/demo</span><br></pre></td></tr></table></figure>
-<p>command generated <code>MakeFile</code>, and some auto generate file.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeCache.txt</span><br><span class="line">|-- CMakeFiles</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- Makefile</span><br><span class="line">|-- cmake_install.cmake</span><br><span class="line">`-- main.c</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# make</span><br><span class="line">Scanning dependencies of target main</span><br><span class="line">[ 50%] Building C object CMakeFiles/main.dir/main.c.o</span><br><span class="line">[100%] Linking C executable main</span><br><span class="line">[100%] Built target main</span><br></pre></td></tr></table></figure>
-<p>make and execute</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af demo]# ./main</span><br><span class="line">Hello World</span><br></pre></td></tr></table></figure>
-<h2 id="Multi-source-filie-under-one-directory"><a href="#Multi-source-filie-under-one-directory" class="headerlink" title="Multi-source filie under one directory"></a>Multi-source filie under one directory</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main.c</span><br><span class="line">|-- testFunc.c</span><br><span class="line">`-- testFunc.h</span><br></pre></td></tr></table></figure>
-<p>testFunc.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * testFunc.c</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">void func(int data)</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;data is %d\n&quot;, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>testFunc.h<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * testFunc.h</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">#ifndef _TEST_FUNC_H_</span><br><span class="line">#define _TEST_FUNC_H_</span><br><span class="line"></span><br><span class="line">void func(int data);</span><br><span class="line"></span><br><span class="line">#endif</span><br></pre></td></tr></table></figure></p>
-<p>main.c<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &quot;testFunc.h&quot;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    func(100);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_executable(main main.c testFunc.c)</span><br></pre></td></tr></table></figure></p>
-<p>add <code>testFunc.c</code> to executable param</p>
-<p>make and execute</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af multsource]# ./main</span><br><span class="line">data is 100</span><br></pre></td></tr></table></figure>
-<p>if we have a lot of source file, <code>add_executable</code> is troublesome.<br><code>aux_source_directory</code> can take files under directory as a source.</p>
-<p>add another function<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main</span><br><span class="line">|-- main.c</span><br><span class="line">|-- testFunc.c</span><br><span class="line">|-- testFunc.h</span><br><span class="line">|-- testFunc1.c</span><br><span class="line">`-- testFunc1.h</span><br></pre></td></tr></table></figure></p>
-<p>modify CMakeLists<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">aux_source_directory(. SRC_LIST)</span><br><span class="line"></span><br><span class="line">add_executable(main $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure></p>
-<p>make and execute<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@8bdf5f3b23af multsource1]# ./main</span><br><span class="line">data is 100</span><br><span class="line">data is 200</span><br></pre></td></tr></table></figure></p>
-<h2 id="Multi-source-filie-under-multi-directory"><a href="#Multi-source-filie-under-multi-directory" class="headerlink" title="Multi-source filie under multi-directory"></a>Multi-source filie under multi-directory</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- main</span><br><span class="line">|-- main.c</span><br><span class="line">|-- test_func</span><br><span class="line">|   |-- testFunc.c</span><br><span class="line">|   `-- testFunc.h</span><br><span class="line">`-- test_func1</span><br><span class="line">    |-- testFunc1.c</span><br><span class="line">    `-- testFunc1.h</span><br></pre></td></tr></table></figure>
-<p>group function by two directory <code>test_func</code> <code>test_func1</code></p>
-<p>modify <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">include_directories (test_func test_func1)</span><br><span class="line"></span><br><span class="line">aux_source_directory (test_func SRC_LIST)</span><br><span class="line">aux_source_directory (test_func1 SRC_LIST1)</span><br><span class="line"></span><br><span class="line">add_executable (main main.c $&#123;SRC_LIST&#125; $&#123;SRC_LIST1&#125;)</span><br></pre></td></tr></table></figure></p>
-<p>result is same as above.</p>
-<h2 id="Formal-structure"><a href="#Formal-structure" class="headerlink" title="Formal structure"></a>Formal structure</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">|-- include</span><br><span class="line">|   |-- testFunc.h</span><br><span class="line">|   `-- testFunc1.h</span><br><span class="line">|-- main</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main.c</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc1.c</span><br></pre></td></tr></table></figure>
-<ol>
-<li>put source file to <code>src</code></li>
-<li>put head file to <code>include</code></li>
-<li><code>build</code> used to store middle file</li>
-<li><code>bin</code> used to store executable file</li>
-</ol>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (src)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line">include_directories (../include)</span><br><span class="line"></span><br><span class="line">add_executable (main $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>EXECUTABLE_OUTPUT_PATH</code> : executable file path</li>
-<li><code>PROJECT_SOURCE_DIR</code> : project root</li>
-</ul>
-<p>result is same as above.</p>
-<h2 id="Dynamic-and-static-libraries"><a href="#Dynamic-and-static-libraries" class="headerlink" title="Dynamic and static libraries"></a>Dynamic and static libraries</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- build</span><br><span class="line">|-- lib</span><br><span class="line">`-- lib_testFunc</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc.h</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (lib_testFunc)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line">add_library (testFunc_shared SHARED $&#123;SRC_LIST&#125;)</span><br><span class="line">add_library (testFunc_static STATIC $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">set_target_properties (testFunc_shared PROPERTIES OUTPUT_NAME &quot;testFunc&quot;)</span><br><span class="line">set_target_properties (testFunc_static PROPERTIES OUTPUT_NAME &quot;testFunc&quot;)</span><br><span class="line"></span><br><span class="line">set (LIBRARY_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/lib)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>add_library</code>: generate dynamic or static libraries, (1. libname; 2. dynamic or static, static in default; 3. source file path)</li>
-<li><code>set_target_properties</code>: setting output name, can set other options like lib version</li>
-<li><code>LIBRARY_OUTPUT_PATH</code>: default path of library file</li>
-</ul>
-<p>in <code>build</code> run <code>cmake .</code> and <code>make</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- build</span><br><span class="line">|   |-- CMakeCache.txt</span><br><span class="line">|   |-- CMakeFiles</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- cmake_install.cmake</span><br><span class="line">|   `-- lib_testFunc</span><br><span class="line">|-- lib</span><br><span class="line">|   |-- libtestFunc.a</span><br><span class="line">|   `-- libtestFunc.so</span><br><span class="line">`-- lib_testFunc</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- testFunc.c</span><br><span class="line">    `-- testFunc.h</span><br></pre></td></tr></table></figure></p>
-<h2 id="Link-by-libraries"><a href="#Link-by-libraries" class="headerlink" title="Link by libraries"></a>Link by libraries</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">|-- lib</span><br><span class="line">|   |-- libtestFunc.a</span><br><span class="line">|   `-- libtestFunc.so</span><br><span class="line">|-- lib_testFunc</span><br><span class="line">|   |-- CMakeLists.txt</span><br><span class="line">|   |-- testFunc.c</span><br><span class="line">|   `-- testFunc.h</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    `-- main.c</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">add_subdirectory (lib_testFunc)</span><br><span class="line"></span><br><span class="line">add_subdirectory (src)</span><br></pre></td></tr></table></figure></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory (. SRC_LIST)</span><br><span class="line"></span><br><span class="line"># find testFunc.h</span><br><span class="line">include_directories (../lib_testFunc)</span><br><span class="line"></span><br><span class="line">link_directories ($&#123;PROJECT_SOURCE_DIR&#125;/lib)</span><br><span class="line"></span><br><span class="line">add_executable (main $&#123;SRC_LIST&#125;)</span><br><span class="line"></span><br><span class="line">target_link_libraries (main testFunc)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><code>link_directories</code> : Add non-standard shared library search path</li>
-<li><code>target_link_libraries</code> : Link the target file with the library file</li>
-</ul>
-<h2 id="Compile-options"><a href="#Compile-options" class="headerlink" title="Compile options"></a>Compile options</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">`-- main.cpp</span><br></pre></td></tr></table></figure>
-<p>main.cpp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    auto data = 100;</span><br><span class="line">    std::cout &lt;&lt; &quot;data: &quot; &lt;&lt; data &lt;&lt; &quot;\n&quot;;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>CMakeLists.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project (demo)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br><span class="line"></span><br><span class="line">add_compile_options(-std=c++11 -Wall)</span><br><span class="line"></span><br><span class="line">add_executable(main main.cpp)</span><br></pre></td></tr></table></figure></p>
-<h2 id="Compile-control"><a href="#Compile-control" class="headerlink" title="Compile control"></a>Compile control</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|-- build</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main1.c</span><br><span class="line">    `-- main2.c</span><br></pre></td></tr></table></figure>
-<p>outside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 2.8)</span><br><span class="line"></span><br><span class="line">project(demo)</span><br><span class="line"></span><br><span class="line">option(MYDEBUG &quot;enable debug compilation&quot; OFF)</span><br><span class="line"></span><br><span class="line">set (EXECUTABLE_OUTPUT_PATH $&#123;PROJECT_SOURCE_DIR&#125;/bin)</span><br><span class="line"></span><br><span class="line">add_subdirectory(src)</span><br></pre></td></tr></table></figure></p>
-<p>add an option <code>MYDEBUG</code></p>
-<p>inside <code>CMakeLists.txt</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line"></span><br><span class="line">add_executable(main1 main1.c)</span><br><span class="line"></span><br><span class="line">if (MYDEBUG)</span><br><span class="line">    add_executable(main2 main2.c)</span><br><span class="line">else()</span><br><span class="line">    message(STATUS &quot;Currently is not in debug mode&quot;)    </span><br><span class="line">endif()</span><br></pre></td></tr></table></figure></p>
-<p>user <code>MYDEBUG</code> to decide whether or not compile <code>main2</code><br><code>cmake .. -DMYDEBUG=ON &amp;&amp; make</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">|-- CMakeLists.txt</span><br><span class="line">|-- bin</span><br><span class="line">|   |-- main1</span><br><span class="line">|   `-- main2</span><br><span class="line">|-- build</span><br><span class="line">|   |-- CMakeCache.txt</span><br><span class="line">|   |-- CMakeFiles</span><br><span class="line">|   |-- Makefile</span><br><span class="line">|   |-- cmake_install.cmake</span><br><span class="line">|   `-- src</span><br><span class="line">`-- src</span><br><span class="line">    |-- CMakeLists.txt</span><br><span class="line">    |-- main1.c</span><br><span class="line">    `-- main2.c</span><br></pre></td></tr></table></figure>
-<p><a href="https://blog.csdn.net/whahu1989/article/details/82078563" target="_blank" rel="noopener">https://blog.csdn.net/whahu1989/article/details/82078563</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2350,7 +2295,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">259</span>
+                    <span class="site-state-item-count">260</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

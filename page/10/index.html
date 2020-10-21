@@ -351,6 +351,207 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/01/26/wireless-raspberry-audio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/01/26/wireless-raspberry-audio/" class="post-title-link" itemprop="url">wireless raspberry audio</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-01-26 19:38:45" itemprop="dateCreated datePublished" datetime="2019-01-26T19:38:45+08:00">2019-01-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://github.com/BaReinhard/Super-Simple-Raspberry-Pi-Audio-Receiver-Install/blob/master/img/SSRPARI_1080_668.png?raw=true" alt></p>
+<h1 id="System"><a href="#System" class="headerlink" title="System"></a>System</h1><p><a href="https://www.raspberrypi.org/downloads/" target="_blank" rel="noopener">https://www.raspberrypi.org/downloads/</a><br>Install <code>Raspbian Stretch</code></p>
+<ul>
+<li>Version:November 2018</li>
+<li>Release date:2018-11-13</li>
+<li>Kernel version:4.14</li>
+</ul>
+<h2 id="Origin-shift"><a href="#Origin-shift" class="headerlink" title="Origin shift"></a>Origin shift</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/apt/sources.list</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br><span class="line">deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/apt/sources.list.d/raspi.list</span><br><span class="line">deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ stretch main ui</span><br><span class="line">deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ stretch main ui</span><br></pre></td></tr></table></figure>
+<p>sudo apt-get update</p>
+<h2 id="Config-wifi-amp-ssh"><a href="#Config-wifi-amp-ssh" class="headerlink" title="Config wifi &amp; ssh"></a>Config wifi &amp; ssh</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</span><br><span class="line">network=&#123;</span><br><span class="line">    ssid=&quot;SSID&quot;</span><br><span class="line">    key_mgmt=WPA-PSK</span><br><span class="line">    psk=&quot;PASSWD&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ifconfig wlan0</span><br><span class="line">sudo ifdown wlan0</span><br><span class="line">sudo ifup wlan0</span><br><span class="line"></span><br><span class="line"># or</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<h3 id="open-ssh-service"><a href="#open-ssh-service" class="headerlink" title="open ssh service"></a>open ssh service</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
+<p>open ssh in configuration</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Socket error Event: 32 Error: 10053</span><br></pre></td></tr></table></figure>
+<p>if terminal throw exception then check service<br><code>sudo sshd -t</code></p>
+<p>key not exist:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key</span><br></pre></td></tr></table></figure></p>
+<p>config rsa_key in <code>/etc/ssh</code></p>
+<p>permission not allow:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 600 /etc/ssh/*</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh restart</span><br></pre></td></tr></table></figure>
+<p>add command to <code>/etc/rc.load</code> before <code>exit 0</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/ssh start</span><br></pre></td></tr></table></figure></p>
+<h2 id="Install-A2DP"><a href="#Install-A2DP" class="headerlink" title="Install A2DP"></a>Install A2DP</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install</span><br><span class="line">cd super-simple-raspberry-pi-audio-receiver-install</span><br><span class="line">git checkout stretch-fix</span><br><span class="line">sudo ./install.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># install home version</span><br><span class="line">2. Install the Raspberry Pi Audio Receiver Home Installation</span><br><span class="line"></span><br><span class="line"># default name</span><br><span class="line">Do you want all the Devices to use the same name? (y/n) : Choose y</span><br><span class="line"></span><br><span class="line"># default passwd</span><br><span class="line">Device WiFi Password: Choose Password</span><br><span class="line"></span><br><span class="line"># no sound card</span><br><span class="line">0. No Sound Card</span><br></pre></td></tr></table></figure>
+<h2 id="Install-create-ap"><a href="#Install-create-ap" class="headerlink" title="Install create_ap"></a>Install create_ap</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/oblique/create_ap.git</span><br><span class="line">cd create_ap</span><br><span class="line">sudo make install</span><br><span class="line">sudo apt-get install util-linux procps hostapd iproute2 iw haveged dnsmasq</span><br></pre></td></tr></table></figure>
+<p>add command to <code>/etc/rc.load</code> before <code>exit 0</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sudo create_ap -n wlan0 raspberry raspberry --no-virl &gt; /dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2019/01/26/wireless-raspberry-audio/raspberry_ios_audio.png" alt="raspberry_ios_audio.png"></p>
+<p>here i use AP without Internet sharing.<br>if network environment is good, raspberry have internet then add <code>eth0</code> to command.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create_ap -m bridge wlan0 eth0 MyAccessPoint MyPassPhrase</span><br></pre></td></tr></table></figure></p>
+<p>enjoy IOS airplay :)</p>
+<p><a href="http://shumeipai.nxez.com/2018/12/28/install-a2dp-to-turn-the-raspberry-pi-into-a-bluetooth-speaker.html" target="_blank" rel="noopener">http://shumeipai.nxez.com/2018/12/28/install-a2dp-to-turn-the-raspberry-pi-into-a-bluetooth-speaker.html</a><br><a href="https://blog.csdn.net/huayucong/article/details/51376506" target="_blank" rel="noopener">https://blog.csdn.net/huayucong/article/details/51376506</a><br><a href="https://blog.csdn.net/newtonsm/article/details/78859152" target="_blank" rel="noopener">https://blog.csdn.net/newtonsm/article/details/78859152</a><br><a href="https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install" target="_blank" rel="noopener">https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install</a><br><a href="https://github.com/oblique/create_ap" target="_blank" rel="noopener">https://github.com/oblique/create_ap</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/01/20/Vector-group-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2150,189 +2351,6 @@ a-\frac{1}{a}=1+\frac{1}{a}
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/09/22/synchronize-fork-project-in-github/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/09/22/synchronize-fork-project-in-github/" class="post-title-link" itemprop="url">synchronize fork project in github</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-09-22 18:40:43" itemprop="dateCreated datePublished" datetime="2018-09-22T18:40:43+08:00">2018-09-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:38:17" itemprop="dateModified" datetime="2020-06-17T22:38:17+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2017/02/03/github-style/095329_upMF_12.png" alt></p>
-<p><a href="2017/02/03/github-style/">2017/02/03/github-style/</a></p>
-<p>When fork a project then want to follow project owner’s commit,<br>We need add another local repository.</p>
-<h3 id="Add-remote-repository-center"><a href="#Add-remote-repository-center" class="headerlink" title="Add remote repository center"></a>Add remote repository center</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git remote add liu https://github.com/liuweijw/fw-cloud-framework.git</span><br><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
-<p>the name <code>liu</code> is just a alias, separate with you project remote <code>origin</code></p>
-<h3 id="Fetch-the-owner’s-project-update"><a href="#Fetch-the-owner’s-project-update" class="headerlink" title="Fetch the owner’s project update"></a>Fetch the owner’s project update</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git fetch liu</span><br><span class="line">git branch -av</span><br></pre></td></tr></table></figure>
-<h3 id="Merge-branchs"><a href="#Merge-branchs" class="headerlink" title="Merge branchs"></a>Merge branchs</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout master</span><br><span class="line">git merge liu/master</span><br></pre></td></tr></table></figure>
-<p>if the merge process have conflict or failed, you may need to solve merging status<br>or just follow owner’s line <code>reset -hard</code> restore the branch and make the merge fast-forward.</p>
-<h3 id="Push"><a href="#Push" class="headerlink" title="Push"></a>Push</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git push origin</span><br><span class="line">#git push -u origin master -f</span><br></pre></td></tr></table></figure>
-<p>last push local synchronized project to you remote repository.<br>if you are an contributor <code>new pull request</code> may need to notify project owner.</p>
-<p><a href="https://www.jianshu.com/p/633ae5c491f5" target="_blank" rel="noopener">https://www.jianshu.com/p/633ae5c491f5</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2379,7 +2397,7 @@ a-\frac{1}{a}=1+\frac{1}{a}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">259</span>
+                    <span class="site-state-item-count">260</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3136,9 +3154,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
   
     
       
-        
-      
     
+      
+        
       
     
       

@@ -351,6 +351,215 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/03/Tomcat-ClassLoader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/03/Tomcat-ClassLoader/" class="post-title-link" itemprop="url">Tomcat-ClassLoader</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-03 18:47:51" itemprop="dateCreated datePublished" datetime="2017-08-03T18:47:51+08:00">2017-08-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JVM-class-loader"><a href="#JVM-class-loader" class="headerlink" title="JVM class loader"></a>JVM class loader</h2><p>JVM contain loaders:</p>
+<ol>
+<li>BootStrapClassLoader<br> jvm need foundation class</li>
+<li>ExtClassLoader<br> load <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>AppClassLoader<br> $CLASS_PATH$ and -classpath, and class not be contained above</li>
+<li>CustomClassLoader<br> self define class loader[<strong>progress</strong>]</li>
+</ol>
+<p>different classloader’s class <strong>can’t use in mix</strong>,<br>even if the class is <strong>same package name</strong> and <strong>same class name</strong>.</p>
+<p>JVM use delegation model</p>
+<ol>
+<li>pass request to father <strong>until the top</strong></li>
+<li>if top can’t load return to <strong>sub level</strong></li>
+<li>if the floor can’t load class throw <strong>ClassNotFoundException</strong></li>
+</ol>
+<p><a href="2017-05-16 Java-ClassLoader-2">java class loader</a></p>
+<p>So if a same path class be put in $CLASS_PATH$ directory, java will load<br>$CLASS_PATH$ class first.</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/java-classloader.svg" alt></p>
+<h2 id="Tomcat-class-loader"><a href="#Tomcat-class-loader" class="headerlink" title="Tomcat class loader"></a>Tomcat class loader</h2><p>Tomcat loader like this:</p>
+<ol>
+<li>Bootstrap<br> guilde class loader <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>System<br> tomcat container loading <code>$CATALINA_HOME$/bin</code> jars</li>
+<li>Common<br> app common use class <code>$CATALINA_HOME$/lib</code> jars</li>
+<li>WebApp<br> <code>WEB-INF/classes</code> and <code>WEB-INF/lib</code> developer’s workspace</li>
+</ol>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/tomcat-classloader.svg" alt></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>When developing throw an exception from java.io.ObjectStreamClass</p>
+<p><em>row:2034</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> ClassCastException(</span><br><span class="line">  <span class="string">"cannot assign instance of "</span> +</span><br><span class="line">  val.getClass().getName() + <span class="string">" to field "</span> +</span><br><span class="line">  f.getDeclaringClass().getName() + <span class="string">"."</span> +</span><br><span class="line">  f.getName() + <span class="string">" of type "</span> +</span><br><span class="line">  f.getType().getName() + <span class="string">" in instance of "</span> +</span><br><span class="line">  obj.getClass().getName());</span><br></pre></td></tr></table></figure></p>
+<p>From inspect the class type is a blank type only a path name.<br>Manually change the Class type suppress exception then jump breakpoint<br>the throw a exception like this:</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/TIM-20170802190442.png" alt></p>
+<h3 id="Key-Point"><a href="#Key-Point" class="headerlink" title="Key Point"></a>Key Point</h3><p>The Class used to communication is for other application use,<br>but the class contain a property that is from acceptor’s offical workspace.</p>
+<p>Two application use a same tomcat and<br>put the dependent jar in <code>$CATALINA_HOME$/lib</code>.</p>
+<p>It lead to a problem, the acceptor’s application load object and it’s field<br>class in two different classloader. one is <code>WebAppClassLoader</code>, on is <code>bootstrap</code></p>
+<ol>
+<li>In object receive acceptor object use the common class jar[find in floor level]</li>
+<li>When object comes the property field’s class be found in workspace<br> but object’s classloader can’t see,<br> so as it’s sign target field class is just a shell.</li>
+<li>When suppress exception and jump breakpoint,<br> the business class violate the loader constraint.</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/23/Cryptology-in-transmission/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2043,185 +2252,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Oracle-query-table-column-comment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/06/Oracle-query-table-column-comment/" class="post-title-link" itemprop="url">Oracle query table column comment</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-06 18:09:39" itemprop="dateCreated datePublished" datetime="2017-06-06T18:09:39+08:00">2017-06-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tables</strong></p>
-<h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_columns</strong></p>
-<h3 id="Query-Comment"><a href="#Query-Comment" class="headerlink" title="Query Comment"></a>Query Comment</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select * from user_tab_comments;</span><br><span class="line">select * from user_tab_comments t where t.COMMENTS like &apos;%shit%&apos; order by t.TABLE_NAME;</span><br><span class="line"></span><br><span class="line">select * from user_col_comments;</span><br><span class="line">select * from user_col_comments t where t.COLUMN_NAME=&apos;xxx&apos;;</span><br><span class="line"></span><br><span class="line">select * from user_tab_comments t1, user_col_comments t2 where t1.TABLE_NAME = t2.TABLE_NAME and t2.COMMENTS like &apos;%shit%&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_comments</strong></p>
-<p><strong>user_col_comments</strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2268,7 +2298,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">259</span>
+                    <span class="site-state-item-count">260</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
