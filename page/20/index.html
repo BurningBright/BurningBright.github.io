@@ -351,6 +351,221 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/01/Hash-index-in-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/01/Hash-index-in-mysql/" class="post-title-link" itemprop="url">Hash index in mysql</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-01 15:18:50" itemprop="dateCreated datePublished" datetime="2017-05-01T15:18:50+08:00">2017-05-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Just like the hash function in java<br>Dispatch field’s row pointer to a slot by field’s hash code.<br>If some rows have same hash code, then storage pointer to a list.</p>
+<h2 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h2><p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE animal (</span><br><span class="line">   name   VARCHAR(50)   NOT NULL,</span><br><span class="line">   weight DOUBLE(11, 3) NOT NULL,</span><br><span class="line">   KEY `name` (`name`) USING HASH</span><br><span class="line">) ENGINE=MEMORY;</span><br></pre></td></tr></table></figure></p>
+<p>mysql&gt; select * from animal;<br>+————+————-+<br>| name   | weight  |<br>+————+————-+<br>| python |  20.500 |<br>| bear   | 321.720 |<br>| lion   | 221.980 |<br>| rabbit |   7.123 |<br>+————+————-+</p>
+<h2 id="Try"><a href="#Try" class="headerlink" title="Try"></a>Try</h2><p><code>f</code> represent the hash function:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f(&apos;python&apos;) = 2123</span><br><span class="line">f(&apos;bear&apos;)   = 6417</span><br><span class="line">f(&apos;lion&apos;)   = 8771</span><br><span class="line">f(&apos;rabbit&apos;) = 2359</span><br></pre></td></tr></table></figure></p>
+<p>then:</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>Hash value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2123</td>
+<td>point to row 1</td>
+</tr>
+<tr>
+<td>2359</td>
+<td>point to row 4</td>
+</tr>
+<tr>
+<td>6417</td>
+<td>point to row 2</td>
+</tr>
+<tr>
+<td>8771</td>
+<td>point to row 3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Mysql calculate query’s hash value to decide<br>which pointer or a pointer list, sql want.</li>
+<li>Because index it’s self only store a <code>short</code> value,<br>so hash code’s length is not determined by data type.</li>
+</ul>
+<h2 id="Some-limit"><a href="#Some-limit" class="headerlink" title="Some limit"></a>Some limit</h2><ol>
+<li>Index only have hash code, so can’t avoid table space i/o.<br>But if table engine is memory, that’s not affected much.</li>
+<li>Hash index can’t be used to sort query collection.</li>
+<li>Not support part match, it only rely on hash code.</li>
+<li>Only support <code>equal</code> operation like:<br><code>=</code> <code>&lt;&gt;</code> <code>in()</code> <code>not in()</code></li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/30/raspberry-home-media/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2083,188 +2298,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/20/Elasticsearch-demo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/20/Elasticsearch-demo/" class="post-title-link" itemprop="url">Elasticsearch demo</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-20 21:06:25" itemprop="dateCreated datePublished" datetime="2017-03-20T21:06:25+08:00">2017-03-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Create-a-new-index"><a href="#Create-a-new-index" class="headerlink" title="Create a new index"></a>Create a new index</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -XDELETE http://192.168.3.11:9200/policy</span><br><span class="line"></span><br><span class="line">curl -XPUT http://192.168.3.11:9200/policy</span><br></pre></td></tr></table></figure>
-<h3 id="A-new-field-mapping"><a href="#A-new-field-mapping" class="headerlink" title="A new field mapping"></a>A new field mapping</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/_mapping -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;fulltext&quot;: &#123;</span><br><span class="line">            &quot;_all&quot;: &#123;</span><br><span class="line">            &quot;analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">            &quot;search_analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">            &quot;term_vector&quot;: &quot;no&quot;,</span><br><span class="line">            &quot;store&quot;: &quot;false&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;content&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">                &quot;analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">                &quot;search_analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">                &quot;include_in_all&quot;: &quot;true&quot;,</span><br><span class="line">                &quot;boost&quot;: 8</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;&apos;</span><br></pre></td></tr></table></figure>
-<h3 id="Add-data"><a href="#Add-data" class="headerlink" title="Add data"></a>Add data</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/1 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年1月1日起全国实行国Ⅴ排放标准&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/2 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年1月1日起实施:车内空气质量强制达标&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/3 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年试行新能源汽车碳配额管理&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/4 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;新能源车生产企业准入规则 有望于2017年正式实施&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/5 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;电池行业新规范 有望于2017年全面执行&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/6 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;新能源补贴新政即将出炉 2017年将实施&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/7 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;《外商投资产业指导目录》修订版将执行 合资车企股比不会放开&quot;&#125;</span><br><span class="line">&apos;</span><br></pre></td></tr></table></figure>
-<h3 id="Have-a-search"><a href="#Have-a-search" class="headerlink" title="Have a search"></a>Have a search</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/_search  -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123; &quot;match&quot; : &#123; &quot;content&quot; : &quot;能源&quot; &#125;&#125;,</span><br><span class="line">    &quot;highlight&quot; : &#123;</span><br><span class="line">        &quot;pre_tags&quot; : [&quot;&lt;tag1&gt;&quot;, &quot;&lt;tag2&gt;&quot;],</span><br><span class="line">        &quot;post_tags&quot; : [&quot;&lt;/tag1&gt;&quot;, &quot;&lt;/tag2&gt;&quot;],</span><br><span class="line">        &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;content&quot; : &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&apos;</span><br></pre></td></tr></table></figure>
-<h3 id="Check-engine-status"><a href="#Check-engine-status" class="headerlink" title="Check engine status"></a>Check engine status</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET http://192.168.3.11:9200/policy/_analyze?text=2017&amp;tokenizer=ik_max_word</span><br><span class="line"></span><br><span class="line">curl -XGET http://192.168.3.11:9200/_cluster/health?pretty=true</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2306,7 +2344,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">260</span>
+                    <span class="site-state-item-count">261</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

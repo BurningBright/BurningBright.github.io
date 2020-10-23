@@ -351,6 +351,183 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/20/Elasticsearch-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/20/Elasticsearch-demo/" class="post-title-link" itemprop="url">Elasticsearch demo</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-20 21:06:25" itemprop="dateCreated datePublished" datetime="2017-03-20T21:06:25+08:00">2017-03-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Create-a-new-index"><a href="#Create-a-new-index" class="headerlink" title="Create a new index"></a>Create a new index</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -XDELETE http://192.168.3.11:9200/policy</span><br><span class="line"></span><br><span class="line">curl -XPUT http://192.168.3.11:9200/policy</span><br></pre></td></tr></table></figure>
+<h3 id="A-new-field-mapping"><a href="#A-new-field-mapping" class="headerlink" title="A new field mapping"></a>A new field mapping</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/_mapping -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;fulltext&quot;: &#123;</span><br><span class="line">            &quot;_all&quot;: &#123;</span><br><span class="line">            &quot;analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">            &quot;search_analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">            &quot;term_vector&quot;: &quot;no&quot;,</span><br><span class="line">            &quot;store&quot;: &quot;false&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;content&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">                &quot;analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">                &quot;search_analyzer&quot;: &quot;ik_max_word&quot;,</span><br><span class="line">                &quot;include_in_all&quot;: &quot;true&quot;,</span><br><span class="line">                &quot;boost&quot;: 8</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="Add-data"><a href="#Add-data" class="headerlink" title="Add data"></a>Add data</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/1 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年1月1日起全国实行国Ⅴ排放标准&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/2 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年1月1日起实施:车内空气质量强制达标&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/3 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;2017年试行新能源汽车碳配额管理&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/4 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;新能源车生产企业准入规则 有望于2017年正式实施&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/5 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;电池行业新规范 有望于2017年全面执行&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/6 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;新能源补贴新政即将出炉 2017年将实施&quot;&#125;</span><br><span class="line">&apos;</span><br><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/7 -d&apos;</span><br><span class="line">&#123;&quot;content&quot;:&quot;《外商投资产业指导目录》修订版将执行 合资车企股比不会放开&quot;&#125;</span><br><span class="line">&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="Have-a-search"><a href="#Have-a-search" class="headerlink" title="Have a search"></a>Have a search</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">curl -XPOST http://192.168.3.11:9200/policy/fulltext/_search  -d&apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123; &quot;match&quot; : &#123; &quot;content&quot; : &quot;能源&quot; &#125;&#125;,</span><br><span class="line">    &quot;highlight&quot; : &#123;</span><br><span class="line">        &quot;pre_tags&quot; : [&quot;&lt;tag1&gt;&quot;, &quot;&lt;tag2&gt;&quot;],</span><br><span class="line">        &quot;post_tags&quot; : [&quot;&lt;/tag1&gt;&quot;, &quot;&lt;/tag2&gt;&quot;],</span><br><span class="line">        &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;content&quot; : &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="Check-engine-status"><a href="#Check-engine-status" class="headerlink" title="Check engine status"></a>Check engine status</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET http://192.168.3.11:9200/policy/_analyze?text=2017&amp;tokenizer=ik_max_word</span><br><span class="line"></span><br><span class="line">curl -XGET http://192.168.3.11:9200/_cluster/health?pretty=true</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/19/Hello-elasticsearch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2079,204 +2256,11 @@ M = 5769^{9553} \quad mod \quad 14363</script><p>The <strong>text</strong> is 72
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/03/RSA-Principle-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/03/RSA-Principle-2/" class="post-title-link" itemprop="url">RSA Principle 2</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-03 09:45:53" itemprop="dateCreated datePublished" datetime="2017-03-03T09:45:53+08:00">2017-03-03</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Generate-cipher-code"><a href="#Generate-cipher-code" class="headerlink" title="Generate cipher code"></a>Generate cipher code</h2><h3 id="Step-1-Choose-two-coprime-number-randomly"><a href="#Step-1-Choose-two-coprime-number-randomly" class="headerlink" title="Step 1 Choose two coprime number randomly"></a>Step 1 Choose two coprime number randomly</h3><p> <code>53</code> and <code>271</code></p>
-<p>The bigger these number is the more difficulty to break it.</p>
-<h3 id="Step-2-First-number-multiplied-by-second-number"><a href="#Step-2-First-number-multiplied-by-second-number" class="headerlink" title="Step 2 First number multiplied by second number"></a>Step 2 First number multiplied by second number</h3><script type="math/tex; mode=display">
-n = 53 \times 271 = 14363 = 11100000011011</script><p>totle 14bits<br>In daily application use <strong>1024 bits[128bytes]</strong> usually.<br>In some important application use <strong>2048 bits[256bytes]</strong> usually.</p>
-<h3 id="Step-3-Calculate-n’s-Euler-function"><a href="#Step-3-Calculate-n’s-Euler-function" class="headerlink" title="Step 3 Calculate n’s Euler function"></a>Step 3 Calculate n’s Euler function</h3><script type="math/tex; mode=display">
-\phi(n) = (p-1)(q-1) = 52 \times 270 = 14040</script><h3 id="Step-4-Choose-a-number-e"><a href="#Step-4-Choose-a-number-e" class="headerlink" title="Step 4 Choose a number e"></a>Step 4 Choose a number <code>e</code></h3><script type="math/tex; mode=display">
-1 < e < \varphi(n)</script><p>and the number <code>e</code> has <strong>coprime relation</strong> with</p>
-<script type="math/tex; mode=display">
-\varphi(n)</script><p>Choose between (1, 14040), suppose <code>97</code> as <code>e</code>;</p>
-<h3 id="Step-5-Calculate-mod-inverse-element"><a href="#Step-5-Calculate-mod-inverse-element" class="headerlink" title="Step 5 Calculate mod inverse element"></a>Step 5 Calculate mod inverse element</h3><p>Calculate the mod inverse element <code>d</code> for <code>e</code> with</p>
-<script type="math/tex; mode=display">
-\varphi(n)</script><script type="math/tex; mode=display">
-ed \equiv 1 \quad (mod \quad \phi(n))</script><p>-&gt;</p>
-<script type="math/tex; mode=display">
-ed -1 = k\phi(n)</script><p>-&gt;</p>
-<script type="math/tex; mode=display">
-ex + \phi(n)y = 1</script><p>-&gt;</p>
-<script type="math/tex; mode=display">
-97x + 14040y = 1</script><p>Based on Extended Euclidean algorithm<br>x = -4487, y = 31 -&gt; (-4487, 31) is a solution pair<br>positive <code>d</code><br>(-4487, 31) -&gt; (9553, -66)</p>
-<h3 id="Step-6-Packaging"><a href="#Step-6-Packaging" class="headerlink" title="Step 6 Packaging"></a>Step 6 Packaging</h3><p>Pack <code>n</code> and <code>e</code> into public key,<code>n</code> and <code>d</code> into private key<br>n = 14040 e = 97 d = 9953 and k = -66</p>
-<p>So , <strong>(14363, 97)</strong> is public key, <strong>(14363, 9553)</strong> is private key.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2318,7 +2302,7 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">260</span>
+                    <span class="site-state-item-count">261</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3079,9 +3063,9 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
       
     
       
-        
-      
     
+      
+        
       
     
       

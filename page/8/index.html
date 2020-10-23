@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/12/mysql-5-7-json-type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/12/mysql-5-7-json-type/" class="post-title-link" itemprop="url">mysql 5.7 json type</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-12 19:21:15" itemprop="dateCreated datePublished" datetime="2019-08-12T19:21:15+08:00">2019-08-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="none-structure-data-in-mysql"><a href="#none-structure-data-in-mysql" class="headerlink" title="none structure data in mysql"></a>none structure data in mysql</h2><p>in mysql 5.7 , support store data in json type.</p>
+<h3 id="create-table-with-virtual-column"><a href="#create-table-with-virtual-column" class="headerlink" title="create table with virtual column."></a>create table with virtual column.</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> players (  </span><br><span class="line">   <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> primary <span class="keyword">key</span> auto_increment,</span><br><span class="line">   player <span class="keyword">JSON</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">   <span class="comment">-- name virtual column</span></span><br><span class="line">   vname <span class="built_in">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">GENERATED</span> <span class="keyword">ALWAYS</span> <span class="keyword">AS</span> (<span class="string">`player`</span> -&gt;&gt; <span class="string">'$.name'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">COLUMNS</span> <span class="keyword">FROM</span> <span class="string">`players`</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="prepare-save-progress"><a href="#prepare-save-progress" class="headerlink" title="prepare save progress"></a>prepare save progress</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- check whether store procedure open</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'log_bin_trust_function_creators'</span>;</span><br><span class="line"><span class="comment">-- open store procedure in mysql</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_bin_trust_function_creators=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">delimiter $$</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> insert_player(<span class="keyword">in</span> max_num <span class="built_in">int</span>(<span class="number">10</span>))</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line"> <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line"> <span class="keyword">declare</span> json_data <span class="built_in">varchar</span>(<span class="number">2000</span>) <span class="keyword">default</span> <span class="string">'1'</span>;</span><br><span class="line"> <span class="keyword">set</span> autocommit= <span class="number">0</span>;</span><br><span class="line"> repeat</span><br><span class="line"> <span class="keyword">set</span> i=i+<span class="number">1</span>;</span><br><span class="line"> <span class="keyword">set</span> json_data = <span class="keyword">concat</span>(<span class="keyword">concat</span>(<span class="string">'&#123;"name":"xxx-'</span>,i),<span class="string">'","age":34&#125;'</span>);</span><br><span class="line"> <span class="keyword">insert</span> <span class="keyword">into</span> players (<span class="keyword">id</span>,player) <span class="keyword">values</span>(<span class="literal">null</span>,json_data);</span><br><span class="line"> until i=max_num <span class="keyword">end</span> <span class="keyword">repeat</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="keyword">end</span> $$</span><br></pre></td></tr></table></figure>
+<h3 id="test-data-and-try"><a href="#test-data-and-try" class="headerlink" title="test data, and try"></a>test data, and try</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> insert_player(<span class="number">2000000</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="string">`name_idx`</span> <span class="keyword">ON</span> <span class="string">`players`</span>(<span class="string">`vname`</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/bugs4j/article/details/79932538" target="_blank" rel="noopener">https://blog.csdn.net/bugs4j/article/details/79932538</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/10/Hello-rabbit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2158,182 +2340,11 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/20/Throttling-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/Throttling-pattern/" class="post-title-link" itemprop="url">Throttling pattern</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-20 10:39:47 / Modified: 22:14:20" itemprop="dateCreated datePublished" datetime="2019-05-20T10:39:47+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2019/05/20/Throttling-pattern/throttling-pattern.png" alt="throttling-pattern.png"></p>
-<h2 id="Interface-Throttler"><a href="#Interface-Throttler" class="headerlink" title="Interface Throttler"></a>Interface Throttler</h2><p> <code>Throttler</code> defined a simple method used to call throttler implementaton.</p>
-<p><code>public void start()</code></p>
-<h2 id="Implementaton"><a href="#Implementaton" class="headerlink" title="Implementaton"></a>Implementaton</h2><p><code>ThrottleTimerImpl</code> implement <code>Throttler</code> used to cyclical reset service visit counter.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Timer(<span class="keyword">true</span>).schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        callsCount.reset();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, <span class="number">0</span>, throttlePeriod);</span><br></pre></td></tr></table></figure>
-<h2 id="Counter"><a href="#Counter" class="headerlink" title="Counter"></a>Counter</h2><p><code>CallsCount</code> use <code>ConcurrentHashMap</code> to implement multi thread save counter.</p>
-<p><code>private Map&lt;String, AtomicLong&gt; tenantCallsCount = new ConcurrentHashMap&lt;&gt;();</code></p>
-<h2 id="POJO"><a href="#POJO" class="headerlink" title="POJO"></a>POJO</h2><p><code>Tenant</code> represent a kind of business.<br>have properties <code>name</code> and <code>allowedCallsPerSecond</code></p>
-<h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><p><code>XXXService</code> call <code>Throttler</code> to start reset thread.<br><code>XXXService</code> call counter to check whether ths visit under threshold.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String tenantName = tenant.getName();</span><br><span class="line"><span class="keyword">long</span> count = callsCount.getCount(tenantName);</span><br><span class="line"><span class="keyword">if</span> (count &gt;= tenant.getAllowedCallsPerSecond()) &#123;</span><br><span class="line">    <span class="comment">// TODO throw excepton or return error code</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line">callsCount.incrementCount(tenantName);</span><br></pre></td></tr></table></figure>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Throttling is used to limit client visit frequency, so we need:<br>a <code>overall situation counter</code><br>a <code>daemonize thread resetor</code><br>a <code>business represent pojo</code><br>a <code>limited flow service</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2375,7 +2386,7 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">260</span>
+                    <span class="site-state-item-count">261</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3138,9 +3149,9 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
       
     
       
-        
-      
     
+      
+        
       
     
       
