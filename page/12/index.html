@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/12/Install-mysql-linux-5-7-22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/06/12/Install-mysql-linux-5-7-22/" class="post-title-link" itemprop="url">Install mysql linux 5.7.22</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-12 14:53:48" itemprop="dateCreated datePublished" datetime="2018-06-12T14:53:48+08:00">2018-06-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Decompress-package"><a href="#Decompress-package" class="headerlink" title="Decompress package"></a>Decompress package</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local</span><br><span class="line">tar -xzvf mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz</span><br><span class="line">rm -f mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz</span><br><span class="line">mv mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz mysql</span><br></pre></td></tr></table></figure>
+<h3 id="Group-amp-User"><a href="#Group-amp-User" class="headerlink" title="Group &amp; User"></a>Group &amp; User</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># linux account</span><br><span class="line">groupadd mysql</span><br><span class="line">useradd -r -g mysql mysql</span><br><span class="line"></span><br><span class="line"># dataspace</span><br><span class="line">cd /usr/local/mysql</span><br><span class="line">mkdir data</span><br><span class="line"></span><br><span class="line"># privilege</span><br><span class="line">cd /usr/local</span><br><span class="line">chown -R mysql mysql/</span><br><span class="line">chgrp -R mysql mysql/</span><br></pre></td></tr></table></figure>
+<h3 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line"></span><br><span class="line">./mysqld --initialize</span><br><span class="line">--user=mysql</span><br><span class="line">--basedir=/usr/local/mysql/</span><br><span class="line">--datadir=/usr/local/mysql/data/</span><br><span class="line">--lc_messages_dir=/usr/local/mysql/share</span><br><span class="line">--lc_messages=en_US</span><br></pre></td></tr></table></figure>
+<p>remember the init root password</p>
+<h3 id="Setting"><a href="#Setting" class="headerlink" title="Setting"></a>Setting</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/my.cnf</span><br><span class="line"># modify</span><br><span class="line"></span><br><span class="line">basedir=/usr/local/mysql/</span><br><span class="line">datadir=/usr/local/mysql/data</span><br><span class="line">port=3306</span><br><span class="line">character-set-server=utf8</span><br><span class="line">explicit_defaults_for_timestamp=true</span><br><span class="line"></span><br><span class="line">#datadir=/var/lib/mysql</span><br><span class="line">#socket=/usr/local/mysql/data/mysql.sock</span><br><span class="line">user=mysql</span><br></pre></td></tr></table></figure>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/support-files/</span><br><span class="line">cp mysql.server /etc/init.d/mysql</span><br><span class="line">vi /etc/init.d/mysql</span><br><span class="line"></span><br><span class="line"># add setting</span><br><span class="line">basedir=/usr/local/mysql/</span><br><span class="line">datadir=/usr/local/mysql/data/</span><br><span class="line"></span><br><span class="line">chmod +x /etc/init.d/mysql</span><br><span class="line">chkconfig --add mysql</span><br></pre></td></tr></table></figure>
+<h3 id="privilege"><a href="#privilege" class="headerlink" title="privilege"></a>privilege</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">./mysql -u root -p</span><br><span class="line">set password=password(&quot;root&quot;);</span><br><span class="line">grant all privileges on *.* to&apos;root&apos; @&apos;%&apos; identified by &apos;root&apos;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld: Can&apos;t create/write to file &apos;/tmp/ibgXpx9Y&apos; (Errcode: 13 - Permission denied)</span><br></pre></td></tr></table></figure>
+<p>if the /tmp dirctory have no permission:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 /tmp</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://blog.csdn.net/NB6063/article/details/80417319" target="_blank" rel="noopener">https://blog.csdn.net/NB6063/article/details/80417319</a><br><a href="https://blog.csdn.net/shaochenshuo/article/details/51375905" target="_blank" rel="noopener">https://blog.csdn.net/shaochenshuo/article/details/51375905</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/11/Intelij-maven-3-x-nexus-2-x/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2113,394 +2295,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/03/10/Elementary-transformation-Linear-equations-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/10/Elementary-transformation-Linear-equations-2/" class="post-title-link" itemprop="url">Elementary transformation & Linear equations (2)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-03-10 16:09:01" itemprop="dateCreated datePublished" datetime="2018-03-10T16:09:01+08:00">2018-03-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="初等变换将矩阵化为最简形"><a href="#初等变换将矩阵化为最简形" class="headerlink" title="初等变换将矩阵化为最简形"></a>初等变换将矩阵化为最简形</h3><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 2 & -1 \\
- 2 & 0 & 3 & 1 \\
- 3 & 0 & 4 & 3
-\end{vmatrix}</script><script type="math/tex; mode=display">r_2-2r_1, r_3-3_r1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 2 & 2 \\
- 0 & 0 & -1 & 3 \\
- 0 & 0 & -2 & 6
-\end{vmatrix}</script><script type="math/tex; mode=display">-1*r_2, r1-2r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 0 & 5 \\
- 0 & 0 & 1 & -3 \\
- 0 & 0 & -2 & 6
-\end{vmatrix}</script><h3 id="求可逆矩阵P-使PA化为行最简形"><a href="#求可逆矩阵P-使PA化为行最简形" class="headerlink" title="求可逆矩阵P,使PA化为行最简形"></a>求可逆矩阵P,使PA化为行最简形</h3><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 2 & 3 & 4 \\
- 2 & 3 & 4 & 5 \\
- 5 & 4 & 3 & 2
-\end{vmatrix}</script><p>矩阵A行列式不为0，矩阵变换 (AE) -&gt; (EP)</p>
-<script type="math/tex; mode=display">
-(AE) = \begin{vmatrix}
- 1 & 2 & 3 & 4 & 1 &  & 0 \\
- 2 & 3 & 4 & 5 & 0 & 1 & 0 \\
- 5 & 4 & 3 & 2 & 0 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_2-2r_1, r_3-5r_1, -1*r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 2 & 3 & 4 & 1 & 0 & 0 \\
- 0 & 1 & 2 & 3 & 2 & -1 & 0 \\
- 0 & -6 & -12 & -18 & -5 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1-2r_2, r_3+6r_2</script><script type="math/tex; mode=display">
-(EP) = \begin{vmatrix}
- 1 & 0 & -1 & -2 & -3 & 2 & 0 \\
- 0 & 1 & 2 & 3 & 2 & -1 & 0 \\
- 0 & 0 & 0 & 0 & 7 & -6 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">
-P = \begin{vmatrix}
- -3 & 2 & 0 \\
- 2 & -1 & 0 \\
- 7 & -6 & 1
-\end{vmatrix}</script><h3 id="设"><a href="#设" class="headerlink" title="设$$"></a>设$$</h3><p>\begin{vmatrix}<br> -5 &amp; 3 &amp; 1\<br> 2 &amp; -1 &amp; 1<br>\end{vmatrix}</p>
-<script type="math/tex; mode=display">，有以下问题
-
-* 求可逆矩阵P,使PA化为行最简形</script><p>(AE) = \begin{vmatrix}<br> -5 &amp; 3 &amp; 1 &amp; 1 &amp; 0\<br> 2 &amp; -1 &amp; 1 &amp; 0 &amp; 1<br>\end{vmatrix}</p>
-<script type="math/tex; mode=display">
-
-$$r_1+2r_2, -1*r_1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & -1 & -3 & -1 & -2\\
- 2 & -1 & 1 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_2-2r_1, r_1+r_2</script><script type="math/tex; mode=display">
-(EP) = \begin{vmatrix}
- 1 & 0 & 4 & 1 & 3\\
- 0 & 1 & 7 & 2 & 5
-\end{vmatrix}</script><script type="math/tex; mode=display">
-P = \begin{vmatrix}
- 1 & 3\\
- 2 & 5
-\end{vmatrix}</script><ul>
-<li>求可逆矩阵Q,使<script type="math/tex">QA^T</script>化为行最简形</li>
-</ul>
-<script type="math/tex; mode=display">
-(A^TE) = \begin{vmatrix}
- -5 & 2 & 1 & 0 & 0\\
- 3 & -1 & 0 & 1 & 0\\
- 1 & 1 & 0 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1+2r_2, r_2-3r_1, r_3-r_1, r_3-r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 1 & 2 & 0\\
- 0 & 1 & 3 & 5 & 0\\
- 0 & 0 & -4 & 7 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">
-Q = \begin{vmatrix}
- 1 & 2 & 0\\
- 3 & 5 & 0\\
- -4 & 7 & 1
-\end{vmatrix}</script><h3 id="利用矩阵初等变换，求方阵的逆矩阵-begin-vmatrix-3-2-1-3-1-5-3-2-3-end-vmatrix"><a href="#利用矩阵初等变换，求方阵的逆矩阵-begin-vmatrix-3-2-1-3-1-5-3-2-3-end-vmatrix" class="headerlink" title="利用矩阵初等变换，求方阵的逆矩阵\begin{vmatrix} 3 & 2 & 1\\ 3 & 1 & 5\\ 3 & 2 & 3\end{vmatrix}"></a>利用矩阵初等变换，求方阵的逆矩阵<script type="math/tex">\begin{vmatrix} 3 & 2 & 1\\ 3 & 1 & 5\\ 3 & 2 & 3\end{vmatrix}</script></h3><script type="math/tex; mode=display">r_2-r_1, r_3-r_1, -1*r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 3 & 2 & 1 & 1 & 0 & 0 \\
- 0 & 1 & 5 & -1 & 1 & 0 \\
- 0 & 2 & 3 & -1 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1-2r_2, \frac 1 2 r_3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 3 & 0 & 9 & -1 & 2 & 0 \\
- 0 & 1 & -4 & 1 & -1 & 0 \\
- 0 & 2 & 3 & -1 & 0 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1-r_3, r_2+4r_3,  \frac 1 3 r_1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 0 & \frac 7 6 & \frac 2 3 & -\frac 3 2 \\
- 0 & 1 & 0 & -1 & -1 & 2 \\
- 0 & 0 & 1 & -\frac 1 2 & 0 & \frac 1 2
-\end{vmatrix}</script><h3 id="求X，使AX-B"><a href="#求X，使AX-B" class="headerlink" title="求X，使AX=B"></a>求X，使AX=B</h3><p>初等行变换<br>$P(A, B) ~ (F, PB)$ 当F为单位矩阵时，P为A的逆矩阵即： $P(A, B) ~ (E, A^{-1}B)$</p>
-<ul>
-<li><script type="math/tex; mode=display">
-A = \begin{vmatrix}
-4 & 1 & -2\\
-2 & 2 & 1\\
-3 & 1 & -1
-\end{vmatrix}</script><script type="math/tex; mode=display">
-B = \begin{vmatrix}
-1 & -3\\
-2 & 2\\
-3 & -1
-\end{vmatrix}</script></li>
-</ul>
-<script type="math/tex; mode=display">
-(AB) = \begin{vmatrix}
-4 & 1 & -2 & 1 & -3\\
-2 & 2 & 1 & 2 & 2\\
-3 & 1 & -1 & 3 & -1
-\end{vmatrix}</script><script type="math/tex; mode=display">r_3-r_2, r1 \leftrightarrow r3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & -2 & -2 & 1 & -3\\
-2 & 2 & 1 & 2 & 2\\
-4 & 1 & -2 & 1 & -3
-\end{vmatrix}</script><script type="math/tex; mode=display">r_2-2r_1, r_3-4r_1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & -1 & -2 & 1 & -3\\
-0 & 4 & 5 & 0 & 8\\
-0 & 5 & 6 & -3 & 9
-\end{vmatrix}</script><script type="math/tex; mode=display">r_3-r_2, r_2 \leftrightarrow r_3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & -1 & -2 & 1 & -3\\
-0 & 1 & 1 & -3 & 1\\
-0 & 4 & 5 & 0 & 8
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1+r_2, r_3-4r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & 0 & -1 & -2 & -2\\
-0 & 1 & 1 & -3 & 1\\
-0 & 0 & 1 & 12 & 4
-\end{vmatrix}</script><script type="math/tex; mode=display">r_1+r_3, r_2-r_3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & 0 & 0 & 10 & 2\\
-0 & 1 & 0 & -15 & -3\\
-0 & 0 & 1 & 12 & 4
-\end{vmatrix}</script><script type="math/tex; mode=display">
-X = \begin{vmatrix}
-10 & 2\\
--15 & -3\\
-12 & 4
-\end{vmatrix}</script><h3 id="求X，使XA-B"><a href="#求X，使XA-B" class="headerlink" title="求X，使XA=B"></a>求X，使XA=B</h3><p>初等列变换<br>$P(A top B) ~ (F top PB)$当F为单位矩阵时，P为A的逆矩阵即：$P(A top B) ~ (E top A^{-1}B)$</p>
-<ul>
-<li><script type="math/tex; mode=display">
-A = \begin{vmatrix}
-0 & 2 & 1\\
-2 & -1 & 3\\
--3 & 3 & -4
-\end{vmatrix}</script><script type="math/tex; mode=display">
-B = \begin{vmatrix}
-1 & 2 & 3\\
-2 & -3 & 1
-\end{vmatrix}</script></li>
-</ul>
-<script type="math/tex; mode=display">
-(A top B) = \begin{vmatrix}
- 0 & 2 & 1\\
- 2 & -1 & 3\\
- -3 & 3 & -4\\
- 1 & 2 & 3\\
- 2 & -3 & 1
-\end{vmatrix}</script><script type="math/tex; mode=display">c_1 \leftrightarrow c_3, c_2-2c_1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 0\\
- 3 & 1 & 2\\
- -4 & -1 & -3\\
- 3 & 0 & 1\\
- 1 & 3 & 2
-\end{vmatrix}</script><script type="math/tex; mode=display">c_2+4c_3, c_1-3c_2, c_3-2c_2, -1*c_3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 0\\
- 0 & 1 & 0\\
- -1 & -1 & 1\\
- 3 & 0 & -1\\
- -8 & 3 & 4
-\end{vmatrix}</script><script type="math/tex; mode=display">c_1+3c_3, c_2+c_3</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 1 & 0 & 0\\
- 0 & 1 & 0\\
- 0 & 0 & 1\\
- 2 & -1 & -1\\
- -4 & 7 & 4
-\end{vmatrix}</script><script type="math/tex; mode=display">
-X = \begin{vmatrix}
- 2 & -1 & -1\\
- -4 & 7 & 4
-\end{vmatrix}</script><h3 id="k为何值时会有对应个数解？A-begin-vmatrix-1-2-3k-1-2k-3-k-2-3-end-vmatrix"><a href="#k为何值时会有对应个数解？A-begin-vmatrix-1-2-3k-1-2k-3-k-2-3-end-vmatrix" class="headerlink" title="k为何值时会有对应个数解？A = \begin{vmatrix}1 & -2 & 3k\\-1 & 2k & -3\\k & -2 & 3\end{vmatrix}"></a>k为何值时会有对应个数解？<script type="math/tex">A = \begin{vmatrix}1 & -2 & 3k\\-1 & 2k & -3\\k & -2 & 3\end{vmatrix}</script></h3><script type="math/tex; mode=display">r_2+r_1, r_3-kr_1</script><script type="math/tex; mode=display">
-A = \begin{vmatrix}
-1 & -2 & 3k\\
-0 & 2k-2 & 3k-3\\
-0 & 2k-2 & 3k - 3k^2
-\end{vmatrix}</script><ol>
-<li>k=1时 ，秩为1</li>
-<li>k=-1时， 秩为2</li>
-<li>k不为1或-1时， 秩为3</li>
-</ol>
-<h3 id="lambda取何值时，非齐次线性方程组"><a href="#lambda取何值时，非齐次线性方程组" class="headerlink" title="\lambda取何值时，非齐次线性方程组"></a><script type="math/tex">\lambda</script>取何值时，非齐次线性方程组</h3><script type="math/tex; mode=display">
-\begin{cases}
-\lambda x_1 &+ x_2 + x_3 = 1 \\
-x_1 &+ \lambda x_2 + x_3 = \lambda \\
-x_1 &+ x_2 + \lambda x_3 = \lambda^2
-\end{cases}</script><script type="math/tex; mode=display">r_1<->r_3, r_2-r_1, r_3-\lambda r_1</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & 1 & \lambda & \lambda^2\\
-0 & \lambda-1 & 1-\lambda & \lambda-\lambda^2\\
-0 & 1-\lambda & 1-\lambda^2 & 1-\lambda^3
-\end{vmatrix}</script><script type="math/tex; mode=display">\frac 1 {\lambda-1} r_2, r_3+r_2, r_1 -r_2</script><script type="math/tex; mode=display">
-\begin{vmatrix}
-1 & 0 & \lambda+1 & \lambda^2+\lambda\\
-0 & 1 & -1 & -\lambda\\
-0 & 0 & 2-\lambda-\lambda^2 & 1+\lambda-\lambda^2-\lambda^3
-\end{vmatrix}</script><ol>
-<li><script type="math/tex">\lambda</script> 不为1或-2时， 有唯一解</li>
-<li><script type="math/tex">\lambda</script> 为-2时， 无解</li>
-<li><script type="math/tex">\lambda</script> 为1时， 有无限解</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2547,7 +2341,7 @@ x_1 &+ x_2 + \lambda x_3 = \lambda^2
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">261</span>
+                    <span class="site-state-item-count">262</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3322,51 +3116,9 @@ x_1 &+ x_2 + \lambda x_3 = \lambda^2
       
     
       
-        
-      
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 

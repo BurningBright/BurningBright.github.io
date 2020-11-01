@@ -351,6 +351,194 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/23/Hello-jenkins/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/23/Hello-jenkins/" class="post-title-link" itemprop="url">Hello jenkins</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-23 11:27:14" itemprop="dateCreated datePublished" datetime="2019-08-23T11:27:14+08:00">2019-08-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="install-jenkins"><a href="#install-jenkins" class="headerlink" title="install jenkins"></a>install jenkins</h2><p>Download jenkins.war, tomcat 8<br>if install suggested plugins report error like this<br>“No such plugin: cloudbees-folder”</p>
+<p>install <code>cloudbees-folder.hpi</code> first</p>
+<h2 id="install-plugins"><a href="#install-plugins" class="headerlink" title="install plugins"></a>install plugins</h2><p>install <code>Maven Integration</code>, if error then in plugin management<br>upload plugin package manually.</p>
+<h2 id="proxy-server"><a href="#proxy-server" class="headerlink" title="proxy server"></a>proxy server</h2><p>if jenkins server can’t visit internet then use proxy, and have a try again.<br><a href="https://github.com/adamfisk/LittleProxy" target="_blank" rel="noopener">https://github.com/adamfisk/LittleProxy</a><br>username:user1<br>password:user2</p>
+<h2 id="maven-setting"><a href="#maven-setting" class="headerlink" title="maven setting"></a>maven setting</h2><p>maven can set proxy too, modify <code>setting.xml</code>, add proxy setting<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;proxy&gt;</span><br><span class="line">    &lt;id&gt;optional&lt;/id&gt;</span><br><span class="line">    &lt;active&gt;true&lt;/active&gt;</span><br><span class="line">    &lt;protocol&gt;http&lt;/protocol&gt;</span><br><span class="line">    &lt;username&gt;user1&lt;/username&gt;</span><br><span class="line">    &lt;password&gt;user2&lt;/password&gt;</span><br><span class="line">    &lt;host&gt;192.168.1.2&lt;/host&gt;</span><br><span class="line">    &lt;port&gt;8080&lt;/port&gt;</span><br><span class="line">    &lt;nonProxyHosts&gt;localhost|127.0.0.1&lt;/nonProxyHosts&gt;</span><br><span class="line">  &lt;/proxy&gt;</span><br><span class="line">&lt;/proxies&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="git-setting"><a href="#git-setting" class="headerlink" title="git setting"></a>git setting</h2><p>save git account in linux server<br><code>vim .git-credentials</code><br>add <code>http(s)://{username}:{password}@serverAddress</code><br>add setting<br><code>git config --global credential.helper store</code></p>
+<h2 id="prevent-preocess-be-killed"><a href="#prevent-preocess-be-killed" class="headerlink" title="prevent preocess be killed"></a>prevent preocess be killed</h2><ol>
+<li>add command <code>BUILD_ID=DONTKILLME</code> in every shell input</li>
+<li>add param <code>-Dhudson.util.ProcessTree.disable=true</code> in java command</li>
+<li>add setting <code>JAVA_OPTS=&quot;$JAVA_OPTS -Dhudson.util.ProcessTree.disable=true&quot;</code> in <code>catalina.sh</code></li>
+</ol>
+<h3 id="install-jenkins-1"><a href="#install-jenkins-1" class="headerlink" title="install jenkins"></a>install jenkins</h3><p><a href="https://blog.csdn.net/utopiaofartoria/article/details/79612754" target="_blank" rel="noopener">https://blog.csdn.net/utopiaofartoria/article/details/79612754</a><br><a href="https://blog.csdn.net/ming19951224/article/details/80958761" target="_blank" rel="noopener">https://blog.csdn.net/ming19951224/article/details/80958761</a></p>
+<h3 id="jenkins-experience"><a href="#jenkins-experience" class="headerlink" title="jenkins experience"></a>jenkins experience</h3><p><a href="https://www.jianshu.com/p/06d2c7fda227" target="_blank" rel="noopener">https://www.jianshu.com/p/06d2c7fda227</a></p>
+<h3 id="setting-of-tools"><a href="#setting-of-tools" class="headerlink" title="setting of tools"></a>setting of tools</h3><p><a href="https://www.cnblogs.com/wkrbky/p/6351243.html" target="_blank" rel="noopener">https://www.cnblogs.com/wkrbky/p/6351243.html</a><br><a href="https://www.cnblogs.com/zhuiluoyu/p/7723949.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhuiluoyu/p/7723949.html</a></p>
+<h3 id="global-proxy"><a href="#global-proxy" class="headerlink" title="global proxy"></a>global proxy</h3><p><a href="https://www.cnblogs.com/EasonJim/p/9826681.html" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/9826681.html</a></p>
+<h2 id="resources"><a href="#resources" class="headerlink" title="resources"></a>resources</h2><p><a href="http://ftp.icm.edu.pl/packages/jenkins/plugins" target="_blank" rel="noopener">http://ftp.icm.edu.pl/packages/jenkins/plugins</a><br><a href="https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/" target="_blank" rel="noopener">https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins/</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/12/mysql-5-7-json-type/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2143,203 +2331,6 @@ t(x) = 1/x</script><p><img src="/2019/06/04/understand-lagrange-multiplier/20190
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/29/Mathjax-in-hexo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/29/Mathjax-in-hexo/" class="post-title-link" itemprop="url">Mathjax in hexo</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-29 13:45:57" itemprop="dateCreated datePublished" datetime="2019-05-29T13:45:57+08:00">2019-05-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-07-09 07:44:46" itemprop="dateModified" datetime="2020-07-09T07:44:46+08:00">2020-07-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-<p>
-When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
-</p>
-
-
-<p>Simple inline $a = b + c$.<br>Block:</p>
-<script type="math/tex; mode=display">\frac{\partial u}{\partial t}
-= h^2 \left( \frac{\partial^2 u}{\partial x^2} +
-\frac{\partial^2 u}{\partial y^2} +
-\frac{\partial^2 u}{\partial z^2}\right)</script><script type="math/tex; mode=display">
-\frac{\partial f}{\partial x}= \lambda \frac{\partial g}{\partial x} \\\\
-\frac{\partial f}{\partial y}=\lambda \frac{\partial g}{\partial y}   \\\\
-g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="add ejs"></a>add ejs</h3><p><code>themes/xxx/layout/_partial/mathjax.ejs</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- MathJax配置，可通过单美元符号书写行内公式等 --&gt;</span><br><span class="line">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;</span><br><span class="line">    MathJax.Hub.Config(&#123;</span><br><span class="line">    &quot;HTML-CSS&quot;: &#123;</span><br><span class="line">        preferredFont: &quot;TeX&quot;,</span><br><span class="line">        availableFonts: [&quot;STIX&quot;,&quot;TeX&quot;],</span><br><span class="line">        linebreaks: &#123; automatic:true &#125;,</span><br><span class="line">        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)</span><br><span class="line">    &#125;,</span><br><span class="line">    tex2jax: &#123;</span><br><span class="line">        inlineMath: [ [&quot;$&quot;, &quot;$&quot;], [&quot;\\(&quot;,&quot;\\)&quot;] ],</span><br><span class="line">        processEscapes: true,</span><br><span class="line">        ignoreClass: &quot;tex2jax_ignore|dno&quot;,</span><br><span class="line">        skipTags: [&apos;script&apos;, &apos;noscript&apos;, &apos;style&apos;, &apos;textarea&apos;, &apos;pre&apos;, &apos;code&apos;]</span><br><span class="line">    &#125;,</span><br><span class="line">    TeX: &#123;  </span><br><span class="line">        equationNumbers: &#123; autoNumber: &quot;AMS&quot; &#125;,</span><br><span class="line">        noUndefined: &#123; attributes: &#123; mathcolor: &quot;red&quot;, mathbackground: &quot;#FFEEEE&quot;, mathsize: &quot;90%&quot; &#125; &#125;,</span><br><span class="line">        Macros: &#123; href: &quot;&#123;&#125;&quot; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    messageStyle: &quot;none&quot;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;!-- 给MathJax元素添加has-jax class --&gt;</span><br><span class="line">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;</span><br><span class="line">    MathJax.Hub.Queue(function() &#123;</span><br><span class="line">        var all = MathJax.Hub.getAllJax(), i;</span><br><span class="line">        for(i=0; i &lt; all.length; i += 1) &#123;</span><br><span class="line">            all[i].SourceElement().parentNode.className += &apos; has-jax&apos;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;!-- 通过连接CDN加载MathJax的js代码 --&gt;</span><br><span class="line">&lt;script type=&quot;text/javascript&quot; async</span><br><span class="line">  src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="add-judge"><a href="#add-judge" class="headerlink" title="add judge"></a>add judge</h3><p><code>themes/free2mind/layout/_partial/footer.ejs</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 根据页面mathjax变量决定是否加载MathJax数学公式js --&gt;</span><br><span class="line">&lt;% if (page.mathjax)&#123; %&gt;</span><br><span class="line">&lt;%- partial(&apos;mathjax&apos;) %&gt;</span><br><span class="line">&lt;% &#125; %&gt;</span><br></pre></td></tr></table></figure>
-<h3 id="Use-NexT"><a href="#Use-NexT" class="headerlink" title="Use NexT"></a>Use NexT</h3><p>clone <a href="https://github.com/theme-next/hexo-theme-next" target="_blank" rel="noopener">https://github.com/theme-next/hexo-theme-next</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-kramed --save</span><br></pre></td></tr></table></figure>
-<p>modify <code>node_modules\kramed\lib\rules\inline.js</code><br>line: 11<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//escape: /^\\([\\`*&#123;&#125;\[\]()#$+\-.!_&gt;])/,</span><br><span class="line"> escape: /^\\([`*\[\]()#$+\-.!_&gt;])/,</span><br></pre></td></tr></table></figure></p>
-<p>line: 20<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//em: /^\b_((?:__|[\s\S])+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br><span class="line">  em: /^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,</span><br></pre></td></tr></table></figure></p>
-<p>open switch in theme config<br>switch theme in blog config</p>
-<p>done</p>
-<p><a href="https://docs.mathjax.org/en/latest/start.html" target="_blank" rel="noopener">https://docs.mathjax.org/en/latest/start.html</a><br><a href="http://www.mamicode.com/info-detail-2145077.html" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-2145077.html</a><br><a href="https://blog.csdn.net/wgshun616/article/details/81019687" target="_blank" rel="noopener">Hexo 的 Next 主题中渲染 MathJax 数学公式</a><br><a href="https://blog.csdn.net/zhangguoliu/article/details/107074037" target="_blank" rel="noopener">Nunjucks Error expected variable end解决办法</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2386,7 +2377,7 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">261</span>
+                    <span class="site-state-item-count">262</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3151,9 +3142,9 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
       
     
       
-        
-      
     
+      
+        
       
     
       
