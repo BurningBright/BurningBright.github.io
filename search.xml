@@ -17177,4 +17177,159 @@ F
         <tag>symbol</tag>
       </tags>
   </entry>
+  <entry>
+    <title>地理空间距离计算优化【转】</title>
+    <url>/2020/11/03/Geospatial-distance-calculation-optimization/</url>
+    <content><![CDATA[<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>地理空间距离计算方法较多，目前使用的可以分为两类：</p>
+<ol>
+<li>球面模型，这种模型将地球看成一个标准球体<br>球面上两点之间的最短距离即大圆弧长，这种方法使用较广，在服务端被广泛使用。</li>
+<li>椭球模型，该模型最贴近真实地球，精度也最高，但计算较为复杂<br>目前客户端有在使用，但实际上应用对精度的要求没有那么高。</li>
+</ol>
+<p>下面着重介绍最常用的基于球面模型的地理空间距离计算公式，推导也只需要高中数学知识即可。</p>
+<p><img src="/2020/11/03/Geospatial-distance-calculation-optimization/5bce04001bc48eb1f451eaa7774e66c586061.png" alt></p>
+<a id="more"></a>
+<p>该模型将地球看成圆球，假设地球上有A(ja,wa)，B(jb,wb)两点（注：ja和jb分别是A和B的经度，wa和wb分别是A和B的纬度）<br>A和B两点的球面距离就是AB的弧长，AB弧长=R*角AOB（注：角AOB是A跟B的夹角，O是地球的球心，R是地球半径，约为6367000米）<br>如何求出角AOB呢？可以先求AOB的最大边AB的长度，再根据余弦定律可以求夹角。</p>
+<p>如何求出AB长度呢？</p>
+<ol>
+<li><p>根据经纬度，以及地球半径R，将A、B两点的经纬度坐标转换成球体三维坐标：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+&A\left\{\begin{array}{l}
+X a=R \cos (w a) \cos (j a) \\
+Y a=R \cos (w a) \sin (j a) \\
+Z a=R \sin (w a)
+\end{array}\right\}\\
+&B\left\{\begin{array}{l}
+X b=R \cos (w b) \cos (j b) \\
+Y b=\operatorname{Rcos}(w b) \sin (j b) \\
+Z b=\operatorname{Rsin}(w b)
+\end{array}\right\}
+\end{aligned}</script></li>
+<li><p>根据A、B两点的三维坐标求AB长度：</p>
+<script type="math/tex; mode=display">
+\begin{array}{l}
+A B^{2}=(X a-X b)^{2}+(Y a-Y b)^{2}+(Z a-Z b)^{2} \\
+=\ldots=2 R^{2}(1-\cos (w a) \cos (w b) \cos (j b-j a)-\sin (w a) \sin (w b))
+\end{array}</script></li>
+<li><p>根据余弦定理求出角AOB：</p>
+<script type="math/tex; mode=display">
+\begin{array}{l}
+A B^{2}=A O^{2}+B O^{2}-2 A O * B O * \cos (\triangle A O B) \\
+\cos (\triangle A O B)=\frac{A B^{2}-A O^{2}-B O^{2}}{-2 A O * B O}=\frac{A B^{2}-2 R^{2}}{-2 R^{2}}=1-\frac{A B^{2}}{2 R^{2}}
+\end{array}</script></li>
+<li><p>AB弧长=R*角AOB：</p>
+<script type="math/tex; mode=display">
+\hat{A B}=\operatorname{Rarccos}(\cos (w a) \cos (w b) \cos (j b-j a)+\sin (w a) \sin (w b))</script></li>
+</ol>
+<h2 id="Lucene"><a href="#Lucene" class="headerlink" title="Lucene"></a>Lucene</h2><p>lucene使用了spatial4j工具包来计算地理空间距离，而spatial4j提供了多种基于球面模型的地理空间距离的公式，其中一种就是上面推导的公式，称之为球面余弦公式。<br>还有一种最常用的是Haversine公式，该公式是spatial4j计算距离的默认公式，本质上是球面余弦函数的一个变换，<br>之前球面余弦公式中有cos(jb-ja)项，当系统的浮点运算精度不高时，在求算较近的两点间的距离时会有较大误差。<br>Haversine方法进行了某种变换消除了cos(jb-ja)项，因此不存在短距离求算时对系统计算精度的过多顾虑的问题。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">distHaversineRAD</span><span class="params">(<span class="keyword">double</span> lat1, <span class="keyword">double</span> lon1, <span class="keyword">double</span> lat2, <span class="keyword">double</span> lon2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">double</span> hsinX = Math.sin((lon1 - lon2) * <span class="number">0.5</span>);</span><br><span class="line">    <span class="keyword">double</span> hsinY = Math.sin((lat1 - lat2) * <span class="number">0.5</span>);</span><br><span class="line">    <span class="keyword">double</span> h = hsinY * hsinY +</span><br><span class="line">            (Math.cos(lat1) * Math.cos(lat2) * hsinX * hsinX);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span> * Math.atan2(Math.sqrt(h), Math.sqrt(<span class="number">1</span> - h)) * <span class="number">6367000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h2><p>计算多消耗在三角函数中，因此优化目标是消除三角函数</p>
+<h3 id="坐标转换"><a href="#坐标转换" class="headerlink" title="坐标转换"></a>坐标转换</h3><p>一种优化思路是POI数据不保存经纬度而保存球面模型下的三维坐标（x,y,z）。</p>
+<p>那么当求夹角AOB时，只需要做一次点乘操作。比如求(lon1,lat1）和 (lon2,lat2）的夹角，<br>只需要计算$ x1<em>x2 + y1</em>y2 + z1<em>z2$ ， 这样避免了大量三角函数的计算。<br>在得到夹角之后，还需要执行arccos函数，将其转换成角度，AB弧长=角AOB</em>R（R是地球半径）。</p>
+<p>进一步优化：<br>当业务场景是在一个城市范围内进行距离计算时，夹角AOB往往会比较小，这个时候sinAOB约等于AOB，<br>因此可以将 Math.acos(cosAOB)<em>R 改为Math.sqrt(1 - cosAOB</em>cosAOB)*R，从而完全避免使用三角函数。</p>
+<h3 id="简化距离"><a href="#简化距离" class="headerlink" title="简化距离"></a>简化距离</h3><h4 id="基本思路"><a href="#基本思路" class="headerlink" title="基本思路"></a>基本思路</h4><p>当业务场景仅仅是在一个城市范围内进行距离计算时，两个点之间的距离一般不会超过200多千米。<br>由于范围小，可以认为经线和纬线是垂直的，这种方式仅仅需要计算一次cos函数。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">distanceSimplify</span><span class="params">(<span class="keyword">double</span> lat1, <span class="keyword">double</span> lng1, <span class="keyword">double</span> lat2, <span class="keyword">double</span> lng2, <span class="keyword">double</span>[] a)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">double</span> dx = lng1 - lng2; <span class="comment">// 经度差值</span></span><br><span class="line">     <span class="keyword">double</span> dy = lat1 - lat2; <span class="comment">// 纬度差值</span></span><br><span class="line">     <span class="keyword">double</span> b = (lat1 + lat2) / <span class="number">2.0</span>; <span class="comment">// 平均纬度</span></span><br><span class="line">     <span class="keyword">double</span> Lx = toRadians(dx) * <span class="number">6367000.0</span>* Math.cos(toRadians(b)); <span class="comment">// 东西距离</span></span><br><span class="line">     <span class="keyword">double</span> Ly = <span class="number">6367000.0</span> * toRadians(dy); <span class="comment">// 南北距离</span></span><br><span class="line">     <span class="keyword">return</span> Math.sqrt(Lx * Lx + Ly * Ly);  <span class="comment">// 用平面的矩形对角距离公式计算总距离</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="有效性验证"><a href="#有效性验证" class="headerlink" title="有效性验证"></a>有效性验证</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>测试点对</th>
+<th>distanceSimplify（米）</th>
+<th>distHaversineRAD（米）</th>
+<th>差别（米）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(39.941,116.45) (39.94, 116.451)</td>
+<td>140.0285167225230</td>
+<td>140.02851671981400</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>(39.96, 116.45) (39.94, 116.40)</td>
+<td>4804.421262839180</td>
+<td>4804.421153907680</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>(39.96, 116.45) (39.94, 117.30)</td>
+<td>72444.81551882200</td>
+<td>72444.54071519510</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>(39.26, 115.25) (41.04, 117.30)</td>
+<td>263525.6167839860</td>
+<td>263508.55921886700</td>
+<td>17.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在百米、千米尺度上几乎没有差别，在万米尺度上也仅有分米的差别，此外由于业务是在一个城市范围内进行筛选排序<br>，所以选择了北京左下角和右上角两点进行比较，两点相距有260多千米，两个方法差别17m。从精度上看该优化方法能满足应用需求。</p>
+<h4 id="进一步优化"><a href="#进一步优化" class="headerlink" title="进一步优化"></a>进一步优化</h4><p>采用多项式来拟合cos三角函数，多项式的最高次数尝试用3。<br>使用org.apache.commons.math3这一数学工具包来进行拟合。<br>中国的纬度范围在10~60之间，即将此区间离散成Length份作为训练集。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span>[] trainPolyFit(<span class="keyword">int</span> degree, <span class="keyword">int</span> Length) &#123;</span><br><span class="line">    PolynomialCurveFitter polynomialCurveFitter = PolynomialCurveFitter.create(degree);</span><br><span class="line">    <span class="keyword">double</span> minLat = <span class="number">10.0</span>; <span class="comment">//中国最低纬度</span></span><br><span class="line">    <span class="keyword">double</span> maxLat = <span class="number">60.0</span>; <span class="comment">//中国最高纬度</span></span><br><span class="line">    <span class="keyword">double</span> interv = (maxLat - minLat) / (<span class="keyword">double</span>) Length;</span><br><span class="line">    List&lt;WeightedObservedPoint&gt; weightedObservedPoints = <span class="keyword">new</span> ArrayList&lt;WeightedObservedPoint&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; Length; i++) &#123;</span><br><span class="line">        <span class="keyword">double</span> x = minLat + (<span class="keyword">double</span>) i * interv;</span><br><span class="line">        WeightedObservedPoint weightedObservedPoint = <span class="keyword">new</span> WeightedObservedPoint(<span class="number">1</span>, x, Math.cos(toRadians(x)));</span><br><span class="line">        weightedObservedPoints.add(weightedObservedPoint);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> polynomialCurveFitter.fit(weightedObservedPoints);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得到多项式系数<br>0.9972739367451966<br>4.323852126263266E-4<br>-1.7522667541578619E-4<br>4.966195349399909E-7</p>
+<script type="math/tex; mode=display">
+y = 0.0000004966195 x^{3}-0.0001752266754 x^{2}+0.0004323852126 x+0.9972739367452</script><p>函数图形：<br><img src="/2020/11/03/Geospatial-distance-calculation-optimization/fit.jpg" alt="fit"></p>
+<p>新方法加入多项式系数数组参数<code>fit</code>：<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">distanceSimplifyMore</span><span class="params">(<span class="keyword">double</span> lat1, <span class="keyword">double</span> lng1, <span class="keyword">double</span> lat2, <span class="keyword">double</span> lng2, <span class="keyword">double</span>[] fit)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1) 计算三个参数</span></span><br><span class="line">    <span class="keyword">double</span> dx = lng1 - lng2;            <span class="comment">// 经度差值</span></span><br><span class="line">    <span class="keyword">double</span> dy = lat1 - lat2;            <span class="comment">// 纬度差值</span></span><br><span class="line">    <span class="keyword">double</span> b = (lat1 + lat2) / <span class="number">2.0</span>;     <span class="comment">// 平均纬度</span></span><br><span class="line">    <span class="comment">// 2) 计算东西方向距离和南北方向距离(单位：米)，东西距离采用三阶多项式</span></span><br><span class="line">    <span class="keyword">double</span> Lx = (fit[<span class="number">3</span>] * b * b * b + fit[<span class="number">2</span>] * b * b + fit[<span class="number">1</span>] * b + fit[<span class="number">0</span>]) * toRadians(dx) * <span class="number">6367000.0</span>; <span class="comment">// 东西距离</span></span><br><span class="line">    <span class="keyword">double</span> Ly = <span class="number">6367000.0</span> * toRadians(dy); <span class="comment">// 南北距离</span></span><br><span class="line">    <span class="comment">// 3) 用平面的矩形对角距离公式计算总距离</span></span><br><span class="line">    <span class="keyword">return</span> Math.sqrt(Lx * Lx + Ly * Ly);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="有效性验证-1"><a href="#有效性验证-1" class="headerlink" title="有效性验证"></a>有效性验证</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>测试点对</th>
+<th>distanceSimplifyMore（米）</th>
+<th>distHaversineRAD（米）</th>
+<th>差别（米）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(39.941,116.45) (39.94, 116.451)</td>
+<td>140.0242769266660</td>
+<td>140.02851671981400</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>(39.96, 116.45) (39.94, 116.40)</td>
+<td>4804.113098854450</td>
+<td>4804.421153907680</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>(39.96, 116.45) (39.94, 117.30)</td>
+<td>72438.90919479560</td>
+<td>72444.54071519510</td>
+<td>5.6</td>
+</tr>
+<tr>
+<td>(39.26, 115.25) (41.04, 117.30)</td>
+<td>263516.676171262</td>
+<td>263508.55921886700</td>
+<td>8.1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在百米尺度上两者几乎未有差别，在千米尺度上仅有分米的区别，在更高尺度上如72千米仅有5.6m米别，在264千米也仅有8.1米区别，因此该优化方法的精度能满足应用需求。</p>
+<h2 id="Benchmark"><a href="#Benchmark" class="headerlink" title="Benchmark"></a>Benchmark</h2><p><img src="/2020/11/03/Geospatial-distance-calculation-optimization/benchmark.png" alt="benchmark"></p>
+<p>Intel(R) Core(TM)i5-6200 CPU @ 2.30GHz - 2.4GHz<br>16GB 1600MHz DDR3<br>Windows10 企业版 (2018)</p>
+<p><code>distanceSimplifyMore</code> 1000W 随机经纬测试耗时大约300ms<br>实际测试中，<code>distanceSimplifyMore</code> 耗时太短，为做参考在方法中加入生成一次随机数。</p>
+<h2 id="实际应用"><a href="#实际应用" class="headerlink" title="实际应用"></a>实际应用</h2><p>坐标转换方法和简化距离公式方法性能都非常高，相比lucene使用的Haversine算法大大提高了计算效率，然而坐标转换方法存在一些缺点：</p>
+<ul>
+<li><p>坐标转换后的数据不能被直接用于空间索引。lucene可以直接对经纬度进行geohash空间索引，而通过空间转换变成三维数据后不能直接使用。<br>应用有附近范围筛选功能（例如附近5km的团购单子），通过geohash空间索引可以提高范围筛选的效率；</p>
+</li>
+<li><p>坐标转换方法增大内存开销。将坐标写入倒排索引中，之前坐标是2列（经度和纬度），<br>现在变成3列（x,y,z），在使用中往往会将这数据放入到cache中，因此会增大内存开销；</p>
+</li>
+<li><p>坐标转换方法增大建索引开销。此方法本质上是将计算从查询阶段放至到索引阶段，因此提高了建索引的开销。</p>
+</li>
+</ul>
+<p>基于上述原因在实际应用中采用简化距离公式方法（通过三次多项式来拟合cos三角函数），<br>与之前相比，筛选团购时北京全城美食品类距离排序响应时间从40ms下降为20ms。</p>
+<p><a href="https://tech.meituan.com/2014/09/05/lucene-distance.html" target="_blank" rel="noopener">地理空间距离计算优化</a></p>
+]]></content>
+      <categories>
+        <category>math</category>
+      </categories>
+  </entry>
 </search>

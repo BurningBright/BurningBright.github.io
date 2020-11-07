@@ -351,6 +351,183 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/15/Convert-picture-to-customized-size/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/06/15/Convert-picture-to-customized-size/" class="post-title-link" itemprop="url">Convert picture to customized size</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-15 10:04:55" itemprop="dateCreated datePublished" datetime="2018-06-15T10:04:55+08:00">2018-06-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Main-method"><a href="#Main-method" class="headerlink" title="Main method"></a>Main method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageConvert</span><span class="params">(InputStream inputStream, Integer limit)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (inputStream == <span class="keyword">null</span> || limit == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    BufferedImage inputImage = ImageIO.read(inputStream);</span><br><span class="line">    <span class="keyword">int</span> size = getImageSize(inputImage);</span><br><span class="line">    <span class="keyword">if</span> (size &lt;= <span class="number">0</span> || inputImage == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// loop reduce pixel</span></span><br><span class="line">    <span class="keyword">while</span> (size &gt; imgLimit) &#123;</span><br><span class="line">        <span class="comment">// calculate edge shrink propotion</span></span><br><span class="line">        <span class="comment">// minus .05 improve convert speed</span></span><br><span class="line">        <span class="keyword">double</span> rate = (<span class="keyword">double</span>)imgLimit/size - .<span class="number">05</span>;</span><br><span class="line">        <span class="comment">// if origin is 20 times than limit, rate may little than 0</span></span><br><span class="line">        <span class="comment">// set ten times smaller than origin as default</span></span><br><span class="line">        <span class="keyword">if</span> (rate &lt; <span class="number">0</span>) rate = .<span class="number">1</span>;</span><br><span class="line">        rate = Math.sqrt(rate);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> width = (<span class="keyword">int</span>)(inputImage.getWidth(<span class="keyword">null</span>) * rate);</span><br><span class="line">        <span class="keyword">int</span> height = (<span class="keyword">int</span>)(inputImage.getHeight(<span class="keyword">null</span>) * rate);</span><br><span class="line">        BufferedImage outputImage = imageCompress(inputImage, width, height);</span><br><span class="line">        inputImage = outputImage;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// recalculate</span></span><br><span class="line">        size = getImageSize(inputImage);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inputImage;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Assistant-method"><a href="#Assistant-method" class="headerlink" title="Assistant method"></a>Assistant method</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getImageSize</span><span class="params">(BufferedImage img)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    ImageIO.write(img, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    <span class="keyword">int</span> size = byteOS.size();</span><br><span class="line">    byteOS.close();</span><br><span class="line">    <span class="keyword">return</span> size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> BufferedImage <span class="title">imageCompress</span><span class="params">(Image img, <span class="keyword">int</span> w, <span class="keyword">int</span> h)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    BufferedImage image = <span class="keyword">new</span> BufferedImage(w, h, BufferedImage.TYPE_INT_RGB );</span><br><span class="line">    <span class="comment">// redraw converted graph</span></span><br><span class="line">    image.getGraphics().drawImage(img, <span class="number">0</span>, <span class="number">0</span>, w, h, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    ByteArrayOutputStream byteOS = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">256</span>);</span><br><span class="line">    ImageIO.write(image, <span class="string">"jpg"</span>, byteOS);</span><br><span class="line">    ByteArrayInputStream byteIS = <span class="keyword">new</span> ByteArrayInputStream(byteOS.toByteArray());</span><br><span class="line">    BufferedImage product = ImageIO.read(byteIS);</span><br><span class="line">    byteOS.close();</span><br><span class="line">    byteIS.close();</span><br><span class="line">    <span class="keyword">return</span> product;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>Use memory to loop picture may cause leak problem.<br>Use 3th part software maybe a better choice? like ffmpeg.</p>
+<p><a href="https://www.cnblogs.com/shoufengwei/p/8526105.html" target="_blank" rel="noopener">https://www.cnblogs.com/shoufengwei/p/8526105.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/12/Install-mysql-linux-5-7-22/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2096,205 +2273,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/03/21/Manacher-s-algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/03/21/Manacher-s-algorithm/" class="post-title-link" itemprop="url">Manacher's algorithm</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-03-21 09:46:29" itemprop="dateCreated datePublished" datetime="2018-03-21T09:46:29+08:00">2018-03-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>O(n) time complexity find longest palindromic substring</p>
-<h2 id="Translate"><a href="#Translate" class="headerlink" title="Translate"></a>Translate</h2><p>put origin string into a new char array, take “ABBABCBA”<br>make odd/ even length origin string into a odd length array (#,…,#)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'\0'</span>&#125;;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'$'</span>&#125;;</span><br></pre></td></tr></table></figure>
-<p>put position 0 and last postion a placeholder, <strong>S.length = origin * 2 + 3</strong> odd length.</p>
-<h2 id="Mark"><a href="#Mark" class="headerlink" title="Mark"></a>Mark</h2><p>declare a array P[] to mark the S’s char symmetric radius length<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'$'</span>&#125;;</span><br><span class="line"><span class="keyword">int</span>  P[] = &#123; <span class="number">0</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">5</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">4</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">6</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">0</span> &#125;;</span><br></pre></td></tr></table></figure></p>
-<h3 id="describe"><a href="#describe" class="headerlink" title="describe:"></a>describe:</h3><blockquote>
-<p>array P used to describe radius, for example : <br><br>P[5] = 5 -&gt; S(1,5) | S(5, 9)</p>
-</blockquote>
-<h3 id="calculate"><a href="#calculate" class="headerlink" title="calculate:"></a>calculate:</h3><p>Declare varable</p>
-<ol>
-<li><code>center</code> the center of mirror</li>
-<li><code>right</code>  the right terminal of mirror</li>
-</ol>
-<blockquote>
-<p><code>right</code> <em>= center + P[center]</em> , right point = center point + radius <br><br><code>left</code> <em>= center - P[center]</em> , left point = center point - radius <br><br>declare <code>i</code> as current S cursor <br><br>delcare <code>mirror</code> as the i’s mirror index ps. <strong>2*center - right</strong></p>
-</blockquote>
-<p><strong><em>when right &gt; i, then P[i] &gt;= Min(P[mirror], right - i)<br></em></strong></p>
-<ol>
-<li>when <code>P[mirror]</code> is minimum, that meaning <strong>P[mirror] &lt; right - i</strong> <br><br>standard check block: <strong>(mirror - P[mirror], mirror + P[mirror]) | (i-P[mirror], i + P[mirror])</strong></li>
-<li>when <code>right - i</code> is minimum, that meaning <strong>P[mirror] &gt; right - i</strong> <br><br><code>mirror - P[mirror]</code> across the circle <em>left border</em>. <br><br>standard check block: <strong>(mirror - (right - i), mirrror + (right - i)) | (i - (right - i), right)</strong></li>
-</ol>
-<h2 id="Code-amp-Graph"><a href="#Code-amp-Graph" class="headerlink" title="Code &amp; Graph"></a>Code &amp; Graph</h2><p><img src="/2018/03/21/Manacher-s-algorithm/P[ j ] is less.png" alt></p>
-<p><img src="/2018/03/21/Manacher-s-algorithm/P[ j ] is more.png" alt></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// right = center + P[center]</span></span><br><span class="line"><span class="keyword">int</span> center = <span class="number">0</span>, right = <span class="number">0</span>;</span><br><span class="line"><span class="comment">// exclude last placeholder position</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;S.length-<span class="number">1</span>; i++) &#123;</span><br><span class="line">    <span class="comment">// j = 2*center - i</span></span><br><span class="line">    P[i] = right &gt; i? Math.min(P[<span class="number">2</span>*center - i], right - i): <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// include char itself, 1 bigger than standard implements</span></span><br><span class="line">    <span class="keyword">while</span>(S[i + P[i]] == S[i - P[i]]) P[i]++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// judge whether new radiu cross border</span></span><br><span class="line">    <span class="keyword">if</span>(i + P[i] &gt; right) &#123;</span><br><span class="line">        right = i + P[i];</span><br><span class="line">        center = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Biggest value in P[] is longest palindromic substring lengh<br>It’s index is substring’s char center index.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// find biggest value in P[]</span></span><br><span class="line">length--;</span><br><span class="line"><span class="comment">// and it's index</span></span><br><span class="line">center--;</span><br><span class="line">src.substring((center - length) / <span class="number">2</span>, (center + length) / <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
-<p>thanks:<br><a href="https://www.felix021.com/blog/read.php?2040" target="_blank" rel="noopener">https://www.felix021.com/blog/read.php?2040</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2341,7 +2319,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">262</span>
+                    <span class="site-state-item-count">263</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
