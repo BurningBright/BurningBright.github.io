@@ -351,6 +351,209 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/11/Kafka-quickstart-in-windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/11/Kafka-quickstart-in-windows/" class="post-title-link" itemprop="url">Kafka quickstart in windows</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-11 10:23:10" itemprop="dateCreated datePublished" datetime="2018-07-11T10:23:10+08:00">2018-07-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Download"><a href="#Download" class="headerlink" title="Download"></a>Download</h2><p>download kafka package from <a href="http://kafka.apache.org/downloads" target="_blank" rel="noopener">http://kafka.apache.org/downloads</a></p>
+<p>un-tar package <code>kafka_2.11-1.1.0.tgz</code></p>
+<h2 id="Start"><a href="#Start" class="headerlink" title="Start"></a>Start</h2><p>copy config file in <code>bin\windows</code><br>Start zookeeper first, because kafka is a cluster type middleware.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zookeeper-server-start.bat config/zookeeper.properties</span><br></pre></td></tr></table></figure></p>
+<p>If alert <code>Error: can&#39;t find or can&#39;t load main class ...</code>,<br>modify <code>bin\windows\kafka-run-class.bat</code></p>
+<p>add Double quotation mark to <code>%CLASSPATH%</code> like this : <code>&quot;%CLASSPATH%&quot;</code></p>
+<p>Now start the Kafka server:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-server-start.sh config/server.properties</span><br></pre></td></tr></table></figure></p>
+<h2 id="Create-topic"><a href="#Create-topic" class="headerlink" title="Create topic"></a>Create topic</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test</span><br><span class="line"></span><br><span class="line">kafka-topics.bat --list --zookeeper localhost:2181</span><br></pre></td></tr></table></figure>
+<h2 id="Send-messages-Producer"><a href="#Send-messages-Producer" class="headerlink" title="Send messages[Producer]"></a>Send messages[Producer]</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-producer.bat --broker-list localhost:9092 --topic test</span><br><span class="line">&gt; Hello world</span><br><span class="line">&gt; Hello topic</span><br></pre></td></tr></table></figure>
+<h2 id="Start-a-consumer"><a href="#Start-a-consumer" class="headerlink" title="Start a consumer"></a>Start a consumer</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test --from-beginning</span><br><span class="line">Hello world</span><br><span class="line">Hello topic</span><br><span class="line">_</span><br></pre></td></tr></table></figure>
+<h2 id="Multi-broker-cluster"><a href="#Multi-broker-cluster" class="headerlink" title="Multi-broker cluster"></a>Multi-broker cluster</h2><p>copy <code>server.properties</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copy config/server.properties config/server-1.properties</span><br><span class="line">copy config/server.properties config/server-2.properties</span><br></pre></td></tr></table></figure></p>
+<p>modify configuration:<br>In same machine, node’s id/ port must be unique, log file should be seperated.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">config/server-1.properties:</span><br><span class="line">    broker.id=1</span><br><span class="line">    listeners=PLAINTEXT://:9093</span><br><span class="line">    log.dir=/tmp/kafka-logs-1</span><br><span class="line"></span><br><span class="line">config/server-2.properties:</span><br><span class="line">    broker.id=2</span><br><span class="line">    listeners=PLAINTEXT://:9094</span><br><span class="line">    log.dir=/tmp/kafka-logs-2</span><br></pre></td></tr></table></figure></p>
+<p>Now start other two broker<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kafka-server-start.sh config/server-1.properties</span><br><span class="line">kafka-server-start.sh config/server-2.properties</span><br></pre></td></tr></table></figure></p>
+<p>Create new topic<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 3 --partitions 1 --topic my-replicated-topic</span><br></pre></td></tr></table></figure></p>
+<p>Show detail<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br><span class="line">Topic:my-replicated-topic       PartitionCount:1        ReplicationFactor:3 Configs:</span><br><span class="line">        Topic: my-replicated-topic      Partition: 0    Leader: 2       Replicas: 2,0,1 Isr: 2,0,1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>“leader” is the node responsible for all reads and writes for the given partition.<br>Each node will be the leader for a randomly selected portion of the partitions.</li>
+<li>“replicas” is the list of nodes that replicate the log for this partition<br>regardless of whether they are the leader or even if they are currently alive.</li>
+<li>“isr” is the set of “in-sync” replicas. This is the subset of the replicas list<br>that is currently alive and caught-up to the leader.</li>
+</ul>
+<p>send some message<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-producer.bat --broker-list localhost:9092 --topic my-replicated-topic</span><br><span class="line">&gt; test message 1</span><br><span class="line">&gt; test message 2</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+<p>consume these messages<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic my-replicated-topic</span><br><span class="line">test message 1</span><br><span class="line">test message 2</span><br><span class="line">_</span><br></pre></td></tr></table></figure></p>
+<p>now the leader broker id is <code>2</code>, kill it[ ctrl+c ]<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; wmic process where &quot;caption = &apos;java.exe&apos; and commandline like &apos;%server-2.properties%&apos;&quot; get processid</span><br><span class="line">ProcessId</span><br><span class="line">6016</span><br><span class="line">&gt; taskkill /pid 6016 /f</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-topics.bat --describe --zookeeper localhost:2181 --topic my-replicated-topic</span><br><span class="line">Topic:my-replicated-topic       PartitionCount:1        ReplicationFactor:3 Configs:</span><br><span class="line">        Topic: my-replicated-topic      Partition: 0    Leader: 0       Replicas: 2,0,1 Isr: 0,1</span><br></pre></td></tr></table></figure>
+<p>now only 0,1 broker ‘in-sync’, the leader is ‘0’ broker<br>send message still available.</p>
+<h2 id="import-export-data"><a href="#import-export-data" class="headerlink" title="import / export data"></a>import / export data</h2><p>make a test file<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; echo foo&gt; test.txt</span><br><span class="line">&gt; echo bar&gt;&gt; test.txt</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connect-standalone.bat config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; type test.sink.txt</span><br><span class="line">foo</span><br><span class="line">bar</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic connect-test --from-beginning</span><br><span class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;foo&quot;&#125;</span><br><span class="line">&#123;&quot;schema&quot;:&#123;&quot;type&quot;:&quot;string&quot;,&quot;optional&quot;:false&#125;,&quot;payload&quot;:&quot;bar&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>If add more string append to <code>test.txt</code>, topic will load more data, and <code>test.sink.txt</code> will in-sync too.</p>
+<p><a href="http://kafka.apache.org/quickstart" target="_blank" rel="noopener">http://kafka.apache.org/quickstart</a><br><a href="https://blog.csdn.net/cx2932350/article/details/78870135" target="_blank" rel="noopener">https://blog.csdn.net/cx2932350/article/details/78870135</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/06/15/Convert-picture-to-customized-size/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2089,190 +2292,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/05/Gif-camera/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/04/05/Gif-camera/" class="post-title-link" itemprop="url">Gif camera</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-04-05 17:28:52" itemprop="dateCreated datePublished" datetime="2018-04-05T17:28:52+08:00">2018-04-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2018/04/05/Gif-camera/prototype.jpg" alt></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"># Optional</span><br><span class="line">sudo apt-get upgrade</span><br><span class="line"></span><br><span class="line"># Used to control camera</span><br><span class="line">sudo apt-get install python-picamera python3-picamera</span><br><span class="line"># Used to convert jpg to gif</span><br><span class="line">sudo apt-get install graphicsmagick</span><br><span class="line"></span><br><span class="line">sudo apt-get install git-core</span><br><span class="line"># This script is used in &apos;PIX-E Gif Camera&apos; project</span><br><span class="line">sudo git clone https://github.com/nickbrewer/gifcam.git</span><br></pre></td></tr></table></figure>
-<h3>If we just want raspberry pi camera can take gif picture, we can just remove
- `GPIO` and `Twitter` module, no need led notification/ real time upload ro so.</h3>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import module first</span></span><br><span class="line"><span class="keyword">import</span> picamera</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> system</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> random, string</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set options</span></span><br><span class="line">um_frame = <span class="number">8</span>       <span class="comment"># Number of frames in Gif</span></span><br><span class="line">gif_delay = <span class="number">15</span>      <span class="comment"># Frame delay [ms]</span></span><br><span class="line">rebound = <span class="literal">True</span>      <span class="comment"># Create a video that loops start &lt;=&gt; end</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set camera parameters</span></span><br><span class="line">camera = picamera.PiCamera()</span><br><span class="line">camera.resolution = (<span class="number">540</span>, <span class="number">405</span>)</span><br><span class="line">camera.rotation = <span class="number">90</span></span><br><span class="line"><span class="comment">#camera.brightness = 70</span></span><br><span class="line">camera.image_effect = <span class="string">'none'</span></span><br></pre></td></tr></table></figure>
-<h2 id="Take-jpg-pictures"><a href="#Take-jpg-pictures" class="headerlink" title="Take jpg pictures"></a>Take jpg pictures</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'Gif Started'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### PREVENT DARK INIT IMAGE ###</span></span><br><span class="line">camera.led = <span class="literal">False</span></span><br><span class="line">camera.start_preview()</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">camera.led = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame):</span><br><span class="line">    camera.capture(<span class="string">'&#123;0:04d&#125;.jpg'</span>.format(i))</span><br></pre></td></tr></table></figure>
-<h2 id="If-rebound-is-True-then-make-picture-loop"><a href="#If-rebound-is-True-then-make-picture-loop" class="headerlink" title="If rebound is True then make picture loop"></a>If <code>rebound</code> is <code>True</code> then make picture loop</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### PROCESSING GIF ###</span></span><br><span class="line"><span class="keyword">if</span> rebound == <span class="literal">True</span>: <span class="comment"># make copy of images in reverse order</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame - <span class="number">1</span>):</span><br><span class="line">        source = str(num_frame - i - <span class="number">1</span>) + <span class="string">".jpg"</span></span><br><span class="line">        source = source.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        dest = str(num_frame + i) + <span class="string">".jpg"</span></span><br><span class="line">        dest = dest.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        copyCommand = <span class="string">"cp "</span> + source + <span class="string">" "</span> + dest</span><br><span class="line">        os.system(copyCommand)</span><br></pre></td></tr></table></figure>
-<h2 id="Convert-picture-to-gif-and-cleanup"><a href="#Convert-picture-to-gif-and-cleanup" class="headerlink" title="Convert picture to gif and cleanup"></a>Convert picture to gif and cleanup</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Correction of time difference</span></span><br><span class="line">now = datetime.datetime.now() + datetime.timedelta(hours=<span class="number">8</span>)</span><br><span class="line">filename = <span class="string">'/home/pi/gifcam/gifs'</span> + now.strftime(<span class="string">'%Y%m%d%H%M%S'</span>)</span><br><span class="line">print(<span class="string">'Processing'</span>)</span><br><span class="line"><span class="comment"># Convert command</span></span><br><span class="line">graphicsmagick = <span class="string">"gm convert -delay "</span> + str(gif_delay) + <span class="string">" "</span> + <span class="string">"*.jpg "</span> + filename + <span class="string">".gif"</span></span><br><span class="line">os.system(graphicsmagick)</span><br><span class="line">os.system(<span class="string">"rm ./*.jpg"</span>) <span class="comment"># cleanup source images</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line">print(<span class="string">'System Ready'</span>)</span><br></pre></td></tr></table></figure>
-<p><a href="http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html" target="_blank" rel="noopener">http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html</a><br><a href="https://hackaday.io/project/16358-pix-e-gif-camera" target="_blank" rel="noopener">https://hackaday.io/project/16358-pix-e-gif-camera</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2319,7 +2338,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">263</span>
+                    <span class="site-state-item-count">264</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

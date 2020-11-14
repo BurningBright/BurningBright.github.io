@@ -351,6 +351,219 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/03/How-to-leak-memory-in-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/03/How-to-leak-memory-in-java/" class="post-title-link" itemprop="url">How to leak memory in java</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-03 18:46:10" itemprop="dateCreated datePublished" datetime="2017-05-03T18:46:10+08:00">2017-05-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Create-some-ghost-memory"><a href="#Create-some-ghost-memory" class="headerlink" title="Create some ghost memory"></a>Create some ghost memory</h2><ol>
+<li>Create a long exist thread or thread pool.</li>
+<li>Load a class through <code>ClassLoader</code>.</li>
+<li>Distribute a <strong>big block memory</strong> to a static strong reference.<br>Then use <code>ThreadLocal</code> storage [thread reference?] or [object reference?]</li>
+<li>Thread clean selfdefine class or <strong>load this class’s loader</strong>.</li>
+<li>repeat these steps.</li>
+</ol>
+<h2 id="Some-mistake"><a href="#Some-mistake" class="headerlink" title="Some mistake"></a>Some mistake</h2><ol>
+<li><p>static reference hold container.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Holder &#123;</span><br><span class="line">    static final List list = new ArrayList(100);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>call long String’s <code>intern()</code> method</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String src = &quot;......&quot;;</span><br><span class="line">str.intern();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>forgot release resource</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    BufferedReader br = new BufferedReader(new FileReader(&quot;...&quot;));</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>forgot close door</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    Connection conn = ConnectionFactory.getConnection();</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">&#125; catch (Exception e) &#123;</span><br><span class="line">    e.printStacktrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>GC can’t reach like <code>native</code> true memory</p>
+</li>
+<li><p>Web container in application context<br><code>getServletContext().setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> and not <strong>remove rubbish</strong>.</p>
+</li>
+<li><p>Web container in session context<br><code>session.setAttribute(&quot;rubbish&quot;, map);</code><br>no <strong>reboot</strong> / not <strong>invalid</strong> and not <strong>remove rubbish</strong>.</p>
+</li>
+<li><p>Not right JVM option<br><strong>IBM JDK</strong> <code>noclassgc</code> option, it stop no use class’s garbage collect.</p>
+</li>
+</ol>
+<h2 id="Bean-not-define-properly"><a href="#Bean-not-define-properly" class="headerlink" title="Bean not define properly"></a>Bean not define properly</h2><p>If HashSet’s element object have <strong>no standard implement</strong><br>  or no implement of <code>equals()</code> and <code>hashCode()</code>.<br>Collection can’t <strong>ignore repeated element</strong>.</p>
+<h2 id="Thread-relevant"><a href="#Thread-relevant" class="headerlink" title="Thread relevant"></a>Thread relevant</h2><ol>
+<li>Create but not start thread.</li>
+<li><p>Thread inherited <code>ContextClassLoader</code> or <code>ccessControlContext</code>,<br>and use <code>ThreadGroup</code> or <code>InheritedThreadLocal</code>.<br>They affect <code>java.util.concurrent.Executor</code></p>
+</li>
+<li><p>Not use <code>ThreadLocal</code> <strong>as cache</strong> unless truly necessary.<br>If thread not in it’s life cycle, load <code>ContextClassLoader</code>, gc can’t reach it.</p>
+</li>
+<li><p>When <code>ThreadGroup</code> have no subThread<br>but have <code>sub ThreadGroup</code> call <code>ThreadGroup.destroy()</code>.<br>It lead to this <code>sub ThreadGroup</code> <strong>can’t remove</strong> from it’s <code>parent ThreadGroup</code>.</p>
+</li>
+<li><p>use WeakHashMap, value hold key reference..</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/02/NIO-in-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2200,194 +2413,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/25/Latex-source-file-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/25/Latex-source-file-1/" class="post-title-link" itemprop="url">Latex source file</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-25 22:44:14" itemprop="dateCreated datePublished" datetime="2017-03-25T22:44:14+08:00">2017-03-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Latex’s-reserved-characters"><a href="#Latex’s-reserved-characters" class="headerlink" title="Latex’s reserved characters"></a>Latex’s reserved characters</h3><p><code># $ % ^ &amp; _ { } \</code></p>
-<p>They have specal meaning in latex.<br>Use backslash to output them</p>
-<p><code>\# \$ \% \^{} \&amp; \_ \{ \} \ {}</code></p>
-<p>The backslash it’s self can’t be output by add another backslash.<br>Have a try <script type="math/tex">\backslash</script>.</p>
-<p>The <code>\\</code> is used to take a newline.</p>
-<h3 id="Commands"><a href="#Commands" class="headerlink" title="Commands"></a>Commands</h3><p>Command start with <code>\</code> backslash</p>
-<p>You can \textsl{lean} on me!<br>-&gt;<br>You can <em>lean</em> on me!</p>
-<hr>
-<p>Please, start a new line right here!\newline Thank you!<br>Please, start a new line right here!\ Thank you!<br>-&gt;<br>Please, start a new line right here!<br>Thank you!</p>
-<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>If Latex meet a ‘%’ percent sign, it will ignore words behind it.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">This is an % stupid</span><br><span class="line">% Better: instructive &lt;----</span><br><span class="line">example: Supercal%</span><br><span class="line">ifragilist%</span><br><span class="line">icexpialidocious</span><br></pre></td></tr></table></figure>
-<p>This is an example: Supercalifragilisticexpialidocious</p>
-<hr>
-<p>If comment content is very long, try verbatim macro package’s comment environment.<br>In document’s guid space declare <code>\usepackage{verbatim}</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">This is another</span><br><span class="line">\begin&#123;comment&#125;</span><br><span class="line">rather stupid,</span><br><span class="line">but helpful</span><br><span class="line">\end&#123;comment&#125;</span><br><span class="line">example for embedding</span><br><span class="line">comments in your document.</span><br></pre></td></tr></table></figure>
-<p>This is another example for embedding comments in your document.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2434,7 +2459,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">263</span>
+                    <span class="site-state-item-count">264</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

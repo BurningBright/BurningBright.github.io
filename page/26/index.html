@@ -351,6 +351,214 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/30/Full-text-retrieval-fundamental-3/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (3)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="How-to-search-in-Index"><a href="#How-to-search-in-Index" class="headerlink" title="How to search in Index"></a>How to search in Index</h2><p> <strong>How to find the result you want most, or the most relevant result with query phrase?</strong></p>
+<h3 id="1-first-User-input-query-pharse"><a href="#1-first-User-input-query-pharse" class="headerlink" title="1. first: User input query pharse"></a>1. first: User input query pharse</h3><p>  <em>The basic query grammar like “AND”, “OR”, “NOT”.</em><br>  <code>elephant and tiger or lion not sheep</code></p>
+<h3 id="2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing"><a href="#2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing" class="headerlink" title="2. second: Query pharse lexical analysis, syntax analysis, and language processing"></a>2. second: Query pharse lexical analysis, syntax analysis, and language processing</h3><ol>
+<li>lexical analysis used to distinguish words and key words</li>
+<li>syntax analysis used to build a grammar tree by syntax rule</li>
+<li>language processing just like the processe in building Index. check page 2</li>
+</ol>
+<h3 id="3-third-Traverse-Index-get-result-that-fit-syntax-tree"><a href="#3-third-Traverse-Index-get-result-that-fit-syntax-tree" class="headerlink" title="3. third: Traverse Index, get result that fit syntax tree"></a>3. third: Traverse Index, get result that fit syntax tree</h3><ol>
+<li>first find the documents contain words(elephant tiger lion) in the posting list.</li>
+<li>second merge documents contain both elephant, tiger or lion.</li>
+<li>third separate documents contain sheep, got result contain both elephant, tiger or lion not sheep.</li>
+</ol>
+<h3 id="4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result"><a href="#4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result" class="headerlink" title="4. fourth: Sort result by relevant between query pharse and search result"></a>4. fourth: Sort result by relevant between query pharse and search result</h3><p> <strong>How to calculate the relevance between documents and query pharse?</strong><br> Toke query pharse as a shot document, scoring relevance between documents, the higher score is the higher rank document is.<br> <em>How to score the relevance between documents?</em><br> <strong><em>It’s not easy a thing</em></strong></p>
+<ul>
+<li>Check what is the important factors between documents</li>
+<li>Check the relation between these factors</li>
+</ul>
+<hr>
+<ul>
+<li>The process of finding the importance of a word (Term) to a document is called the weight (Term) process.</li>
+<li>The process of judging the relationship between Term to get document relevance using an algorithm called <code>Vector Space Model</code></li>
+</ul>
+<hr>
+<h2 id="Term-weight-process"><a href="#Term-weight-process" class="headerlink" title="Term weight process"></a>Term weight process</h2><p><strong>This is a simple classic implementation, lucene’s have a little difference</strong></p>
+<script type="math/tex; mode=display">w_{t_\eta}{_d} = tf_{t_\eta}{_d} \times log(n/df_t)</script><ul>
+<li>$w<em>{t</em>\eta}{_d}$ = the weight of the term t in document d</li>
+<li>$tf<em>{t</em>\eta}{_d}$ = frequency of term t in document d</li>
+<li>$n$ = total number of documents</li>
+<li>$df_t$ = the number of documents that contain term t</li>
+</ul>
+<ul>
+<li>Term Frequency (tf): How many times this Term show in this document, the bigger tf is , the more importance this Term is.</li>
+<li>Document Frequency (df)：How many documents contain this Term, the bigger df is, the less importance this Term is.</li>
+</ul>
+<p><strong>Like programmer, the deeper technology you leanr is better(tf big), the less technology people know is better (df little). When finding job your competitive power would be grate. Man’s value is about unsubsititutability</strong></p>
+<h2 id="Vector-Space-Model"><a href="#Vector-Space-Model" class="headerlink" title="Vector Space Model"></a>Vector Space Model</h2><p><strong>Less the two vector’s angle is the more relevance is</strong><br><strong>We take two vector’s consine as the score point</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Full-text-retrieval-fundamental-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2003,188 +2211,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/hexo-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/hexo-install/" class="post-title-link" itemprop="url">hexo install</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 10:41:54" itemprop="dateCreated datePublished" datetime="2017-01-24T10:41:54+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-01-09 22:49:54" itemprop="dateModified" datetime="2019-01-09T22:49:54+08:00">2019-01-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install-amp-theme"><a href="#Install-amp-theme" class="headerlink" title="Install &amp; theme"></a>Install &amp; theme</h2><blockquote>
-<p>use cnpm<br>npm install -g cnpm —registry=<a href="https://registry.npm.taobao.org" target="_blank" rel="noopener">https://registry.npm.taobao.org</a></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo cnpm install hexo-cli -g</span><br><span class="line">hexo init blog</span><br><span class="line">cd blog</span><br><span class="line"></span><br><span class="line">cnpm install</span><br><span class="line">hexo server</span><br><span class="line"></span><br><span class="line"># may ship</span><br><span class="line">git clone https://github.com/tufu9441/maupassant-hexo.git themes/maupassant</span><br><span class="line">npm install hexo-renderer-jade --save</span><br><span class="line">npm install hexo-renderer-sass --save</span><br><span class="line"></span><br><span class="line">npm install hexo-tag-katex --save</span><br></pre></td></tr></table></figure>
-<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><ul>
-<li><p>enter themes\landscape\layout_partial，open head.ejs，delete 31th row fonts.googleapis.com</p>
-</li>
-<li><p>download jquery-2.0.3.min.js put into themes\landscape\source\js , enter themes\landscape\layout_partial, openafter-footer.ejs, replace 17th row to /js/jquery-2.0.3.min.js。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2231,7 +2257,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">263</span>
+                    <span class="site-state-item-count">264</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
