@@ -351,6 +351,212 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/29/ZK-queue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/29/ZK-queue/" class="post-title-link" itemprop="url">ZK queue</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-29 22:19:42" itemprop="dateCreated datePublished" datetime="2017-05-29T22:19:42+08:00">2017-05-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><ul>
+<li><strong>Define</strong></li>
+</ul>
+<p><code>static public class Queue extends SyncPrimitive</code></p>
+<p>class define in SyncPrimitive, it’s inner static class.</p>
+<p>same as the previous article <code>ZK barrier</code></p>
+<ul>
+<li><p><strong>Properties</strong><br>no properties</p>
+</li>
+<li><p><strong>Constructor</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Queue(String address, String name) &#123;</span><br><span class="line">    <span class="keyword">super</span>(address);</span><br><span class="line">    <span class="keyword">this</span>.root = name;</span><br><span class="line">    <span class="comment">// Create ZK node name</span></span><br><span class="line">    <span class="keyword">if</span> (zk != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Stat s = zk.exists(root, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">                zk.create(root, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">                 Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                        CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>the constructor is not same as barrier, it no need common path.</p>
+<ul>
+<li><strong>push</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">produce</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    ByteBuffer b = ByteBuffer.allocate(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">byte</span>[] value;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add child with value i</span></span><br><span class="line">    b.putInt(i);</span><br><span class="line">    value = b.array();</span><br><span class="line">    zk.create(root + <span class="string">"/element"</span>, value, Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                CreateMode.PERSISTENT_SEQUENTIAL);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>create a node with value.</p>
+<ul>
+<li><strong>pop</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">consume</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> retvalue = -<span class="number">1</span>;</span><br><span class="line">    Stat stat = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get the first element available</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (list.size() == <span class="number">0</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"Going to wait"</span>);</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                String min = list.get(<span class="number">0</span>).substring(<span class="number">7</span>);</span><br><span class="line">                <span class="keyword">for</span>(String s : list)&#123;</span><br><span class="line">                  String tempValue = s.substring(<span class="number">7</span>);</span><br><span class="line">                  min = tempValue.compareTo(min) &lt; <span class="number">0</span>? tempValue: min;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                System.out.println(<span class="string">"Temporary value: "</span> +</span><br><span class="line">                    root + <span class="string">"/element"</span> + min);</span><br><span class="line">                <span class="keyword">byte</span>[] b = zk.getData(root +</span><br><span class="line">                    <span class="string">"/element"</span> + min, <span class="keyword">false</span>, stat);</span><br><span class="line">                zk.delete(root + <span class="string">"/element"</span> + min, <span class="number">0</span>);</span><br><span class="line">                ByteBuffer buffer = ByteBuffer.wrap(b);</span><br><span class="line">                retvalue = buffer.getInt();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> retvalue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>Synchronously pop the minimum node name’s node.</p>
+<h3 id="Test-queue"><a href="#Test-queue" class="headerlink" title="Test queue"></a>Test queue</h3><ul>
+<li><p>a producer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"7"</span>, <span class="string">"p"</span>&#125;;</span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        queueTest(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>few customer</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"3"</span>, <span class="string">"c"</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;Integer.valueOf(args[<span class="number">2</span>]); i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            queueTest(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>Queue’s sequential rely on the node name’s sequential.<br>If nodes’ name sequential messed up, the queue is messed as well.</p>
+<p>The queue rely on name form, so the data’s key must all be fetch from zookeeper.<br>If the key quantity is big, the I/O cost well be appreciable.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/27/ZK-barrier/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2188,189 +2394,6 @@ p2region&gt;&gt; 101.105.35.57
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/15/Java-ClassLoader-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/15/Java-ClassLoader-1/" class="post-title-link" itemprop="url">Java ClassLoader 1</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-15 22:44:29" itemprop="dateCreated datePublished" datetime="2017-05-15T22:44:29+08:00">2017-05-15</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">final</span> Class&lt;?&gt; defineClass(String name, <span class="keyword">byte</span>[] b, <span class="keyword">int</span> off, <span class="keyword">int</span> len)</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) &#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> ClassLoader <span class="title">getParent</span><span class="params">()</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> URL <span class="title">getResource</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Enumeration&lt;URL&gt; <span class="title">getResources</span><span class="params">(String name)</span> </span>&#123;...&#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>Most important method is <code>loadClass(arg)</code> ,<br>it accept a class’s <strong>full name</strong>, and return it’s instance.</p>
-</li>
-<li><p><code>defineClass(arg)</code> accept a byte array, turn it into instance.<br>Usually, it <strong>load a file</strong> from disk, then pass file byte into JVM.<br>Instantiate Class into a instance through JVM’s(<strong>native method</strong>) define to Class.</p>
-</li>
-<li><code>getResource()</code> and <code>getResources</code> search URL from repository.<br>They have agent mechanism as well as loadClass, like:<br><code>defineClass(getResource(name).getBytes())</code></li>
-</ul>
-<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><p>Because Java <strong>late binding</strong> and <strong>explain</strong> character,<br>Classes’ will be load when it needed like<br>static method/ construct method or direct allocate in field.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">xxx</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    B b = <span class="keyword">new</span> B();</span><br><span class="line">    b.xxoo();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>They are same when <code>B</code> have default constructor.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">B b = <span class="keyword">new</span> B();</span><br><span class="line"></span><br><span class="line">B b = Class.forName(<span class="string">"B"</span>, <span class="keyword">false</span>,</span><br><span class="line">    A<span class="class">.<span class="keyword">class</span>.<span class="title">getClassLoader</span>()).<span class="title">newInstance</span>()</span>;</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2417,7 +2440,7 @@ p2region&gt;&gt; 101.105.35.57
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">264</span>
+                    <span class="site-state-item-count">265</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

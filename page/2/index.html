@@ -351,6 +351,194 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/" class="post-title-link" itemprop="url">卡夫卡，炼狱和分层时间轮【译】</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-09-11 14:58:46" itemprop="dateCreated datePublished" datetime="2020-09-11T14:58:46+08:00">2020-09-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Apache Kafka具有称为“请求炼狱”的数据结构。炼狱将保留所有尚未满足其成功条件但还没有导致错误的请求。问题是“我们如何有效地跟踪集群中其他活动异步满足的成千上万个请求？”</p>
+<p>Kafka实现了几种请求类型，这些请求类型无法立即通过响应进行响应。例子：</p>
+<ul>
+<li>在所有同步副本都确认该写入之前，不能将<code>acks = all</code>的生产请求视为已完成，如此我们可以保证，如果领导者失败，该请求也不会丢失。</li>
+<li>直到至少有一个新字节的数据供消费者使用时，才会回答<code>min.bytes = 1</code>的提取请求。这允许进行“长时间轮询”，以便用户不必忙于等待检查新数据的到来。</li>
+</ul>
+<p>当（a）他们要求的条件完成或（b）发生某些超时时，这些请求被视为完成。</p>
+<p>在任何时候，运行中的这些异步操作的数量与连接的数量成比例，对于卡夫卡而言，连接的数量通常为数万。</p>
+<p>请求炼狱是为如此大规模的请求处理而设计的，但是旧的实现有许多缺陷。</p>
+<p>在此博客中，我想解释旧实现的问题以及新实现如何解决它。我还将介绍基准测试结果。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/09/11/Apache-Kafka-Purgatory-and-Hierarchical-Timing-Wheels/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/09/09/Add-clipboard-to-next-code-block/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1922,179 +2110,6 @@ dV=\pi y^2dx=\pi f(x)^2dx\tag1
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/" class="post-title-link" itemprop="url">漫步微积分7.1 - 定积分的直观含义</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-07-09 07:44:55 / Modified: 08:09:37" itemprop="dateCreated datePublished" datetime="2020-07-09T07:44:55+08:00">2020-07-09</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>前面的文章中，我们完成了两个主要目的。首先，我们将面积近似为给定曲线下的面积，并利用他们和的极限求出确切的面积值。第二，通过使用更强大的方法微积分基本定理，我们学会了如何计算极限的数值解。几乎前几篇文章的整个内容可以被压缩成下面的命题：如果$f(x)$在$[a,b]$上是连续的，那么</p>
-<script type="math/tex; mode=display">
-\begin{align}
-\lim_{ {\rm max}\Delta x\to 0}\sum_{k=1}^nf(x_k^*)\Delta x_k
-&=\int_a^bf(x)dx\nonumber\\
-&=F(x)\big|_a^b=F(b)-F(a)\tag1
-\end{align}</script>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/07/09/Stroll-calculus-7-1-Introduction-The-Intuitive-Meaning-of-Integration/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2141,7 +2156,7 @@ dV=\pi y^2dx=\pi f(x)^2dx\tag1
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">264</span>
+                    <span class="site-state-item-count">265</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2898,11 +2913,11 @@ dV=\pi y^2dx=\pi f(x)^2dx\tag1
   
     
       
-    
-      
-    
-      
         
+      
+    
+      
+    
       
     
       

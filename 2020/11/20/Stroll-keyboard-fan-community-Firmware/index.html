@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="nrf52-keyboardLotlab 开源固件，支持双模。具体安装过程可参考  .travis.yml 环境SDCC 用于编译 CH554GCC 用于编译 NRF52832nrfutil 用于生成DFU包 123456789101112131415161718192021# 安装git make和sdcc编译工具。# 注意Ubuntu 18.04及之前的SDCC版本较旧，无法成功编译sudo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漫步键圈 - 固件">
+<meta property="og:url" content="http://linchenguang.com/2020/11/20/Stroll-keyboard-fan-community-Firmware/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="nrf52-keyboardLotlab 开源固件，支持双模。具体安装过程可参考  .travis.yml 环境SDCC 用于编译 CH554GCC 用于编译 NRF52832nrfutil 用于生成DFU包 123456789101112131415161718192021# 安装git make和sdcc编译工具。# 注意Ubuntu 18.04及之前的SDCC版本较旧，无法成功编译sudo">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-11-22T00:47:24.281Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="漫步键圈 - 固件">
+<meta name="twitter:description" content="nrf52-keyboardLotlab 开源固件，支持双模。具体安装过程可参考  .travis.yml 环境SDCC 用于编译 CH554GCC 用于编译 NRF52832nrfutil 用于生成DFU包 123456789101112131415161718192021# 安装git make和sdcc编译工具。# 注意Ubuntu 18.04及之前的SDCC版本较旧，无法成功编译sudo">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/11/20/Stroll-keyboard-fan-community-Firmware/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>漫步键圈 - 固件 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/11/20/Stroll-keyboard-fan-community-Firmware/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">漫步键圈 - 固件
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-11-20 13:25:00" itemprop="dateCreated datePublished" datetime="2020-11-20T13:25:00+08:00">2020-11-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-11-22 08:47:24" itemprop="dateModified" datetime="2020-11-22T08:47:24+08:00">2020-11-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步键圈/" itemprop="url" rel="index"><span itemprop="name">漫步键圈</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="nrf52-keyboard"><a href="#nrf52-keyboard" class="headerlink" title="nrf52-keyboard"></a>nrf52-keyboard</h2><p>Lotlab 开源固件，支持双模。<br>具体安装过程可参考  <a href="https://github.com/Lotlab/nrf52-keyboard/blob/master/.travis.yml" target="_blank" rel="noopener">.travis.yml</a></p>
+<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p><code>SDCC</code> 用于编译 <code>CH554</code><br><code>GCC</code> 用于编译 <code>NRF52832</code><br><code>nrfutil</code> 用于生成DFU包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装git make和sdcc编译工具。</span></span><br><span class="line"><span class="comment"># 注意Ubuntu 18.04及之前的SDCC版本较旧，无法成功编译</span></span><br><span class="line">sudo apt install git make sdcc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果sdcc无法命令安装，可以手动安装</span></span><br><span class="line">wget https://sourceforge.net/projects/sdcc/files/sdcc-linux-amd64/4.0.0/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2 -O /tmp/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2</span><br><span class="line">tar xf /tmp/sdcc-4.0.0-amd64-unknown-linux2.5.tar.bz2 -C /tmp</span><br><span class="line">sudo cp -r /tmp/sdcc-4.0.0/* /usr/<span class="built_in">local</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载GCC</span></span><br><span class="line">wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2</span><br><span class="line"><span class="comment"># 解压gcc</span></span><br><span class="line">tar xf gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2</span><br><span class="line"><span class="comment"># 将GCC移动到用户目录</span></span><br><span class="line">mv gcc-arm-none-eabi-7-2018-q2-update/ ~/.<span class="built_in">local</span>/</span><br><span class="line"><span class="comment"># 删除压缩包</span></span><br><span class="line">rm gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2</span><br><span class="line"></span><br><span class="line">sudo apt install python3 python3-pip</span><br><span class="line"><span class="comment"># 安装 nrfutil</span></span><br><span class="line">pip3 install nrfutil</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h3><p>信驰达的文档中使用<code>nRF5_SDK_15.3.0_59ac345</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget http://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip</span><br><span class="line">unzip -q nRF5_SDK_15.3.0_59ac345.zip</span><br></pre></td></tr></table></figure></p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/Lotlab/nrf52-keyboard.git</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等同于 --recurse-submodules 选项</span></span><br><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/Lotlab/nrf52-keyboard.git</span><br></pre></td></tr></table></figure>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建配置文件</span></span><br><span class="line">cp template/Makefile.posix.template template/Makefile.posix</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定gcc目录把所有 /user/local 换成 ~/.local</span></span><br><span class="line">sed -i <span class="string">"s/\/usr\/local/~\/.local/g"</span> template/Makefile.posix</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制SDK进工程</span></span><br><span class="line">cp -r /tmp/sdk/nRF5_SDK_15.3.0_59ac345/* SDK/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重置TMK子模块</span></span><br><span class="line">rm -r tmk/tmk_core/protocol/usb_hid/USB_Host_Shield_2.0-tmk/</span><br><span class="line"><span class="built_in">cd</span> tmk/ &amp;&amp; git reset --hard</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回到工程根目录</span></span><br><span class="line"><span class="built_in">cd</span> ../</span><br></pre></td></tr></table></figure>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><h4 id="config"><a href="#config" class="headerlink" title="config"></a>config</h4><p>新建 keyboard 子文件夹，配置 <code>config.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// USB VID</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VENDOR_ID 0x1209</span></span><br><span class="line"><span class="comment">// USB PID</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PRODUCT_ID 0x0514</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 键盘省电参数</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更改发射功率到+4dBm</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> HIGH_TX_POWER</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 不启用宏存储功能</span></span><br><span class="line"><span class="comment">//#define MACRO_STORAGE</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// UART_RX口IO</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> UART_RXD 6</span></span><br><span class="line"><span class="comment">// UART_TX口IO</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> UART_TXD 7</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置参考 keyboard/lkb-core/config.h</li>
+<li><code>VID</code> 作者ID不要和别的作者重复</li>
+<li><code>PID</code> 作者名下产品ID不要重复</li>
+<li>可根据实际使用情况调整键盘省电参数</li>
+<li>自动发射功率调整并不好用，高发射功率更稳定，尤其是在复杂无线设备环境里。</li>
+<li>不启用宏存储功能是为了在配置中写宏，如果启用宏存储<br>在 <code>keymap_plain.c</code> 中定义的宏函数<code>action_get_macro</code>会导致编译报错<br>也许有更好的宏配置方式。。。</li>
+<li>USB串口<code>RX</code> 接 <code>UART_TXD</code>， <code>TX</code> 接 <code>UART_RXD</code></li>
+</ul>
+<h4 id="keymap"><a href="#keymap" class="headerlink" title="keymap"></a>keymap</h4><p><code>keymap_common.h</code><br><code>keymap_plain.c</code><br>基础键位映射可以通过<code>qmkbuilder</code>生成源代码<br><a href="https://kbfirmware.com/" target="_blank" rel="noopener">https://kbfirmware.com/</a><br><a href="https://github.com/ruiqimao/qmkbuilder" target="_blank" rel="noopener">https://github.com/ruiqimao/qmkbuilder</a><br><a href="https://git.code.tencent.com/lotkb/lotkb-builder" target="_blank" rel="noopener">https://git.code.tencent.com/lotkb/lotkb-builder</a></p>
+<p>键值可以参考<a href="https://github.com/tmk/tmk_core/blob/master/doc/keycode.txt" target="_blank" rel="noopener">https://github.com/tmk/tmk_core/blob/master/doc/keycode.txt</a></p>
+<p><a href="https://github.com/BurningBright/nrf52-keyboard/tree/ergo88/keyboard/ergo88-left" target="_blank" rel="noopener">https://github.com/BurningBright/nrf52-keyboard/tree/ergo88/keyboard/ergo88-left</a><br><a href="https://github.com/BurningBright/nrf52-keyboard/tree/ergo88/keyboard/ergo88-right" target="_blank" rel="noopener">https://github.com/BurningBright/nrf52-keyboard/tree/ergo88/keyboard/ergo88-right</a></p>
+<h4 id="layers"><a href="#layers" class="headerlink" title="layers"></a>layers</h4><p>通过定义多层、默认层、开关层、瞬开层和透明按键，可以高度自定义键盘。<br>层从大到小遍历，在所有开启的层中，高优先级的层中的按键会覆盖掉低优先级层的按键。</p>
+<p><code>layer: 0-31</code><br><code>on: { ON_PRESS | ON_RELEASE | ON_BOTH }</code></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>描述</th>
+<th>函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>开启层</td>
+<td>指定层设置为开启</td>
+<td><code>ACTION_LAYER_ON(layer, on)</code></td>
+</tr>
+<tr>
+<td>关闭层</td>
+<td>指定层设置为关闭</td>
+<td><code>ACTION_LAYER_OFF(layer, on)</code></td>
+</tr>
+<tr>
+<td>反转层状态</td>
+<td>指定层的状态反转</td>
+<td><code>ACTION_LAYER_TOGGLE(layer)</code></td>
+</tr>
+<tr>
+<td>仅开启层</td>
+<td>指定层设置为开启，并将其他所有层设置为关闭</td>
+<td><code>ACTION_LAYER_SET_CLEAR(layer)</code></td>
+</tr>
+<tr>
+<td>瞬开或按键</td>
+<td>按住将指定层开启，松开后关闭；<br>快速按下松开则触发指定按键</td>
+<td><code>ACTION_LAYER_TAP_KEY(layer, key)</code></td>
+</tr>
+<tr>
+<td>瞬时开启</td>
+<td>按住将指定层开启，松开后关闭</td>
+<td><code>ACTION_LAYER_MOMENTARY(layer)</code></td>
+</tr>
+<tr>
+<td>瞬时仅开启/清空层</td>
+<td>按住仅开启指定层，松开后关闭所有层</td>
+<td><code>ACTION_LAYER_SET_CLEAR(layer)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code>层状态</code>和<code>默认层状态</code>共同决定了一个层的开启状态。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>层状态</th>
+<th>默认层状态</th>
+<th>层的实际状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关闭</td>
+<td>关闭</td>
+<td>关闭</td>
+</tr>
+<tr>
+<td>关闭</td>
+<td>开启</td>
+<td>开启</td>
+</tr>
+<tr>
+<td>开启</td>
+<td>关闭</td>
+<td>开启</td>
+</tr>
+<tr>
+<td>开启</td>
+<td>开启</td>
+<td>开启</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>键盘在启动时，会将第1层的<strong>默认层状态</strong>设置为开启。<br>所有的层（包括第1层）的<strong>层状态</strong>设置为关闭。<br>此时只有第一层保持开启，其他层都为关闭。</p>
+<p><a href="https://keyboard.lotlab.org/help" target="_blank" rel="noopener">https://keyboard.lotlab.org/help</a><br><a href="https://github.com/tmk/tmk_core/blob/master/doc/keymap.md" target="_blank" rel="noopener">Keymap framework - how to define your keymap</a></p>
+<h4 id="macro"><a href="#macro" class="headerlink" title="macro"></a>macro</h4><p>宏用于自定义一连串键盘操作</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I()</td>
+<td>设置每个按键之间的间隔时间</td>
+</tr>
+<tr>
+<td>D()</td>
+<td>按下某个键</td>
+</tr>
+<tr>
+<td>U()</td>
+<td>松开某个键</td>
+</tr>
+<tr>
+<td>T()</td>
+<td>按下并松开某个键</td>
+</tr>
+<tr>
+<td>W()</td>
+<td>等待指定时间（ms）</td>
+</tr>
+<tr>
+<td>SM()</td>
+<td>将当前修饰键状态暂存</td>
+</tr>
+<tr>
+<td>RM()</td>
+<td>将之前暂存的修饰键状态恢复</td>
+</tr>
+<tr>
+<td>CM()</td>
+<td>将所有修饰键状态设置为未按下</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在 <code>keymap_plain.c</code> 中自定义宏执行函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">macro_t</span> *<span class="title">action_get_macro</span><span class="params">(<span class="keyword">keyrecord_t</span> *record, <span class="keyword">uint8_t</span> id, <span class="keyword">uint8_t</span> opt)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (id) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> (record-&gt;event.pressed ?</span><br><span class="line">                    MACRO( I(<span class="number">0</span>), T(H), T(E), T(L), T(L), W(<span class="number">255</span>), T(O), END ) :</span><br><span class="line">                    MACRO_NONE );</span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">return</span> (record-&gt;event.pressed ?</span><br><span class="line">                    MACRO( D(LALT), D(TAB), END ) :</span><br><span class="line">                    MACRO( U(TAB), END ));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> MACRO_NONE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="构建"><a href="#构建" class="headerlink" title="构建"></a>构建</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> keyboard/lkb-core</span><br><span class="line">make clean</span><br><span class="line"><span class="comment"># 生成引导</span></span><br><span class="line">make bootloader -j</span><br><span class="line"><span class="comment"># 生成用于DFU升级的升级包</span></span><br><span class="line">make package -j</span><br><span class="line"><span class="comment"># 生成USB固件</span></span><br><span class="line">make ch554 -j</span><br></pre></td></tr></table></figure>
+<h3 id="烧录"><a href="#烧录" class="headerlink" title="烧录"></a>烧录</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 恢复</span></span><br><span class="line">nrfjprog --family NRF52 --recover</span><br><span class="line"><span class="comment"># 擦除</span></span><br><span class="line">nrfjprog --family NRF52 --eraseall</span><br><span class="line"><span class="comment"># 刷入设备程序，刷错会变砖。。。</span></span><br><span class="line">nrfjprog --family NRF52 --program SDK/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex</span><br><span class="line"><span class="comment"># 刷入引导程序</span></span><br><span class="line">nrfjprog --family NRF52 --program nrf52_bootloader.hex</span><br><span class="line"><span class="comment"># 重置</span></span><br><span class="line">nrfjprog --family NRF52 --reset</span><br></pre></td></tr></table></figure>
+<p>手机APP <code>nRF Connect</code> 空中升级固件（设备名DfuTarg）<br><code>nrf52_kbd_4384d09c.zip</code></p>
+<p><a href="https://wiki.lotlab.org/ble/upgrade.html" target="_blank" rel="noopener">蓝牙键盘固件更新教程</a></p>
+<hr>
+<p><a href="https://wiki.lotlab.org/ble/build-guide.html" target="_blank" rel="noopener">LotKB固件编译移植指南</a><br><a href="https://github.com/Lotlab/nrf52-keyboard" target="_blank" rel="noopener">https://github.com/Lotlab/nrf52-keyboard</a></p>
+<p><a href="https://www.jianshu.com/p/9c6a803c83ac" target="_blank" rel="noopener">nRF52832 DFU空中升级</a><br><a href="https://www.eemaker.com/nrf52832-dfu.html" target="_blank" rel="noopener">NRF52832 DFU功能</a><br><a href="https://www.cnblogs.com/iini/p/8994433.html" target="_blank" rel="noopener">Nordic nRF51/nRF52开发流程说明</a></p>
+<h2 id="BlueMicro-BLE"><a href="#BlueMicro-BLE" class="headerlink" title="BlueMicro_BLE"></a>BlueMicro_BLE</h2><p>固件意外的好用，支持主从一体，在Mac、Linux上兼容性好。<br>虽然不是TMK，但也支持层、层操作、宏，自定义程度不比TMK差。</p>
+<h3 id="bootloader"><a href="#bootloader" class="headerlink" title="bootloader"></a>bootloader</h3><p>由于PCB设计的时候占用21脚，如果烧录 <code>Adafruit Feather nRF52</code> 默认bootloader会导致左手第一行失效。<br>为了不飞线解决这个问题，需要自行修改bootloader源码，把reset针脚改掉。</p>
+<p><a href="https://github.com/NordicSemiconductor/nrfx/tree/7a4c9d946cf1801771fc180acdbf7b878f270093" target="_blank" rel="noopener">NordicSemiconductor/nrfx</a><br><a href="https://github.com/adafruit/Adafruit_nRF52_Bootloader" target="_blank" rel="noopener">https://github.com/adafruit/Adafruit_nRF52_Bootloader</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pip install intelhex</span><br><span class="line">pip3 install --user adafruit-nrfutil</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/adafruit/Adafruit_nRF52_Bootloader</span><br><span class="line"><span class="built_in">cd</span> Adafruit_nRF52_Bootloader</span><br><span class="line">git submodule update --init</span><br></pre></td></tr></table></figure>
+<p>修改 <code>nrfx/mdk/system_nrf52.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line:193</span></span><br><span class="line">NRF_UICR-&gt;PSELRESET[<span class="number">0</span>] = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">while</span> (NRF_NVMC-&gt;READY == NVMC_READY_READY_Busy)&#123;&#125;</span><br><span class="line">NRF_UICR-&gt;PSELRESET[<span class="number">1</span>] = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<p>编译<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make BOARD=feather_nrf52832</span><br></pre></td></tr></table></figure></p>
+<p>得到合并 softdevice 和 bootloader 后的基础固件<br><code>feather_nrf52832_bootloader-0.3.2-170-g7b86264-dirty_s132_6.1.1.hex</code></p>
+<h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><p>编译需要用到 <a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">Arduino</a><br>下载安装 Arduino IDE 1.8.xx</p>
+<p>安装 BSP：</p>
+<ol>
+<li>在 <code>Preferences</code> 中 <code>附加开发板管理器网址</code> 输入：<br><code>https://www.adafruit.com/package_adafruit_index.json</code></li>
+<li>重启 IDE</li>
+<li>在 <code>工具</code> -&gt; <code>开发板</code> -&gt; <code>开发板管理</code> 中选择安装 <code>Adafruit nRF52 by Adafruit</code></li>
+</ol>
+<p>BSP 安装完成后，在 <code>开发板</code> 中选择 <code>Adafruit Feather nRF52</code></p>
+<p>安装过程中，如果出现 ARM GCC 安装失败<br>可以到ARM官网下载 <a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads" target="_blank" rel="noopener">gcc-arm-none-eabi-9-2019-q4-major-xxx</a> 手动安装<br>MacOS解压目录： <code>~/Library/Arduino15/packages/adafruit/tools/arm-none-eabi-gcc/9-2019q4</code></p>
+<p><a href="https://learn.adafruit.com/bluefruit-nrf52-feather-learning-guide/arduino-bsp-setup" target="_blank" rel="noopener">bluefruit-nrf52-feather-learning-guide</a></p>
+<h3 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h3><h4 id="bsp设置"><a href="#bsp设置" class="headerlink" title="bsp设置"></a>bsp设置</h4><ul>
+<li>macOS : ~/Library/Arduino15/packages/adafruit/hardware/nrf52</li>
+<li>Linux : ~/.arduino15/packages/adafruit/hardware/nrf52</li>
+<li>Windows: %APPDATA%\Local\Arduino15\packages\adafruit\hardware\nrf52</li>
+</ul>
+<p>修改 <code>variants/feather_nrf52832/variant.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line:90</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_SERIAL_RX       (0)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_SERIAL_TX       (0)</span></span><br></pre></td></tr></table></figure>
+<p>默认<code>PIN_SERIAL_RX</code>占用8针脚，会导致左第三行、右第六行失效。</p>
+<p><a href="https://github.com/adafruit/Adafruit_nRF52_Arduino" target="_blank" rel="noopener">https://github.com/adafruit/Adafruit_nRF52_Arduino</a></p>
+<h4 id="config-1"><a href="#config-1" class="headerlink" title="config"></a>config</h4><p>参考 <code>firmware/keyboards</code> 中的其他键盘目录结构，复制一份<br>由于 <code>ERGO88</code>，左右板针脚并不对称，需要把定义在 <code>hardware_config.h</code> 中的<br><code>MATRIX_ROW_PINS</code>、 <code>MATRIX_COL_PINS</code>、 <code>VBAT_PIN</code> 迁移至 <code>keyboard_config.h</code> 中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span>  KEYBOARD_CONFIG_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>  KEYBOARD_CONFIG_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"hardware_config.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KEYBOARD_SIDE       LEFT</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEVICE_NAME_R       <span class="meta-string">"ERGO88-R"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEVICE_NAME_L       <span class="meta-string">"ERGO88-L"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEVICE_NAME_M       <span class="meta-string">"ERGO88-M"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEVICE_MODEL        <span class="meta-string">"ERGO88"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MANUFACTURER_NAME   <span class="meta-string">"Burningbright"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> KEYBOARD_SIDE == RIGHT</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KEYMAP( \</span></span><br><span class="line">    ...</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KEYMAP( \</span></span><br><span class="line">    ...</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_ROW_PINS &#123; ... &#125;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MATRIX_COL_PINS &#123; ... &#125;</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VBAT_PIN  5</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">/* KEYBOARD_CONFIG_H */</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="keymaps"><a href="#keymaps" class="headerlink" title="keymaps"></a>keymaps</h4><p>HID键值可参考 <code>firmware/hid_keycodes.h</code><br>高级键值可参考 <code>firmware/advance_keycodes.h</code></p>
+<p>在 <code>firmware/keyboards/Ergo88/keymaps/3layer/keymap.h</code> 中<br>定义层序号、键值别名、组合键值定义、宏值定义、函数名定义等</p>
+<p>在 <code>firmware/keyboards/Ergo88/keymaps/3layer/keymap.c</code> 中定义具体映射</p>
+<p>第一层 WINDOWS<br>基础按键 + 复制、粘贴、查找、选中一行</p>
+<p>第二层 MACOS<br>WINDOWS的蒙板层，通过透明按键实现<br>交换<code>GUI</code> <code>ALT</code> 位置，重新定义复制、粘贴、查找、选中一行，兼容MacOS</p>
+<p>第三层 功能层<br>亮度、音量、鼠标、小键盘、常用命令宏、层切换开关</p>
+<p><a href="https://github.com/BurningBright/BlueMicro_BLE/tree/ergo88/firmware/keyboards/Ergo88" target="_blank" rel="noopener">https://github.com/BurningBright/BlueMicro_BLE/tree/ergo88/firmware/keyboards/Ergo88</a></p>
+<h3 id="构建-1"><a href="#构建-1" class="headerlink" title="构建"></a>构建</h3><p>参数按以下层级排列，也可以用命令行交互输入<br>keyboard : keymap : part : model : version</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> BlueMicro_BLE/build/macos/</span><br><span class="line">./build-macos Ergo88:3layer:left:feather52832:bluemicrov2_0c</span><br><span class="line">./build-macos Ergo88:3layer:right:feather52832:bluemicrov2_0c</span><br></pre></td></tr></table></figure>
+<h3 id="烧录-1"><a href="#烧录-1" class="headerlink" title="烧录"></a>烧录</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 恢复</span></span><br><span class="line">nrfjprog --family NRF52 --recover</span><br><span class="line"><span class="comment"># 擦除</span></span><br><span class="line">nrfjprog --family NRF52 --eraseall</span><br><span class="line"><span class="comment"># softdevice + bootloader</span></span><br><span class="line">nrfjprog --family NRF52 --program feather_nrf52832_bootloader-0.3.2-170-g7b86264-dirty_s132_6.1.1.hex</span><br><span class="line"><span class="comment"># application</span></span><br><span class="line">nrfjprog --family NRF52 --program BlueMicro_BLE/output/Ergo88/Ergo88-feather52832-bluemicrov2_0c-3layer-right.hex</span><br><span class="line"><span class="comment"># valid</span></span><br><span class="line">nrfjprog --family NRF52 --program BlueMicro_BLE/build/app_valid_setting_apply_nRF52832.hex</span><br><span class="line"><span class="comment"># 重置</span></span><br><span class="line">nrfjprog --family NRF52 --reset</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/jpconstantineau/BlueMicro_BLE" target="_blank" rel="noopener">https://github.com/jpconstantineau/BlueMicro_BLE</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/09/Stroll-keyboard-fan-community-Hardware/" rel="next" title="漫步键圈 - 硬件">
+                <i class="fa fa-chevron-left"></i> 漫步键圈 - 硬件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">265</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">53</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#nrf52-keyboard"><span class="nav-number">1.</span> <span class="nav-text">nrf52-keyboard</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境"><span class="nav-number">1.1.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDK"><span class="nav-number">1.2.</span> <span class="nav-text">SDK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">1.3.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.4.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置"><span class="nav-number">1.5.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#config"><span class="nav-number">1.5.1.</span> <span class="nav-text">config</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#keymap"><span class="nav-number">1.5.2.</span> <span class="nav-text">keymap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#layers"><span class="nav-number">1.5.3.</span> <span class="nav-text">layers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#macro"><span class="nav-number">1.5.4.</span> <span class="nav-text">macro</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建"><span class="nav-number">1.6.</span> <span class="nav-text">构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#烧录"><span class="nav-number">1.7.</span> <span class="nav-text">烧录</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BlueMicro-BLE"><span class="nav-number">2.</span> <span class="nav-text">BlueMicro_BLE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bootloader"><span class="nav-number">2.1.</span> <span class="nav-text">bootloader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-1"><span class="nav-number">2.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-1"><span class="nav-number">2.3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#bsp设置"><span class="nav-number">2.3.1.</span> <span class="nav-text">bsp设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#config-1"><span class="nav-number">2.3.2.</span> <span class="nav-text">config</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#keymaps"><span class="nav-number">2.3.3.</span> <span class="nav-text">keymaps</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建-1"><span class="nav-number">2.4.</span> <span class="nav-text">构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#烧录-1"><span class="nav-number">2.5.</span> <span class="nav-text">烧录</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+    <div id="sidebar-dimmer"></div>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
+</body>
+</html>

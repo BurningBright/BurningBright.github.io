@@ -351,6 +351,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/07/Difference-between-redis-and-memcached/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/07/Difference-between-redis-and-memcached/" class="post-title-link" itemprop="url">Difference between redis and memcached</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-07 20:59:01" itemprop="dateCreated datePublished" datetime="2017-05-07T20:59:01+08:00">2017-05-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:47:45" itemprop="dateModified" datetime="2020-06-17T22:47:45+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="IO-Model"><a href="#IO-Model" class="headerlink" title="IO Model"></a>IO Model</h2><p>Memcached is <strong>multi-thread</strong>, not block reuse IO net model.<br>it has main listen thread main worker sub thread.<br>‘leader’ listened net connnect, dispatch to worker thread.<br>In network layer, memcached use libevent package event.<br>But this bring concurrency and lock problem, like <code>stats</code> command.</p>
+<p>Redis reuse <strong>single thread</strong> IO model, it’s self package a AeEvent event framework.<br>It implements <code>epoll</code> <code>kqueue</code> <code>select</code> event,<br>for simple IO operation, single thread can reach the top speed.<br>But for some calc operation, this affect global throughput alot.</p>
+<h2 id="Memory-manage"><a href="#Memory-manage" class="headerlink" title="Memory manage"></a>Memory manage</h2><p>Memcached use prepare way to manage memory.<br>In this way memory pool can avoid the cost in apply and release memory.</p>
+<p>Redis use real-time way to manage memory.</p>
+<h2 id="Data-consistency"><a href="#Data-consistency" class="headerlink" title="Data consistency"></a>Data consistency</h2><p>Memcached provide <code>cas</code> command, it can make sure data consistency.</p>
+<p>Redis has no <code>cas</code> command, but it provide transaction function.<br>It make sure series of commands’ <strong>atomicity</strong>, it wouldn’t be interrupted.</p>
+<h2 id="Storage-way"><a href="#Storage-way" class="headerlink" title="Storage way"></a>Storage way</h2><p>Memcached only support <code>key-value</code> storage,<br>not support enumerate / persistence/ copy and so on function.</p>
+<p>Redis support except <code>key-value</code> way, but <code>list</code> <code>set</code> <code>sorted</code> <code>set</code> <code>hash</code>.<br>In other hand, redis support data persistence, copy and so on function.</p>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><ol>
+<li><p>When data in-memory use Redis is better.</p>
+</li>
+<li><p>Redis in alot of place play a role in replace Memcached.</p>
+</li>
+<li><p>When need other data structure, Redis is better.</p>
+</li>
+<li><p>When storage data can’t be remove, Redis is better.</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/03/How-to-leak-memory-in-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2198,221 +2388,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/26/Java-dynamic-proxy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/26/Java-dynamic-proxy/" class="post-title-link" itemprop="url">Java dynamic proxy</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-26 18:00:10" itemprop="dateCreated datePublished" datetime="2017-03-26T18:00:10+08:00">2017-03-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Use-scope"><a href="#Use-scope" class="headerlink" title="Use scope"></a>Use scope</h3><ul>
-<li>Java AOP is base on dynamic proxy</li>
-<li>Plug in, for increasing function of package already exists.</li>
-<li>Framework, for some abstract programming level.</li>
-</ul>
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><h3 id="1-an-Interface"><a href="#1-an-Interface" class="headerlink" title="1. an Interface"></a>1. an Interface</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Interface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">hi</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">String <span class="title">sayHello</span><span class="params">(String arg)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>first interface used to call a method<br>  that has <strong>no arguments and return</strong></li>
-<li>second interface used to call a method<br>  that has <strong>a argument and return string</strong></li>
-</ul>
-<h3 id="2-an-implements-class"><a href="#2-an-implements-class" class="headerlink" title="2. an implements class"></a>2. an implements class</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloProxy</span> <span class="keyword">implements</span> <span class="title">Interface</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hi</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello world"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">(String arg)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello "</span> + arg);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Hello "</span> + arg;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>Geet to world</li>
-<li>Geet to the input argument and return</li>
-</ul>
-<h3 id="3-an-InvocationHandler"><a href="#3-an-InvocationHandler" class="headerlink" title="3. an InvocationHandler"></a>3. an InvocationHandler</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DynamicProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Object proxied;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DynamicProxyHandler</span><span class="params">(Object proxied)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.proxied = proxied;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>] != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">"Invoke "</span> + method.invoke(proxied, args);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>The handler implements InvocationHandler is the key<br>  to dynamic call the target methods or fields.</p>
-</li>
-<li><p>All the call in handler would be redirect to a <code>call processor</code>.</p>
-</li>
-<li><p><em>The first argument</em> in method invoke is used to deal the<br>  <strong>manual call</strong> object.</p>
-</li>
-<li><p><em>The second argument</em> is the method you call in a<br>  <strong>uppper reference</strong> or a <strong>maunal call</strong> method.</p>
-</li>
-<li><p><em>The third argument</em> is the arguments you want to input,<br>  the processor would distinguish the method sign may be -_-.<br>  <strong>uppper input</strong> or <strong>maunal input</strong> arguments.</p>
-</li>
-</ul>
-<h3 id="4-have-a-try"><a href="#4-have-a-try" class="headerlink" title="4. have a try"></a>4. have a try</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SimpleDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Interface hello = (Interface) Proxy.newProxyInstance(</span><br><span class="line">                HelloProxy<span class="class">.<span class="keyword">class</span>.<span class="title">getClassLoader</span>(),</span></span><br><span class="line">                new Class[] &#123; Interface.class &#125;,</span><br><span class="line">                <span class="keyword">new</span> DynamicProxyHandler(<span class="keyword">new</span> HelloProxy()));</span><br><span class="line"></span><br><span class="line">        hello.hi();</span><br><span class="line">        System.out.println(hello.sayHello(<span class="string">"proxy"</span>));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>The <code>newProxyInstance</code> will create a subClass of the second argument<br>  so the <code>$proxy0</code> can be transform to the <code>Interface</code>.</p>
-</li>
-<li><p>The first argument <code>classLoader</code> is to point which class is agent.</p>
-</li>
-<li><p>The third argument is the handler we created in <strong>step 3</strong><br>  take a <strong>proxied hello interface implement</strong> into it’s constructor.</p>
-</li>
-<li><p>The result in <code>sayHello</code> has been deal by handler.</p>
-</li>
-</ul>
-<p>Result:</p>
-<blockquote>
-<p>Hello world<br>Hello proxy<br>Invoke Hello proxy</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2459,7 +2434,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">264</span>
+                    <span class="site-state-item-count">265</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
