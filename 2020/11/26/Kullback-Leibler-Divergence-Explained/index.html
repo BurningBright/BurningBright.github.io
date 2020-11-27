@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文地址Count Bayesie这篇文章是博客Count Bayesie 上 Will Kurt 的文章Kullback-Leibler Divergence Explained 的翻译和笔记原文对 KL散度 的概念诠释得非常清晰易懂，评论区中有很多致谢，建议阅读  笔记KL散度是原始分布中数据概率与近似分布中数据概率的对数差的期望，用于量化参数化近似代替观测分布时丢失了多少信息。散度越小，说">
+<meta name="keywords" content="math">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KL散度的解释【译】">
+<meta property="og:url" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="原文地址Count Bayesie这篇文章是博客Count Bayesie 上 Will Kurt 的文章Kullback-Leibler Divergence Explained 的翻译和笔记原文对 KL散度 的概念诠释得非常清晰易懂，评论区中有很多致谢，建议阅读  笔记KL散度是原始分布中数据概率与近似分布中数据概率的对数差的期望，用于量化参数化近似代替观测分布时丢失了多少信息。散度越小，说">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/biting-worms.jpg">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/empirical-distribution-of-data.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/uniform-approximation.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/binomial-approximation.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/all-approximations.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/finding-the-optimal-parameter.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/optimizing-our-ad-hoc-function.png">
+<meta property="og:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/optimal-value-for-ad-hoc.png">
+<meta property="og:updated_time" content="2020-11-27T13:46:18.212Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KL散度的解释【译】">
+<meta name="twitter:description" content="原文地址Count Bayesie这篇文章是博客Count Bayesie 上 Will Kurt 的文章Kullback-Leibler Divergence Explained 的翻译和笔记原文对 KL散度 的概念诠释得非常清晰易懂，评论区中有很多致谢，建议阅读  笔记KL散度是原始分布中数据概率与近似分布中数据概率的对数差的期望，用于量化参数化近似代替观测分布时丢失了多少信息。散度越小，说">
+<meta name="twitter:image" content="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/biting-worms.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>KL散度的解释【译】 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">KL散度的解释【译】
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-11-26 13:00:51" itemprop="dateCreated datePublished" datetime="2020-11-26T13:00:51+08:00">2020-11-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-11-27 21:46:18" itemprop="dateModified" datetime="2020-11-27T21:46:18+08:00">2020-11-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>原文地址<a href="https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained" target="_blank" rel="noopener">Count Bayesie</a><br>这篇文章是博客Count Bayesie 上 Will Kurt 的文章<br><code>Kullback-Leibler Divergence Explained</code> 的翻译和笔记<br>原文对 <strong>KL散度</strong> 的概念诠释得非常清晰易懂，评论区中有很多致谢，建议阅读</p>
+</blockquote>
+<h1 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h1><p><code>KL散度</code>是<code>原始分布</code>中数据概率与<code>近似分布</code>中数据概率的<code>对数差</code>的<code>期望</code>，用于量化<code>参数化近似</code>代替<code>观测分布</code>时丢失了多少信息。散度越小，说明模拟越逼近现实。</p>
+<h2 id="信息"><a href="#信息" class="headerlink" title="信息"></a>信息</h2><p>信息论奠基人香农认为“信息是用来消除随机不确定性的东西”，也就是<strong>以前不知道现在知道的事实</strong>。</p>
+<p><code>熵</code>作为度量信息的期望，引用<code>PRML</code>中的观点，<code>信息量</code>可以看成是在了解事物时，感受到的<strong>“惊讶程度”</strong>。低概率事件内蕴的信息会比高概率的信息多，比如革命性产品问世、突破性科学发现。正所谓<strong>“无常生妖”</strong>，低概率事件有更多信息符合直觉。</p>
+<p>多个事件同时发生的概率是多个事件<strong>概率相乘</strong>，总信息量是多个事件<strong>信息量相加</strong>。<br><code>熵</code>计算公式中的对数不大好理解，参考严谨推导可以发现<code>信息量</code>确实是$f(x)=-log{x}$。</p>
+<script type="math/tex; mode=display">
+0-f(x)=f \prime(1) \int_{x}^{1} \frac{1}{t} dt</script><p>概率和信息量的对数关系，可以理解为 <strong>两件事情信息量之和 = 两件事情同时发生的信息量</strong>:<br>$x_1$和$x_2$同时发生的概率：$P(x_1, x_2) = P(x_1)×P(x_2)$<br>$x_1$和$x_2$的总信息量：$log_2(P(x_1)P(x_2)) = log_2P(x_1)+log_2P(x_2)$</p>
+<h2 id="趣闻"><a href="#趣闻" class="headerlink" title="趣闻"></a>趣闻</h2><p>评论区中，作者有回复关于<code>熵</code>的符号<code>H</code>的提问：</p>
+<p>谢谢你的评论，我不禁对这个符号的历史做了一些研究!如果你读过《通信的数学理论》(该书改编自香农为信息论奠定基础的原始论文 <a href="http://math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf" target="_blank" rel="noopener">http://math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf</a> )你会发现香农解释了<code>H</code>的起源:</p>
+<p><code>H</code>就是玻尔兹曼著名的<code>H定理</code>中的<code>H</code>。</p>
+<p>有趣的是玻尔兹曼最初把它命名为<code>E</code>，但后来他决定换成了<code>H</code>，虽说对他是不是取了希腊字母Eta <code>H</code>有些争议。</p>
+<p>在玻尔兹曼关于熵的论文中，他使用了<code>S</code>，而<code>S</code>(不是<code>E</code>)仍然是熵的标准物理符号。(维基百科中关于热力学第二定律的注释用了<code>S</code> <a href="https://en.wikipedia.org/wiki/Second_law_of_thermodynamics" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Second_law_of_thermodynamics</a>)</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.cnblogs.com/lemon-rain/p/9287991.html" target="_blank" rel="noopener">KL散度的理解（GAN网络的优化）</a><br><a href="https://blog.csdn.net/ericcchen/article/details/72357411" target="_blank" rel="noopener">KL散度的理解</a><br><a href="https://arxiv.org/abs/1606.05908" target="_blank" rel="noopener">Tutorial on Variational Autoencoders</a><br><a href="https://blog.csdn.net/dog250/article/details/78944526" target="_blank" rel="noopener">不知为不知—信息论和最大熵原则</a><br><a href="https://blog.csdn.net/dog250/article/details/79081043" target="_blank" rel="noopener">信息量为什么要表示成对数的形式</a></p>
+<h1 id="译文"><a href="#译文" class="headerlink" title="译文"></a>译文</h1><p>在这篇文章中，我们将研究一种比较两种概率分布的方法，即Kullback-Leibler散度(通常简称为KL散度)。在概率和统计中，我们经常用更简单的近似分布来代替观察到的数据或复杂分布。KL散度帮助我们测量当我们选择一个近似值时我们损失了多少信息。</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/biting-worms.jpg" alt="biting-worms.jpg"></p>
+<p><div align="center">空间蠕虫和KL散度！！！</div><br><br></p>
+<a id="more"></a>
+<p>让我们从一个问题开始我们的探索。假设我们是太空科学家，访问一个遥远的新行星，我们发现了一种我们想研究的噬虫。我们发现，这些蠕虫有10颗牙齿，但由于它们不停地咀嚼，它们中的许多最终失去了牙齿。在收集了大量样本后，我们得到了每只蠕虫中牙齿数量的经验概率分布:</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/empirical-distribution-of-data.png" alt="empirical-distribution-of-data.png"></p>
+<p><div align="center">收集数据的经验概率分布</div><br><br></p>
+<p>虽然这些数据很好，但我们有一个小问题。我们远离地球，向地球发送原始数据成本高昂。我们要做的是将这些数据简化为只有一两个参数的简单模型。一种选择是把蠕虫牙齿的分布表示为均匀分布。我们知道有11个可能的值我们可以对每一种可能赋值相同的概率。</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/uniform-approximation.png" alt="uniform-approximation.png"></p>
+<p><div align="center">一致近似消除了我们数据中一切的细微差别</div><br><br></p>
+<p>显然，我们的数据不是均匀分布的，但它看起来也不太像我们知道的任何常见分布。我们可以尝试的另一个选择是使用<a href="https://www.countbayesie.com/blog/2015/3/17/interrogating-probability-distributions" target="_blank" rel="noopener">二项分布</a>建模我们的数据。在这种情况下，我们需要做的就是估计二项分布的概率参数。我们知道，如果我们有 $n$ 次试验 它的概率是 $p$ 那期望就是 <script type="math/tex">E[x] = n.p</script> 。这里的$ n = 10 $，而期望就是数据的均值，也就是5.7，因此我们对 $p$ 的最佳估计值为0.57。这将使我们得到一个二项分布，如下所示：</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/binomial-approximation.png" alt="binomial-approximation.png"></p>
+<p><div align="center">我们的二项式近似更微妙，但也不能完美地模拟我们的数据</div><br><br></p>
+<p>将我们的每个模型与原始数据进行比较，我们可以发现两者都不是完美的匹配，但是哪一个更好呢?</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/all-approximations.png" alt="all-approximations.png"></p>
+<p><div align="center">与原始数据相比，很明显这两种近似都是有限的。我们如何选择使用哪一个?</div><br><br></p>
+<p>现有的错误度量有很多，但我们主要关心的是最小化我们必须发送的信息量。这两个模型都将问题简化为两个参数，牙齿数量和一个概率(尽管对于均匀分布，我们实际上只需要牙齿数量)。求证哪个分布更好的方法，就是去测试哪个分布保留了更多的原始数据源信息。这就是Kullback-Leibler散度出现的原因。</p>
+<h2 id="分布的熵"><a href="#分布的熵" class="headerlink" title="分布的熵"></a>分布的熵</h2><p><code>KL散度</code>起源于信息论。信息论的主要目标是量化数据中有多少信息。信息论中最重要的度量是熵，通常用$H$表示。概率分布的熵的定义是：</p>
+<script type="math/tex; mode=display">
+H = -\sum_{i=1}^{N} p(x_i) \cdot \text{log }p(x_i)</script><p>如果我们使用 <script type="math/tex">log_2</script> 来进行计算，我们可以将熵解释为“编码信息所需要的最小比特数”。在这种情况下，信息将是每次观察到的牙齿计数给定我们的经验分布。根据我们观察到的数据，我们的概率分布的熵是 3.12bits。比特的数量告诉我们，我们平均需要多少比特的下限，来编码我们在一轮观察到的牙齿数量。</p>
+<p>熵没有告诉我们的是帮助我们实现这种压缩的最佳编码方案。信息的最优编码是一个非常有趣的话题，但对于理解KL散度并不是必要的。熵的关键在于，只要知道我们需要的比特数的理论下限，我们就能精确地量化数据中有多少信息。现在我们可以量化它了：我们想要量化当我们用<code>参数化近似</code>来代替<code>观测到的分布</code>时丢失了多少信息。</p>
+<h2 id="使用Kullback-Leibler散度度量丢失的信息"><a href="#使用Kullback-Leibler散度度量丢失的信息" class="headerlink" title="使用Kullback-Leibler散度度量丢失的信息"></a>使用Kullback-Leibler散度度量丢失的信息</h2><p>Kullback-Leibler散度只是对熵公式稍加修改。我们不仅用到概率分布 $p$，还加入了近似分布 $q$。然后我们看一下每一个对数值的差异:</p>
+<script type="math/tex; mode=display">
+D_{KL}(p||q) = \sum_{i=1}^{N} p(x_i)\cdot (\text{log }p(x_i) - \text{log }q(x_i))</script><p>实际上，KL散度是原始分布中数据概率与近似分布中数据概率的对数差的<a href="https://www.countbayesie.com/blog/2015/3/19/expectation-and-variance-from-high-school-to-grad-school" target="_blank" rel="noopener">期望</a>。同样，如果我们用 $log_2$ 来考虑，我们可以把它解释为“我们预计会丢失多少位信息”。我们可以把这个公式写成期望的形式</p>
+<script type="math/tex; mode=display">
+D_{KL}(p||q) = E[\text{log } p(x) - \text{log } q(x)]</script><p>KL散度更常见的写法如下:</p>
+<script type="math/tex; mode=display">
+D_{KL}(p||q) = \sum_{i=1}^{N} p(x_i)\cdot log\frac{p(x_i)}{q(x_i)}</script><p>由于 $\text{log }a - \text{log b} = \text{log }\frac{a}{b}$</p>
+<p>利用KL散度，我们可以精确地计算出当我们近似一个分布和另一个分布时丢失了多少信息。让我们回到我们的数据，看看结果是什么样子。</p>
+<h2 id="比较我们的近似分布"><a href="#比较我们的近似分布" class="headerlink" title="比较我们的近似分布"></a>比较我们的近似分布</h2><p>现在我们可以继续计算两个近似分布的KL散度。对于均匀分布，我们发现:</p>
+<script type="math/tex; mode=display">D_{kl}( \text{Observed} || \text{Binomial}) = 0.338</script><p>对于二项式近似：</p>
+<script type="math/tex; mode=display">D_{kl}(\text{Observed } || \text{ Binomial}) = 0.477</script><p>我们可以看到，使用<code>二项式近似</code>所丢失的信息要大于使用<code>一致近似</code>所丢失的信息。如果我们必须选择一个来表示我们的观察结果，我们最好坚持<code>一致近似</code>。</p>
+<h2 id="散度而不是距离"><a href="#散度而不是距离" class="headerlink" title="散度而不是距离"></a>散度而不是距离</h2><p>把KL散度看作距离度量的想法很诱人，但是我们不能用KL散度来度量两个分布之间的距离。原因是KL散度是不对称的。例如，如果我们使用观测数据来近似二项分布我们会得到一个非常不同的结果</p>
+<script type="math/tex; mode=display">D_{kl}( \text{Binomial} || \text{Observed}) = 0.330</script><p>这是符合直觉的，因为在各自的情形下，我们正在做非常不同形式的近似。</p>
+<h2 id="使用KL散度进行优化"><a href="#使用KL散度进行优化" class="headerlink" title="使用KL散度进行优化"></a>使用KL散度进行优化</h2><p>当我们选择二项分布的值时，我们通过使用与数据匹配的期望值选择了概率的参数。但由于我们是在优化最小化信息损失，这可能不是选择参数的最佳方式。我们可以通过观察KL散度在改变参数值时的变化方式来再次检查我们的工作。下面是这值如何一起改变信息损失的图表:</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/finding-the-optimal-parameter.png" alt="finding-the-optimal-parameter.png"></p>
+<p><div align="center">事实证明，我们确实选择了正确的方法来寻找最佳的二项分布来建模我们的数据</div><br><br></p>
+<p>正如您所看到的，我们对二项分布(用圆点标记)的估计是最小化KL散度的最佳估计。</p>
+<p>假设我们希望创建一个特别分布来建模我们的数据。我们将把数据分成两部分。0-5个牙齿的概率和6-10个牙齿的概率。然后我们将使用一个参数来指定总概率分布中落在分布右侧的百分比。例如，如果我们选择1作为参数，那么6-10组的概率都是0.2， 0-5组的概率都是0。所以:</p>
+<script type="math/tex; mode=display">[6,11] = \frac{p}{5}; [0,5] = \frac{1-p}{6}</script><p>注意：因为 $log$ 对 $0$ 没有定义，所以只有当$p(x_i) = 0$ 暗示 $q(x_i) = 0$ 时，我们才允许概率为0。</p>
+<p>我们怎样才能为我们的这个奇怪模型找到最佳的参数呢?我们所需要做的就是最小化KL散度，就像我们之前做的那样:</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/optimizing-our-ad-hoc-function.png" alt="optimizing-our-ad-hoc-function.png"></p>
+<p><div align="center">当我们改变参数时，通过寻找KL散度的最小值，我们可以找到p的最优值。</div><br><br></p>
+<p>我们发现当p=0.47时，KL散度的最小值为0.338。最小KL散度的值看起来很熟悉:它几乎和我们从均匀分布中得到的值一样!当我们用p的理想值来绘制我们的特别分布的值时，我们发现它几乎是一致的:</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/optimal-value-for-ad-hoc.png" alt="optimal-value-for-ad-hoc.png"></p>
+<p><div align="center">我们的 ad hoc 模型最终非常接近均匀分布</div><br><br></p>
+<p>由于我们不使用临时分布保存任何信息，所以最好使用更熟悉和更简单的模型。</p>
+<p>这里的关键点是，我们可以使用KL散度作为一个目标函数来找到任何近似分布的最优值。虽然这个示例只优化了一个参数，但我们可以很容易地将此方法扩展到具有多个参数的高维模型中。</p>
+<h2 id="变分自动编码器和变分贝叶斯方法"><a href="#变分自动编码器和变分贝叶斯方法" class="headerlink" title="变分自动编码器和变分贝叶斯方法"></a>变分自动编码器和变分贝叶斯方法</h2><p>如果您熟悉神经网络，您可能已经猜到了最后部分之后的学习方向。在最一般的意义上，神经网络是函数近似器。这意味着您可以使用神经网络来学习各种复杂的功能。使神经网络学习的关键是使用目标函数，该函数可以告知网络运行状况。您可以通过最小化目标函数的损失来训练神经网络。</p>
+<p>正如我们已经看到的，我们可以使用KL散度来最小化近似分布时的信息损失。将KL散度与神经网络相结合，使我们能够学习非常复杂的数据近似分布。一种常见的解决方法称为“变分自动编码器”，它可以学习最佳方式来近似数据集中的信息。这里有一个<a href="https://arxiv.org/abs/1606.05908" target="_blank" rel="noopener">很棒的教程</a>，深入了解构建变分自动编码器的细节。</p>
+<p>更普遍的是变分贝叶斯方法。在其他的文章中，我们已经看到了蒙特卡洛模拟在解决一系列概率问题上是多么的强大。虽然<a href="https://www.countbayesie.com/blog/2015/3/3/6-amazing-trick-with-monte-carlo-simulations" target="_blank" rel="noopener">蒙特卡洛模拟</a>可以帮助解决许多棘手的积分需要贝叶斯推理，即使这些方法可以非常昂贵的计算。变分贝叶斯方法，包括变分自编码器，使用KL散度产生最优近似分布，允许对非常困难的积分更有效的推理。要了解关于变分推理的更多信息，请查看<a href="http://edwardlib.org/" target="_blank" rel="noopener">Edward library for python</a>。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/math/" rel="tag"># math</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/20/Stroll-keyboard-fan-community-Firmware/" rel="next" title="漫步键圈 - 固件">
+                <i class="fa fa-chevron-left"></i> 漫步键圈 - 固件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">266</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">53</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#笔记"><span class="nav-number">1.</span> <span class="nav-text">笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#信息"><span class="nav-number">1.1.</span> <span class="nav-text">信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#趣闻"><span class="nav-number">1.2.</span> <span class="nav-text">趣闻</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">1.3.</span> <span class="nav-text">参考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#译文"><span class="nav-number">2.</span> <span class="nav-text">译文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布的熵"><span class="nav-number">2.1.</span> <span class="nav-text">分布的熵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Kullback-Leibler散度度量丢失的信息"><span class="nav-number">2.2.</span> <span class="nav-text">使用Kullback-Leibler散度度量丢失的信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#比较我们的近似分布"><span class="nav-number">2.3.</span> <span class="nav-text">比较我们的近似分布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#散度而不是距离"><span class="nav-number">2.4.</span> <span class="nav-text">散度而不是距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用KL散度进行优化"><span class="nav-number">2.5.</span> <span class="nav-text">使用KL散度进行优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变分自动编码器和变分贝叶斯方法"><span class="nav-number">2.6.</span> <span class="nav-text">变分自动编码器和变分贝叶斯方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+    <div id="sidebar-dimmer"></div>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
+</body>
+</html>

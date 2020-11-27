@@ -351,6 +351,282 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/22/Java-memory-anaylsis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/22/Java-memory-anaylsis/" class="post-title-link" itemprop="url">Java memory anaylsis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-22 22:06:09" itemprop="dateCreated datePublished" datetime="2017-08-22T22:06:09+08:00">2017-08-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Machine-addresses"><a href="#Machine-addresses" class="headerlink" title="Machine addresses"></a>Machine addresses</h3><p>Many data structures involve representation of machine addresses.</p>
+<p>The typical x64 architectures we widely used, need <strong>8 bytes</strong> to represent address.</p>
+<p>Many older machines use a 32-bit architecture that<br>would involve just <strong>4 bytes</strong> per machine address.</p>
+<h3 id="Primary-type"><a href="#Primary-type" class="headerlink" title="Primary type"></a>Primary type</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>byte</td>
+<td>1</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>1</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2</td>
+</tr>
+<tr>
+<td>int</td>
+<td>4</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h3><p><img src="/2017/08/22/Java-memory-anaylsis/object.svg" alt="Object"></p>
+<p>The <code>overhead</code> includes:</p>
+<ul>
+<li>a reference to the object’s class</li>
+<li>garbage collection information</li>
+<li>synchronization information</li>
+</ul>
+<hr>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList:"></a>LinkedList:</h4><p><img src="/2017/08/22/Java-memory-anaylsis/linkedlist.svg" alt="Object"></p>
+<p>Instance :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for first node reference</li>
+<li>4 bytes counter</li>
+<li>4 bytes padding</li>
+</ul>
+<p>Node :</p>
+<ul>
+<li>16 bytes of object overhead</li>
+<li>8 bytes for the <strong>references</strong> to the Item</li>
+<li>8 bytes for the <strong>next</strong> to the Item</li>
+<li>8 bytes for the extra overhead</li>
+</ul>
+<p>total :<br><strong>32 + (40 + size(Ojbect)) * N</strong></p>
+<h4 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h4><p><img src="/2017/08/22/Java-memory-anaylsis/array.svg" alt="Object"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int[N]</td>
+<td>24 + 4N</td>
+</tr>
+<tr>
+<td>Integer[N]</td>
+<td>24 + 32N</td>
+</tr>
+<tr>
+<td>int[M][N]</td>
+<td>24 + 8 * (24 + 4N)</td>
+</tr>
+<tr>
+<td>Integer[M][N]</td>
+<td>24 + 8 * (24 + 32N)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 16 bytes</span><br><span class="line">public class String &#123;</span><br><span class="line">  // reference 8 bytes</span><br><span class="line">  // 24 + 2N bytes</span><br><span class="line">  private char[] value;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int offset;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int count;</span><br><span class="line">  // 4 bytes</span><br><span class="line">  private int hash;</span><br><span class="line">  ...</span><br><span class="line">  // padding 4 bytes</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Total : 64 + 2N</strong></p>
+<hr>
+<h3 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h3><p><img src="/2017/08/22/Java-memory-anaylsis/hashmap.svg" alt="Object"><br>array length : M<br>average node size : N<br><strong>Total[structure] : 64M + 48N</strong></p>
+<hr>
+<h3 id="Tree"><a href="#Tree" class="headerlink" title="Tree"></a>Tree</h3><p><img src="/2017/08/22/Java-memory-anaylsis/tree.svg" alt="Object"><br><strong>Total[structure] : 56N</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/21/python-edit-file/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2140,203 +2416,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/21/Annotation-in-java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/21/Annotation-in-java/" class="post-title-link" itemprop="url">Annotation in java</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-21 23:03:12" itemprop="dateCreated datePublished" datetime="2017-06-21T23:03:12+08:00">2017-06-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Create-Annotation"><a href="#Create-Annotation" class="headerlink" title="Create Annotation"></a>Create Annotation</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> DBTable &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>Target and Retention is meta annotation</li>
-<li>Target point the annotation’s place in law[SOURCE in default]</li>
-<li>Retention point the annotation avaliable time</li>
-</ol>
-<h3 id="Create-More"><a href="#Create-More" class="headerlink" title="Create More"></a>Create More</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Constraints &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">primaryKey</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">nullable</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">unique</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>annotation interface’s method will become ture annotation’s <code>property</code></li>
-<li>interface need a default value</li>
-<li>type support <code>Primary Type</code> <code>Class</code> <code>String</code> <code>Enum</code> <code>Annotation</code></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ConstraintsMore &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span></span></span><br><span class="line"><span class="function">     @<span class="title">Constraints</span><span class="params">(nullable=<span class="keyword">false</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>Annotation not support inherit</strong><br>use default value implements inheritage</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlInteger &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.FIELD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SqlString &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">Constraints <span class="title">constraints</span><span class="params">()</span> <span class="keyword">default</span> @Constraints</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p><code>Alternative way</code></p>
-<ol>
-<li><p>Use enumeration type to define the type in DB<br>but this way lose agility.</p>
-</li>
-<li><p>Use String to describe the type you want to define<br>but ths way bind handler with DB, if DB changes<br>java need to modify and recompile.</p>
-</li>
-<li><p>Define some annotation more, to describe what you want<br>this is good, but maybe a little confusion</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2383,7 +2462,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">265</span>
+                    <span class="site-state-item-count">266</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

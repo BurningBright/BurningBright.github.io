@@ -351,6 +351,405 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/01/lucene-index-file-constructure-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/01/lucene-index-file-constructure-1/" class="post-title-link" itemprop="url">lucene index file constructure (1)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-01 18:59:24" itemprop="dateCreated datePublished" datetime="2017-02-01T18:59:24+08:00">2017-02-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <ul>
+<li>Index<ul>
+<li>In Lucene an Index is in a directory</li>
+<li>All files constitute an Index</li>
+</ul>
+</li>
+<li>Segment<ul>
+<li>An Index could contain a lot of Segments, each Segment is independent.<br>The new added document could be build into a new Segment, different Segment can be merged.</li>
+<li>If files prefix is same, they belong to same Segment, like “_0”, “_1”, “_2”.</li>
+<li>segments.gen and segments_X is Segment’s metaldata, storage it’s propertites information.</li>
+</ul>
+</li>
+<li>Document<ul>
+<li>Document is the basic unit in building Index. Different Document storage in different Segment, a Segment can contain a lot of Documents.</li>
+<li>New added Document is in Segment new build, when Segment be merged, different document be merged into same Segment.</li>
+</ul>
+</li>
+<li>Field<ul>
+<li>A document may contain different type informations, like time, content, write and so on, it can be index separately, and be storage in different Term.</li>
+<li>Different Term’s Index way can be different, when analysis Term’s storage, we would explain it.</li>
+</ul>
+</li>
+<li>Term<ul>
+<li>Term is the basic unit in Index. It is the string after lexical analysis and language processing</li>
+</ul>
+</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>文件拓展名</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>段文件</td>
+<td>segments_N</td>
+<td style="text-align:center">保存了索引包含的多少段，每个段包含多少文档。</td>
+</tr>
+<tr>
+<td>段元数据</td>
+<td>.si</td>
+<td style="text-align:center">保存了索引段的元数据信息</td>
+</tr>
+<tr>
+<td>锁文件&nbsp;</td>
+<td>write.lock</td>
+<td style="text-align:center">防止多个IndexWriter同时写到一份索引文件中。</td>
+</tr>
+<tr>
+<td>复合索引文件</td>
+<td>.cfs, .cfe</td>
+<td style="text-align:center">把所有索引信息都存储到复合索引文件中。</td>
+</tr>
+<tr>
+<td>索引段的域信息</td>
+<td>.fnm</td>
+<td style="text-align:center">保存此段包含的域，以及域的名称和域的索引类型。</td>
+</tr>
+<tr>
+<td>索引段的文档信息</td>
+<td>.fdx, .fdt</td>
+<td style="text-align:center">保存此段包含的文档，每篇文档中包含的域以及每个域的信息。</td>
+</tr>
+<tr>
+<td>索引段Term信息</td>
+<td>.tim, .tip</td>
+<td style="text-align:center">.tim文件中存储着每个域中Term的统计信息且保存着指向  .doc, .pos, and .pay 索引文件的指针。  .tip文件保存着Term 字典的索引信息，可支持随机访问。</td>
+</tr>
+<tr>
+<td>文档中Term词频和跳表信息</td>
+<td>.doc</td>
+<td style="text-align:center">保存此段中每个文档对应的Term频率信息。</td>
+</tr>
+<tr>
+<td>文档中Term的位置信息</td>
+<td>.pos</td>
+<td style="text-align:center">保存此段中每个文档对应的Term位置信息。</td>
+</tr>
+<tr>
+<td>文档的有效载荷和部分位置信息</td>
+<td>.pay</td>
+<td style="text-align:center">保存此段中每个文档的有效载体(payload) 和 Term的位置信息(offsets)。 其中有一部分的Term位置信息存储在.pos文件中。</td>
+</tr>
+<tr>
+<td>索引字段加权因子</td>
+<td>.nvd, .nvm</td>
+<td style="text-align:center">.nvm 文件保存索引字段加权因子的元数据  .nvd 文件保存索引字段加权数据</td>
+</tr>
+<tr>
+<td>索引文档加权因子</td>
+<td>.dvd, .dvm</td>
+<td style="text-align:center">.dvm 文件保存索引文档加权因子的元数据  .dvd 文件保存索引文档加权数据</td>
+</tr>
+<tr>
+<td>索引矢量数据</td>
+<td>.tvx, .tvd, .tvf</td>
+<td style="text-align:center">.tvd 存储此段文档的Term、Term频率、位置信息、有效载荷等信息。  .tvx 索引文件，用于把特定的文档加载到内存。  .tvf 保存索引字段的矢量信息。</td>
+</tr>
+<tr>
+<td>有效文档</td>
+<td>.liv</td>
+<td style="text-align:center">保存有效文档的索引文件信息</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Extension</th>
+<th style="text-align:center">Brief Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Segments File</td>
+<td>segments.gen, segments_N</td>
+<td style="text-align:center">Stores information about segments</td>
+</tr>
+<tr>
+<td>Lock File</td>
+<td>write.lock</td>
+<td style="text-align:center">The Write lock prevents multiple IndexWriters from writing to the same file.</td>
+</tr>
+<tr>
+<td>Compound File</td>
+<td>.cfs</td>
+<td style="text-align:center">An optional “virtual” file consisting of all the other index files for systems that frequently run out of file handles.</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>.fnm</td>
+<td style="text-align:center">Stores information about the fields</td>
+</tr>
+<tr>
+<td>Field Index</td>
+<td>.fdx</td>
+<td style="text-align:center">Contains pointers to field data</td>
+</tr>
+<tr>
+<td>Field Data</td>
+<td>.fdt</td>
+<td style="text-align:center">The stored fields for documents</td>
+</tr>
+<tr>
+<td>Term Infos</td>
+<td>.tis</td>
+<td style="text-align:center">Part of the term dictionary, stores term info</td>
+</tr>
+<tr>
+<td>Term Info Index</td>
+<td>.tii</td>
+<td style="text-align:center">The index into the Term Infos file</td>
+</tr>
+<tr>
+<td>Frequencies</td>
+<td>.frq</td>
+<td style="text-align:center">Contains the list of docs which contain each term along with frequency</td>
+</tr>
+<tr>
+<td>Positions</td>
+<td>.prx</td>
+<td style="text-align:center">Stores position information about where a term occurs in the index</td>
+</tr>
+<tr>
+<td>Norms</td>
+<td>.nrm</td>
+<td style="text-align:center">Encodes length and boost factors for docs and fields</td>
+</tr>
+<tr>
+<td>Term Vector Index</td>
+<td>.tvx</td>
+<td style="text-align:center">Stores offset into the document data file</td>
+</tr>
+<tr>
+<td>Term Vector Documents</td>
+<td>.tvd</td>
+<td style="text-align:center">Contains information about each document that has term vectors</td>
+</tr>
+<tr>
+<td>Term Vector Fields</td>
+<td>.tvf</td>
+<td style="text-align:center">The field level info about term vectors</td>
+</tr>
+<tr>
+<td>Deleted Documents</td>
+<td>.del</td>
+<td style="text-align:center">Info about what files are deleted</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping"><a href="#Lucene’s-index-not-only-storage-positive-mapping-but-also-storage-negative-mapping" class="headerlink" title="Lucene’s index not only storage positive mapping but also storage negative mapping"></a>Lucene’s index not only storage positive mapping but also storage negative mapping</h2><h3 id="Positive-mapping"><a href="#Positive-mapping" class="headerlink" title="Positive mapping"></a>Positive mapping</h3><ul>
+<li>From Index to Term : Index –&gt; segment –&gt; Document –&gt; Field –&gt; Term</li>
+<li>Each upper floor storage it’s children floors’ matedata. Like a province, a city, a county, they got it’s chilren’s info.<ul>
+<li>segments_N : how many segment the Index have, how many Documents each segment have.</li>
+<li>.fnm : how many Fields the segment contain, each Field’s name and Index way.</li>
+<li>.fdx , .fdt : all Documents the segment have, how many Fields each Document have, what information each field recorded.</li>
+<li>.tvx , .tvd , .tvf : how many Documents the segment have, how many Fields each Document have, how many words each Field have, every words’ string, position, and so on.<h3 id="Negative-mapping"><a href="#Negative-mapping" class="headerlink" title="Negative mapping"></a>Negative mapping</h3></li>
+</ul>
+</li>
+<li>Term -&gt; Document<ul>
+<li>.tis , .tii : Term dictionary, that is segment’s words sort by alphabet sequencely.</li>
+<li>.frq : posting sorted table, that is table that contain all words’ Document ID.</li>
+<li>.prx : the word position in Document at posting sorted table.</li>
+</ul>
+</li>
+</ul>
+<h2 id="Primary-Type"><a href="#Primary-Type" class="headerlink" title="Primary Type"></a>Primary Type</h2><ul>
+<li>Byte : the most basic type, 8 bits long.</li>
+<li>UInt32 : composed by 4 Bytes.</li>
+<li>UInt64 : composed by 8 Bytes.</li>
+<li>VInt :<ul>
+<li>May be composed by many Bytes.</li>
+<li>Front byte represent lower number bit.</li>
+<li>For example: 51271 - [1]1000111, [1]0010000, [0]0000011</li>
+</ul>
+</li>
+<li>Chars : UTF-8 encoding bytes.</li>
+<li>String : first a VInt represent Char numbers, then a series of Chars.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2289,198 +2688,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/url-encoding/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/url-encoding/" class="post-title-link" itemprop="url">url encoding</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 15:17:05" itemprop="dateCreated datePublished" datetime="2017-01-24T15:17:05+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>RFC 3986 section 2.2 reserved january 2005</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">! * &apos;( ) ; : @&amp; = + $ ,/ ? # [ ]</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 3986 section 2.3 unreserved january 2005</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A B C D E F G H I J K L M N O P Q RS T U V W X Y Z  </span><br><span class="line">a b c d e f g h i j k l m n o p q rs t u v w x y z  </span><br><span class="line">0 1 2 3 4 5 6 7 8 9 - _ .~</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 2396 URI Generic Syntax reserved August 1998</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">;  /  ?  :  @  &amp;  =  +  $  ,</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>RFC 2396 URI Generic Syntax unreserved August 1998</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alphanum  or  mark</span><br><span class="line">mark      = -  _  .  !  ~  *  &apos;  (  )</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><strong>java use the older one</strong><br><strong>for compatible java use the same collection unreserved from all browser just like RFC2986 no ‘~’ add ‘*’</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * Unreserved characters can be escaped without changing the</span><br><span class="line"> * semantics of the URI, but this should not be done unless the</span><br><span class="line"> * URI is being used in a context that does not allow the</span><br><span class="line"> * unescaped character to appear.</span><br><span class="line"> */</span><br></pre></td></tr></table></figure></p>
-<h2 id="regular-expression"><a href="#regular-expression" class="headerlink" title="regular expression"></a>regular expression</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&amp;:\/~\+#]*[\w\-\@?^=%&amp;\/~\+#])?$/</span><br></pre></td></tr></table></figure>
-<ul>
-<li>start with ‘http/https/ftp/ftps’</li>
-<li>can’t contain double bytes characters or not unreserved characters</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2527,7 +2734,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">265</span>
+                    <span class="site-state-item-count">266</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

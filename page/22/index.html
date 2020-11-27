@@ -351,6 +351,238 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/10/Quicksort-compare-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/10/Quicksort-compare-analysis/" class="post-title-link" itemprop="url">Quicksort compare analysis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-10 15:26:23" itemprop="dateCreated datePublished" datetime="2017-03-10T15:26:23+08:00">2017-03-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>Quicksort user $~2NlnN$ compares to sort<br>an array of N distinct keys on average<br>(one-sixth that many exchanges)</p>
+</blockquote>
+<h2 id="Proof"><a href="#Proof" class="headerlink" title="Proof"></a>Proof</h2><p>Let $C_N$ be the average number of compares need to sort N items<br>with distinct values.<br>We have $C_0=C_1=0$ for $N&gt;1$</p>
+<h3 id="Express-the-average-compare"><a href="#Express-the-average-compare" class="headerlink" title="Express the average compare"></a>Express the average compare</h3><script type="math/tex; mode=display">
+C_N = N + 1 + (C_0+C_1+...+C_{N-2}+C_{N-1})/N + (C_{N-1}+C_{N-2}+...+C_0)/N</script><ol>
+<li>cost of partitioning<br><code>N-1</code> compares two partition with flag<br><code>1 more</code> compare in <code>each part</code> breakpoint compare</li>
+</ol>
+<ol>
+<li><p>left subarray sort</p>
+<script type="math/tex; mode=display">
+(C_0+C_1+...+C_{N-2}+C_{N-1})/N</script></li>
+<li><p>right subarray sort</p>
+<script type="math/tex; mode=display">
+(C_{N-1}+C_{N-2}+...+C_1+C_0)/N</script></li>
+</ol>
+<h3 id="Rearrange-terms"><a href="#Rearrange-terms" class="headerlink" title="Rearrange terms"></a>Rearrange terms</h3><ol>
+<li>Multiplying by <code>N</code></li>
+</ol>
+<script type="math/tex; mode=display">
+NC_N = N(N+1) + 2(C_0+C_1+...+C_{N-2}+C_{N-1})</script><ol>
+<li>Subtracting with same equation of <code>N-1</code></li>
+</ol>
+<script type="math/tex; mode=display">
+NC_N - (N-1)C_{N-1} = N(N+1)-(N-1)N +</script><script type="math/tex; mode=display">
+2(C_0+C_1+...+C_{N-2}+C_{N-1}) - 2(C_0+C_1+...+C_{N-2})</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+NC_N - (N-1)C_{N-1} = 2N + 2C_{N-1}</script><ol>
+<li>Each item dividing by N(N+1) leaves</li>
+</ol>
+<script type="math/tex; mode=display">
+C_N/(N+1) = C_{N-1}/N + 2/(N+1)</script><ol>
+<li>Add same equation from <code>1</code></li>
+</ol>
+<script type="math/tex; mode=display">
+C_N/(N+1) = C_{N-1}/N + 2/(N+1)</script><script type="math/tex; mode=display">
++</script><script type="math/tex; mode=display">
+C_{N-1}/(N) = C_{N-2}/(N-1) + 2/(N)</script><script type="math/tex; mode=display">
+\cdots</script><script type="math/tex; mode=display">
+C_3/(4) = C_2/3 + 2/4</script><script type="math/tex; mode=display">
++</script><script type="math/tex; mode=display">
+C_2/(3) = C_1/2 + 2/3</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+\frac{C_2}{3} + \frac{C_3}{4}+...+\frac{C_{N-1}}{N} + \frac{C_N}{N+1}=</script><script type="math/tex; mode=display">
+\frac{C_1}{2} + \frac{C_2}{3}+...+\frac{C_{N-2}}{N-1} + \frac{C_{N-1}}{N}
++
+\frac{2}{3} + \frac{3}{4}+...+\frac{2}{N} + \frac{2}{N+1}</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+\frac{C_N}{(N+1)} = \frac{C_1}{2}+\frac{2}{3} + \frac{3}{4}+...+\frac{2}{N+1}</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+C_N \sim 2(N+1)(\frac{1}{3}+\frac{1}{4}+...+\frac{1}{N+1})</script><ol>
+<li>Further integration</li>
+</ol>
+<script type="math/tex; mode=display">
+\frac{1}{3}+\frac{1}{4}+...+\frac{1}{N+1} \sim ln(N)</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+C_N \sim 2NlnN \approx 1.39lgN</script><h3 id="PS"><a href="#PS" class="headerlink" title="PS."></a>PS.</h3><script type="math/tex; mode=display">
+1+\frac{1}{2}+\frac{1}{3}+...+\frac{1}{N}>ln(1+1)+ln(1+\frac{1}{2})+</script><script type="math/tex; mode=display">
+...+ln(1+\frac{1}{N-1})+ln(1+\frac{1}{N})</script><script type="math/tex; mode=display">
+\Rightarrow</script><script type="math/tex; mode=display">
+1+\frac{1}{2}+\frac{1}{3}+...+\frac{1}{N} > ln[2 \times \frac{3}{2} \times \frac{4}{3} \times ...\frac{N}{N-1} \times \frac{N+1}{N}] \approx ln(N)</script>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/09/Euclidean-algorithm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2085,190 +2317,6 @@ Like above a=3 and n=5, a's mod reserve elementis</script><p>a^{\phi(5)-1} = 3^3
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/26/Hello-PhotoSwipe/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/26/Hello-PhotoSwipe/" class="post-title-link" itemprop="url">Hello PhotoSwipe</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-26 21:42:00" itemprop="dateCreated datePublished" datetime="2017-02-26T21:42:00+08:00">2017-02-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="http://photoswipe.com/documentation/getting-started.html" target="_blank" rel="noopener">Phtoswipe documentation</a></p>
-<h2 id="Primer"><a href="#Primer" class="headerlink" title="Primer"></a>Primer</h2><h3 id="Add-src"><a href="#Add-src" class="headerlink" title="Add src"></a>Add src</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Core CSS file --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"path/to/photoswipe.css"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Skin CSS file (styling of UI - buttons, caption, etc.)</span></span><br><span class="line"><span class="comment">     In the folder of skin CSS file there are also:</span></span><br><span class="line"><span class="comment">     - .png and .svg icons sprite,</span></span><br><span class="line"><span class="comment">     - preloader.gif (for browsers that do not support CSS animations) --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"path/to/default-skin/default-skin.css"</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Core JS file --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"path/to/photoswipe.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- UI JS file --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"path/to/photoswipe-ui-default.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="Add-tag-to-DOM"><a href="#Add-tag-to-DOM" class="headerlink" title="Add tag to DOM"></a>Add tag to DOM</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Root element of PhotoSwipe. Must have class pswp. --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp"</span> <span class="attr">tabindex</span>=<span class="string">"-1"</span> <span class="attr">role</span>=<span class="string">"dialog"</span> <span class="attr">aria-hidden</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Background of PhotoSwipe.</span></span><br><span class="line"><span class="comment">         It's a separate element as animating opacity is faster than rgba(). --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__bg"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Slides wrapper with overflow:hidden. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__scroll-wrap"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- Container that holds slides.</span></span><br><span class="line"><span class="comment">            PhotoSwipe keeps only 3 of them in the DOM to save memory.</span></span><br><span class="line"><span class="comment">            Don't modify these 3 pswp__item elements, data is added later on. --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__container"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__item"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__item"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__item"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__ui pswp__ui--hidden"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__top-bar"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">&lt;!--  Controls are self-explanatory. Order can be changed. --&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__counter"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--close"</span> <span class="attr">title</span>=<span class="string">"Close (Esc)"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--share"</span> <span class="attr">title</span>=<span class="string">"Share"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--fs"</span> <span class="attr">title</span>=<span class="string">"Toggle fullscreen"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--zoom"</span> <span class="attr">title</span>=<span class="string">"Zoom in/out"</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">&lt;!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR --&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- element will get class pswp__preloader - - active when preloader is running --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__preloader"</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__preloader__icn"</span>&gt;</span></span><br><span class="line">                      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__preloader__cut"</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__preloader__donut"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__share-modal pswp__share-modal--hidden pswp__single-tap"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__share-tooltip"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--arrow--left"</span> <span class="attr">title</span>=<span class="string">"Previous (arrow left)"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">"pswp__button pswp__button--arrow--right"</span> <span class="attr">title</span>=<span class="string">"Next (arrow right)"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__caption"</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"pswp__caption__center"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="Initialize"><a href="#Initialize" class="headerlink" title="Initialize"></a>Initialize</h3><p>Put this part to the <strong>end of the dom</strong> because if no dom, js can’t find the target element. Or register this part as an event after dom be loaded.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pswpElement = <span class="built_in">document</span>.querySelectorAll(<span class="string">'.pswp'</span>)[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// build items array</span></span><br><span class="line"><span class="keyword">var</span> items = [</span><br><span class="line">    &#123;</span><br><span class="line">        src: <span class="string">'https://placekitten.com/600/400'</span>,</span><br><span class="line">        w: <span class="number">600</span>,</span><br><span class="line">        h: <span class="number">400</span></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        src: <span class="string">'https://placekitten.com/1200/900'</span>,</span><br><span class="line">        w: <span class="number">1200</span>,</span><br><span class="line">        h: <span class="number">900</span></span><br><span class="line">    &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// define options (if needed)</span></span><br><span class="line"><span class="keyword">var</span> options = &#123;</span><br><span class="line">    <span class="comment">// optionName: 'option value'</span></span><br><span class="line">    <span class="comment">// for example:</span></span><br><span class="line">    index: <span class="number">0</span> <span class="comment">// start at first slide</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Initializes and opens PhotoSwipe</span></span><br><span class="line"><span class="keyword">var</span> gallery = <span class="keyword">new</span> PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);</span><br><span class="line">gallery.init();</span><br></pre></td></tr></table></figure></p>
-<h2 id="Creating-an-Array-of-Slide-Objects"><a href="#Creating-an-Array-of-Slide-Objects" class="headerlink" title="Creating an Array of Slide Objects"></a>Creating an Array of Slide Objects</h2><h3 id="Data-structure"><a href="#Data-structure" class="headerlink" title="Data structure"></a>Data structure</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> slides = [</span><br><span class="line">    <span class="comment">// slide 1</span></span><br><span class="line">    &#123;</span><br><span class="line">        src: <span class="string">'path/to/image1.jpg'</span>, <span class="comment">// path to image</span></span><br><span class="line">        w: <span class="number">1024</span>, <span class="comment">// image width</span></span><br><span class="line">        h: <span class="number">768</span>, <span class="comment">// image height</span></span><br><span class="line"></span><br><span class="line">        msrc: <span class="string">'path/to/small-image.jpg'</span>, <span class="comment">// small image placeholder,</span></span><br><span class="line">                        <span class="comment">// main (large) image loads on top of it,</span></span><br><span class="line">                        <span class="comment">// if you skip this parameter - grey rectangle will be displayed,</span></span><br><span class="line">                        <span class="comment">// try to define this property only when small image was loaded before</span></span><br><span class="line"></span><br><span class="line">        title: <span class="string">'Image Caption'</span>  <span class="comment">// used by Default PhotoSwipe UI</span></span><br><span class="line">                                <span class="comment">// if you skip it, there won't be any caption</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// You may add more properties here and use them.</span></span><br><span class="line">        <span class="comment">// For example, demo gallery uses "author" property, which is used in the caption.</span></span><br><span class="line">        <span class="comment">// author: 'John Doe'</span></span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// slide 2</span></span><br><span class="line">    &#123;</span><br><span class="line">        src: <span class="string">'path/to/image2.jpg'</span>,</span><br><span class="line">        w: <span class="number">600</span>,</span><br><span class="line">        h: <span class="number">600</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// etc.</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// etc.</span></span><br><span class="line"></span><br><span class="line">];</span><br></pre></td></tr></table></figure>
-<h3 id="DOM-for-build"><a href="#DOM-for-build" class="headerlink" title="DOM for build"></a>DOM for build</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"my-gallery"</span> <span class="attr">itemscope</span> <span class="attr">itemtype</span>=<span class="string">"http://schema.org/ImageGallery"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">figure</span> <span class="attr">itemprop</span>=<span class="string">"associatedMedia"</span> <span class="attr">itemscope</span> <span class="attr">itemtype</span>=<span class="string">"http://schema.org/ImageObject"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"large-image.jpg"</span> <span class="attr">itemprop</span>=<span class="string">"contentUrl"</span> <span class="attr">data-size</span>=<span class="string">"600x400"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"small-image.jpg"</span> <span class="attr">itemprop</span>=<span class="string">"thumbnail"</span> <span class="attr">alt</span>=<span class="string">"Image description"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">figcaption</span> <span class="attr">itemprop</span>=<span class="string">"caption description"</span>&gt;</span>Image caption<span class="tag">&lt;/<span class="name">figcaption</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">figure</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">figure</span> <span class="attr">itemprop</span>=<span class="string">"associatedMedia"</span> <span class="attr">itemscope</span> <span class="attr">itemtype</span>=<span class="string">"http://schema.org/ImageObject"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"large-image.jpg"</span> <span class="attr">itemprop</span>=<span class="string">"contentUrl"</span> <span class="attr">data-size</span>=<span class="string">"600x400"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"small-image.jpg"</span> <span class="attr">itemprop</span>=<span class="string">"thumbnail"</span> <span class="attr">alt</span>=<span class="string">"Image description"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">figcaption</span> <span class="attr">itemprop</span>=<span class="string">"caption description"</span>&gt;</span>Image caption<span class="tag">&lt;/<span class="name">figcaption</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">figure</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>Bind <strong>click event</strong> to links/thumbnails.</li>
-<li>After user clicked on on thumbnail, find its <strong>index</strong>.</li>
-<li>Create an array of slide objects from DOM elements – <strong>loop through</strong> all links<br>and retrieve <code>href</code> attribute (large image url), <code>data-size</code> attribute (its size), <code>src</code> of thumbnail, and contents of caption.</li>
-</ul>
-<h3 id="JS-implementation"><a href="#JS-implementation" class="headerlink" title="JS implementation"></a>JS implementation</h3><p><strong>pure Vanilla JS support IE8</strong><br>The same in front, script execute need be after dom be loaded.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// define a macro function</span></span><br><span class="line"><span class="keyword">var</span> initPhotoSwipeFromDOM = <span class="function"><span class="keyword">function</span>(<span class="params">gallerySelector</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// parse slide data (url, title, size ...) from DOM elements</span></span><br><span class="line">    <span class="comment">// (children of gallerySelector)</span></span><br><span class="line">    <span class="comment">// Used to anaylsis the dom attributes</span></span><br><span class="line">    <span class="keyword">var</span> parseThumbnailElements = <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> thumbElements = el.childNodes,</span><br><span class="line">            numNodes = thumbElements.length,</span><br><span class="line">            items = [],</span><br><span class="line">            figureEl,</span><br><span class="line">            linkEl,</span><br><span class="line">            size,</span><br><span class="line">            item;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; numNodes; i++) &#123;</span><br><span class="line"></span><br><span class="line">            figureEl = thumbElements[i]; <span class="comment">// &lt;figure&gt; element</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// include only element nodes</span></span><br><span class="line">            <span class="keyword">if</span>(figureEl.nodeType !== <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            linkEl = figureEl.children[<span class="number">0</span>]; <span class="comment">// &lt;a&gt; element</span></span><br><span class="line"></span><br><span class="line">            size = linkEl.getAttribute(<span class="string">'data-size'</span>).split(<span class="string">'x'</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// create slide object</span></span><br><span class="line">            item = &#123;</span><br><span class="line">                src: linkEl.getAttribute(<span class="string">'href'</span>),</span><br><span class="line">                w: <span class="built_in">parseInt</span>(size[<span class="number">0</span>], <span class="number">10</span>),</span><br><span class="line">                h: <span class="built_in">parseInt</span>(size[<span class="number">1</span>], <span class="number">10</span>)</span><br><span class="line">            &#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(figureEl.children.length &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="comment">// &lt;figcaption&gt; content</span></span><br><span class="line">                item.title = figureEl.children[<span class="number">1</span>].innerHTML;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(linkEl.children.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// &lt;img&gt; thumbnail element, retrieving thumbnail url</span></span><br><span class="line">                item.msrc = linkEl.children[<span class="number">0</span>].getAttribute(<span class="string">'src'</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            item.el = figureEl; <span class="comment">// save link to element for getThumbBoundsFn</span></span><br><span class="line">            items.push(item);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> items;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// find nearest parent element</span></span><br><span class="line">    <span class="keyword">var</span> closest = <span class="function"><span class="keyword">function</span> <span class="title">closest</span>(<span class="params">el, fn</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> el &amp;&amp; ( fn(el) ? el : closest(el.parentNode, fn) );</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// triggers when user clicks on thumbnail</span></span><br><span class="line">    <span class="comment">// register the click event</span></span><br><span class="line">    <span class="keyword">var</span> onThumbnailsClick = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">        e = e || <span class="built_in">window</span>.event;</span><br><span class="line">        e.preventDefault ? e.preventDefault() : e.returnValue = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> eTarget = e.target || e.srcElement;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// find root element of slide</span></span><br><span class="line">        <span class="keyword">var</span> clickedListItem = closest(eTarget, <span class="function"><span class="keyword">function</span>(<span class="params">el</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> (el.tagName &amp;&amp; el.tagName.toUpperCase() === <span class="string">'FIGURE'</span>);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!clickedListItem) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// find index of clicked item by looping through all child nodes</span></span><br><span class="line">        <span class="comment">// alternatively, you may define index via data- attribute</span></span><br><span class="line">        <span class="keyword">var</span> clickedGallery = clickedListItem.parentNode,</span><br><span class="line">            childNodes = clickedListItem.parentNode.childNodes,</span><br><span class="line">            numChildNodes = childNodes.length,</span><br><span class="line">            nodeIndex = <span class="number">0</span>,</span><br><span class="line">            index;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; numChildNodes; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(childNodes[i].nodeType !== <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(childNodes[i] === clickedListItem) &#123;</span><br><span class="line">                index = nodeIndex;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            nodeIndex++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(index &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// open PhotoSwipe if valid index found</span></span><br><span class="line">            openPhotoSwipe( index, clickedGallery );</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// parse picture index and gallery index from URL (#&amp;pid=1&amp;gid=2)</span></span><br><span class="line">    <span class="keyword">var</span> photoswipeParseHash = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> hash = <span class="built_in">window</span>.location.hash.substring(<span class="number">1</span>),</span><br><span class="line">        params = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(hash.length &lt; <span class="number">5</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> params;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> vars = hash.split(<span class="string">'&amp;'</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; vars.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(!vars[i]) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">var</span> pair = vars[i].split(<span class="string">'='</span>);  </span><br><span class="line">            <span class="keyword">if</span>(pair.length &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;           </span><br><span class="line">            params[pair[<span class="number">0</span>]] = pair[<span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(params.gid) &#123;</span><br><span class="line">            params.gid = <span class="built_in">parseInt</span>(params.gid, <span class="number">10</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> params;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> openPhotoSwipe = <span class="function"><span class="keyword">function</span>(<span class="params">index, galleryElement, disableAnimation, fromURL</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> pswpElement = <span class="built_in">document</span>.querySelectorAll(<span class="string">'.pswp'</span>)[<span class="number">0</span>],</span><br><span class="line">            gallery,</span><br><span class="line">            options,</span><br><span class="line">            items;</span><br><span class="line"></span><br><span class="line">        items = parseThumbnailElements(galleryElement);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// define options (if needed)</span></span><br><span class="line">        options = &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// define gallery index (for URL)</span></span><br><span class="line">            galleryUID: galleryElement.getAttribute(<span class="string">'data-pswp-uid'</span>),</span><br><span class="line"></span><br><span class="line">            getThumbBoundsFn: <span class="function"><span class="keyword">function</span>(<span class="params">index</span>) </span>&#123;</span><br><span class="line">                <span class="comment">// See Options -&gt; getThumbBoundsFn section of documentation for more info</span></span><br><span class="line">                <span class="keyword">var</span> thumbnail = items[index].el.getElementsByTagName(<span class="string">'img'</span>)[<span class="number">0</span>], <span class="comment">// find thumbnail</span></span><br><span class="line">                    pageYScroll = <span class="built_in">window</span>.pageYOffset || <span class="built_in">document</span>.documentElement.scrollTop,</span><br><span class="line">                    rect = thumbnail.getBoundingClientRect();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> &#123;<span class="attr">x</span>:rect.left, <span class="attr">y</span>:rect.top + pageYScroll, <span class="attr">w</span>:rect.width&#125;;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// PhotoSwipe opened from URL</span></span><br><span class="line">        <span class="keyword">if</span>(fromURL) &#123;</span><br><span class="line">            <span class="keyword">if</span>(options.galleryPIDs) &#123;</span><br><span class="line">                <span class="comment">// parse real index when custom PIDs are used</span></span><br><span class="line">                <span class="comment">// http://photoswipe.com/documentation/faq.html#custom-pid-in-url</span></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">var</span> j = <span class="number">0</span>; j &lt; items.length; j++) &#123;</span><br><span class="line">                    <span class="keyword">if</span>(items[j].pid == index) &#123;</span><br><span class="line">                        options.index = j;</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// in URL indexes start from 1</span></span><br><span class="line">                options.index = <span class="built_in">parseInt</span>(index, <span class="number">10</span>) - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            options.index = <span class="built_in">parseInt</span>(index, <span class="number">10</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// exit if index not found</span></span><br><span class="line">        <span class="keyword">if</span>( <span class="built_in">isNaN</span>(options.index) ) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(disableAnimation) &#123;</span><br><span class="line">            options.showAnimationDuration = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Pass data to PhotoSwipe and initialize it</span></span><br><span class="line">        gallery = <span class="keyword">new</span> PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);</span><br><span class="line">        gallery.init();</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// loop through all gallery elements and bind events</span></span><br><span class="line">    <span class="keyword">var</span> galleryElements = <span class="built_in">document</span>.querySelectorAll( gallerySelector );</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, l = galleryElements.length; i &lt; l; i++) &#123;</span><br><span class="line">        galleryElements[i].setAttribute(<span class="string">'data-pswp-uid'</span>, i+<span class="number">1</span>);</span><br><span class="line">        galleryElements[i].onclick = onThumbnailsClick;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Parse URL and open gallery if it contains #&amp;pid=3&amp;gid=1</span></span><br><span class="line">    <span class="keyword">var</span> hashData = photoswipeParseHash();</span><br><span class="line">    <span class="keyword">if</span>(hashData.pid &amp;&amp; hashData.gid) &#123;</span><br><span class="line">        openPhotoSwipe( hashData.pid ,  galleryElements[ hashData.gid - <span class="number">1</span> ], <span class="literal">true</span>, <span class="literal">true</span> );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// execute above function</span></span><br><span class="line">initPhotoSwipeFromDOM(<span class="string">'.my-gallery'</span>);</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2315,7 +2363,7 @@ Like above a=3 and n=5, a's mod reserve elementis</script><p>a^{\phi(5)-1} = 3^3
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">265</span>
+                    <span class="site-state-item-count">266</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
