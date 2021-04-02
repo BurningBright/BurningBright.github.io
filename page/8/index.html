@@ -351,6 +351,390 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/16/change-repository-in-centos-8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/10/16/change-repository-in-centos-8/" class="post-title-link" itemprop="url">change repository in centos 8</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-16 09:13:47" itemprop="dateCreated datePublished" datetime="2019-10-16T09:13:47+08:00">2019-10-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-11-30 10:58:27" itemprop="dateModified" datetime="2019-11-30T10:58:27+08:00">2019-11-30</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="CentOS-Base-repo"><a href="#CentOS-Base-repo" class="headerlink" title="CentOS-Base.repo"></a>CentOS-Base.repo</h2><p>modify /etc/yum.repos.d/CentOS-Base.repo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[BaseOS]</span><br><span class="line">name=CentOS-$releasever - Base</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=BaseOS&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/BaseOS/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/BaseOS/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
+<h2 id="CentOS-AppStream-repo"><a href="#CentOS-AppStream-repo" class="headerlink" title="CentOS-AppStream.repo"></a>CentOS-AppStream.repo</h2><p>modify /etc/yum.repos.d/CentOS-AppStream.repo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[AppStream]</span><br><span class="line">name=CentOS-$releasever - AppStream</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=AppStream&amp;infra=$infra</span><br><span class="line">#baseurl=http://mirror.centos.org/$contentdir/$releasever/AppStream/$basearch/os/</span><br><span class="line">baseurl=https://mirrors.aliyun.com/centos/$releasever/AppStream/$basearch/os/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial</span><br></pre></td></tr></table></figure>
+<h2 id="other"><a href="#other" class="headerlink" title="other"></a>other</h2><p>other file not avaliable in default, can change to ali repository as well.<br><a href="https://mirrors.aliyun.com/centos/8/extras/x86_64/os/" target="_blank" rel="noopener">https://mirrors.aliyun.com/centos/8/extras/x86_64/os/</a></p>
+<p>reload matadata<br><code>yum makecache</code></p>
+<p>when modifying the source on a docker image, use the following description in the <code>Dockerfile</code> to build<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo_bak</span><br><span class="line">COPY CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"></span><br><span class="line">RUN mv /etc/yum.repos.d/CentOS-AppStream.repo /etc/yum.repos.d/CentOS-AppStream.repo_bak</span><br><span class="line">COPY CentOS-AppStream.repo /etc/yum.repos.d/CentOS-AppStream.repo</span><br><span class="line"></span><br><span class="line">RUN yum makecache</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://www.voycn.com/article/centos8-peizhialiyuan-zuixiaohuaanzhuang" target="_blank" rel="noopener">http://www.voycn.com/article/centos8-peizhialiyuan-zuixiaohuaanzhuang</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/10/15/TDengine-in-docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/10/15/TDengine-in-docker/" class="post-title-link" itemprop="url">TDengine in docker</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-10-15 08:28:18 / Modified: 21:38:58" itemprop="dateCreated datePublished" datetime="2019-10-15T08:28:18+08:00">2019-10-15</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><h3 id="prepare-base-image"><a href="#prepare-base-image" class="headerlink" title="prepare base image"></a>prepare base image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker image pull centos</span><br></pre></td></tr></table></figure>
+<h3 id="prepare-source-code"><a href="#prepare-source-code" class="headerlink" title="prepare source code"></a>prepare source code</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:taosdata/TDengine.git</span><br><span class="line">cd TDengine</span><br></pre></td></tr></table></figure>
+<p>or download release version package and unpackage</p>
+<h3 id="prepare-Dockerfile-file"><a href="#prepare-Dockerfile-file" class="headerlink" title="prepare Dockerfile file"></a>prepare <code>Dockerfile</code> file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"># Compile image</span><br><span class="line">FROM centos as compile</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY src/ ./src/</span><br><span class="line">COPY deps/ ./deps/</span><br><span class="line">COPY packaging/ ./packaging/</span><br><span class="line">COPY CMakeLists.txt ./</span><br><span class="line"></span><br><span class="line">RUN yum update -y</span><br><span class="line"></span><br><span class="line">RUN yum group install -y &quot;Development Tools&quot;</span><br><span class="line"></span><br><span class="line">Run yum install -y cmake</span><br><span class="line"></span><br><span class="line">WORKDIR /root/build</span><br><span class="line">RUN cmake .. &amp;&amp; cmake --build .</span><br><span class="line"></span><br><span class="line">CMD [&quot;bash&quot;]</span><br><span class="line"></span><br><span class="line"># Final image</span><br><span class="line">FROM centos</span><br><span class="line"></span><br><span class="line">WORKDIR /root</span><br><span class="line"></span><br><span class="line">COPY --from=compile /root/build/build/bin /usr/bin/</span><br><span class="line">COPY --from=compile /root/build/build/lib/libtaos.so /usr/lib/</span><br><span class="line">COPY packaging/cfg/taos.cfg /etc/taos/</span><br><span class="line"></span><br><span class="line">RUN echo &quot;charset UTF-8&quot; &gt;&gt; /etc/taos/taos.cfg</span><br><span class="line"></span><br><span class="line">ENV LD_LIBRARY_PATH=&quot;$LD_LIBRARY_PATH:/usr/lib&quot;</span><br><span class="line">ENV LC_CTYPE=&quot;en_US.UTF-8&quot;</span><br><span class="line"></span><br><span class="line"># origin blog missing this</span><br><span class="line">ENV LC_ALL=&quot;C&quot;</span><br><span class="line"></span><br><span class="line">CMD [&quot;taosd&quot;]</span><br></pre></td></tr></table></figure>
+<h3 id="create-TDengine-image"><a href="#create-TDengine-image" class="headerlink" title="create TDengine image"></a>create TDengine image</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t tdtest .</span><br></pre></td></tr></table></figure>
+<h2 id="start-service"><a href="#start-service" class="headerlink" title="start service"></a>start service</h2><h3 id="create-volumn"><a href="#create-volumn" class="headerlink" title="create volumn"></a>create volumn</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume create td_log_vol</span><br><span class="line">docker volume create td_data_vol</span><br></pre></td></tr></table></figure>
+<h3 id="start"><a href="#start" class="headerlink" title="start"></a>start</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest</span><br></pre></td></tr></table></figure>
+<p>if service start fail then check logs</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a</span><br><span class="line">docker logs -f -t --tail 50 tdtest_run</span><br></pre></td></tr></table></figure>
+<p>Error info like this</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2019-10-15T00:51:45.614929519Z TDengine:[1]: Starting TDengine service...</span><br><span class="line">2019-10-15T00:51:45.614966105Z 10/15 00:51:45.614216 7f6a24ce1b80 UTL timezone not configured, set to system default: (UTC, +0000)</span><br><span class="line">2019-10-15T00:51:45.614975483Z 10/15 00:51:45.614410 7f6a24ce1b80 ERROR UTL can&apos;t get locale from system</span><br><span class="line">2019-10-15T00:51:45.614981522Z 10/15 00:51:45.614486 7f6a24ce1b80 UTL Invalid locale:, please set the valid locale in config file</span><br><span class="line">2019-10-15T00:51:45.770437005Z Invalid locale:, please set the valid locale in config file</span><br></pre></td></tr></table></figure>
+<p>the 1th process is not <code>/sbin/init</code>, so <code>systemctl</code> command can’t execute.<br>for fix this need option <code>--privileged=true</code> and parameter <code>/sbin/init</code>, it’s not right.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run --privileged=true -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest /sbin/init</span><br></pre></td></tr></table></figure>
+<p>I met a problem here, the docker process started, but <code>taosd</code> server process start failed.<br>At first i thought the <code>datetimectl</code> command can fix this, i try to add<br><code>RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; echo &#39;Asia/Shanghai&#39; &gt; /etc/timezone</code><br>in <code>Dockerfile</code> and rebuild image but failed.</p>
+<p>Then i try to find the source code where the exception be throw.<br>It’s in <code>TDengine/src/util/src/tglobalcfg.c</code> , the c function <code>setlocale()</code> read location failed.<br>I write a simple c file, to valid this problem, then search in internet.<br>Finally, find a similar problem in other software, the answer is very obviously : caused by environment variable.</p>
+<p>When add the variable <code>export LC_ALL=C</code>, the client part <code>taos</code> can start up, the demo c file can printf locale normally.<br>So, add <code>ENV LC_ALL=&quot;C&quot;</code> in <code>Dockerfile</code> and rebuild image, start the container <code>taosd</code> successfully.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -itd --name tdtest_run -v td_log_vol:/var/log/taos -v td_data_vol:/var/lib/taos tdtest</span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/weixin_34038652/article/details/86236240" target="_blank" rel="noopener">https://blog.csdn.net/weixin_34038652/article/details/86236240</a><br><a href="http://c.biancheng.net/ref/setlocale.html" target="_blank" rel="noopener">http://c.biancheng.net/ref/setlocale.html</a><br><a href="https://www.runoob.com/cprogramming/c-function-setlocale.html" target="_blank" rel="noopener">https://www.runoob.com/cprogramming/c-function-setlocale.html</a></p>
+<h3 id="check"><a href="#check" class="headerlink" title="check"></a>check</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># visit container</span><br><span class="line">docker exec -it tdtest_run /bin/bash</span><br><span class="line"># start tdengine client</span><br><span class="line">taos</span><br></pre></td></tr></table></figure>
+<h2 id="Experiment"><a href="#Experiment" class="headerlink" title="Experiment"></a>Experiment</h2><h3 id="code-prepare"><a href="#code-prepare" class="headerlink" title="code prepare"></a>code prepare</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker cp test.tar.gz tdtest_run:/root</span><br><span class="line">docker exec -it tdtest_run bash</span><br><span class="line">cd /root</span><br><span class="line">tar -zxvf test.tar.gz</span><br><span class="line">cd test</span><br></pre></td></tr></table></figure>
+<p><a href="/2019/10/15/TDengine-in-docker/test.tar.gz">test.tar.gz</a></p>
+<h3 id="insert"><a href="#insert" class="headerlink" title="insert"></a>insert</h3><p>modify <code>config/config.sh</code>, modify table num, table record num<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./test.sh -F config/config.sh -f config/tdengine.sh</span><br></pre></td></tr></table></figure></p>
+<p>result:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">You are testing TDengine...</span><br><span class="line">TEST INFORMATION</span><br><span class="line">======================================</span><br><span class="line">Databse              : TDENGINE</span><br><span class="line">Action               : Insert</span><br><span class="line">Schema file          : /root/test/data/schema.txt</span><br><span class="line">Sample file          : /root/test/data/sample.txt</span><br><span class="line">Insert thread        : 10</span><br><span class="line">Detectors            : 10000</span><br><span class="line">Records per detector : 10000</span><br><span class="line">Start time           : 01/01/2015 00:00:00</span><br><span class="line">Time interval        : 900000</span><br><span class="line"></span><br><span class="line">Config dir           : /etc/taos/</span><br><span class="line">Host                 :</span><br><span class="line">User name            : root</span><br><span class="line">Password             : taosdata</span><br><span class="line">DB name              : meterInfo</span><br><span class="line">Table prefix         : meter</span><br><span class="line">STable               : meters</span><br><span class="line">DB property          : days 30 tblocks 500 tables 5000</span><br><span class="line">Records per request  : 200</span><br><span class="line">Insert mode          : 0</span><br><span class="line">Real situation       : 0</span><br><span class="line">======================================</span><br><span class="line">Starting to test...</span><br><span class="line">days 30 tblocks 500 tables 5000</span><br><span class="line">Creating 10000 tables......</span><br><span class="line">TDengine tables are created. Sleep 2 seconds and starting to insert data...</span><br><span class="line"></span><br><span class="line">Inserting data......</span><br><span class="line">ThreadID: 0 start table ID: 0 end table ID: 999</span><br><span class="line">ThreadID: 1 start table ID: 1000 end table ID: 1999</span><br><span class="line">ThreadID: 2 start table ID: 2000 end table ID: 2999</span><br><span class="line">ThreadID: 3 start table ID: 3000 end table ID: 3999</span><br><span class="line">ThreadID: 4 start table ID: 4000 end table ID: 4999</span><br><span class="line">ThreadID: 5 start table ID: 5000 end table ID: 5999</span><br><span class="line">ThreadID: 6 start table ID: 6000 end table ID: 6999</span><br><span class="line">ThreadID: 7 start table ID: 7000 end table ID: 7999</span><br><span class="line">ThreadID: 8 start table ID: 8000 end table ID: 8999</span><br><span class="line">ThreadID: 9 start table ID: 9000 end table ID: 9999</span><br><span class="line">Done! Spent    70.6098 seconds to insert 100000000 records, speed:   1416233.89 R/s</span><br><span class="line">Test done!</span><br></pre></td></tr></table></figure></p>
+<h3 id="query"><a href="#query" class="headerlink" title="query"></a>query</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it tdtest_run bash</span><br><span class="line">taos</span><br></pre></td></tr></table></figure>
+<p>result:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Welcome to the TDengine shell from linux, client version:1.6.2.2, server version:1.6.2.2</span><br><span class="line">Copyright (c) 2017 by TAOS Data, Inc. All rights reserved.</span><br><span class="line"></span><br><span class="line">taos&gt; select count(*) from meterinfo.meters;</span><br><span class="line">      count(*)       |</span><br><span class="line">======================</span><br><span class="line">            100000000|</span><br><span class="line">Query OK, 1 row(s) in set (0.135594s)</span><br><span class="line"></span><br><span class="line">taos&gt; select count(*) from meterinfo.meters group by loc;</span><br><span class="line">      count(*)       |                  loc                   |</span><br><span class="line">===============================================================</span><br><span class="line">             40000000|                                        |</span><br><span class="line">             20000000|                                        |</span><br><span class="line">             10000000|                                        |</span><br><span class="line">             30000000|                                        |</span><br><span class="line">Query OK, 4 row(s) in set (0.163399s)</span><br></pre></td></tr></table></figure></p>
+<h3 id="parameter"><a href="#parameter" class="headerlink" title="parameter"></a>parameter</h3><p><code>config/config.sh</code> data config</p>
+<ul>
+<li>SCHEMA_FILE:          schema config file, test/data/schema.txt。</li>
+<li>SAMPLE_FILE:          sample data file, need echo each other with schema.txt, test program will loop write in these data.</li>
+<li>NDETECTORS:           table number</li>
+<li>INSERT_THREAD:        thread number</li>
+<li>RECORDS_PER_DETECTOR: records number in one table</li>
+<li>START_TIME:           start time</li>
+<li>TIME_INTERVAL:        data collect interval, unit in millisecond.</li>
+</ul>
+<p><code>config/tdengine.sh</code> engine config</p>
+<ul>
+<li>INSERT_DB_NAME:       db name</li>
+<li>TB_PREFIX:            table name = prefix + num</li>
+<li>STABLE:               super table name</li>
+<li>DB_PROPERTY:          database option</li>
+<li>RECORDS_PER_REQUEST:  recored num in one insert command, insert limit in 64K</li>
+</ul>
+<p><a href="https://github.com/taosdata/TDengine" target="_blank" rel="noopener">https://github.com/taosdata/TDengine</a><br><a href="https://github.com/taosdata/TDengine/blob/v1.6/src/util/src/tglobalcfg.c" target="_blank" rel="noopener">https://github.com/taosdata/TDengine/blob/v1.6/src/util/src/tglobalcfg.c</a><br><a href="https://blog.csdn.net/qishidiguadan/article/details/96284529" target="_blank" rel="noopener">https://blog.csdn.net/qishidiguadan/article/details/96284529</a><br><a href="https://blog.csdn.net/u013829518/article/details/99681154" target="_blank" rel="noopener">https://blog.csdn.net/u013829518/article/details/99681154</a><br><a href="https://blog.csdn.net/u012954706/article/details/82588687" target="_blank" rel="noopener">https://blog.csdn.net/u012954706/article/details/82588687</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/09/26/proxy-in-docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1820,393 +2204,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/05/maintain-log-files-by-shell/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/05/maintain-log-files-by-shell/" class="post-title-link" itemprop="url">maintain log files by shell</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-07-05 10:19:28" itemprop="dateCreated datePublished" datetime="2019-07-05T10:19:28+08:00">2019-07-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="move-log-file-to-another-device"><a href="#move-log-file-to-another-device" class="headerlink" title="move log file to another device"></a>move log file to another device</h3><p>scheduled move specific file to target directory<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># move log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># file name</span></span><br><span class="line">default=<span class="string">"/logs/common-default.log."</span><span class="variable">$&#123;date&#125;</span><span class="string">".log"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$default</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$date</span><span class="string">' move '</span><span class="variable">$default</span><span class="string">' to /data0/backup'</span> &gt;&gt; /logs/backup.log</span><br><span class="line">    `mv <span class="variable">$default</span> /data0/backup`</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
-<p><code>crontab -e</code> add schedule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 0 * * * sh /move.sh</span><br></pre></td></tr></table></figure></p>
-<h3 id="delete-log-file-by-function"><a href="#delete-log-file-by-function" class="headerlink" title="delete log file by function"></a>delete log file by function</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># delete log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># find files modify 1 month ago</span></span><br><span class="line">files=find /data0/backup -<span class="built_in">type</span> f -not -newermt <span class="variable">$date</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> delete_log_files</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">test</span> <span class="variable">$#</span> -gt 0</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        `rm -f <span class="variable">$1</span>`</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">'$date clean $1'</span> &gt;&gt; /logs/cleanup.log</span><br><span class="line">        <span class="built_in">shift</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete_log_files <span class="variable">$files</span></span><br></pre></td></tr></table></figure>
-<h3 id="delete-log-file-by-command"><a href="#delete-log-file-by-command" class="headerlink" title="delete log file by command"></a>delete log file by command</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">find /logs/ -<span class="built_in">type</span> f -mtime +30 -name <span class="string">'*.log'</span> -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-<p><code>{}</code> is placeholder of the file be found<br><code>\;</code> mean exec command finish</p>
-<hr>
-<p>process every line in a multi-line variable<br><a href="https://cloud.tencent.com/developer/ask/46222" target="_blank" rel="noopener">https://cloud.tencent.com/developer/ask/46222</a></p>
-<p>‘crontab’ schedule<br><a href="https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="noopener">https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a></p>
-<p>‘find’ command -exec<br><a href="https://blog.csdn.net/u010900754/article/details/83020378" target="_blank" rel="noopener">https://blog.csdn.net/u010900754/article/details/83020378</a></p>
-<p>‘find’ command useage<br><a href="https://blog.csdn.net/h106140873/article/details/72874455" target="_blank" rel="noopener">https://blog.csdn.net/h106140873/article/details/72874455</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/30/linear-logistic-regression/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/30/linear-logistic-regression/" class="post-title-link" itemprop="url">线性回归和逻辑回归</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-06-30 19:24:08" itemprop="dateCreated datePublished" datetime="2019-06-30T19:24:08+08:00">2019-06-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2019/06/30/linear-logistic-regression/AndrewNg-Headshot.jpg" alt="AndrewNg-Headshot"></p>
-<p>AndrewNg</p>
-<p>就我理解所谓的回归问题，就是做假设，完善这个假设，验证这个假设的过程。<br>有的假设本身很离谱，完善了也没有好的验证结果；有的问题本身很复杂，假设很难归纳问题。</p>
-<p>像西瓜书上说了：No Free Launch Theorem<br>要根据特定的问题，应用特定的算法，看算法本身的归纳偏好和问题是否匹配。</p>
-<h2 id="线性回归"><a href="#线性回归" class="headerlink" title="线性回归"></a>线性回归</h2><p>代价函数</p>
-<script type="math/tex; mode=display">J(\theta)=\frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{i}))^2</script><p>其中 $h_{\theta}$ 是假设函数 $\theta^T X$</p>
-<p>也就是求目标函数方差最小的参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = sum((X * theta - y) .^ 2) / (2 * length(y));</span><br></pre></td></tr></table></figure>
-<h3 id="梯度下降法"><a href="#梯度下降法" class="headerlink" title="梯度下降法"></a>梯度下降法</h3><p>每一个参数就是一个维度，求各个维度上的函数变化率，组成向量即梯度。</p>
-<script type="math/tex; mode=display">\frac{\partial J(\theta)}{\partial \theta_{j}} =\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{(i)}))x_{j}^{(i))}</script><p>每一次迭代都向梯度方向前进一小步，其中 <code>alpha</code> 是学习率，最终达到收敛目的</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theta = theta - (alpha * ((X&apos; * (X * theta - y))/ m));</span><br></pre></td></tr></table></figure>
-<h3 id="正规方程法"><a href="#正规方程法" class="headerlink" title="正规方程法"></a>正规方程法</h3><p>即解线性代数的解。</p>
-<script type="math/tex; mode=display">\theta = (X^T X)^{-1}X^T y</script><p>线性方程组的个数不够(样本不够)，或参数可相互线性表示(维度耦合度过高)<br>会导致参数矩阵是一个奇异矩阵，非方正，不可逆；矩阵的秩小于维数，方程组没有唯一解。</p>
-<h3 id="向量化"><a href="#向量化" class="headerlink" title="向量化"></a>向量化</h3><p>为简化代码，加速计算，需要将计算向量化<br>在线性回归计算中，将偏导项、损失函数计算向量化：<br>  将假设函数的变量参数当作向量 $\theta$，各个样本作为矩阵行，样本属性作为矩阵列，再在左侧并上偏移向量1。<br>  那么梯度可用 <script type="math/tex">X^T * (X * \theta - y)/m</script> 表示，其中 <script type="math/tex">X * \theta - y</script> 代表当前参数下的样本【误差向量】。<br>  特征向量转置 * 误差向量 / m 得到的标量即，函数在 $ \theta_j $ 维度上的偏导数。<br>  求得所有特征维度上的偏导数组成向量即梯度。</p>
-<h2 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a>逻辑回归</h2><p>逻辑回归是使用线性回归的思想，来处理分类问题。<br>使用<code>sigmoid</code>函数，让原线性方程约束到(0, 1)之间；原有的凸函数也变得非凸，二阶导不一定保持符号。</p>
-<script type="math/tex; mode=display">h_{\theta}=\frac{1}{1+e^{-\theta^T x}}</script><p>为了保证损失函数的凸性，需要对原损失函数做一次变换（极大似然法）</p>
-<script type="math/tex; mode=display">J(\theta)=\frac{1}{m} \sum_{i=1}^{m}[-y^{(i)}log(h_{\theta}(x^{(i)}) - (1-y^{(i)})log(1-h_{\theta}(x^{(i)}))]</script><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = -sum( y&apos; * log(sigmoid(X * theta)) + (1 - y)&apos; * log(1 - sigmoid(X * theta)) ) / m;</span><br></pre></td></tr></table></figure>
-<p>梯度方程也发生变化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad = X&apos; * (sigmoid(X * theta) - y) ./ m;</span><br></pre></td></tr></table></figure>
-<p>在“回归”时，数值 &gt;= 0.5 为正类， &lt; 0.5 为负类</p>
-<h2 id="正则化"><a href="#正则化" class="headerlink" title="正则化"></a>正则化</h2><p>算法的泛化能力非常重要，训练过度很可能过拟合，无法在验证集里获得好的效果。<br>正则化在线性回归中，相当于是在每步迭代中提前缩小了 $\theta$ (实际没变)<br>这样获得的参数向量不会在谷底，和训练集的拟合度能得到控制，泛化能力得到保障。</p>
-<script type="math/tex; mode=display">J(\theta)=\frac{1}{m} \sum_{i=1}^{m}[-y^{(i)}log(h_{\theta}(x^{(i)}) - (1-y^{(i)})log(1-h_{\theta}(x^{(i)}))] + \frac{\lambda}{2m}\sum_{j=1}^{n}\theta_{j}^2</script><h3 id="梯度下降的正规化"><a href="#梯度下降的正规化" class="headerlink" title="梯度下降的正规化"></a>梯度下降的正规化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">J = -sum( y&apos; * log(sigmoid(X * theta)) + (1 - y)&apos; * log(1 - sigmoid(X * theta)) ) / m + (lambda/(2*m)) * sum(theta.^2);</span><br></pre></td></tr></table></figure>
-<p>正则化后的梯度为：</p>
-<script type="math/tex; mode=display">\frac{\partial J(\theta)}{\partial \theta_{j}} = （\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^{(i)}-y^{(i)}))x_{j}^{(i)})+\frac{\lambda}{m}\theta_j</script><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad = X&apos; * (sigmoid(X * theta) - y) ./ m + (lambda / m) * theta;</span><br></pre></td></tr></table></figure>
-<h3 id="正规方程的正规化"><a href="#正规方程的正规化" class="headerlink" title="正规方程的正规化"></a>正规方程的正规化</h3><p>内部加上一个 $\lambda$ 倍的第一行全零的单位矩阵即可。这样还能消除参数矩阵的不可逆问题。</p>
-<script type="math/tex; mode=display">\theta = (X^T X + \lambda
-  \begin{pmatrix}
-  0 & 0 & ... & 0\\
-  0 & 1 & ...  & 0\\
-  ... & ... & 1 & ...\\
-  0 & 0 & ... & 1 \\
-  \end{pmatrix})^{-1}X^Ty</script><hr>
-<p><a href="https://www.coursera.org/learn/machine-learning" target="_blank" rel="noopener">https://www.coursera.org/learn/machine-learning</a><br><a href="https://study.163.com/course/courseMain.htm?courseId=1004570029" target="_blank" rel="noopener">https://study.163.com/course/courseMain.htm?courseId=1004570029</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2253,7 +2250,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">266</span>
+                    <span class="site-state-item-count">268</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2532,7 +2529,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -3028,51 +3025,9 @@
       
     
       
-        
-      
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    
   
 
 
