@@ -351,6 +351,210 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/24/Mondrian-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/24/Mondrian-architecture/" class="post-title-link" itemprop="url">Mondrian architecture</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-24 14:56:13" itemprop="dateCreated datePublished" datetime="2018-05-24T14:56:13+08:00">2018-05-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Mondrian系统的图层"><a href="#Mondrian系统的图层" class="headerlink" title="Mondrian系统的图层"></a>Mondrian系统的图层</h2><p>OLAP: OnlineAnalytical Processing<br>Mondrian OLAP系统由四层组成; 从最终用户的眼睛到数据中心的核心，有如下：表示层，维度层，星层和存储层。</p>
+<p>表示层决定最终用户在他或她的监视器上看到的内容，以及他或她如何交互以提出新问题。有多种方式可以呈现多维数据集，<br>包括数据透视表（上面显示的表格的交互式版本），饼图，线条和条形图以及高级可视化工具，如可点击的地图和动态图形。<br>这些可以用Swing或JSP编写，以JPEG或GIF格式呈现的图表或通过XML传输到远程应用程序。所有这些表示形式的共同之处在于<br>表示层提出问题的维度，度量和单元的多维“语法”，并且OLAP服务器返回答案。</p>
+<p>第二层是维度层。维度层解析，验证并执行MDX查询。查询分多个阶段进行评估。首先计算坐标轴，然后计算坐标轴内单元格的值。<br>为了提高效率，维度层将批量请求发送给汇聚层。查询转换器允许应用程序操纵现有查询，而不是从头开始为每个请求构建MDX语句。<br>元数据描述了维度模型，以及它如何映射到关系模型。</p>
+<p>第三层是星级层，负责维护聚合缓存。聚合是内存中的一组度量值’单元’[cells]，由一组维度列值限定。维度层发送单元组请求。<br>如果请求的单元格不在高速缓存中，或者通过在高速缓存中汇总聚合进行派生，则聚合管理器会向存储层发送请求。</p>
+<p>存储层是一个RDBMS。它负责提供聚合的单元格数据，以及维度表中的成员。<br>我在下面描述为什么我决定使用RDBMS的功能，而不是开发针对多维数据优化的存储系统。</p>
+<p>这些组件可以全部存在于同一台机器上，也可以分布在机器之间。构成Mondrian服务器的第2层和第3层必须位于同一台计算机上。<br>存储层可以在另一台机器上，通过远程JDBC连接访问。在多用户系统中，表示层将存在于每个最终用户的机器上（除了在服务器上生成的JSP页面的情况）。</p>
+<p><img src="/2018/05/24/Mondrian-architecture/arch_mondrian_v1_lrg.png" alt><br><img src="/2018/05/24/Mondrian-architecture/architecture2_big.png" alt></p>
+<h2 id="存储和聚合策略"><a href="#存储和聚合策略" class="headerlink" title="存储和聚合策略"></a>存储和聚合策略</h2><p>OLAP服务器通常根据其存储数据的方式进行分类：</p>
+<ul>
+<li>MOLAP（multidimensional  OLAP）服务器将其所有数据存储在磁盘中，并针对多维访问进行优化。<br>通常，数据以密集阵列存储，每个单元值只需要4或8个字节。</li>
+<li>ROLAP（relational OLAP）服务器将其数据存储在关系数据库中。事实表中的每一行都有一个用于每个维度和度量的列。<br>需要存储三种数据：事实表数据（事务记录），聚合和维度。</li>
+</ul>
+<p>MOLAP数据库以多维格式存储事实数据，但如果维度不止一个维度，则这些数据将会很稀疏，并且多维格式表现不佳。<br>HOLAP（混合OLAP）系统通过在关系数据库中保留最细粒度的数据来解决此问题，但将聚合以多维格式存储。</p>
+<p>预先计算的聚合对于大型数据集是必需的，否则某些查询在未读取事实表的全部内容的情况下不能被回答。<br>MOLAP聚合通常是内存数据结构的图像，分解成页面并存储在磁盘上。ROLAP聚合被存储在表中。<br>在一些ROLAP系统中，这些由OLAP服务器显式管理; 在其他系统中，这些表被声明为物化视图[materialized views]，<br>并且当OLAP服务器使用 group by子句中列的正确组合发出查询时，它们将被隐式使用。</p>
+<p>聚合策略的最后组件是缓存。高速缓存将预先计算的聚合保存在内存中，以便后续查询可以访问单元值而不必访问磁盘。<br>如果缓存将所需数据集保留在较低级别的聚合中，则它可以通过<strong>卷起来</strong>计算所需的数据集。</p>
+<p>缓存可以说是聚合策略中最重要的部分，因为它是自适应的。很难选择一组聚合来预先计算在不使用大量磁盘的情况下加速系统的速度，<br>特别是那些维度较高或用户提交不可预知查询的系统。在数据实时变化的系统中，维护预先计算的聚合是不切实际的。<br>合理大小的缓存可以允许系统在面对不可预知的查询时充分执行，而预先计算的聚合很少或没有。</p>
+<p><code>蒙德里安</code>的汇总策略如下：</p>
+<ul>
+<li>事实数据存储在RDBMS中。RDBMS已经有一个存储管理器，为什么还要开发一个？</li>
+<li>通过查询提交分组，将聚合数据读入缓存。同样，RDBMS有一个聚合器，为什么还要开发一个？</li>
+<li>如果RDBMS支持实体化视图，并且数据库管理员选择为特定聚合创建实体化视图，则Mondrian将隐式使用它们。<br>理想情况下，<code>蒙德里安</code>的聚合管理者应该意识到存在这些物化视图，并且这些特定的聚合计算起来很便宜。<br>它甚至应该向数据库管理员提供调优建议。</li>
+</ul>
+<p>总体思路是将数据库的内容委托给数据库。<br>这给数据库带来了额外的负担，但是一旦将这些功能添加到数据库中，数据库的所有客户端都将从中受益。<br>多维存储可以减少I / O，并在某些情况下可以加快操作速度，但我认为这不足以保证现阶段的复杂性。</p>
+<p>一个奇妙的副作用是因为Mondrian自己不需要存储空间，所以可以通过将JAR文件添加到类路径中并立即启动并运行来安装它。<br>由于没有冗余数据集进行管理，数据加载过程更容易，<strong>Mondrian非常适合在实时更改的数据集上执行OLAP。</strong></p>
+<h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><p>Mondrian为客户端应用程序提供执行查询的API。</p>
+<p>由于没有普遍接受的用于执行OLAP查询的API，Mondrian的主要API是专有的; 然而，任何使用过JDBC的人都会发现它很熟悉。<br>主要区别在于查询语言：Mondrian使用称为MDX的语言(M ulti- D dimension e X pressions)来指定查询，其中JDBC将使用SQL。<br>下面更详细地描述MDX。</p>
+<p>连接 经由创建 的DriverManager，以类似的方式来JDBC。<br>一个 查询是类似于JDBC 声明，并且通过解析MDX字符串创建。<br>甲 结果是类似于JDBC 结果集 ; 因为我们正在处理多维数据，所以它由轴和单元组成，而不是行和列。<br>由于OLAP旨在用于数据挖掘，因此可以通过 drillDown和 sort等操作修改查询中包含的分析树 ，然后重新执行查询。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mondrian.olap.*;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line">Connection connection = DriverManager.getConnection(</span><br><span class="line">    <span class="string">"Provider=mondrian;"</span> +</span><br><span class="line">    <span class="string">"Jdbc=jdbc:odbc:MondrianFoodMart;"</span> +</span><br><span class="line">    <span class="string">"Catalog=/WEB-INF/FoodMart.xml;"</span>,</span><br><span class="line">    <span class="keyword">null</span>,</span><br><span class="line">    <span class="keyword">false</span>);</span><br><span class="line">Query query = connection.parseQuery(</span><br><span class="line">    <span class="string">"SELECT &#123;[Measures].[Unit Sales], [Measures].[Store Sales]&#125; on columns,"</span> +</span><br><span class="line">    <span class="string">"&#123;[Product].children&#125; on rows "</span> +</span><br><span class="line">    <span class="string">"FROM [Sales] "</span> +</span><br><span class="line">    <span class="string">"WHERE ([Time].[1997].[Q1], [Store].[CA].[San Francisco])"</span>);</span><br><span class="line">Result result = connection.execute(query);</span><br><span class="line">result.print(<span class="keyword">new</span> PrintWriter(System.out));</span><br></pre></td></tr></table></figure>
+<p>API还将数据库模式呈现为一组对象： 模式， 多维数据集， 维度， 层次结构， 级别， 成员。<br>有关Mondrian API的更多信息，请参阅 javadoc。</p>
+<p>用于分析的XML是通过SOAP（简单对象访问协议）访问OLAP服务器的标准。<br>这允许Microsoft Excel等非Java组件针对Mondrian运行查询。</p>
+<p><code>蒙德里安</code>包括对 JSR-069(‘JOLAP’)提议标准的支持，<br>但是在明确标准永远不会被批准的情况下，这一支持在mondrian-2.3中被删除。</p>
+<p><a href="https://mondrian.pentaho.com/documentation/architecture.php#Figure_1:_Mondrian_architecture" target="_blank" rel="noopener">https://mondrian.pentaho.com/documentation/architecture.php#Figure_1:_Mondrian_architecture</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/22/python-encode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2321,204 +2525,6 @@ A \thicksim B</script></li>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/01/31/Suurballe-s-algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/01/31/Suurballe-s-algorithm/" class="post-title-link" itemprop="url">Suurballe's algorithm</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-01-31 14:33:58" itemprop="dateCreated datePublished" datetime="2018-01-31T14:33:58+08:00">2018-01-31</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Definitions"><a href="#Definitions" class="headerlink" title="Definitions"></a>Definitions</h2><ul>
-<li><code>G</code> represent a graph</li>
-<li><code>P</code> represent a path</li>
-<li><code>s</code> represent source start vertex</li>
-<li><code>w(u, v)</code> mean edge weight from vertex <code>u</code> to <code>v</code></li>
-<li><code>d(u, v)</code> mean short path cost from vertex <code>u</code> to <code>v</code></li>
-</ul>
-<h2 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h2><ol>
-<li>Find shortest path P1</li>
-<li>Recalculate the edge weith by <code>w′(u,v) = w(u,v) − d(s,v) + d(s,u)</code></li>
-<li>Create a residual graph Gt formed from G by removing the edges of G on path P1 (leave a reserve zero path)</li>
-<li>Find the shortest path P2 in the residual graph Gt</li>
-<li>Discard the reversed edges of P2 from both paths</li>
-</ol>
-<p>The remaining edges of P1 and P2 form a subgraph have no common edges.<br>Return the two disjoint paths from the subgraph.</p>
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2018/01/31/Suurballe-s-algorithm/First_graph.jpg" alt></p>
-<ul>
-<li>Figure <strong>A</strong> illustrates a weighted graph G.</li>
-<li>Figure <strong>B</strong> calculates the shortest path P1 from A to F (A–B–D–F).</li>
-<li>Figure <strong>C</strong> illustrates the shortest path tree T rooted at A, and the computed distances from A to every vertex (u).</li>
-<li>Figure <strong>D</strong> shows the residual graph Gt with the updated cost of each edge and the edges of path ‘P1 reversed.</li>
-<li>Figure <strong>E</strong> calculates path P2 in the residual graph Gt (A–C–D–B–E–F).</li>
-<li>Figure <strong>F</strong> illustrates both path P1 and path P2.</li>
-<li>Figure <strong>G</strong> finds the shortest pair of disjoint paths<br>Combining the edges of paths P1 and P2 and then <em>discarding the common reversed edges</em> between both paths (B–D).<br>As a result, we get the two shortest pair of disjoint paths (A–B–E–F) and (A–C–D–F).</li>
-</ul>
-<p><a href="https://en.wikipedia.org/wiki/Suurballe%27s_algorithm" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Suurballe%27s_algorithm</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2565,7 +2571,7 @@ A \thicksim B</script></li>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">268</span>
+                    <span class="site-state-item-count">269</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3334,9 +3340,9 @@ A \thicksim B</script></li>
       
     
       
-        
-      
     
+      
+        
       
     
       

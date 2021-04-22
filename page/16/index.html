@@ -351,6 +351,195 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/09/07/Intellij-IDEA-Debug/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/09/07/Intellij-IDEA-Debug/" class="post-title-link" itemprop="url">Intellij IDEA Debug</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-09-07 14:15:47" itemprop="dateCreated datePublished" datetime="2017-09-07T14:15:47+08:00">2017-09-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-17 22:41:42" itemprop="dateModified" datetime="2020-06-17T22:41:42+08:00">2020-06-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Customize-shortcut-keymap"><a href="#Customize-shortcut-keymap" class="headerlink" title="Customize shortcut keymap"></a>Customize shortcut keymap</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907141844.png" alt="change keymap"><br><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142511.png" alt="shortcut key"></p>
+<p>change intellij’s keymap to eclipse’s</p>
+<ul>
+<li><code>F5</code>        step into a method</li>
+<li><code>Ctrl + F5</code> smart step in</li>
+<li><code>F6</code>        step over a row</li>
+<li><code>F7</code>        step out a method</li>
+<li><code>Ctrl + R</code>  step to cursor’s raw</li>
+</ul>
+<h3 id="Samrt-step-in"><a href="#Samrt-step-in" class="headerlink" title="Samrt step in"></a>Samrt step in</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907144209.png" alt="smart step in"><br><code>Ctrl + F5</code><br>when a series method link a callback, smart step in debug is useful.</p>
+<h3 id="Thread-Block"><a href="#Thread-Block" class="headerlink" title="Thread Block"></a>Thread Block</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142036.png" alt="break point"><br>In default when current thread met breakpoint, other thread will be blocked.<br>Util current debug thread finished.<br>If project need to debug in multi thread, set breakpoint the suspend in thread.</p>
+<h3 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142731.png" alt="frame opt"><br>Java’s memory model is a thread have multi methods, a method corresponding a frame.<br>Every frame have a private variable array, it’s <code>0</code> index is <code>this</code>.[Stacks Link Invocate]<br>When drop the frame, debug will roll back.</p>
+<h3 id="Thread-List"><a href="#Thread-List" class="headerlink" title="Thread List"></a>Thread List</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907142354.png" alt="thread list"><br>Show thread list, thread status.</p>
+<h3 id="Thread’s-Frames"><a href="#Thread’s-Frames" class="headerlink" title="Thread’s Frames"></a>Thread’s Frames</h3><p><img src="/2017/09/07/Intellij-IDEA-Debug/TIM-20170907144107.png" alt="switch thread"><br>Used to switch thread, but it seem can’t debug a thread’s code alone.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class DebugTest &#123;</span><br><span class="line"></span><br><span class="line">  private static Object lock = new Object();</span><br><span class="line"></span><br><span class="line">  @Test</span><br><span class="line">  public void main() &#123;</span><br><span class="line">      try &#123;</span><br><span class="line">          for(int i=0; i&lt; 3; i++) &#123;</span><br><span class="line">              new Line().start();</span><br><span class="line">              Thread.sleep(1000);</span><br><span class="line">          &#125;</span><br><span class="line">          new LineAnother().start();</span><br><span class="line">          Thread.sleep(100000);</span><br><span class="line">      &#125; catch (InterruptedException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">class Line extends Thread &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        synchronized (lock) &#123;</span><br><span class="line">            // smart step in</span><br><span class="line">            if (Thread.currentThread().getContextClassLoader().equals(new Object()))</span><br><span class="line">                System.out.println(&quot;-_-!&quot;);</span><br><span class="line"></span><br><span class="line">            for (int i = 0; i &lt; 3; i++)</span><br><span class="line">                System.out.println(Thread.currentThread().getId() +</span><br><span class="line">                        &quot;\t&quot; + Thread.currentThread().getName() +</span><br><span class="line">                        &quot;\t&quot; + i);</span><br><span class="line">            test(5);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // sub frame</span><br><span class="line">    public int test(int i) &#123;</span><br><span class="line">        i -= 1;</span><br><span class="line">        return i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class LineAnother extends Thread &#123;</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(&quot;xxx&quot;);</span><br><span class="line">        System.out.println(&quot;ooo&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/31/linux-process-job-session-control/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2275,207 +2464,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/23/Cryptology-in-transmission/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/23/Cryptology-in-transmission/" class="post-title-link" itemprop="url">Cryptology in transmission</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-07-23 20:17:51" itemprop="dateCreated datePublished" datetime="2017-07-23T20:17:51+08:00">2017-07-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:34:01" itemprop="dateModified" datetime="2020-06-17T22:34:01+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Password"><a href="#Password" class="headerlink" title="Password"></a>Password</h2><p>In application <code>password</code> mean a text string, used to authenticate user identity.</p>
-<p>In cryptology <code>cipher</code> mean a series of algorithms.<br><code>encript</code> and <code>decript</code> be called cipher algorithm.</p>
-<h2 id="Key"><a href="#Key" class="headerlink" title="Key"></a>Key</h2><p>A parameter in algorithm, participate calculation.<br>In generally bigger length of the key is, the harder to attack brutally</p>
-<h2 id="Symmetric-key-algorithm"><a href="#Symmetric-key-algorithm" class="headerlink" title="Symmetric-key algorithm"></a>Symmetric-key algorithm</h2><p>Usual algorithm hava <code>DES</code> <code>3DES</code> <code>AES</code>.<br>advantage of this algorithm is performanc, disadvantage is security problem.</p>
-<p>Once the key be attacked, the ciphertext be decripted.<br>So how to securely transfer symmetric key be a big problem.</p>
-<h2 id="Public-key-cryptography"><a href="#Public-key-cryptography" class="headerlink" title="Public-key cryptography"></a>Public-key cryptography</h2><p>Who want to make sure security, who generate key pair.<br>Sender use public key to encript, receiver use private key to decript.</p>
-<p>The advantage of this cryptograpy is security, disadvantage is performance.</p>
-<h2 id="Message-digest"><a href="#Message-digest" class="headerlink" title="Message digest"></a>Message digest</h2><p><code>MD5</code> <code>SHA</code> hash algorithm used to create a fingerprint.<br>It’s an one way hash function, and unreversible.<br>Make sure data not dropping packet, prevent data not be replaced by attacker.</p>
-<h2 id="Message-authentication-code"><a href="#Message-authentication-code" class="headerlink" title="Message authentication code"></a>Message authentication code</h2><p>First share common key first.<br>Sender calculate mac code by mac algorithm and key.<br>Receiver calculate as well, check data is not be ‘modified’.</p>
-<p>But mac can’t resolve non-repudiation problem. Sender say the <code>key</code> be stolen,<br>the data sended by attacker.</p>
-<h2 id="Digital-Signature"><a href="#Digital-Signature" class="headerlink" title="Digital Signature"></a>Digital Signature</h2><p>The way to resolve this problem is use <code>public-key cryptography</code> to calc mac.</p>
-<ol>
-<li><p>Sender use <code>private key</code> calc mac, send message with mac.</p>
-</li>
-<li><p>Receiver split data, got message and mac.</p>
-</li>
-<li><p>receiver check mac by <code>public key</code>, result is same with <code>sender&#39;s mac</code> show success.</p>
-</li>
-</ol>
-<h3 id="Public-key-credential"><a href="#Public-key-credential" class="headerlink" title="Public-key credential"></a>Public-key credential</h3><p>Certification Authority[CA] to manage organization’s public key.</p>
-<ol>
-<li>Receiver create key pair, private key manage by it’s self, public key pass to CA.</li>
-<li>CA check [offline maybe] the key is from the organization.</li>
-<li>CA sign the receiver’s public-key by itself’s private-key to generate a <code>PKC</code></li>
-<li>fetch <code>PKC</code></li>
-<li>Sender use CA’s public-key to check <code>PKC</code>,<br>if successd then the public-key in <code>PKC</code> is the reciver’s.</li>
-<li>Encript by <code>public-key</code> send to receiver.</li>
-<li>Receive and decript message by <code>private-key</code>.</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2522,7 +2510,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">268</span>
+                    <span class="site-state-item-count">269</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
