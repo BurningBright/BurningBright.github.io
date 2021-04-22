@@ -111,7 +111,7 @@
 <meta property="og:image" content="http://linchenguang.com/2021/04/18/u2u-converter/20210421163804.jpg">
 <meta property="og:image" content="http://linchenguang.com/2021/04/18/u2u-converter/130850.jpg">
 <meta property="og:image" content="http://linchenguang.com/2021/04/18/u2u-converter/20210422153200.jpg">
-<meta property="og:updated_time" content="2021-04-22T23:41:31.428Z">
+<meta property="og:updated_time" content="2021-04-22T23:54:03.179Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="usb 转 usb 转换器">
 <meta name="twitter:description" content="19年初看到老莱频道剪辑师介绍的 Hasu u2u 转换器非常心动，可惜已售罄。在geekhack上找到 Hasu 的帖子USB to USB keyboard converter build log，但完全不知道怎么制作。这是第一次了解到 Hasu 和他的 TMK，后来在看Yang的HHKB蓝牙双模改装方案时发现也有 Hasu 的贡献。 20年8月看到50元成本自制转换器，正好ERGO88进展">
@@ -421,7 +421,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2021-04-23 07:41:31" itemprop="dateModified" datetime="2021-04-23T07:41:31+08:00">2021-04-23</time>
+                <time title="Modified: 2021-04-23 07:54:03" itemprop="dateModified" datetime="2021-04-23T07:54:03+08:00">2021-04-23</time>
               
             
           </span>
@@ -475,12 +475,13 @@
       
         <p><img src="/2021/04/18/u2u-converter/489871548.jpg" alt="489871548.jpg"></p>
 <p>19年初看到老莱频道剪辑师介绍的 Hasu u2u 转换器非常心动，可惜已售罄。<br>在geekhack上找到 Hasu 的帖子<a href="https://geekhack.org/index.php?topic=80421.0" target="_blank" rel="noopener">USB to USB keyboard converter build log</a>，但完全不知道怎么制作。<br>这是第一次了解到 Hasu 和他的 TMK，后来在看Yang的HHKB蓝牙双模改装方案时发现也有 Hasu 的贡献。</p>
-<p>20年8月看到<a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器</a>，正好ERGO88进展不顺，打算试试QMK换换心情。<br>结果是反复尝试进<code>DFU</code>都失败，一度以为运气不好，买到的 Arduino pro micro 板子没法刷固件。<br>纠结半天，曾打算买量产工具重新烧录bootloader，最后担心花费太多时间精力还是放弃了。</p>
+<p>20年8月看到<a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器</a>，正好ERGO88进展不顺，打算试试QMK换换心情。<br>结果是反复尝试进<code>DFU</code>都失败，一度以为运气不好，买到的 Arduino pro micro 板子没法刷固件。<br>纠结半天，曾打算买ISP工具重新烧录bootloader，最后担心花费太多时间精力还是放弃了。</p>
 <p>21年初完成ERGO88后，重买 pro micro，这次以防万一，买了16MHz-5V版本。<br>16MHz u2u运行正常，换到8MHz发现去年买的板子竟然烧录正常。<br>问题应该是出在第一次进<code>DFU</code>上，尝试在插入USB前就短接，插入后放开再短接一次就能顺利进入。</p>
 <h2 id="原理图"><a href="#原理图" class="headerlink" title="原理图"></a>原理图</h2><p><img src="/2021/04/18/u2u-converter/20210421155504.png" alt="20210421155504.png"><br>如果买的是3.3V版本的pro micro，就不用再接<code>U2</code>线性稳压元件</p>
 <p><a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器</a> 里面包板线序没有很清晰的标注出来，原理图参考 <a href="https://www.pjrc.com/teensy/td_libs_USBHostShield.html" target="_blank" rel="noopener">USB Host Shield Library, For Connecing Other USB Devices</a>。</p>
 <h2 id="Shield"><a href="#Shield" class="headerlink" title="Shield"></a>Shield</h2><p><img src="/2021/04/18/u2u-converter/20210421163704.jpg" alt="20210421163704.jpg"><br>usb hub的外接设备供电，需要和板子断开，如图中红圈所示断开线路。<br>飞线shield的<code>raw</code>针至图中箭头所示焊盘，使用 pro micro 的raw针为设备供电。</p>
 <p><img src="/2021/04/18/u2u-converter/20210421163804.jpg" alt="20210421163804.jpg"><br>外接设备供电飞线，3.3V和RST针飞线。</p>
+<p>线路参考： <a href="https://www.arduino.cn/thread-76102-1-1.html" target="_blank" rel="noopener">在 Arduino Min (3.3V,8MHz) 上使用 Usb Host Shield Mini</a></p>
 <p><img src="/2021/04/18/u2u-converter/130850.jpg" alt="130850.jpg"></p>
 <h2 id="Arduino"><a href="#Arduino" class="headerlink" title="Arduino"></a>Arduino</h2><p><img src="/2021/04/18/u2u-converter/20210422153200.jpg" alt="20210422153200.jpg"><br>旋转180度，层叠在一起。<br>右上第三针如果插接会短接VCC，这里我掰掉了 pro micro 的第三针GND脚。</p>
 <h2 id="固件"><a href="#固件" class="headerlink" title="固件"></a>固件</h2><p>解决好供电，晶振频率的问题可以通过固件适配。</p>
@@ -498,6 +499,8 @@
 <li>如果arduino插入toolbox没反应，检查驱动是否安装</li>
 <li>如果arduino两次短接没法进入DFU，尝试先短接<code>RST</code>、<code>GND</code>再连接电脑，放开再短接一次。</li>
 </ul>
+<hr>
+<p><a href="https://www.arduino.cn/thread-76102-1-1.html" target="_blank" rel="noopener">在 Arduino Min (3.3V,8MHz) 上使用 Usb Host Shield Mini</a><br><a href="https://post.smzdm.com/p/andgo2l3/" target="_blank" rel="noopener">我修我自己——Arduino充当ISP烧录器修复Arduino记录</a><br><a href="https://www.arduino.cn/thread-23762-1-1.html" target="_blank" rel="noopener">【HIDuino】 — 超迷你的USB-HID开发板</a><br><a href="https://www.arduino.cn/thread-6001-1-1.html" target="_blank" rel="noopener">https://www.arduino.cn/thread-6001-1-1.html</a><br><a href="https://www.arduino.cn/thread-1183-1-1.html" target="_blank" rel="noopener">Arduino串口调试助手（2013.12.28更新）</a></p>
 <hr>
 <p><a href="https://1upkeyboards.com/shop/controllers/usb-to-usb-converter/" target="_blank" rel="noopener">https://1upkeyboards.com/shop/controllers/usb-to-usb-converter/</a><br><a href="https://www.pjrc.com/teensy/td_libs_USBHostShield.html" target="_blank" rel="noopener">USB Host Shield Library, For Connecing Other USB Devices</a><br><a href="https://geekhack.org/index.php?topic=80421.0" target="_blank" rel="noopener">USB to USB keyboard converter build log(Pro Micro 3.3v with mini host shield)</a><br><a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器——普通键盘变全键可编程键盘<em>键盘</em>什么值得买</a><br><a href="https://www.bilibili.com/video/BV1Kb411y7Rk" target="_blank" rel="noopener">【官方双语】打鸡血的键盘-Hasu USB到USB键盘控制器转换器#linus谈科技</a></p>
 
