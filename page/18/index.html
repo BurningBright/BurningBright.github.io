@@ -351,6 +351,376 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Throw-try-catch-finally-in-compiling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/06/Throw-try-catch-finally-in-compiling/" class="post-title-link" itemprop="url">Throw try catch finally in compiling</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-06 22:20:46" itemprop="dateCreated datePublished" datetime="2017-06-06T22:20:46+08:00">2017-06-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void noZero(int) throws java.lang.Exception;</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: ifne          14</span><br><span class="line">       // class java/lang/Exception</span><br><span class="line">       4: new           #2</span><br><span class="line">       7: dup</span><br><span class="line">       // String no zero</span><br><span class="line">       8: ldc           #3</span><br><span class="line">       // Method java/lang/Exception.</span><br><span class="line">       //&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="line">      10: invokespecial #4</span><br><span class="line">      13: athrow</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>if not equals pass the throw part</li>
+<li>if equals take constant string as param create a Exception.</li>
+<li>throw it to the caller[handler?].</li>
+</ol>
+<h3 id="Catch-an-exception"><a href="#Catch-an-exception" class="headerlink" title="Catch an exception"></a>Catch an exception</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">e</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">    noZero(<span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(ExcpA a) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(ExcpB b) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void e();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: goto          17</span><br><span class="line">       8: astore_1</span><br><span class="line">       9: goto          17</span><br><span class="line">      12: astore_1</span><br><span class="line">      13: goto          17</span><br><span class="line">      16: astore_1</span><br><span class="line">      17: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     8   Class HaveATry$ExcpA</span><br><span class="line">           0     5    12   Class HaveATry$ExcpB</span><br><span class="line">           0     5    16   Class java/lang/Exception</span><br></pre></td></tr></table></figure>
+<p><code>excption table</code><br>Every catcher have a chance to catch.</p>
+<p><code>astore_1</code><br>Beginning of handler for excpSentry() store thrown value in local var 1.</p>
+<h3 id="Finally"><a href="#Finally" class="headerlink" title="Finally"></a>Finally</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123; noZero(<span class="number">0</span>); &#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>javap</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int f();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: iconst_2</span><br><span class="line">       6: ireturn</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: iconst_1</span><br><span class="line">       9: istore_2</span><br><span class="line">      10: iconst_2</span><br><span class="line">      11: ireturn</span><br><span class="line">      12: astore_3</span><br><span class="line">      13: iconst_2</span><br><span class="line">      14: ireturn</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     7   Class java/lang/Exception</span><br><span class="line">           0     5    12   any</span><br><span class="line">           7    10    12   any</span><br></pre></td></tr></table></figure>
+<p>5/6 copy instructions of 13/14.<br>7th is the Exception handler.<br>11th can’t reach.<br>what’s the object of istore_2/ istore_3 ???</p>
+<p><code>istore_2</code> the catcher itself’s handler?<br><code>istore_3</code> the finaly’s handler comes from <code>istore_2</code> ?</p>
+<p><code>any</code> mean in range instructions finished then goto target.</p>
+<p>The final return handle by finally got <code>2</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Oracle-query-table-column-comment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/06/Oracle-query-table-column-comment/" class="post-title-link" itemprop="url">Oracle query table column comment</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-06 18:09:39" itemprop="dateCreated datePublished" datetime="2017-06-06T18:09:39+08:00">2017-06-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tables</strong></p>
+<h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tab_columns</strong></p>
+<h3 id="Query-Comment"><a href="#Query-Comment" class="headerlink" title="Query Comment"></a>Query Comment</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select * from user_tab_comments;</span><br><span class="line">select * from user_tab_comments t where t.COMMENTS like &apos;%shit%&apos; order by t.TABLE_NAME;</span><br><span class="line"></span><br><span class="line">select * from user_col_comments;</span><br><span class="line">select * from user_col_comments t where t.COLUMN_NAME=&apos;xxx&apos;;</span><br><span class="line"></span><br><span class="line">select * from user_tab_comments t1, user_col_comments t2 where t1.TABLE_NAME = t2.TABLE_NAME and t2.COMMENTS like &apos;%shit%&apos;;</span><br></pre></td></tr></table></figure>
+<p><strong>user_tab_comments</strong></p>
+<p><strong>user_col_comments</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/05/Arrays-in-compiling/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1962,399 +2332,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/22/Hello-World/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/22/Hello-World/" class="post-title-link" itemprop="url">Hello World</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-22 21:52:44" itemprop="dateCreated datePublished" datetime="2017-05-22T21:52:44+08:00">2017-05-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">"hello world"</span>);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>invokevirtual</code><br><code>$ javap -c HelloWorld</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Compiled from <span class="string">"HelloWorld.java"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">HelloWorld</span><span class="params">()</span></span>;</span><br><span class="line">    Code:</span><br><span class="line">       <span class="number">0</span>: aload_0</span><br><span class="line">       <span class="comment">// Method java/lang/Object."&lt;init&gt;":()V</span></span><br><span class="line">       1: invokespecial #1</span><br><span class="line">       <span class="number">4</span>: <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(java.lang.String[])</span></span>;</span><br><span class="line">    Code:</span><br><span class="line">       <span class="comment">// Field java/lang/System.out:Ljava/io/PrintStream;</span></span><br><span class="line">       0: getstatic     #2</span><br><span class="line">       <span class="comment">// String hello world</span></span><br><span class="line">       3: ldc           #3</span><br><span class="line">       <span class="comment">// Method java/io/PrintStream.println:(Ljava/lang/String;)V</span></span><br><span class="line">       5: invokevirtual #4</span><br><span class="line">       <span class="number">8</span>: <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>The property <code>out</code> in System is a <code>packaged</code> type <code>PrintStream</code>.<br>There is a <code>BufferedOutputStream</code> inside <code>PrintStream</code>.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">System</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> PrintStream out = <span class="keyword">null</span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">setOut0</span><span class="params">(PrintStream out)</span></span>;</span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initializeSystemClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      ...</span><br><span class="line">      FileOutputStream fdOut = <span class="keyword">new</span> FileOutputStream(FileDescriptor.out);</span><br><span class="line">      ...</span><br><span class="line">      setOut0(newPrintStream(fdOut, props.getProperty(<span class="string">"sun.stdout.encoding"</span>)));</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The init method called after thread initialization, initialize the system class.</p>
-<hr>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> PrintStream <span class="title">newPrintStream</span><span class="params">(FileOutputStream fos, String enc)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (enc != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> PrintStream(<span class="keyword">new</span> BufferedOutputStream(fos, <span class="number">128</span>), <span class="keyword">true</span>, enc);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException uee) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PrintStream(<span class="keyword">new</span> BufferedOutputStream(fos, <span class="number">128</span>), <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>package buffer function into <code>out</code>. base on encoding, create output stream object.</p>
-<hr>
-<p><img src="/2017/05/22/Hello-World/01.png" alt><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">JNIEXPORT void JNICALL</span><br><span class="line">Java_java_lang_System_setOut0(JNIEnv *env, jclass cla, jobject stream)</span><br><span class="line">&#123;</span><br><span class="line">    jfieldID fid =</span><br><span class="line">        (*env)-&gt;GetStaticFieldID(env,cla,&quot;out&quot;,&quot;Ljava/io/PrintStream;&quot;);</span><br><span class="line">    if (fid == 0)</span><br><span class="line">        return;</span><br><span class="line">    (*env)-&gt;SetStaticObjectField(env,cla,fid,stream);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li><p>The native method <code>setOut0</code> will call this c function.</p>
-</li>
-<li><p><code>fid</code> the member of <code>System</code> the <code>out</code>‘s id.</p>
-</li>
-<li><p><code>&quot;Ljava/io/PrintStream;&quot;</code> mean <code>java.io.PrintStream</code> object</p>
-</li>
-</ul>
-<p><img src="/2017/05/22/Hello-World/02.png" alt></p>
-<p><code>SetStaticObjectField</code> define here.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void (JNICALL *SetStaticObjectField)</span><br><span class="line">      (JNIEnv *env, jclass clazz, jfieldID fieldID, jobject value);</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/21/The-structure-of-the-JVM-overview-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/21/The-structure-of-the-JVM-overview-2/" class="post-title-link" itemprop="url">The structure of the JVM overview 2</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-21 18:58:53" itemprop="dateCreated datePublished" datetime="2017-05-21T18:58:53+08:00">2017-05-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h2><h3 id="Local-Variables"><a href="#Local-Variables" class="headerlink" title="Local Variables"></a>Local Variables</h3><p>Each frame contains <strong>an array of variables</strong> known as its <code>local variables</code>.</p>
-<ul>
-<li><p>one can hold<br>&gt;<br>boolean, byte, char, short, int,<br>float, reference, returnAddress</p>
-</li>
-<li><p>a pair can hold <code>long or double</code></p>
-</li>
-</ul>
-<p>JVM uses local variables to pass parameters on method invocation.</p>
-<p>On instance method invocation, <strong>local variable 0</strong> is always used to pass<br>a reference to instance it’self(<code>this</code>).</p>
-<h3 id="Operand-Stacks"><a href="#Operand-Stacks" class="headerlink" title="Operand Stacks"></a>Operand Stacks</h3><p>Each frame contains a last-in-first-out (LIFO) stack known as its operand stack.</p>
-<p>Used to push or pop constant or values from variable or method.</p>
-<p>Values from the operand stack must be operated upon in ways <strong>appropriate to their types</strong>.</p>
-<p>These restrictions on operand stack manipulation are enforced through <strong>class file verification</strong>.</p>
-<h3 id="Dynamic-Linking"><a href="#Dynamic-Linking" class="headerlink" title="Dynamic Linking"></a>Dynamic Linking</h3><p>Each frame contains a reference to the <code>run-time constant pool</code> for<br>the type of the current method to support <code>dynamic linking</code> of the method code.</p>
-<p><code>invoke</code> <code>InvocationHandler</code> in java ?</p>
-<p>Used to reduce the <strong>invasive</strong> of the code linked code,<br>keep current code shape and solid.</p>
-<p>Dynamic linking translates these <code>symbolic
-method</code> references into <code>concrete method</code> references.</p>
-<h3 id="Normal-Method-Invocation-Completion"><a href="#Normal-Method-Invocation-Completion" class="headerlink" title="Normal Method Invocation Completion"></a>Normal Method Invocation Completion</h3><p>A method invocation completes normally if<br>that invocation does <strong>not cause</strong> an exception to be thrown.</p>
-<p>The current frame use <code>break</code> characteristic to restore <strong>the state of the invoker</strong><br>for the program counter of the invoker appropriately incremented to <strong>skip past</strong><br>the method invocation instruction(PC Register?).</p>
-<h3 id="Abrupt-Method-Invocation-Completion"><a href="#Abrupt-Method-Invocation-Completion" class="headerlink" title="Abrupt Method Invocation Completion"></a>Abrupt Method Invocation Completion</h3><p>A method invocation <code>completes abruptly</code> if execution of a JVM<br>instruction within the method causes the JVM to throw an<br>exception, and that exception is <strong>not handled</strong> within the method.</p>
-<p>Execution of an <code>athrow</code> instruction also causes an exception to<br>be <code>explicitly thrown</code> and, if the exception is not caught by the<br>current method, results in <strong>abrupt method</strong> invocation completion.</p>
-<p>A method invocation that completes abruptly <strong>never returns</strong> a value to its invoker.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2396,7 +2378,7 @@ method</code> references into <code>concrete method</code> references.</p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">269</span>
+                    <span class="site-state-item-count">271</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2574,7 +2556,11 @@ method</code> references into <code>concrete method</code> references.</p>
                     
                       
                     
-                    <span class="site-state-item-count">53</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2615,6 +2601,10 @@ method</code> references into <code>concrete method</code> references.</p>
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clock" title="https://www.linchenguang.com/mnist-clock" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
                     <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
                   </li>
                 
@@ -2623,27 +2613,27 @@ method</code> references into <code>concrete method</code> references.</p>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
                   </li>
                 
               </ul>

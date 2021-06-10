@@ -351,6 +351,405 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/05/Raspberry-ap-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/05/Raspberry-ap-mode/" class="post-title-link" itemprop="url">Raspberry ap mode</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-05 16:25:19" itemprop="dateCreated datePublished" datetime="2017-08-05T16:25:19+08:00">2017-08-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><p>upgrade system &amp;&amp; update apt-get resources<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/etc/apt/sources.list</span><br><span class="line"></span><br><span class="line">deb http://mirrors.zju.edu.cn/raspbian/raspbian/ jessie main contrib non-free rpi</span><br><span class="line"># Uncomment line below then &apos;apt-get update&apos; to enable &apos;apt-get source&apos;</span><br><span class="line"></span><br><span class="line">#deb-src http://mirrors.zju.edu.cn/raspbian/raspbian/ jessie main contrib non-free rpi</span><br><span class="line">#deb http://mirror.nus.edu.sg/raspbian/raspbian wheezy main contrib non-free rpi</span><br><span class="line">#deb http://mirrordirector.raspbian.org/raspbian/ jessie main contrib non-free rpi</span><br><span class="line"># Uncomment line below then &apos;apt-get update&apos; to enable &apos;apt-get source&apos;</span><br><span class="line">#deb-src http://archive.raspbian.org/raspbian/ jessie main contrib non-free rpi</span><br></pre></td></tr></table></figure></p>
+<p>software<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/oblique/create_ap.git</span><br></pre></td></tr></table></figure></p>
+<p>dependencies<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install util-linux procps iproute2 iw haveged hostapd dnsmasq</span><br></pre></td></tr></table></figure></p>
+<p><strong>hostapd</strong> is the daemon thread of <code>Host Access Point</code><br>used to provide <code>WPA2</code> token check and authentication</p>
+<p><strong>dnsmasq</strong> used to config <code>DNS</code> provide <code>DHCP</code> service</p>
+<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p><a href="https://github.com/oblique/create_ap" target="_blank" rel="noopener">Config Git Page</a></p>
+<h3 id="Wlan-config"><a href="#Wlan-config" class="headerlink" title="Wlan config"></a>Wlan config</h3><p>dispatch wlan0 a static ip address<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/dhcpcd.conf</span><br><span class="line"></span><br><span class="line">interface wlan0</span><br><span class="line">    static ip_address=192.168.0.1/24</span><br></pre></td></tr></table></figure></p>
+<p>comments the wlan0 wpa-conf to prevent distribute host mode<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/network/interfaces</span><br><span class="line"></span><br><span class="line">allow-hotplug wlan0</span><br><span class="line">iface wlan0 inet manual</span><br><span class="line">#    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf</span><br></pre></td></tr></table></figure></p>
+<p>restart raspberry<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service dhcpcd restart</span><br><span class="line">sudo reboot</span><br><span class="line">sudo init 0</span><br></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="Host-config"><a href="#Host-config" class="headerlink" title="Host config"></a>Host config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/hostapd/hostapd.conf</span><br><span class="line"></span><br><span class="line">interface=wlan0</span><br><span class="line">driver=nl80211</span><br><span class="line">ssid=pi3ap</span><br><span class="line">hw_mode=g</span><br><span class="line">channel=6</span><br><span class="line">wmm_enabled=1</span><br><span class="line">macaddr_acl=0</span><br><span class="line">auth_algs=1</span><br><span class="line">ignore_broadcast_ssid=0</span><br><span class="line"># WPA2 mode</span><br><span class="line">wpa=2</span><br><span class="line">wpa_passphrase=12345678</span><br><span class="line">wpa_key_mgmt=WPA-PSK</span><br><span class="line">rsn_pairwise=CCMP</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="Web-config"><a href="#Web-config" class="headerlink" title="Web config"></a>Web config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/sysctl.conf</span><br><span class="line"></span><br><span class="line"># remove comment</span><br><span class="line">net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
+<p>if not want to reboot raspberry<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c &quot;echo 1 &gt;/proc/sys/net/ipv4/ip_forward&quot;</span><br></pre></td></tr></table></figure></p>
+<p>For config <code>NAT</code>, config firewall first<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo iptables -t nat -APOSTROUTING -o eth0 -j MASQUERADE</span><br><span class="line">sudo iptables -A FORWARD -i eth0-o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT</span><br><span class="line">sudo iptables -A FORWARD -i wlan0-o eth0 -j ACCEPT</span><br></pre></td></tr></table></figure></p>
+<p>set rule autostart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c &quot;iptables-save&gt; /etc/iptables.ipv4.nat&quot;</span><br></pre></td></tr></table></figure></p>
+<p>run <code>NAT</code> by <code>DHCPCD</code> need a new config<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat</span><br><span class="line">iptables-restore &lt;/etc/iptables.ipv4.nat</span><br></pre></td></tr></table></figure></p>
+<p>restart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo service hostapdstart</span><br><span class="line">sudo service dnsmasq start</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/03/Tomcat-ClassLoader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/03/Tomcat-ClassLoader/" class="post-title-link" itemprop="url">Tomcat-ClassLoader</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-03 18:47:51" itemprop="dateCreated datePublished" datetime="2017-08-03T18:47:51+08:00">2017-08-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="JVM-class-loader"><a href="#JVM-class-loader" class="headerlink" title="JVM class loader"></a>JVM class loader</h2><p>JVM contain loaders:</p>
+<ol>
+<li>BootStrapClassLoader<br> jvm need foundation class</li>
+<li>ExtClassLoader<br> load <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>AppClassLoader<br> $CLASS_PATH$ and -classpath, and class not be contained above</li>
+<li>CustomClassLoader<br> self define class loader[<strong>progress</strong>]</li>
+</ol>
+<p>different classloader’s class <strong>can’t use in mix</strong>,<br>even if the class is <strong>same package name</strong> and <strong>same class name</strong>.</p>
+<p>JVM use delegation model</p>
+<ol>
+<li>pass request to father <strong>until the top</strong></li>
+<li>if top can’t load return to <strong>sub level</strong></li>
+<li>if the floor can’t load class throw <strong>ClassNotFoundException</strong></li>
+</ol>
+<p><a href="2017-05-16 Java-ClassLoader-2">java class loader</a></p>
+<p>So if a same path class be put in $CLASS_PATH$ directory, java will load<br>$CLASS_PATH$ class first.</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/java-classloader.svg" alt></p>
+<h2 id="Tomcat-class-loader"><a href="#Tomcat-class-loader" class="headerlink" title="Tomcat class loader"></a>Tomcat class loader</h2><p>Tomcat loader like this:</p>
+<ol>
+<li>Bootstrap<br> guilde class loader <code>$JAVA_HOME$/jre/lib/ext</code> jars</li>
+<li>System<br> tomcat container loading <code>$CATALINA_HOME$/bin</code> jars</li>
+<li>Common<br> app common use class <code>$CATALINA_HOME$/lib</code> jars</li>
+<li>WebApp<br> <code>WEB-INF/classes</code> and <code>WEB-INF/lib</code> developer’s workspace</li>
+</ol>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/tomcat-classloader.svg" alt></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>When developing throw an exception from java.io.ObjectStreamClass</p>
+<p><em>row:2034</em><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> ClassCastException(</span><br><span class="line">  <span class="string">"cannot assign instance of "</span> +</span><br><span class="line">  val.getClass().getName() + <span class="string">" to field "</span> +</span><br><span class="line">  f.getDeclaringClass().getName() + <span class="string">"."</span> +</span><br><span class="line">  f.getName() + <span class="string">" of type "</span> +</span><br><span class="line">  f.getType().getName() + <span class="string">" in instance of "</span> +</span><br><span class="line">  obj.getClass().getName());</span><br></pre></td></tr></table></figure></p>
+<p>From inspect the class type is a blank type only a path name.<br>Manually change the Class type suppress exception then jump breakpoint<br>the throw a exception like this:</p>
+<p><img src="/2017/08/03/Tomcat-ClassLoader/TIM-20170802190442.png" alt></p>
+<h3 id="Key-Point"><a href="#Key-Point" class="headerlink" title="Key Point"></a>Key Point</h3><p>The Class used to communication is for other application use,<br>but the class contain a property that is from acceptor’s offical workspace.</p>
+<p>Two application use a same tomcat and<br>put the dependent jar in <code>$CATALINA_HOME$/lib</code>.</p>
+<p>It lead to a problem, the acceptor’s application load object and it’s field<br>class in two different classloader. one is <code>WebAppClassLoader</code>, on is <code>bootstrap</code></p>
+<ol>
+<li>In object receive acceptor object use the common class jar[find in floor level]</li>
+<li>When object comes the property field’s class be found in workspace<br> but object’s classloader can’t see,<br> so as it’s sign target field class is just a shell.</li>
+<li>When suppress exception and jump breakpoint,<br> the business class violate the loader constraint.</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/07/23/Cryptology-in-transmission/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1852,381 +2251,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Throw-try-catch-finally-in-compiling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/06/Throw-try-catch-finally-in-compiling/" class="post-title-link" itemprop="url">Throw try catch finally in compiling</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-06 22:20:46" itemprop="dateCreated datePublished" datetime="2017-06-06T22:20:46+08:00">2017-06-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Throw-an-exception-positively"><a href="#Throw-an-exception-positively" class="headerlink" title="Throw an exception positively"></a>Throw an exception positively</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">noZero</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"no zero"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">void noZero(int) throws java.lang.Exception;</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: ifne          14</span><br><span class="line">       // class java/lang/Exception</span><br><span class="line">       4: new           #2</span><br><span class="line">       7: dup</span><br><span class="line">       // String no zero</span><br><span class="line">       8: ldc           #3</span><br><span class="line">       // Method java/lang/Exception.</span><br><span class="line">       //&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</span><br><span class="line">      10: invokespecial #4</span><br><span class="line">      13: athrow</span><br><span class="line">      14: return</span><br></pre></td></tr></table></figure></p>
-<ol>
-<li>if not equals pass the throw part</li>
-<li>if equals take constant string as param create a Exception.</li>
-<li>throw it to the caller[handler?].</li>
-</ol>
-<h3 id="Catch-an-exception"><a href="#Catch-an-exception" class="headerlink" title="Catch an exception"></a>Catch an exception</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">e</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">    noZero(<span class="number">0</span>);</span><br><span class="line">  &#125; <span class="keyword">catch</span>(ExcpA a) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(ExcpB b) &#123;&#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void e();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: goto          17</span><br><span class="line">       8: astore_1</span><br><span class="line">       9: goto          17</span><br><span class="line">      12: astore_1</span><br><span class="line">      13: goto          17</span><br><span class="line">      16: astore_1</span><br><span class="line">      17: return</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     8   Class HaveATry$ExcpA</span><br><span class="line">           0     5    12   Class HaveATry$ExcpB</span><br><span class="line">           0     5    16   Class java/lang/Exception</span><br></pre></td></tr></table></figure>
-<p><code>excption table</code><br>Every catcher have a chance to catch.</p>
-<p><code>astore_1</code><br>Beginning of handler for excpSentry() store thrown value in local var 1.</p>
-<h3 id="Finally"><a href="#Finally" class="headerlink" title="Finally"></a>Finally</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123; noZero(<span class="number">0</span>); &#125;</span><br><span class="line">	<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>javap</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">int f();</span><br><span class="line">    Code:</span><br><span class="line">       0: aload_0</span><br><span class="line">       1: iconst_0</span><br><span class="line">       // Method noZero:(I)V</span><br><span class="line">       2: invokevirtual #5</span><br><span class="line">       5: iconst_2</span><br><span class="line">       6: ireturn</span><br><span class="line">       7: astore_1</span><br><span class="line">       8: iconst_1</span><br><span class="line">       9: istore_2</span><br><span class="line">      10: iconst_2</span><br><span class="line">      11: ireturn</span><br><span class="line">      12: astore_3</span><br><span class="line">      13: iconst_2</span><br><span class="line">      14: ireturn</span><br><span class="line">    Exception table:</span><br><span class="line">       from    to  target type</span><br><span class="line">           0     5     7   Class java/lang/Exception</span><br><span class="line">           0     5    12   any</span><br><span class="line">           7    10    12   any</span><br></pre></td></tr></table></figure>
-<p>5/6 copy instructions of 13/14.<br>7th is the Exception handler.<br>11th can’t reach.<br>what’s the object of istore_2/ istore_3 ???</p>
-<p><code>istore_2</code> the catcher itself’s handler?<br><code>istore_3</code> the finaly’s handler comes from <code>istore_2</code> ?</p>
-<p><code>any</code> mean in range instructions finished then goto target.</p>
-<p>The final return handle by finally got <code>2</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/06/Oracle-query-table-column-comment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/06/Oracle-query-table-column-comment/" class="post-title-link" itemprop="url">Oracle query table column comment</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-06 18:09:39" itemprop="dateCreated datePublished" datetime="2017-06-06T18:09:39+08:00">2017-06-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Query-Table"><a href="#Query-Table" class="headerlink" title="Query Table"></a>Query Table</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- current user&apos;s table</span><br><span class="line">select table_name from user_tables;</span><br><span class="line"></span><br><span class="line">-- all user&apos;s table</span><br><span class="line">select table_name from all_tables;</span><br><span class="line"></span><br><span class="line">-- contain system&apos;s table</span><br><span class="line">select table_name from dba_tables;</span><br><span class="line">-- filter</span><br><span class="line">select table_name from dba_tables where owner=&apos;用户名&apos;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tables</strong></p>
-<h3 id="Query-Column"><a href="#Query-Column" class="headerlink" title="Query Column"></a>Query Column</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from all_tab_columns where Table_Name=&apos;xxx&apos;;</span><br><span class="line">select * from dba_tab_columns where Table_Name=&apos;xxx&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_columns</strong></p>
-<h3 id="Query-Comment"><a href="#Query-Comment" class="headerlink" title="Query Comment"></a>Query Comment</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">select * from user_tab_comments;</span><br><span class="line">select * from user_tab_comments t where t.COMMENTS like &apos;%shit%&apos; order by t.TABLE_NAME;</span><br><span class="line"></span><br><span class="line">select * from user_col_comments;</span><br><span class="line">select * from user_col_comments t where t.COLUMN_NAME=&apos;xxx&apos;;</span><br><span class="line"></span><br><span class="line">select * from user_tab_comments t1, user_col_comments t2 where t1.TABLE_NAME = t2.TABLE_NAME and t2.COMMENTS like &apos;%shit%&apos;;</span><br></pre></td></tr></table></figure>
-<p><strong>user_tab_comments</strong></p>
-<p><strong>user_col_comments</strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2268,7 +2297,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">269</span>
+                    <span class="site-state-item-count">271</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2446,7 +2475,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">53</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2487,6 +2520,10 @@
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clock" title="https://www.linchenguang.com/mnist-clock" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
                     <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
                   </li>
                 
@@ -2495,27 +2532,27 @@
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
                   </li>
                 
               </ul>

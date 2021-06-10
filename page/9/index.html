@@ -351,6 +351,357 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/12/mysql-5-7-json-type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/12/mysql-5-7-json-type/" class="post-title-link" itemprop="url">mysql 5.7 json type</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-12 19:21:15" itemprop="dateCreated datePublished" datetime="2019-08-12T19:21:15+08:00">2019-08-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-10-15 21:38:58" itemprop="dateModified" datetime="2019-10-15T21:38:58+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="none-structure-data-in-mysql"><a href="#none-structure-data-in-mysql" class="headerlink" title="none structure data in mysql"></a>none structure data in mysql</h2><p>in mysql 5.7 , support store data in json type.</p>
+<h3 id="create-table-with-virtual-column"><a href="#create-table-with-virtual-column" class="headerlink" title="create table with virtual column."></a>create table with virtual column.</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> players (  </span><br><span class="line">   <span class="keyword">id</span> <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> primary <span class="keyword">key</span> auto_increment,</span><br><span class="line">   player <span class="keyword">JSON</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">   <span class="comment">-- name virtual column</span></span><br><span class="line">   vname <span class="built_in">VARCHAR</span>(<span class="number">50</span>) <span class="keyword">GENERATED</span> <span class="keyword">ALWAYS</span> <span class="keyword">AS</span> (<span class="string">`player`</span> -&gt;&gt; <span class="string">'$.name'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> <span class="keyword">COLUMNS</span> <span class="keyword">FROM</span> <span class="string">`players`</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="prepare-save-progress"><a href="#prepare-save-progress" class="headerlink" title="prepare save progress"></a>prepare save progress</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- check whether store procedure open</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'log_bin_trust_function_creators'</span>;</span><br><span class="line"><span class="comment">-- open store procedure in mysql</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> log_bin_trust_function_creators=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">delimiter $$</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> insert_player(<span class="keyword">in</span> max_num <span class="built_in">int</span>(<span class="number">10</span>))</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line"> <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line"> <span class="keyword">declare</span> json_data <span class="built_in">varchar</span>(<span class="number">2000</span>) <span class="keyword">default</span> <span class="string">'1'</span>;</span><br><span class="line"> <span class="keyword">set</span> autocommit= <span class="number">0</span>;</span><br><span class="line"> repeat</span><br><span class="line"> <span class="keyword">set</span> i=i+<span class="number">1</span>;</span><br><span class="line"> <span class="keyword">set</span> json_data = <span class="keyword">concat</span>(<span class="keyword">concat</span>(<span class="string">'&#123;"name":"xxx-'</span>,i),<span class="string">'","age":34&#125;'</span>);</span><br><span class="line"> <span class="keyword">insert</span> <span class="keyword">into</span> players (<span class="keyword">id</span>,player) <span class="keyword">values</span>(<span class="literal">null</span>,json_data);</span><br><span class="line"> until i=max_num <span class="keyword">end</span> <span class="keyword">repeat</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"><span class="keyword">end</span> $$</span><br></pre></td></tr></table></figure>
+<h3 id="test-data-and-try"><a href="#test-data-and-try" class="headerlink" title="test data, and try"></a>test data, and try</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> insert_player(<span class="number">2000000</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="string">`name_idx`</span> <span class="keyword">ON</span> <span class="string">`players`</span>(<span class="string">`vname`</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">EXPLAIN</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`players`</span> <span class="keyword">WHERE</span> <span class="string">`vname`</span> = <span class="string">"xxx-990099"</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/bugs4j/article/details/79932538" target="_blank" rel="noopener">https://blog.csdn.net/bugs4j/article/details/79932538</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/08/10/Hello-rabbit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/10/Hello-rabbit/" class="post-title-link" itemprop="url">Hello rabbit</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-10 16:44:45 / Modified: 16:58:08" itemprop="dateCreated datePublished" datetime="2019-08-10T16:44:45+08:00">2019-08-10</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Install-rabbitmq-in-ubuntu-16-04-1"><a href="#Install-rabbitmq-in-ubuntu-16-04-1" class="headerlink" title="Install rabbitmq in ubuntu 16.04.1"></a>Install rabbitmq in ubuntu 16.04.1</h2><p>prepare Ubuntu Server 16.04.1 LTS 64 first</p>
+<p><code>apt-get install rabbitmq-server</code></p>
+<p>check service status<br><code>systemctl status rabbitmq-server</code></p>
+<p>daily command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service rabbitmq-server start</span><br><span class="line">service rabbitmq-server stop</span><br><span class="line">service rabbitmq-server restart</span><br></pre></td></tr></table></figure></p>
+<h2 id="manage-interface"><a href="#manage-interface" class="headerlink" title="manage interface"></a>manage interface</h2><p>enable management interface<br><code>rabbitmq-plugins enable rabbitmq_management</code></p>
+<p><code>127.0.0.1:15672</code> is the default address, <code>guest/guest</code> is the default account.</p>
+<h2 id="out-account"><a href="#out-account" class="headerlink" title="out account"></a>out account</h2><p>add user<br><code>rabbitmqctl add_user root yourpassword</code><br>add role<br><code>rabbitmqctl set_user_tags root administrator</code><br>add permission<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rabbitmqctl  set_permissions  -p  VHostPath  User  ConfP  WriteP  ReadP</span><br><span class="line">rabbitmqctl  set_permissions  -p  &quot;/&quot; root &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="enjoy-route"><a href="#enjoy-route" class="headerlink" title="enjoy route :)"></a>enjoy route :)</h2><p><code>exchange</code> bind <code>queue</code> route by <code>key</code> in same <code>arguments</code></p>
+<p><a href="https://blog.csdn.net/qq_22638399/article/details/81704372" target="_blank" rel="noopener">https://blog.csdn.net/qq_22638399/article/details/81704372</a><br><a href="https://www.cnblogs.com/feixiablog/articles/8317605.html" target="_blank" rel="noopener">https://www.cnblogs.com/feixiablog/articles/8317605.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/30/spring-cloud-feign-support-file-upload/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1989,396 +2340,11 @@ g(x,y)=0</script><h3 id="add-ejs"><a href="#add-ejs" class="headerlink" title="a
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/20/Throttling-pattern/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/Throttling-pattern/" class="post-title-link" itemprop="url">Throttling pattern</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-20 10:39:47 / Modified: 22:14:20" itemprop="dateCreated datePublished" datetime="2019-05-20T10:39:47+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2019/05/20/Throttling-pattern/throttling-pattern.png" alt="throttling-pattern.png"></p>
-<h2 id="Interface-Throttler"><a href="#Interface-Throttler" class="headerlink" title="Interface Throttler"></a>Interface Throttler</h2><p> <code>Throttler</code> defined a simple method used to call throttler implementaton.</p>
-<p><code>public void start()</code></p>
-<h2 id="Implementaton"><a href="#Implementaton" class="headerlink" title="Implementaton"></a>Implementaton</h2><p><code>ThrottleTimerImpl</code> implement <code>Throttler</code> used to cyclical reset service visit counter.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Timer(<span class="keyword">true</span>).schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        callsCount.reset();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, <span class="number">0</span>, throttlePeriod);</span><br></pre></td></tr></table></figure>
-<h2 id="Counter"><a href="#Counter" class="headerlink" title="Counter"></a>Counter</h2><p><code>CallsCount</code> use <code>ConcurrentHashMap</code> to implement multi thread save counter.</p>
-<p><code>private Map&lt;String, AtomicLong&gt; tenantCallsCount = new ConcurrentHashMap&lt;&gt;();</code></p>
-<h2 id="POJO"><a href="#POJO" class="headerlink" title="POJO"></a>POJO</h2><p><code>Tenant</code> represent a kind of business.<br>have properties <code>name</code> and <code>allowedCallsPerSecond</code></p>
-<h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><p><code>XXXService</code> call <code>Throttler</code> to start reset thread.<br><code>XXXService</code> call counter to check whether ths visit under threshold.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String tenantName = tenant.getName();</span><br><span class="line"><span class="keyword">long</span> count = callsCount.getCount(tenantName);</span><br><span class="line"><span class="keyword">if</span> (count &gt;= tenant.getAllowedCallsPerSecond()) &#123;</span><br><span class="line">    <span class="comment">// TODO throw excepton or return error code</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line">callsCount.incrementCount(tenantName);</span><br></pre></td></tr></table></figure>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Throttling is used to limit client visit frequency, so we need:<br>a <code>overall situation counter</code><br>a <code>daemonize thread resetor</code><br>a <code>business represent pojo</code><br>a <code>limited flow service</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/10/bayes-formula-comprehend/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/10/bayes-formula-comprehend/" class="post-title-link" itemprop="url">bayes' formula comprehend</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-05-10 17:20:04" itemprop="dateCreated datePublished" datetime="2019-05-10T17:20:04+08:00">2019-05-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Ideology"><a href="#Ideology" class="headerlink" title="Ideology"></a>Ideology</h2><p>Old day people study probability forcus on sample distribute. [fix parameters]<br>Bayes probability study forcus on parameters.[fix samples]</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prior distribution + sample info -&gt; Posterior distribution</span><br></pre></td></tr></table></figure>
-<p>the new experiment result will refresh people cognition on old things.<br>It’s fit people cognition law on nation explor method.</p>
-<h2 id="formula"><a href="#formula" class="headerlink" title="formula"></a>formula</h2><script type="math/tex; mode=display">
-P(B|A) = \frac{P(B)P(A|B)}{P(A)}</script><p>First:</p>
-<script type="math/tex; mode=display">
-P(AB) = P(B)P(A|B) = P(A)P(B|A)</script><p>the probability event A, event B happen at the <strong>same time</strong><br>, equals the probability <strong>A happen</strong> multiply with the probability<br><strong>B happen when A happen</strong>.</p>
-<p>So we have:</p>
-<script type="math/tex; mode=display">
-P(B|A) = \frac{P(B)P(A|B)}{P(A)}</script><p>=&gt;</p>
-<script type="math/tex; mode=display">
-P(law|phenomenon) = P(law)\frac{P(phenomenon|law)}{P(phenomenon)}</script><p>=&gt;</p>
-<p>a new knowledge = a priori knowledge * a new factor affect knowledge / a new factor</p>
-<p>We use sample experiment’s phenomenon verify rules.<br>Use <code>adjust factor</code> to adust parameters, make rules more accurate.</p>
-<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>We need to check a rule:<br>watermelon sugar content &gt; 10, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 25%, sugar content &gt; 10</li>
-<li>exp:good watermelon has probability 99%, sugar content &gt; 10</li>
-</ol>
-<p>so we have :</p>
-<script type="math/tex; mode=display">
-P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</script><script type="math/tex; mode=display">
-P(B|A) = 0.2 * ( \frac{0.99}{0.99 * 0.2 + 0.25 * 0.8} ) \approx 0.497</script><hr>
-<p>Now we found the threshold is not right, base on adjust factor, we change rule:<br>watermelon sugar content &gt; 15, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 15%, sugar content &gt; 15</li>
-<li>exp:good watermelon has probability 90%, sugar content &gt; 15</li>
-</ol>
-<p>so we have :</p>
-<script type="math/tex; mode=display">
-P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</script><script type="math/tex; mode=display">
-P(B|A) = 0.2 * ( \frac{0.9}{0.9 * 0.2 + 0.15 * 0.8} ) \approx 0.600</script><hr>
-<p>Keep on adjust:<br>watermelon sugar content &gt; 20, good probability is 70%</p>
-<ol>
-<li>prior condition is good watermelon probability is 20%</li>
-<li>exp:bad watermelon has probability 9%, sugar content &gt; 20</li>
-<li>exp:good watermelon has probability 85%, sugar content &gt; 20</li>
-</ol>
-<script type="math/tex; mode=display">
-P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p><a href="https://www.cnblogs.com/zhoulujun/p/8893393.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhoulujun/p/8893393.html</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2420,7 +2386,7 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">269</span>
+                    <span class="site-state-item-count">271</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2598,7 +2564,11 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
                     
                       
                     
-                    <span class="site-state-item-count">53</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2639,6 +2609,10 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clock" title="https://www.linchenguang.com/mnist-clock" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
                     <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
                   </li>
                 
@@ -2647,27 +2621,27 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
                   </li>
                 
               </ul>
@@ -3181,11 +3155,11 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
       
     
       
+    
+      
+    
+      
         
-      
-    
-      
-    
       
     
       

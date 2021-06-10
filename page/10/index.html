@@ -351,6 +351,391 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/20/Throttling-pattern/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/20/Throttling-pattern/" class="post-title-link" itemprop="url">Throttling pattern</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-20 10:39:47 / Modified: 22:14:20" itemprop="dateCreated datePublished" datetime="2019-05-20T10:39:47+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2019/05/20/Throttling-pattern/throttling-pattern.png" alt="throttling-pattern.png"></p>
+<h2 id="Interface-Throttler"><a href="#Interface-Throttler" class="headerlink" title="Interface Throttler"></a>Interface Throttler</h2><p> <code>Throttler</code> defined a simple method used to call throttler implementaton.</p>
+<p><code>public void start()</code></p>
+<h2 id="Implementaton"><a href="#Implementaton" class="headerlink" title="Implementaton"></a>Implementaton</h2><p><code>ThrottleTimerImpl</code> implement <code>Throttler</code> used to cyclical reset service visit counter.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Timer(<span class="keyword">true</span>).schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        callsCount.reset();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;, <span class="number">0</span>, throttlePeriod);</span><br></pre></td></tr></table></figure>
+<h2 id="Counter"><a href="#Counter" class="headerlink" title="Counter"></a>Counter</h2><p><code>CallsCount</code> use <code>ConcurrentHashMap</code> to implement multi thread save counter.</p>
+<p><code>private Map&lt;String, AtomicLong&gt; tenantCallsCount = new ConcurrentHashMap&lt;&gt;();</code></p>
+<h2 id="POJO"><a href="#POJO" class="headerlink" title="POJO"></a>POJO</h2><p><code>Tenant</code> represent a kind of business.<br>have properties <code>name</code> and <code>allowedCallsPerSecond</code></p>
+<h2 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h2><p><code>XXXService</code> call <code>Throttler</code> to start reset thread.<br><code>XXXService</code> call counter to check whether ths visit under threshold.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String tenantName = tenant.getName();</span><br><span class="line"><span class="keyword">long</span> count = callsCount.getCount(tenantName);</span><br><span class="line"><span class="keyword">if</span> (count &gt;= tenant.getAllowedCallsPerSecond()) &#123;</span><br><span class="line">    <span class="comment">// TODO throw excepton or return error code</span></span><br><span class="line">    <span class="keyword">return</span> ;</span><br><span class="line">&#125;</span><br><span class="line">callsCount.incrementCount(tenantName);</span><br></pre></td></tr></table></figure>
+<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Throttling is used to limit client visit frequency, so we need:<br>a <code>overall situation counter</code><br>a <code>daemonize thread resetor</code><br>a <code>business represent pojo</code><br>a <code>limited flow service</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/10/bayes-formula-comprehend/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/10/bayes-formula-comprehend/" class="post-title-link" itemprop="url">bayes' formula comprehend</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-05-10 17:20:04" itemprop="dateCreated datePublished" datetime="2019-05-10T17:20:04+08:00">2019-05-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Ideology"><a href="#Ideology" class="headerlink" title="Ideology"></a>Ideology</h2><p>Old day people study probability forcus on sample distribute. [fix parameters]<br>Bayes probability study forcus on parameters.[fix samples]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prior distribution + sample info -&gt; Posterior distribution</span><br></pre></td></tr></table></figure>
+<p>the new experiment result will refresh people cognition on old things.<br>It’s fit people cognition law on nation explor method.</p>
+<h2 id="formula"><a href="#formula" class="headerlink" title="formula"></a>formula</h2><script type="math/tex; mode=display">
+P(B|A) = \frac{P(B)P(A|B)}{P(A)}</script><p>First:</p>
+<script type="math/tex; mode=display">
+P(AB) = P(B)P(A|B) = P(A)P(B|A)</script><p>the probability event A, event B happen at the <strong>same time</strong><br>, equals the probability <strong>A happen</strong> multiply with the probability<br><strong>B happen when A happen</strong>.</p>
+<p>So we have:</p>
+<script type="math/tex; mode=display">
+P(B|A) = \frac{P(B)P(A|B)}{P(A)}</script><p>=&gt;</p>
+<script type="math/tex; mode=display">
+P(law|phenomenon) = P(law)\frac{P(phenomenon|law)}{P(phenomenon)}</script><p>=&gt;</p>
+<p>a new knowledge = a priori knowledge * a new factor affect knowledge / a new factor</p>
+<p>We use sample experiment’s phenomenon verify rules.<br>Use <code>adjust factor</code> to adust parameters, make rules more accurate.</p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p>We need to check a rule:<br>watermelon sugar content &gt; 10, good probability is 70%</p>
+<ol>
+<li>prior condition is good watermelon probability is 20%</li>
+<li>exp:bad watermelon has probability 25%, sugar content &gt; 10</li>
+<li>exp:good watermelon has probability 99%, sugar content &gt; 10</li>
+</ol>
+<p>so we have :</p>
+<script type="math/tex; mode=display">
+P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</script><script type="math/tex; mode=display">
+P(B|A) = 0.2 * ( \frac{0.99}{0.99 * 0.2 + 0.25 * 0.8} ) \approx 0.497</script><hr>
+<p>Now we found the threshold is not right, base on adjust factor, we change rule:<br>watermelon sugar content &gt; 15, good probability is 70%</p>
+<ol>
+<li>prior condition is good watermelon probability is 20%</li>
+<li>exp:bad watermelon has probability 15%, sugar content &gt; 15</li>
+<li>exp:good watermelon has probability 90%, sugar content &gt; 15</li>
+</ol>
+<p>so we have :</p>
+<script type="math/tex; mode=display">
+P(B|A) = P(B) \frac{P(A|B)}{P(A)} = P(B) \frac{P(A|B)}{P(A|B)P(B) + P(A|\overline{B})P(\overline{B})}</script><script type="math/tex; mode=display">
+P(B|A) = 0.2 * ( \frac{0.9}{0.9 * 0.2 + 0.15 * 0.8} ) \approx 0.600</script><hr>
+<p>Keep on adjust:<br>watermelon sugar content &gt; 20, good probability is 70%</p>
+<ol>
+<li>prior condition is good watermelon probability is 20%</li>
+<li>exp:bad watermelon has probability 9%, sugar content &gt; 20</li>
+<li>exp:good watermelon has probability 85%, sugar content &gt; 20</li>
+</ol>
+<script type="math/tex; mode=display">
+P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p><a href="https://www.cnblogs.com/zhoulujun/p/8893393.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhoulujun/p/8893393.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/05/07/hide-csdn-ad-in-chrome/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1838,410 +2223,11 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/11/Regex-in-repository/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/02/11/Regex-in-repository/" class="post-title-link" itemprop="url">Regex in repository</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-02-11 10:40:32" itemprop="dateCreated datePublished" datetime="2019-02-11T10:40:32+08:00">2019-02-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-03-09 13:33:26" itemprop="dateModified" datetime="2019-03-09T13:33:26+08:00">2019-03-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="URL匹配后缀部分可能会有特殊字符无法匹配"><a href="#URL匹配后缀部分可能会有特殊字符无法匹配" class="headerlink" title="URL匹配后缀部分可能会有特殊字符无法匹配"></a>URL匹配后缀部分可能会有特殊字符无法匹配</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;amp;:/~\+#]*[\w\-\@?^=%&amp;amp;/~\+#])?</span><br></pre></td></tr></table></figure>
-<h2 id="URL更简洁的匹配，后缀部分匹配宽泛不精细"><a href="#URL更简洁的匹配，后缀部分匹配宽泛不精细" class="headerlink" title="URL更简洁的匹配，后缀部分匹配宽泛不精细"></a>URL更简洁的匹配，后缀部分匹配宽泛不精细</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\w\-_/:%]+(\.[\w\-_]+)+([\u0021-\u007e]*)?</span><br></pre></td></tr></table></figure>
-<h2 id="找到前是linux换行，后不是’320500’的光标"><a href="#找到前是linux换行，后不是’320500’的光标" class="headerlink" title="找到前是linux换行，后不是’320500’的光标"></a>找到前是linux换行，后不是’320500’的光标</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\n(?!320500)</span><br></pre></td></tr></table></figure>
-<h2 id="找到后不是’create’的windows换行。即-r-n-create"><a href="#找到后不是’create’的windows换行。即-r-n-create" class="headerlink" title="找到后不是’create’的windows换行。即\r\n(?!create)"></a>找到后不是’create’的windows换行。即\r\n(?!create)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(?!(\r\ncreate))\r\n</span><br></pre></td></tr></table></figure>
-<h2 id="找到后不是’地址行’的换行，清除，清除前后即URL"><a href="#找到后不是’地址行’的换行，清除，清除前后即URL" class="headerlink" title="找到后不是’地址行’的换行，清除，清除前后即URL"></a>找到后不是’地址行’的换行，清除，清除前后即URL</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(?!(\n.*java\.html))\n.*</span><br><span class="line">(?&lt;=(\.html))&quot;.*</span><br><span class="line">.*(?&lt;=&quot;)</span><br></pre></td></tr></table></figure>
-<h2 id="平衡组匹配？？？"><a href="#平衡组匹配？？？" class="headerlink" title="平衡组匹配？？？"></a>平衡组匹配？？？</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(?&apos;Open&apos;\()[2-9][0-9]&#123;2&#125;(?&apos;-Open&apos;\))\s?[0-9]&#123;3&#125;-[0-9]&#123;4&#125;(?(Open)(?!))|[2-9][0-9]&#123;2&#125;(-|\.)[0-9]&#123;3&#125;\1[0-9]&#123;4&#125;</span><br><span class="line">&lt;div[^&gt;]*&gt;[^&lt;&gt;]*(((?&apos;Open&apos;&lt;div[^&gt;]*&gt;)[^&lt;&gt;]*)+((?&apos;-Open&apos;&lt;/div&gt;)[^&lt;&gt;]*)+)*(?(Open)(?!))&lt;/div&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="格式化单行xml格式报文"><a href="#格式化单行xml格式报文" class="headerlink" title="格式化单行xml格式报文"></a>格式化单行xml格式报文</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(?&lt;=&gt;)(?=&lt;(?!\/))</span><br></pre></td></tr></table></figure>
-<h2 id="找非词组空格"><a href="#找非词组空格" class="headerlink" title="找非词组空格"></a>找非词组空格</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(?&lt;![a-z,A-Z])|(?![a-z,A-Z])</span><br></pre></td></tr></table></figure>
-<h2 id="找到后面是空行的换行符"><a href="#找到后面是空行的换行符" class="headerlink" title="找到后面是空行的换行符"></a>找到后面是空行的换行符</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\r\n(?&lt;=^$)</span><br></pre></td></tr></table></figure>
-<h2 id="匹配中文字符"><a href="#匹配中文字符" class="headerlink" title="匹配中文字符"></a>匹配中文字符</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\u4e00-\u9fa5]</span><br></pre></td></tr></table></figure>
-<h2 id="匹配双字节字符-包括汉字在内"><a href="#匹配双字节字符-包括汉字在内" class="headerlink" title="匹配双字节字符(包括汉字在内)"></a>匹配双字节字符(包括汉字在内)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[^\x00-\xff]</span><br></pre></td></tr></table></figure>
-<h2 id="匹配空白行"><a href="#匹配空白行" class="headerlink" title="匹配空白行"></a>匹配空白行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\n\s*\r</span><br></pre></td></tr></table></figure>
-<h2 id="匹配Email地址"><a href="#匹配Email地址" class="headerlink" title="匹配Email地址"></a>匹配Email地址</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[\w!#$%&amp;&apos;*+/=?^_`&#123;|&#125;~-]+(?:\.[\w!#$%&amp;&apos;*+/=?^_`&#123;|&#125;~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?</span><br></pre></td></tr></table></figure>
-<h2 id="匹配网址URL"><a href="#匹配网址URL" class="headerlink" title="匹配网址URL"></a>匹配网址URL</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[a-zA-z]+://[^\s]*</span><br></pre></td></tr></table></figure>
-<h2 id="匹配国内电话号码"><a href="#匹配国内电话号码" class="headerlink" title="匹配国内电话号码"></a>匹配国内电话号码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\d&#123;3&#125;-\d&#123;8&#125;|\d&#123;4&#125;-\&#123;7,8&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="匹配QQ号"><a href="#匹配QQ号" class="headerlink" title="匹配QQ号"></a>匹配QQ号</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1-9][0-9]&#123;4,&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="匹配中国邮政编码"><a href="#匹配中国邮政编码" class="headerlink" title="匹配中国邮政编码"></a>匹配中国邮政编码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[1-9]\d&#123;5&#125;(?!\d)</span><br></pre></td></tr></table></figure>
-<h2 id="匹配18位身份证号"><a href="#匹配18位身份证号" class="headerlink" title="匹配18位身份证号"></a>匹配18位身份证号</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^(\d&#123;6&#125;)(\d&#123;4&#125;)(\d&#123;2&#125;)(\d&#123;2&#125;)(\d&#123;3&#125;)([0-9]|X)$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配-年-月-日-格式日期"><a href="#匹配-年-月-日-格式日期" class="headerlink" title="匹配(年-月-日)格式日期"></a>匹配(年-月-日)格式日期</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">([0-9]&#123;3&#125;[1-9]|[0-9]&#123;2&#125;[1-9][0-9]&#123;1&#125;|[0-9]&#123;1&#125;[1-9][0-9]&#123;2&#125;|[1-9][0-9]&#123;3&#125;)-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8])))</span><br></pre></td></tr></table></figure>
-<h2 id="匹配正整数"><a href="#匹配正整数" class="headerlink" title="匹配正整数"></a>匹配正整数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^[1-9]\d*$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配负整数"><a href="#匹配负整数" class="headerlink" title="匹配负整数"></a>匹配负整数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^-[1-9]\d*$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配整数"><a href="#匹配整数" class="headerlink" title="匹配整数"></a>匹配整数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^-?[1-9]\d*$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配非负整数（正整数-0）"><a href="#匹配非负整数（正整数-0）" class="headerlink" title="匹配非负整数（正整数 + 0）"></a>匹配非负整数（正整数 + 0）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^[1-9]\d*|0$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配非正整数（负整数-0）"><a href="#匹配非正整数（负整数-0）" class="headerlink" title="匹配非正整数（负整数 + 0）"></a>匹配非正整数（负整数 + 0）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^-[1-9]\d*|0$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配正浮点数"><a href="#匹配正浮点数" class="headerlink" title="匹配正浮点数"></a>匹配正浮点数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$</span><br></pre></td></tr></table></figure>
-<h2 id="匹配负浮点数"><a href="#匹配负浮点数" class="headerlink" title="匹配负浮点数"></a>匹配负浮点数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">^-[1-9]\d*\.\d*|-0\.\d*[1-9]\d*$</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/01/26/wireless-raspberry-audio/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/01/26/wireless-raspberry-audio/" class="post-title-link" itemprop="url">wireless raspberry audio</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-01-26 19:38:45" itemprop="dateCreated datePublished" datetime="2019-01-26T19:38:45+08:00">2019-01-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="https://github.com/BaReinhard/Super-Simple-Raspberry-Pi-Audio-Receiver-Install/blob/master/img/SSRPARI_1080_668.png?raw=true" alt></p>
-<h1 id="System"><a href="#System" class="headerlink" title="System"></a>System</h1><p><a href="https://www.raspberrypi.org/downloads/" target="_blank" rel="noopener">https://www.raspberrypi.org/downloads/</a><br>Install <code>Raspbian Stretch</code></p>
-<ul>
-<li>Version:November 2018</li>
-<li>Release date:2018-11-13</li>
-<li>Kernel version:4.14</li>
-</ul>
-<h2 id="Origin-shift"><a href="#Origin-shift" class="headerlink" title="Origin shift"></a>Origin shift</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/apt/sources.list</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br><span class="line">deb-src http://mirrors.tuna.tsinghua.edu.cn/raspbian/raspbian/ stretch main contrib non-free rpi</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/apt/sources.list.d/raspi.list</span><br><span class="line">deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ stretch main ui</span><br><span class="line">deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ stretch main ui</span><br></pre></td></tr></table></figure>
-<p>sudo apt-get update</p>
-<h2 id="Config-wifi-amp-ssh"><a href="#Config-wifi-amp-ssh" class="headerlink" title="Config wifi &amp; ssh"></a>Config wifi &amp; ssh</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</span><br><span class="line">network=&#123;</span><br><span class="line">    ssid=&quot;SSID&quot;</span><br><span class="line">    key_mgmt=WPA-PSK</span><br><span class="line">    psk=&quot;PASSWD&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ifconfig wlan0</span><br><span class="line">sudo ifdown wlan0</span><br><span class="line">sudo ifup wlan0</span><br><span class="line"></span><br><span class="line"># or</span><br><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
-<h3 id="open-ssh-service"><a href="#open-ssh-service" class="headerlink" title="open ssh service"></a>open ssh service</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
-<p>open ssh in configuration</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Socket error Event: 32 Error: 10053</span><br></pre></td></tr></table></figure>
-<p>if terminal throw exception then check service<br><code>sudo sshd -t</code></p>
-<p>key not exist:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key</span><br></pre></td></tr></table></figure></p>
-<p>config rsa_key in <code>/etc/ssh</code></p>
-<p>permission not allow:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod 600 /etc/ssh/*</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service ssh restart</span><br></pre></td></tr></table></figure>
-<p>add command to <code>/etc/rc.load</code> before <code>exit 0</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/ssh start</span><br></pre></td></tr></table></figure></p>
-<h2 id="Install-A2DP"><a href="#Install-A2DP" class="headerlink" title="Install A2DP"></a>Install A2DP</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install</span><br><span class="line">cd super-simple-raspberry-pi-audio-receiver-install</span><br><span class="line">git checkout stretch-fix</span><br><span class="line">sudo ./install.sh</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># install home version</span><br><span class="line">2. Install the Raspberry Pi Audio Receiver Home Installation</span><br><span class="line"></span><br><span class="line"># default name</span><br><span class="line">Do you want all the Devices to use the same name? (y/n) : Choose y</span><br><span class="line"></span><br><span class="line"># default passwd</span><br><span class="line">Device WiFi Password: Choose Password</span><br><span class="line"></span><br><span class="line"># no sound card</span><br><span class="line">0. No Sound Card</span><br></pre></td></tr></table></figure>
-<h2 id="Install-create-ap"><a href="#Install-create-ap" class="headerlink" title="Install create_ap"></a>Install create_ap</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/oblique/create_ap.git</span><br><span class="line">cd create_ap</span><br><span class="line">sudo make install</span><br><span class="line">sudo apt-get install util-linux procps hostapd iproute2 iw haveged dnsmasq</span><br></pre></td></tr></table></figure>
-<p>add command to <code>/etc/rc.load</code> before <code>exit 0</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup sudo create_ap -n wlan0 raspberry raspberry --no-virl &gt; /dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure></p>
-<p><img src="/2019/01/26/wireless-raspberry-audio/raspberry_ios_audio.png" alt="raspberry_ios_audio.png"></p>
-<p>here i use AP without Internet sharing.<br>if network environment is good, raspberry have internet then add <code>eth0</code> to command.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create_ap -m bridge wlan0 eth0 MyAccessPoint MyPassPhrase</span><br></pre></td></tr></table></figure></p>
-<p>enjoy IOS airplay :)</p>
-<p><a href="http://shumeipai.nxez.com/2018/12/28/install-a2dp-to-turn-the-raspberry-pi-into-a-bluetooth-speaker.html" target="_blank" rel="noopener">http://shumeipai.nxez.com/2018/12/28/install-a2dp-to-turn-the-raspberry-pi-into-a-bluetooth-speaker.html</a><br><a href="https://blog.csdn.net/huayucong/article/details/51376506" target="_blank" rel="noopener">https://blog.csdn.net/huayucong/article/details/51376506</a><br><a href="https://blog.csdn.net/newtonsm/article/details/78859152" target="_blank" rel="noopener">https://blog.csdn.net/newtonsm/article/details/78859152</a><br><a href="https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install" target="_blank" rel="noopener">https://github.com/bareinhard/super-simple-raspberry-pi-audio-receiver-install</a><br><a href="https://github.com/oblique/create_ap" target="_blank" rel="noopener">https://github.com/oblique/create_ap</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2283,7 +2269,7 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">269</span>
+                    <span class="site-state-item-count">271</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2461,7 +2447,11 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
                     
                       
                     
-                    <span class="site-state-item-count">53</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">55</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2502,6 +2492,10 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
               <ul class="links-of-blogroll-list">
                 
                   <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clock" title="https://www.linchenguang.com/mnist-clock" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
                     <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
                   </li>
                 
@@ -2510,27 +2504,27 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/cron" title="http://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/dos" title="http://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/keyboard" title="http://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/regex" title="http://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/sql" title="http://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
                   </li>
                 
                   <li class="links-of-blogroll-item">
-                    <a href="http://www.linchenguang.com/toy" title="http://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
                   </li>
                 
               </ul>
@@ -3042,9 +3036,9 @@ P(B_{i}|A) = \frac{P(B_{i})P(A|B_{i})}{\displaystyle\sum_{j=1}^jP(B_{j})P(A|B_{j
       
     
       
-    
-      
         
+      
+    
       
     
       
