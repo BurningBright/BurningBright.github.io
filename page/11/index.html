@@ -351,6 +351,185 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/11/Nginx-https-in-aws/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/02/11/Nginx-https-in-aws/" class="post-title-link" itemprop="url">Nginx https in aws</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-02-11 15:30:21" itemprop="dateCreated datePublished" datetime="2019-02-11T15:30:21+08:00">2019-02-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-03-09 13:33:26" itemprop="dateModified" datetime="2019-03-09T13:33:26+08:00">2019-03-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="install-nginx-in-aws-linux"><a href="#install-nginx-in-aws-linux" class="headerlink" title="install nginx in aws linux"></a>install nginx in aws linux</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo amazon-linux-extras install nginx1.12</span><br></pre></td></tr></table></figure>
+<h2 id="apply-certificate"><a href="#apply-certificate" class="headerlink" title="apply certificate"></a>apply certificate</h2><p>apply in wanwang.aliyun.com<br>wait a few minutes, download nginx version certificate package</p>
+<h2 id="config-nginx"><a href="#config-nginx" class="headerlink" title="config nginx"></a>config nginx</h2><p>in <code>/etc/nginx/nginx.conf</code><br>add server configuration</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443;</span><br><span class="line">    server_name abc.com; // your domain</span><br><span class="line">    ssl on;</span><br><span class="line">    root  /home/ec2-user/www/abc.com; // page file</span><br><span class="line">    index index.html index.htm;      // index</span><br><span class="line">    ssl_certificate     cert/214292799730473.pem; // certificate name</span><br><span class="line">    ssl_certificate_key cert/214292799730473.key; // certificate name</span><br><span class="line">    ssl_session_timeout 5m;</span><br><span class="line">    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;</span><br><span class="line">    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line">    location / &#123;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name bjubi.com; // your domain</span><br><span class="line">    rewrite ^(.*)$ https://$host$1 permanent; // turn http to https</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="start-nginx"><a href="#start-nginx" class="headerlink" title="start nginx"></a>start nginx</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// check config file</span><br><span class="line">sudo /usr/sbin/nginx -t</span><br><span class="line"></span><br><span class="line">// reload nginx</span><br><span class="line">sudo /usr/sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
+<p>some useful command<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// start in manual</span><br><span class="line">sudo /usr/sbin/nginx -c /etc/nginx/nginx.conf</span><br><span class="line">sudo service nginx stop    // stop</span><br><span class="line">sudo service nginx start   // start</span><br><span class="line">sudo service nginx restart // restart</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://www.cnblogs.com/tianhei/p/7726505.html" target="_blank" rel="noopener">https://www.cnblogs.com/tianhei/p/7726505.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/02/11/Regex-in-repository/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2179,195 +2358,6 @@ a-\frac{1}{a}=1+\frac{1}{a}
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/10/05/RedisTemplate-pipline/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/10/05/RedisTemplate-pipline/" class="post-title-link" itemprop="url">RedisTemplate pipline</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-10-05 14:36:35" itemprop="dateCreated datePublished" datetime="2018-10-05T14:36:35+08:00">2018-10-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>when a job need to update alot redis k/v<br>use normal command loop is low efficiency plan<br>that cause tcp connection time-wait exceed several ten thousand.<br>so we use redis pipline operation merge command connection.</p>
-</blockquote>
-<h2 id="Use-RedisTemplate-read-obj"><a href="#Use-RedisTemplate-read-obj" class="headerlink" title="Use RedisTemplate read obj"></a>Use <code>RedisTemplate</code> read obj</h2><p>Set <code>User</code> class deserializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">redisTemplate.setValueSerializer(userSerializer);</span><br></pre></td></tr></table></figure></p>
-<p>pip execute multi get command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; result = redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&lt;User&gt;&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Object obj: keys)</span><br><span class="line">            connection.get((RedisConstant.USER + obj).getBytes());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, redisTemplate.getValueSerializer());</span><br></pre></td></tr></table></figure></p>
-<h2 id="Use-RedisTemplate-write-obj"><a href="#Use-RedisTemplate-write-obj" class="headerlink" title="Use RedisTemplate write obj"></a>Use <code>RedisTemplate</code> write obj</h2><p>Same as above use <code>User</code> class serializer first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Jackson2JsonRedisSerializer userSerializer = <span class="keyword">new</span> Jackson2JsonRedisSerializer(User<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">userSerializer.serialize(user);</span><br></pre></td></tr></table></figure></p>
-<p>pip execute multi set command<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">redisTemplate.executePipelined(<span class="keyword">new</span> RedisCallback&lt;List&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List <span class="title">doInRedis</span><span class="params">(RedisConnection connection)</span> <span class="keyword">throws</span> DataAccessException </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;<span class="keyword">byte</span>[], <span class="keyword">byte</span>[]&gt; entry : map.entrySet())</span><br><span class="line">            connection.set(entry.getKey(), entry.getValue());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<h2 id="Caution"><a href="#Caution" class="headerlink" title="Caution"></a>Caution</h2><ol>
-<li><code>connection</code> return is byte array, it need deserializer method.</li>
-<li><p><code>doInRedis</code> return must be null, the return value has been take over by <code>executePipelined</code>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (result != <span class="keyword">null</span>)</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> InvalidDataAccessApiUsageException(</span><br><span class="line">    <span class="string">"Callback cannot return a non-null value as it gets overwritten by the pipeline"</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>don’t call <code>connection.closePipeline()</code>, it will return result and no deserialize.</p>
-</li>
-<li>Deserialize need deserializer object. like these<br><img src="/2018/10/05/RedisTemplate-pipline/QQ20181006095747.png" alt="QQ20181006095747.png"></li>
-</ol>
-<p><a href="https://blog.csdn.net/xiaoliu598906167/article/details/82218525" target="_blank" rel="noopener">https://blog.csdn.net/xiaoliu598906167/article/details/82218525</a><br><a href="https://blog.csdn.net/huilixiang/article/details/19484921" target="_blank" rel="noopener">https://blog.csdn.net/huilixiang/article/details/19484921</a><br><a href="https://blog.csdn.net/xiaolyuh123/article/details/78682200" target="_blank" rel="noopener">https://blog.csdn.net/xiaolyuh123/article/details/78682200</a><br><a href="https://my.oschina.net/yuyidi/blog/499951" target="_blank" rel="noopener">https://my.oschina.net/yuyidi/blog/499951</a><br><a href="https://www.cnblogs.com/EasonJim/p/7803067.html#autoid-2-6-0" target="_blank" rel="noopener">https://www.cnblogs.com/EasonJim/p/7803067.html#autoid-2-6-0</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2414,7 +2404,7 @@ a-\frac{1}{a}=1+\frac{1}{a}
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">271</span>
+                    <span class="site-state-item-count">272</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2469,7 +2459,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
                     
                       
                     
-                    <span class="site-state-item-count">19</span>
+                      
+                    
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -3183,9 +3175,9 @@ a-\frac{1}{a}=1+\frac{1}{a}
       
     
       
-        
-      
     
+      
+        
       
     
       

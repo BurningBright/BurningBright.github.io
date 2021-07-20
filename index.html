@@ -351,6 +351,242 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/07/16/Try-UDP-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2021/07/16/Try-UDP-analysis/" class="post-title-link" itemprop="url">尝试分析UDP</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2021-07-16 18:34:32" itemprop="dateCreated datePublished" datetime="2021-07-16T18:34:32+08:00">2021-07-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2021-07-20 20:43:19" itemprop="dateModified" datetime="2021-07-20T20:43:19+08:00">2021-07-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Host"><a href="#Host" class="headerlink" title="Host"></a>Host</h2><p>准备环境<br>Server<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:36  </span><br><span class="line">          inet addr:172.17.0.54  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:36/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:3733 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:1723 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1216408 (1.2 MB)  TX bytes:678036 (678.0 KB)</span><br></pre></td></tr></table></figure></p>
+<p>Client<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:18  </span><br><span class="line">          inet addr:172.17.0.24  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:18/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:1717 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:904 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1021151 (1.0 MB)  TX bytes:301129 (301.1 KB)</span><br></pre></td></tr></table></figure></p>
+<h2 id="Program"><a href="#Program" class="headerlink" title="Program"></a>Program</h2><p>在各自主机上启动进程<br>Server<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">ip_port = (<span class="string">'0.0.0.0'</span>, <span class="number">9999</span>)</span><br><span class="line">server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  <span class="comment"># udp</span></span><br><span class="line">server.bind(ip_port)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data,client_addr = server.recvfrom(BUFSIZE)</span><br><span class="line">    print(data)</span><br><span class="line">    sys.stdout.flush()</span><br><span class="line">server.close()</span><br></pre></td></tr></table></figure></p>
+<p>Client<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    msg = raw_input(<span class="string">"&gt;&gt; "</span>).strip()</span><br><span class="line">    ip_port = (<span class="string">'172.17.0.54'</span>, <span class="number">9999</span>)</span><br><span class="line">    client.sendto(msg.encode(<span class="string">'utf-8'</span>),ip_port)</span><br><span class="line">client.close()</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2021/07/16/Try-UDP-analysis/20210718195900.jpg" alt="20210718195900.jpg"></p>
+<hr>
+<h2 id="TCPDUMP"><a href="#TCPDUMP" class="headerlink" title="TCPDUMP"></a>TCPDUMP</h2><h3 id="Linux-cooked-mode"><a href="#Linux-cooked-mode" class="headerlink" title="Linux cooked mode"></a>Linux cooked mode</h3><p>首先尝试默认的<code>linux处理模式</code></p>
+<p><code>tcpdump udp -i any -w ./udp.cap</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00000000: d4c3 b2a1 0200 0400 0000 0000 0000 0000  ................</span><br><span class="line">00000010: 0000 0400 7100 0000 7315 f460 e14b 0300  ....q...s..`.K..</span><br><span class="line">00000020: 3100 0000 3100 0000 0000 0001 0006 0242  1...1..........B</span><br><span class="line">00000030: ac11 0018 0000 0800 4500 0021 783d 4000  ........E..!x=@.</span><br><span class="line">00000040: 4011 6a1e ac11 0018 ac11 0036 9f66 270f  @.j........6.f&apos;.</span><br><span class="line">00000050: 000d 9d1b 6865 6c6c 6f                   ..X.hello</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>0xd4c3 b2a1</code> 首四字节被称为<code>幻数</code>，它的主机序列用于传输识别</li>
+<li><code>0x0200 0400</code> 两字节常数 + 两字节常数，代表主版本号 + 次版本号</li>
+<li><code>0x0000 0000</code> 四字节常数，全为0，表示时区</li>
+<li><code>0x0000 0000</code> 四字节常数，全为0，表示时间戳精度</li>
+<li><code>0x0000 0400</code> 四字节常数，主机字节序为<code>0x04000000</code>，表示每个包抓包大小</li>
+<li><code>0x7100 0000</code> 四字节常数，主机字节序为<code>0x00000071</code>，表示数据链路层类型<code>DLT_LINUX_SLL</code></li>
+<li><code>0x7315 f460</code> 四字节变量，代表秒时间戳</li>
+<li><code>0xe14b 0300</code> 四字节变量，代表微秒部分时间戳</li>
+<li><code>0x3100 0000</code> 四字节变量，抓包数据长度</li>
+<li><code>0x3100 0000</code> 四字节变量，数据包数据的未截断长度</li>
+<li><code>0x0000</code> 两字节变量，报文来源，<code>来自他人</code></li>
+<li><code>0x0001</code> 两字节变量，寻址类型，<code>Novell 802.3</code></li>
+<li><code>0x0006</code> 两字节变量，数据链路层地址长度，<code>6 Octets</code></li>
+<li><code>0x0242 ac11 0018</code> 六字节变量，发送方mac地址<br>在默认模式里，没有记录下服务端的mac地址<br>记录文件里，也没有记录下<code>数据链路层</code>头尾的数据</li>
+<li><code>0x0000</code> 地址少于8个字节，填充补足8字节</li>
+<li><code>0x0800</code> 协议类型</li>
+</ul>
+<h3 id="指定数据链路类型"><a href="#指定数据链路类型" class="headerlink" title="指定数据链路类型"></a>指定数据链路类型</h3><p>列出本机支持的类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ tcpdump -L</span><br><span class="line">Data link types for ens3 (use option -y to set):</span><br><span class="line">  EN10MB (Ethernet)</span><br><span class="line">  DOCSIS (DOCSIS) (printing not supported)</span><br></pre></td></tr></table></figure></p>
+<p>指定以太网协议<br><code>tcpdump udp port 9999 -i ens3 -y EN10MB -w ./udp.cap</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00000000: d4c3 b2a1 0200 0400 0000 0000 0000 0000  ................</span><br><span class="line">00000010: 0000 0400 0100 0000 0a16 f460 3a6f 0c00  ...........`:o..</span><br><span class="line">00000020: 2f00 0000 2f00 0000 0242 ac11 0036 0242  /.../....B...6.B</span><br><span class="line">00000030: ac11 0018 0800 4500 0021 a7d2 4000 4011  ......E..!..@.@.</span><br><span class="line">00000040: 3a89 ac11 0018 ac11 0036 9f66 270f 000d  :........6.f&apos;...</span><br><span class="line">00000050: 9d1b 6865 6c6c 6f                        X.hello</span><br></pre></td></tr></table></figure>
+<p>指定数据链路类型后，DLT字段主机序列变为<code>0x00000001</code>，类型为<code>DLT_EN10MB</code><br>指定数据链路类型后，同时记录下服务端mac地址、客户端mac地址</p>
+<p><a href="https://www.tcpdump.org/manpages/tcpdump.1.html" target="_blank" rel="noopener">https://www.tcpdump.org/manpages/tcpdump.1.html</a><br><a href="https://www.tcpdump.org/manpages/pcap-savefile.5.html" target="_blank" rel="noopener">https://www.tcpdump.org/manpages/pcap-savefile.5.html</a><br><a href="https://www.tcpdump.org/linktypes.html" target="_blank" rel="noopener">https://www.tcpdump.org/linktypes.html</a><br><a href="https://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html" target="_blank" rel="noopener">https://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html</a><br><a href="https://blog.csdn.net/u014497084/article/details/50684939" target="_blank" rel="noopener">tcpdump文件格式分析</a><br><a href="https://www.cnblogs.com/aios/p/9545378.html" target="_blank" rel="noopener">Linux cooked-mode capture 格式转换</a><br><a href="https://www.cnblogs.com/pyng/p/9698723.html" target="_blank" rel="noopener">tcpdump抓包分析</a></p>
+<hr>
+<h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><h3 id="格式"><a href="#格式" class="headerlink" title="格式"></a>格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> 0                   1                   2                   3</span><br><span class="line"> 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|Version|  IHL  |Type of Service|          Total Length         |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|         Identification        |Flags|      Fragment Offset    |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|  Time to Live |    Protocol   |         Header Checksum       |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|                       Source Address                          |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|                    Destination Address                        |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br><span class="line">|                    Options                    |    Padding    |</span><br><span class="line">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+</span><br></pre></td></tr></table></figure>
+<p><code>4500 0021 783d 4000 4011 6a1e ac11 0018 ac11 0036</code></p>
+<ul>
+<li><code>4</code>：   版本，IPv4</li>
+<li><code>5</code>：   头长度，5个32位，共20字节</li>
+<li><code>00</code>：  区分服务</li>
+<li><code>21</code>：  长度，33字节</li>
+<li><code>783d</code>：ID</li>
+<li><code>4000</code>: <code>0b01000000</code> 不分片，偏移为0</li>
+<li><code>40</code>:   生存时间TTL，64</li>
+<li><code>6a1e</code>：检验和</li>
+<li><code>11</code>：协议，17(udp)</li>
+<li><code>ac11 0018</code>：来源ip</li>
+<li><code>ac11 0036</code>：目标ip</li>
+</ul>
+<h3 id="检验和"><a href="#检验和" class="headerlink" title="检验和"></a>检验和</h3><p>ip数据报，检验和仅检查头部是否正确：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">    0100010100000000    4500</span><br><span class="line">    0000000000100001    0021</span><br><span class="line">    0111100000111101    783d</span><br><span class="line">    0100000000000000    4000</span><br><span class="line">    0100000000010001    4011</span><br><span class="line">    0000000000000000    0000</span><br><span class="line">    1010110000010001    ac11</span><br><span class="line">    0000000000011000    0018</span><br><span class="line">    1010110000010001    ac11</span><br><span class="line">+   0000000000110110    0036</span><br><span class="line">--------------------</span><br><span class="line">00101001010111011111   295DF</span><br></pre></td></tr></table></figure></p>
+<p>进位部分截断，加回低位，再取反：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">00101001010111011111   295DF</span><br><span class="line">+               0010    0002</span><br><span class="line">--------------------</span><br><span class="line">    1001010111100001    95E1</span><br><span class="line">XOR 1111111111111111    ffff</span><br><span class="line">--------------------</span><br><span class="line">    0110101000011110    6a1e</span><br></pre></td></tr></table></figure></p>
+<h2 id="运输层"><a href="#运输层" class="headerlink" title="运输层"></a>运输层</h2><h3 id="格式-1"><a href="#格式-1" class="headerlink" title="格式"></a>格式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> 0      7 8     15 16    23 24    31</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|     Source      |   Destination   |</span><br><span class="line">|      Port       |      Port       |</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|                 |                 |</span><br><span class="line">|     Length      |    Checksum     |</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|</span><br><span class="line">|          data octets ...</span><br><span class="line">+---------------- ...</span><br></pre></td></tr></table></figure>
+<p><code>9f66 270f 000d 9d1b 6865 6c6c 6f</code></p>
+<ul>
+<li><code>9f66</code>：40806 来源端口</li>
+<li><code>270f</code>：9999  目标端口</li>
+<li><code>000d</code>：13 UDP报文长度</li>
+<li><code>9d1b</code>：检验和</li>
+<li><code>6865 6c6c 6f</code>：<code>hello</code></li>
+</ul>
+<h3 id="检验和-1"><a href="#检验和-1" class="headerlink" title="检验和"></a>检验和</h3><p>pseudo header：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> 0      7 8     15 16    23 24    31</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|          source address           |</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|        destination address        |</span><br><span class="line">+--------+--------+--------+--------+</span><br><span class="line">|  zero  |protocol|   UDP length    |</span><br><span class="line">+--------+--------+--------+--------+</span><br></pre></td></tr></table></figure></p>
+<p>假头(不传)+真头+数据，计算检验和：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">    1010110000010001    ac11</span><br><span class="line">    0000000000011000    0018</span><br><span class="line">    1010110000010001    ac11</span><br><span class="line">    0000000000110110    0036</span><br><span class="line">    0000000000010001    0011</span><br><span class="line">    0000000000001101    000d</span><br><span class="line">    1001111101100110    9f66</span><br><span class="line">    0010011100001111    270f</span><br><span class="line">    0000000000001101    000d</span><br><span class="line">    0000000000000000    0000</span><br><span class="line">    0110100001100101    6865</span><br><span class="line">    0110110001101100    6c6c</span><br><span class="line">    0110111100000000    6f00</span><br><span class="line">--------------------</span><br><span class="line">00110110001011100001   362E1</span><br></pre></td></tr></table></figure>
+<p>进位部分截断，加回低位，再取反：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">00110110001011100001   362E1</span><br><span class="line">+               0011    </span><br><span class="line">--------------------</span><br><span class="line">    0110001011100100    62E4</span><br><span class="line">XOR 1111111111111111    ffff</span><br><span class="line">--------------------</span><br><span class="line">    1001110100011011    9D1B</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc791.html#page-11" target="_blank" rel="noopener">RFC-791: INTERNET PROTOCOL</a><br><a href="https://datatracker.ietf.org/doc/html/rfc768" target="_blank" rel="noopener">RFC-768: User Datagram Protocol</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/06/07/Cathedrals-Bazaars-and-the-Town-Council/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2025,186 +2261,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/10/30/Stroll-keyboard-fan-community-Design/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/10/30/Stroll-keyboard-fan-community-Design/" class="post-title-link" itemprop="url">漫步键圈 - 设计</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-10-30 20:53:05" itemprop="dateCreated datePublished" datetime="2020-10-30T20:53:05+08:00">2020-10-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2021-05-29 09:24:13" itemprop="dateModified" datetime="2021-05-29T09:24:13+08:00">2021-05-29</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步键圈/" itemprop="url" rel="index"><span itemprop="name">漫步键圈</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>被 <code>Baguette</code> 毒到，看教程视频打算自己设计一个来玩。<br>事实证明，从零开始自制没这么简单，天马行空的胡乱摆弄一番后便放弃了。</p>
-<p>之后还是把【LY092-MINI】复刻出真无线蓝牙版本的想法激发了我，让我有足够动力。<br>期间碰到相当多困难，一度让我想放弃，还好坚持了下来。<br>虽然最后的完成度不够高，但已经让我满意，成就感满满。<br>因为左右各有44个键共88个，就管它叫 <code>ERGO88</code> 吧。</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/10/30/Stroll-keyboard-fan-community-Design/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2251,7 +2307,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">271</span>
+                    <span class="site-state-item-count">272</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2306,7 +2362,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">19</span>
+                      
+                    
+                    <span class="site-state-item-count">20</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -3018,9 +3076,9 @@
       
     
       
-        
-      
     
+      
+        
       
     
       
