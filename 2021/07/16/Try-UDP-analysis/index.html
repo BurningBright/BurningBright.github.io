@@ -107,7 +107,7 @@
 <meta property="og:description" content="Host准备环境Server12345678ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:36            inet addr:172.17.0.54  Bcast:172.17.255.255  Mask:255.255.0.0          inet6 addr: fe80::42:acff:fe11:36/64 Sco">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://linchenguang.com/2021/07/16/Try-UDP-analysis/20210718195900.jpg">
-<meta property="og:updated_time" content="2021-07-20T12:43:19.437Z">
+<meta property="og:updated_time" content="2021-09-18T11:08:21.506Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="尝试分析UDP">
 <meta name="twitter:description" content="Host准备环境Server12345678ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:36            inet addr:172.17.0.54  Bcast:172.17.255.255  Mask:255.255.0.0          inet6 addr: fe80::42:acff:fe11:36/64 Sco">
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2021-07-20 20:43:19" itemprop="dateModified" datetime="2021-07-20T20:43:19+08:00">2021-07-20</time>
+                <time title="Modified: 2021-09-18 19:08:21" itemprop="dateModified" datetime="2021-09-18T19:08:21+08:00">2021-09-18</time>
               
             
           </span>
@@ -471,6 +471,7 @@
       
         <h2 id="Host"><a href="#Host" class="headerlink" title="Host"></a>Host</h2><p>准备环境<br>Server<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:36  </span><br><span class="line">          inet addr:172.17.0.54  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:36/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:3733 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:1723 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1216408 (1.2 MB)  TX bytes:678036 (678.0 KB)</span><br></pre></td></tr></table></figure></p>
 <p>Client<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:18  </span><br><span class="line">          inet addr:172.17.0.24  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:18/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:1717 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:904 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1021151 (1.0 MB)  TX bytes:301129 (301.1 KB)</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <h2 id="Program"><a href="#Program" class="headerlink" title="Program"></a>Program</h2><p>在各自主机上启动进程<br>Server<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">ip_port = (<span class="string">'0.0.0.0'</span>, <span class="number">9999</span>)</span><br><span class="line">server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  <span class="comment"># udp</span></span><br><span class="line">server.bind(ip_port)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data,client_addr = server.recvfrom(BUFSIZE)</span><br><span class="line">    print(data)</span><br><span class="line">    sys.stdout.flush()</span><br><span class="line">server.close()</span><br></pre></td></tr></table></figure></p>
 <p>Client<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    msg = raw_input(<span class="string">"&gt;&gt; "</span>).strip()</span><br><span class="line">    ip_port = (<span class="string">'172.17.0.54'</span>, <span class="number">9999</span>)</span><br><span class="line">    client.sendto(msg.encode(<span class="string">'utf-8'</span>),ip_port)</span><br><span class="line">client.close()</span><br></pre></td></tr></table></figure></p>
 <p><img src="/2021/07/16/Try-UDP-analysis/20210718195900.jpg" alt="20210718195900.jpg"></p>
@@ -581,6 +582,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2021/09/13/net-topology-in-tapip/" rel="prev" title="tapip的网络拓扑">
+                tapip的网络拓扑 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -648,7 +653,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">272</span>
+                    <span class="site-state-item-count">274</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -832,7 +837,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">55</span>
+                      
+                    
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

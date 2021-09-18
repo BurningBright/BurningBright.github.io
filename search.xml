@@ -17318,6 +17318,7 @@ D_{KL}(p||q) = \sum_{i=1}^{N} p(x_i)\cdot log\frac{p(x_i)}{q(x_i)}</script><p>�
     <url>/2021/07/16/Try-UDP-analysis/</url>
     <content><![CDATA[<h2 id="Host"><a href="#Host" class="headerlink" title="Host"></a>Host</h2><p>准备环境<br>Server<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:36  </span><br><span class="line">          inet addr:172.17.0.54  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:36/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:3733 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:1723 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1216408 (1.2 MB)  TX bytes:678036 (678.0 KB)</span><br></pre></td></tr></table></figure></p>
 <p>Client<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ens3      Link encap:Ethernet  HWaddr 02:42:ac:11:00:18  </span><br><span class="line">          inet addr:172.17.0.24  Bcast:172.17.255.255  Mask:255.255.0.0</span><br><span class="line">          inet6 addr: fe80::42:acff:fe11:18/64 Scope:Link</span><br><span class="line">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span><br><span class="line">          RX packets:1717 errors:0 dropped:0 overruns:0 frame:0</span><br><span class="line">          TX packets:904 errors:0 dropped:0 overruns:0 carrier:0</span><br><span class="line">          collisions:0 txqueuelen:1000</span><br><span class="line">          RX bytes:1021151 (1.0 MB)  TX bytes:301129 (301.1 KB)</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <h2 id="Program"><a href="#Program" class="headerlink" title="Program"></a>Program</h2><p>在各自主机上启动进程<br>Server<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">ip_port = (<span class="string">'0.0.0.0'</span>, <span class="number">9999</span>)</span><br><span class="line">server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  <span class="comment"># udp</span></span><br><span class="line">server.bind(ip_port)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data,client_addr = server.recvfrom(BUFSIZE)</span><br><span class="line">    print(data)</span><br><span class="line">    sys.stdout.flush()</span><br><span class="line">server.close()</span><br></pre></td></tr></table></figure></p>
 <p>Client<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line">client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    msg = raw_input(<span class="string">"&gt;&gt; "</span>).strip()</span><br><span class="line">    ip_port = (<span class="string">'172.17.0.54'</span>, <span class="number">9999</span>)</span><br><span class="line">    client.sendto(msg.encode(<span class="string">'utf-8'</span>),ip_port)</span><br><span class="line">client.close()</span><br></pre></td></tr></table></figure></p>
 <p><img src="/2021/07/16/Try-UDP-analysis/20210718195900.jpg" alt="20210718195900.jpg"></p>
@@ -17876,6 +17877,319 @@ D_{KL}(p||q) = \sum_{i=1}^{N} p(x_i)\cdot log\frac{p(x_i)}{q(x_i)}</script><p>�
       </categories>
       <tags>
         <tag>symbol</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tapip的网络拓扑</title>
+    <url>/2021/09/13/net-topology-in-tapip/</url>
+    <content><![CDATA[<h1 id="网络拓扑一：替换内核网络协议栈"><a href="#网络拓扑一：替换内核网络协议栈" class="headerlink" title="网络拓扑一：替换内核网络协议栈"></a>网络拓扑一：替换内核网络协议栈</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">+----------+</span><br><span class="line">| internet |            (10.20.133.20)</span><br><span class="line">+----|-----+                |</span><br><span class="line">+----|-----+                |</span><br><span class="line">|   eth0   |            (0.0.0.0)</span><br><span class="line">+----|-----+                |</span><br><span class="line">+----|-----+                |</span><br><span class="line">|  bridge  |            (0.0.0.0)</span><br><span class="line">+----|-----+                |</span><br><span class="line">+----|---------+            |</span><br><span class="line">|   tap0       |        (0.0.0.0)</span><br><span class="line">|--------------|</span><br><span class="line">| /dev/net/tun |        /dev/net/tun</span><br><span class="line">+--|----|---|--+            |</span><br><span class="line">  poll  |   |               |</span><br><span class="line">   |  read  |               |</span><br><span class="line">   |    |  write            |</span><br><span class="line">+--|----|---|--+            |</span><br><span class="line">| my netstack  |        (10.20.133.21)</span><br><span class="line">+--------------+</span><br></pre></td></tr></table></figure>
+<p>通过网桥连通本地网络eth0和虚拟网络tap0</p>
+<h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ol>
+<li>本地网络作为网关</li>
+<li>不支持重定向</li>
+<li>路由初始化，下一跳为TAP的IP</li>
+<li>如果下一跳不可达，需要返回Code 0 (Network Unreachable) ICMP报文(RFC 1812)</li>
+<li>虚拟网络设备额外初始化过程</li>
+<li><code>ifconfig</code> 命令特殊提示</li>
+</ol>
+<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><ol>
+<li>创建网络设备<code>tap0</code> 简要输出接口名到垃圾桶</li>
+<li>创建网桥设备<code>br0</code></li>
+<li>配置网桥通过 <code>br0</code> 连通 <code>eth0</code> <code>tap0</code></li>
+<li>将<code>eth0</code> <code>tap0</code> <code>br0</code>加入本地网络并启动</li>
+</ol>
+<h2 id="WARNING"><a href="#WARNING" class="headerlink" title="WARNING"></a>WARNING</h2><p>谨慎使用该模式，内核协议栈会被挂起，网络由用户态接管。<br>如果是远程登录使用TOP1可能会导致断连，无法继续使用。<br>建议直接使用串口同真实机器交互，以方便恢复原网络拓扑。</p>
+<h1 id="网络拓扑二：虚拟设备与核心交互"><a href="#网络拓扑二：虚拟设备与核心交互" class="headerlink" title="网络拓扑二：虚拟设备与核心交互"></a>网络拓扑二：虚拟设备与核心交互</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">localhost                     outside network</span><br><span class="line">kernel stack                  usermode stack [ ./tapip ]</span><br><span class="line">    |                           (10.0.0.1)</span><br><span class="line">    |                   (write) |        .</span><br><span class="line">    |                          \|/      /|\</span><br><span class="line">    |                           &apos;        | (read)</span><br><span class="line">  tap0 &lt;------ netif_rx() -----/dev/net/tun</span><br><span class="line">(10.0.0.2) `-- tun_net_xmit() -----------^</span><br></pre></td></tr></table></figure>
+<p>local -&gt; tap0(10.0.0.2) -&gt; veth0(10.0.0.1)</p>
+<h2 id="交互"><a href="#交互" class="headerlink" title="交互"></a>交互</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">                  +-------------------[Linux kernel TCP/IP stack]---------------------+</span><br><span class="line">                  |                                                                   |</span><br><span class="line">arping 10.0.0.1 -----&gt; socket send --&gt; route --&gt;  tap0 --&gt;  tap0::dev_hard_xmit       |</span><br><span class="line">                  | ( arp packet:                              |                      |</span><br><span class="line">                  |  10.0.0.2 request                          |                      |</span><br><span class="line">                  |  hwaddr of 10.0.0.1)                       |   _tap0 (10.0.0.2)_  |</span><br><span class="line">                  |                                            |                      |</span><br><span class="line">arping received &lt;----- socket recv &lt;--  tap0(netif_rx) &lt;----.  |                      |</span><br><span class="line">                  |                                         |  |                      |</span><br><span class="line">                  +-----------------------------------------|--|----------------------+</span><br><span class="line">                                                            |  |</span><br><span class="line">                                                        /dev/net/tun</span><br><span class="line">                                                            |  |</span><br><span class="line">                                                   (write)  |  |  (read)</span><br><span class="line">                                                            |  |</span><br><span class="line">                             .--------&gt; reply --&gt; netdev_tx-&apos;  |   _veth (10.0.0.1)_</span><br><span class="line">                             |                                \|/</span><br><span class="line">                             |                                 &apos;</span><br><span class="line">                             &apos;- arp_in &lt;-- netif_in &lt;-----  process</span><br><span class="line">        update arp cache &lt;------&apos;                   &#123; usermode network stack &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>arping</code> 命令进程向内核发起寻址请求</li>
+<li>内核将请求包路由至<code>tap0</code>设备</li>
+<li>经虚拟网络设备交换至用户态协议栈<code>tapip</code>处理</li>
+<li>寻址结果返回设备<code>tap0</code>，经内核返回<code>arping</code>命令进程显示</li>
+</ol>
+<p><a href="https://segmentfault.com/a/1190000009249039" target="_blank" rel="noopener">Linux虚拟网络设备之tun/tap</a><br><a href="https://github.com/chobits/tapip" target="_blank" rel="noopener">user-mode TCP/IP stack based on linux tap device</a></p>
+]]></content>
+      <categories>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>tapip</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tapip的工程框架</title>
+    <url>/2021/09/18/engineering-framework-of-tapip/</url>
+    <content><![CDATA[<h2 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">目录</th>
+<th>文件</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">app</td>
+<td></td>
+<td>内嵌shell的网络命令</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>ping.c</td>
+<td>网络请求命令</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>snc.c</td>
+<td>网络监听命令</td>
+</tr>
+<tr>
+<td style="text-align:center">arp</td>
+<td>arp_cache.c</td>
+<td>地址数据缓存</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>arp.c</td>
+<td>地址解析处理逻辑</td>
+</tr>
+<tr>
+<td style="text-align:center">doc</td>
+<td></td>
+<td>工程文档</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td style="text-align:center">include</td>
+<td></td>
+<td>头文件</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td style="text-align:center">ip</td>
+<td></td>
+<td>网络层</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>icmp.c</td>
+<td>网际控制报文协议</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>ip_forward.c</td>
+<td>报文重定向</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>ip_in.c</td>
+<td>收到ip数据报，交给运输层</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>ip_out.c</td>
+<td>发送ip数据报，从运输层来</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>raw.c</td>
+<td>读取链路层数据</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>route.c</td>
+<td>路由寻找下一跳</td>
+</tr>
+<tr>
+<td style="text-align:center">lib</td>
+<td></td>
+<td>静态库文件</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>cbuf.c</td>
+<td>环型缓冲数据结构</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>checksum.c</td>
+<td>加和检查完整性</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>lib.c</td>
+<td>打印、内存分配方法等</td>
+</tr>
+<tr>
+<td style="text-align:center">net</td>
+<td></td>
+<td>物理层、数据链路层</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>loop.c</td>
+<td>事件轮询</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>net.c</td>
+<td>数据链路层</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>netdev.c</td>
+<td>网络设备相关</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>pkb.c</td>
+<td>数据报相关</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tap.c</td>
+<td>操作tap设备</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>veth.c</td>
+<td>虚拟网络，用户态处理的起点</td>
+</tr>
+<tr>
+<td style="text-align:center">shell</td>
+<td></td>
+<td>交互界面</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>main.c</td>
+<td>程序启动入口</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>net_command.c</td>
+<td>网络命令交互</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>ping_command.c</td>
+<td>ping命令交互</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>shell.c</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">socket</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>inet.c</td>
+<td>绑定上层运输层协议</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>raw_sock.c</td>
+<td>默认网络帧处理</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>sock.c</td>
+<td>底层套接字</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>socket.c</td>
+<td>上层套接字</td>
+</tr>
+<tr>
+<td style="text-align:center">tcp</td>
+<td></td>
+<td>模拟传输控制协议</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_in.c</td>
+<td>tcp报文接收处理</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_out.c</td>
+<td>tcp报文发送处理</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_reass.c</td>
+<td>分配数据段？</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_sock.c</td>
+<td>tcp套接字相关</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_state.c</td>
+<td>状态处理 RFC 793</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_text.c</td>
+<td>滑动窗口收发数据</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>tcp_timer.c</td>
+<td>超时计时器</td>
+</tr>
+<tr>
+<td style="text-align:center">udp</td>
+<td></td>
+<td>模拟用户数据报协议</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>udp_sock.c</td>
+<td>udp套接字相关</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td>udp.c</td>
+<td>udp报文接收处理</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h2><p>外层<code>Makefile</code> 配置调试选项、网络拓扑选项<br>执行<code>make</code>命令时，先用下层<code>Makefile</code>构建各个模块<code>.o</code>文件<br>各模块<code>.o</code>文件链接为目标文件<code>xxx_obj.o</code><br>各模块目标文件，构建为可执行文件<code>tapip</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LD = ld</span><br><span class="line">CC = gcc</span><br><span class="line">CFLAGS = -Wall -I../include</span><br><span class="line">LFLAGS = -pthread</span><br><span class="line">export LD CC CFLAGS</span><br><span class="line"></span><br><span class="line">ifeq ($(CONFIG_DEBUG), y)</span><br><span class="line">	CFLAGS += -g</span><br><span class="line">endif</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>ld</code> 链接器</li>
+<li><code>gcc</code> 编译器</li>
+<li><code>-Wall</code> 选项可以打印出编译时所有的错误或者警告信息</li>
+<li><code>-I</code> 选项指定寻找头文件的路径</li>
+<li><code>-pthread</code> 执行多线程选项</li>
+<li><code>-g</code> 选项是指可以用gdb调试</li>
+</ul>
+<p><a href="https://zhuanlan.zhihu.com/p/128519905" target="_blank" rel="noopener">CMake中使用pthread实践</a></p>
+]]></content>
+      <categories>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>tapip</tag>
       </tags>
   </entry>
 </search>

@@ -351,6 +351,437 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/20/Tomcat-static-resources/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/20/Tomcat-static-resources/" class="post-title-link" itemprop="url">Tomcat static resources</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-20 12:48:31" itemprop="dateCreated datePublished" datetime="2017-08-20T12:48:31+08:00">2017-08-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p><code>$CATALINA_HOME\conf\web.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;servlet&gt;</span><br><span class="line">    &lt;servlet-name&gt;default&lt;/servlet-name&gt;</span><br><span class="line">    &lt;servlet-class&gt;org.apache.catalina.servlets.DefaultServlet&lt;/servlet-class&gt;</span><br><span class="line">    &lt;init-param&gt;</span><br><span class="line">        &lt;param-name&gt;debug&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;0&lt;/param-value&gt;</span><br><span class="line">    &lt;/init-param&gt;</span><br><span class="line">    &lt;init-param&gt;</span><br><span class="line">        &lt;param-name&gt;listings&lt;/param-name&gt;</span><br><span class="line">        &lt;param-value&gt;false&lt;/param-value&gt;</span><br><span class="line">    &lt;/init-param&gt;</span><br><span class="line">    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</span><br><span class="line">&lt;/servlet&gt;</span><br></pre></td></tr></table></figure>
+<p>When param <code>listings</code> is true, <code>/</code> can list all files</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- The mapping for the default servlet --&gt;</span><br><span class="line">&lt;servlet-mapping&gt;</span><br><span class="line">    &lt;servlet-name&gt;default&lt;/servlet-name&gt;</span><br><span class="line">    &lt;url-pattern&gt;/&lt;/url-pattern&gt;</span><br><span class="line">&lt;/servlet-mapping&gt;</span><br></pre></td></tr></table></figure>
+<p>The pattern mapping is this, for all no mapping <code>servlet-mapping</code> request.</p>
+<h3 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">protected void doGet(HttpServletRequest request,</span><br><span class="line">  HttpServletResponse response)</span><br><span class="line">    throws IOException, ServletException &#123;</span><br><span class="line">      // Serve the requested resource, including the data content</span><br><span class="line">      serveResource(request, response, true, fileEncoding);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>judge resource existence</li>
+<li>judge file readable</li>
+<li>set response head <code>content-type</code> base on file type</li>
+<li>judge file time</li>
+<li>set response timeout</li>
+<li>stream operation</li>
+</ol>
+<p><img src="/2017/08/20/Tomcat-static-resources/tomcat.png" alt="tomcat"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/19/python-basic-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/19/python-basic-1/" class="post-title-link" itemprop="url">python basic 1</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-19 23:22:29" itemprop="dateCreated datePublished" datetime="2017-08-19T23:22:29+08:00">2017-08-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Replace-String"><a href="#Replace-String" class="headerlink" title="Replace String"></a>Replace String</h2><ol>
+<li><p>replace function</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a = &apos;hello word&apos;</span><br><span class="line">b = a.replace(&apos;word&apos;,&apos;python&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>regex</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line">a = &apos;hello word&apos;</span><br><span class="line">pattern = re.compile(&apos;word&apos;)</span><br><span class="line">b = pattern.sub(&apos;python&apos;,a)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="Change-line-inside"><a href="#Change-line-inside" class="headerlink" title="Change line inside"></a>Change line inside</h2><ol>
+<li>three single qute ‘’’</li>
+<li>three double qute “””</li>
+<li>one backslash \</li>
+</ol>
+<h2 id="Thread-sleep"><a href="#Thread-sleep" class="headerlink" title="Thread sleep"></a>Thread sleep</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">time.sleep(7)</span><br></pre></td></tr></table></figure>
+<h2 id="Real-time-print"><a href="#Real-time-print" class="headerlink" title="Real time print"></a>Real time print</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import sys</span><br><span class="line">print &apos;hello word&apos;</span><br><span class="line">sys.stdout.flush()</span><br><span class="line">time.sleep(7)</span><br></pre></td></tr></table></figure>
+<h2 id="Basic-function"><a href="#Basic-function" class="headerlink" title="Basic function"></a>Basic function</h2><h3 id="type-transfer"><a href="#type-transfer" class="headerlink" title="type transfer"></a>type transfer</h3><ul>
+<li><p>int()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int(&apos;7&apos;)</span><br><span class="line">int(&apos;17&apos;, 16)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>str()</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">str(7)</span><br><span class="line">hex(17)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="string"><a href="#string" class="headerlink" title="string"></a>string</h3><ol>
+<li><p>remove blank / special characters<br><code>s.strip().lstrip().rstrip(&#39;,&#39;)</code></p>
+</li>
+<li><p>copy</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcpy(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strcpy'</span></span><br><span class="line">sStr2 = sStr1</span><br><span class="line">sStr1 = <span class="string">'strcpy2'</span></span><br><span class="line"><span class="keyword">print</span> sStr2</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>concat</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcat(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strcat'</span></span><br><span class="line">sStr2 = <span class="string">'append'</span></span><br><span class="line">sStr1 += sStr2</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>find</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strchr(sStr1,sStr2)</span></span><br><span class="line"><span class="comment"># &lt; 0 not found</span></span><br><span class="line">sStr1 = <span class="string">'strchr'</span></span><br><span class="line">sStr2 = <span class="string">'s'</span></span><br><span class="line">nPos = sStr1.index(sStr2)</span><br><span class="line"><span class="keyword">print</span> nPos</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>compare</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strcmp(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'strchr'</span></span><br><span class="line">sStr2 = <span class="string">'strch'</span></span><br><span class="line"><span class="keyword">print</span> cmp(sStr1,sStr2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>scan 4 contain</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strspn(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'12345678'</span></span><br><span class="line">sStr2 = <span class="string">'456'</span></span><br><span class="line"><span class="comment">#sStr1 and chars both in sStr1 and sStr2</span></span><br><span class="line"><span class="keyword">print</span> len(sStr1 <span class="keyword">and</span> sStr2)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>length</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strlen(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'strlen'</span></span><br><span class="line"><span class="keyword">print</span> len(sStr1)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>case</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strlwr(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'JCstrlwr'</span></span><br><span class="line">sStr1 = sStr1.upper()</span><br><span class="line"><span class="comment">#sStr1 = sStr1.lower()</span></span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>add pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncat(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">sStr2 = <span class="string">'abcdef'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 += sStr2[<span class="number">0</span>:n]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>compare pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncmp(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">sStr2 = <span class="string">'123bc'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line"><span class="keyword">print</span> cmp(sStr1[<span class="number">0</span>:n],sStr2[<span class="number">0</span>:n])</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>copy pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strncpy(sStr1,sStr2,n)</span></span><br><span class="line">sStr1 = <span class="string">''</span></span><br><span class="line">sStr2 = <span class="string">'12345'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 = sStr2[<span class="number">0</span>:n]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>replace pointed string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strnset(sStr1,ch,n)</span></span><br><span class="line">sStr1 = <span class="string">'12345'</span></span><br><span class="line">ch = <span class="string">'r'</span></span><br><span class="line">n = <span class="number">3</span></span><br><span class="line">sStr1 = n * ch + sStr1[<span class="number">3</span>:]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>scan string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strpbrk(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'cekjgdklab'</span></span><br><span class="line">sStr2 = <span class="string">'gka'</span></span><br><span class="line">nPos = <span class="number">-1</span></span><br><span class="line"><span class="keyword">for</span> c <span class="keyword">in</span> sStr1:</span><br><span class="line">    <span class="keyword">if</span> c <span class="keyword">in</span> sStr2:</span><br><span class="line">        nPos = sStr1.index(c)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"><span class="keyword">print</span> nPos</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>reverse string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strrev(sStr1)</span></span><br><span class="line">sStr1 = <span class="string">'abcdefg'</span></span><br><span class="line">sStr1 = sStr1[::<span class="number">-1</span>]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>split string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#strtok(sStr1,sStr2)</span></span><br><span class="line">sStr1 = <span class="string">'ab,cde,fgh,ijk'</span></span><br><span class="line">sStr2 = <span class="string">','</span></span><br><span class="line">sStr1 = sStr1[sStr1.find(sStr2) + <span class="number">1</span>:]</span><br><span class="line"><span class="keyword">print</span> sStr1</span><br><span class="line"><span class="comment">#or</span></span><br><span class="line">s = <span class="string">'ab,cde,fgh,ijk'</span></span><br><span class="line">print(s.split(<span class="string">','</span>))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>connect string</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">delimiter = <span class="string">','</span></span><br><span class="line">mylist = [<span class="string">'Brazil'</span>, <span class="string">'Russia'</span>, <span class="string">'India'</span>, <span class="string">'China'</span>]</span><br><span class="line"><span class="keyword">print</span> delimiter.join(mylist)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/10/Spring-Structure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1910,387 +2341,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/16/Char-in-MFC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/16/Char-in-MFC/" class="post-title-link" itemprop="url">Char in MFC</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-16 22:52:41" itemprop="dateCreated datePublished" datetime="2017-06-16T22:52:41+08:00">2017-06-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="character"><a href="#character" class="headerlink" title="character"></a>character</h3><ul>
-<li>char：<br>prefix with <code>str</code><br>ANSI: <code>strcat( )</code>, <code>strcpy( )</code>, <code>strlen( )</code></li>
-</ul>
-<ul>
-<li>wchar_t :<br>prefix with <code>wcs</code><br>Unicode: <code>wcscat()</code>, <code>wcscpy()</code>, <code>wcslen()</code></li>
-</ul>
-<ul>
-<li>WCHAR:<br><code>typedef wchar_t WCHAR</code><br><strong>WCHAR == wchar_t</strong><br>macro <code>_UNICODE</code> in <code>c</code>, macro <code>UNICODE</code> in <code>windows</code><br>if no macro defined, system use <code>ANSI</code> compiling and run.</li>
-</ul>
-<ul>
-<li>TCHAR:<br><strong>Condition define type</strong><br>If macro <code>UNICODE</code> defined<br><code>typedef wchar_t TCHAR;</code><br>If not<br><code>typedef char TCHAR;</code></li>
-</ul>
-<h3 id="checkout"><a href="#checkout" class="headerlink" title="checkout"></a>checkout</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span>   UNICODE</span></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">wchar_t</span>   TCHAR;     </span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">char</span>   TCHAR;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">char</span>   CHAR;</span><br><span class="line"><span class="keyword">typedef</span>   <span class="keyword">unsigned</span>   <span class="keyword">wchar_t</span>   WCHAR;</span><br></pre></td></tr></table></figure>
-<p>From VS2005 C++’s encoding use <code>UNICODE</code> in default.</p>
-<h3 id="translate"><a href="#translate" class="headerlink" title="translate"></a>translate</h3><p>char -&gt; wchar_t<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">wchar_t</span>* <span class="title">Util::CharToWchar</span><span class="params">(<span class="keyword">char</span>* c)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> length = <span class="built_in">strlen</span>(c) + <span class="number">1</span>;   <span class="comment">// the text end \0 [0x00] [EOF]</span></span><br><span class="line">  <span class="keyword">wchar_t</span> *wide = (<span class="keyword">wchar_t</span>*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">wchar_t</span>)*length);</span><br><span class="line">  <span class="built_in">memset</span>(t, <span class="number">0</span>, length * <span class="keyword">sizeof</span>(<span class="keyword">wchar_t</span>));</span><br><span class="line">  MultiByteToWideChar(CP_ACP, <span class="number">0</span>, c, <span class="built_in">strlen</span>(c), wide, length);</span><br><span class="line">  <span class="comment">//wcout &lt;&lt; wide &lt;&lt; endl;</span></span><br><span class="line">  <span class="keyword">return</span> wide;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>wchar_t -&gt; char<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span>* <span class="title">Util::WcharToChar</span><span class="params">(<span class="keyword">wchar_t</span>* wc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> length = wcslen(wc) + <span class="number">1</span>;</span><br><span class="line">  	<span class="built_in">cout</span> &lt;&lt; length1 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">  	<span class="keyword">char</span> *c = <span class="keyword">new</span> <span class="keyword">char</span>[length1];</span><br><span class="line">  	WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, wc, <span class="number">-1</span>,</span><br><span class="line">      c, length, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">  	<span class="built_in">cout</span> &lt;&lt; c &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> c;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/12/Hello-VC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/12/Hello-VC/" class="post-title-link" itemprop="url">Hello VC++</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-12 23:03:46" itemprop="dateCreated datePublished" datetime="2017-06-12T23:03:46+08:00">2017-06-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/c/" itemprop="url" rel="index"><span itemprop="name">c++</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Swap-Mouse-Button"><a href="#Swap-Mouse-Button" class="headerlink" title="Swap Mouse Button"></a>Swap Mouse Button</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;tchar.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"windows.h"</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// a handler</span></span><br><span class="line">	HKEY key;</span><br><span class="line">  <span class="comment">// target key</span></span><br><span class="line">	LPCTSTR SubKey = _T(<span class="string">"Control Panel\\Mouse"</span>);</span><br><span class="line">	<span class="keyword">if</span> (::RegOpenKeyEx(HKEY_CURRENT_USER, SubKey, <span class="number">0</span>, KEY_ALL_ACCESS, &amp;key) !=</span><br><span class="line">		ERROR_SUCCESS) &#123;</span><br><span class="line">		::RegCloseKey(key);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">char</span> dwValue[<span class="number">256</span>];</span><br><span class="line">	DWORD dwSize = <span class="keyword">sizeof</span>(DWORD);</span><br><span class="line">	DWORD dwType = REG_SZ;</span><br><span class="line">	<span class="keyword">if</span> (::RegQueryValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, &amp;dwType,</span><br><span class="line">		(LPBYTE)&amp;dwValue, &amp;dwSize) != ERROR_SUCCESS) &#123;</span><br><span class="line">		::RegCloseKey(key);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (dwValue[<span class="number">0</span>] == <span class="string">'1'</span>) &#123;</span><br><span class="line"></span><br><span class="line">		DWORD value = <span class="string">'0'</span>;</span><br><span class="line">		<span class="keyword">if</span> (ERROR_SUCCESS</span><br><span class="line">			!= ::RegSetValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, REG_SZ,</span><br><span class="line">			(CONST BYTE*) &amp;value, <span class="number">1</span>)) &#123;</span><br><span class="line">			::RegCloseKey(key);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		SwapMouseButton(<span class="number">0</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		DWORD value = <span class="string">'1'</span>;</span><br><span class="line">		<span class="keyword">if</span> (ERROR_SUCCESS</span><br><span class="line">			!= ::RegSetValueEx(key, _T(<span class="string">"SwapMouseButtons"</span>), <span class="number">0</span>, REG_SZ,</span><br><span class="line">			(CONST BYTE*) &amp;value, <span class="number">1</span>)) &#123;</span><br><span class="line">			::RegCloseKey(key);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		SwapMouseButton(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">  <span class="comment">// release</span></span><br><span class="line">	::RegCloseKey(key);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>RegOpenKeyEx</code>/ <code>RegQueryValueEx</code>/ <code>RegSetValueEx</code> is register table function.</li>
-<li><code>RegCloseKey</code> when function above failed release handler.</li>
-<li><code>SwapMouseButton</code> used to control which button’s left right.</li>
-</ul>
-<h3 id="LPCTSTR"><a href="#LPCTSTR" class="headerlink" title="LPCTSTR"></a>LPCTSTR</h3><ul>
-<li><code>L</code> Long no actual meaning</li>
-<li><code>P</code> pointer</li>
-<li><code>C</code> constant</li>
-<li><code>T</code> base on <code>UNICODE</code> macro, define <code>char</code> or <code>wchar_t</code></li>
-<li><code>STR</code> string char*</li>
-</ul>
-<p>So <code>LPCTSTR</code> almost <code>const char*</code></p>
-<p>If macro not define <code>UNICODE</code>, lead to</p>
-<blockquote>
-<p>const char* value can’t initial LPCTSTR instance class.</p>
-</blockquote>
-<h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;tchar.h&gt;</span><br><span class="line">LPCTSTR SubKey = _T(&quot;Control Panel\\Mouse&quot;);</span><br></pre></td></tr></table></figure>
-<p>or<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LPCWSTR SubKey = L&quot;Control Panel\\Mouse&quot;;</span><br></pre></td></tr></table></figure></p>
-<p><code>_T(&quot;ABC&quot;)</code> the letter in <code>_T()</code> obtain 2 bytes same as chinese characters.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2337,7 +2387,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">272</span>
+                    <span class="site-state-item-count">274</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2521,7 +2571,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">55</span>
+                      
+                    
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

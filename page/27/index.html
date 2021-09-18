@@ -351,6 +351,410 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/30/Full-text-retrieval-fundamental-3/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (3)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="How-to-search-in-Index"><a href="#How-to-search-in-Index" class="headerlink" title="How to search in Index"></a>How to search in Index</h2><p> <strong>How to find the result you want most, or the most relevant result with query phrase?</strong></p>
+<h3 id="1-first-User-input-query-pharse"><a href="#1-first-User-input-query-pharse" class="headerlink" title="1. first: User input query pharse"></a>1. first: User input query pharse</h3><p>  <em>The basic query grammar like “AND”, “OR”, “NOT”.</em><br>  <code>elephant and tiger or lion not sheep</code></p>
+<h3 id="2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing"><a href="#2-second-Query-pharse-lexical-analysis-syntax-analysis-and-language-processing" class="headerlink" title="2. second: Query pharse lexical analysis, syntax analysis, and language processing"></a>2. second: Query pharse lexical analysis, syntax analysis, and language processing</h3><ol>
+<li>lexical analysis used to distinguish words and key words</li>
+<li>syntax analysis used to build a grammar tree by syntax rule</li>
+<li>language processing just like the processe in building Index. check page 2</li>
+</ol>
+<h3 id="3-third-Traverse-Index-get-result-that-fit-syntax-tree"><a href="#3-third-Traverse-Index-get-result-that-fit-syntax-tree" class="headerlink" title="3. third: Traverse Index, get result that fit syntax tree"></a>3. third: Traverse Index, get result that fit syntax tree</h3><ol>
+<li>first find the documents contain words(elephant tiger lion) in the posting list.</li>
+<li>second merge documents contain both elephant, tiger or lion.</li>
+<li>third separate documents contain sheep, got result contain both elephant, tiger or lion not sheep.</li>
+</ol>
+<h3 id="4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result"><a href="#4-fourth-Sort-result-by-relevant-between-query-pharse-and-search-result" class="headerlink" title="4. fourth: Sort result by relevant between query pharse and search result"></a>4. fourth: Sort result by relevant between query pharse and search result</h3><p> <strong>How to calculate the relevance between documents and query pharse?</strong><br> Toke query pharse as a shot document, scoring relevance between documents, the higher score is the higher rank document is.<br> <em>How to score the relevance between documents?</em><br> <strong><em>It’s not easy a thing</em></strong></p>
+<ul>
+<li>Check what is the important factors between documents</li>
+<li>Check the relation between these factors</li>
+</ul>
+<hr>
+<ul>
+<li>The process of finding the importance of a word (Term) to a document is called the weight (Term) process.</li>
+<li>The process of judging the relationship between Term to get document relevance using an algorithm called <code>Vector Space Model</code></li>
+</ul>
+<hr>
+<h2 id="Term-weight-process"><a href="#Term-weight-process" class="headerlink" title="Term weight process"></a>Term weight process</h2><p><strong>This is a simple classic implementation, lucene’s have a little difference</strong></p>
+<script type="math/tex; mode=display">w_{t_\eta}{_d} = tf_{t_\eta}{_d} \times log(n/df_t)</script><ul>
+<li>$w<em>{t</em>\eta}{_d}$ = the weight of the term t in document d</li>
+<li>$tf<em>{t</em>\eta}{_d}$ = frequency of term t in document d</li>
+<li>$n$ = total number of documents</li>
+<li>$df_t$ = the number of documents that contain term t</li>
+</ul>
+<ul>
+<li>Term Frequency (tf): How many times this Term show in this document, the bigger tf is , the more importance this Term is.</li>
+<li>Document Frequency (df)：How many documents contain this Term, the bigger df is, the less importance this Term is.</li>
+</ul>
+<p><strong>Like programmer, the deeper technology you leanr is better(tf big), the less technology people know is better (df little). When finding job your competitive power would be grate. Man’s value is about unsubsititutability</strong></p>
+<h2 id="Vector-Space-Model"><a href="#Vector-Space-Model" class="headerlink" title="Vector Space Model"></a>Vector Space Model</h2><p><strong>Less the two vector’s angle is the more relevance is</strong><br><strong>We take two vector’s consine as the score point</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Full-text-retrieval-fundamental-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/01/29/Full-text-retrieval-fundamental-1/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (1)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-01-29 22:01:21" itemprop="dateCreated datePublished" datetime="2017-01-29T22:01:21+08:00">2017-01-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Introduce"><a href="#Introduce" class="headerlink" title="Introduce"></a>Introduce</h2><ul>
+<li>结构化数据: 指有规律结构固定格式长度的数据, 如数据库</li>
+<li>非结构化数据: 指无规律不定长不固定格式的数据, 如邮件</li>
+<li>半结构化数据: XML/HTML等, 可按需求以不同形式处理</li>
+</ul>
+<p>非结构化数据又一种叫法叫全文数据。</p>
+<p>全文检索大体分两个过程，索引创建(Indexing)和搜索索引(Search)。</p>
+<ul>
+<li>索引创建：将现实世界中所有的结构化和非结构化数据提取信息，创建索引的过程。</li>
+<li>搜索索引：就是得到用户的查询请求，搜索创建的索引，然后返回结果的过程。</li>
+</ul>
+<p>全文检索就存在三个重要问题：</p>
+<ol>
+<li>索引里面究竟存些什么？(Index)</li>
+<li>如何创建索引？(Indexing)</li>
+<li>如何对索引进行搜索？(Search)</li>
+</ol>
+<h2 id="What-fuck-in-these-Index"><a href="#What-fuck-in-these-Index" class="headerlink" title="What fuck in these Index"></a>What fuck in these Index</h2><ul>
+<li>存的是<strong> 符号表 </strong> 通俗的说是个映射表</li>
+<li>从字符串到文件的映射是文件到字符串映射的反向过程，于是保存这种信息的索引称为<strong> 反向索引 </strong> 。</li>
+<li>左边的一系列为词典也叫Key</li>
+<li>右边的一系列为倒排表也叫Value</li>
+</ul>
+<p><em>建索引的好处是一次建立, 多次使用, 如果建索引的频率过于频繁反而会拖累整体性能</em></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/29/Apache-Lucene-Demo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1807,401 +2211,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/hexo-install/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/hexo-install/" class="post-title-link" itemprop="url">hexo install</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 10:41:54" itemprop="dateCreated datePublished" datetime="2017-01-24T10:41:54+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-01-09 22:49:54" itemprop="dateModified" datetime="2019-01-09T22:49:54+08:00">2019-01-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install-amp-theme"><a href="#Install-amp-theme" class="headerlink" title="Install &amp; theme"></a>Install &amp; theme</h2><blockquote>
-<p>use cnpm<br>npm install -g cnpm —registry=<a href="https://registry.npm.taobao.org" target="_blank" rel="noopener">https://registry.npm.taobao.org</a></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo cnpm install hexo-cli -g</span><br><span class="line">hexo init blog</span><br><span class="line">cd blog</span><br><span class="line"></span><br><span class="line">cnpm install</span><br><span class="line">hexo server</span><br><span class="line"></span><br><span class="line"># may ship</span><br><span class="line">git clone https://github.com/tufu9441/maupassant-hexo.git themes/maupassant</span><br><span class="line">npm install hexo-renderer-jade --save</span><br><span class="line">npm install hexo-renderer-sass --save</span><br><span class="line"></span><br><span class="line">npm install hexo-tag-katex --save</span><br></pre></td></tr></table></figure>
-<h2 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h2><ul>
-<li><p>enter themes\landscape\layout_partial，open head.ejs，delete 31th row fonts.googleapis.com</p>
-</li>
-<li><p>download jquery-2.0.3.min.js put into themes\landscape\source\js , enter themes\landscape\layout_partial, openafter-footer.ejs, replace 17th row to /js/jquery-2.0.3.min.js。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/24/mybatis-foreach/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/24/mybatis-foreach/" class="post-title-link" itemprop="url">mybatis foreach</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-24 10:21:38" itemprop="dateCreated datePublished" datetime="2017-01-24T10:21:38+08:00">2017-01-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th style="text-align:right">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>item</td>
-<td style="text-align:right">循环体中的具体对象。支持属性的点路径访问，如item.age,item.info.details。具体说明：在list和数组中是其中的对象，在map中是value。该参数为必选。</td>
-</tr>
-<tr>
-<td>collection</td>
-<td style="text-align:right">要做foreach的对象，作为入参时，List&lt;?&gt;对象默认用list代替作为键，数组对象有array代替作为键，Map对象用map代替作为键。当然在作为入参时可以使用@Param(“keyName”)来设置键，设置keyName后，list,array,map将会失效。 除了入参这种情况外，还有一种作为参数对象的某个字段的时候。举个例子：如果User有属性List ids。入参是User对象，那么这个collection = “ids”如果User有属性Ids ids;其中Ids是个对象，Ids有个属性List id;入参是User对象，那么collection = “ids.id”上面只是举例，具体collection等于什么，就看你想对那个元素做循环。该参数为必选。</td>
-</tr>
-<tr>
-<td>separator</td>
-<td style="text-align:right">元素之间的分隔符，例如在in()的时候，separator=”,”会自动在元素中间用“,“隔开，避免手动输入逗号导致sql错误，如in(1,2,)这样。该参数可选。</td>
-</tr>
-<tr>
-<td>open</td>
-<td style="text-align:right">foreach代码的开始符号，一般是(和close=”)”合用。常用在in(),values()时。该参数可选。</td>
-</tr>
-<tr>
-<td>close</td>
-<td style="text-align:right">foreach代码的关闭符号，一般是)和open=”(“合用。常用在in(),values()时。该参数可选。</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">在list和数组中,index是元素的序号，在map中，index是元素的key，该参数可选。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><strong>select count(*) from users WHERE id in ( ? , ? )</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;countByUserList&quot; resultType=&quot;_int&quot; parameterType=&quot;list&quot;&gt;    </span><br><span class="line">select count(*) from users    </span><br><span class="line">  &lt;where&gt;    </span><br><span class="line">    id in    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; collection=&quot;list&quot; separator=&quot;,&quot; open=&quot;(&quot; close=&quot;)&quot; index=&quot;&quot;&gt;    </span><br><span class="line">      #&#123;item.id, jdbcType=NUMERIC&#125;    </span><br><span class="line">    &lt;/foreach&gt;    </span><br><span class="line">  &lt;/where&gt;    </span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>insert into deliver select ?,? from dual union all select ?,? from dual</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;addList&quot;&gt;  </span><br><span class="line">    INSERT INTO DELIVER  </span><br><span class="line">        (  </span><br><span class="line">            &lt;include refid=&quot;selectAllColumnsSql&quot;/&gt;  </span><br><span class="line">         )  </span><br><span class="line"></span><br><span class="line">      &lt;foreach collection=&quot;deliverList&quot; item=&quot;item&quot; separator=&quot;UNION ALL&quot;&gt;  </span><br><span class="line">            SELECT   </span><br><span class="line">                 #&#123;item.id, jdbcType=NUMERIC&#125;,  </span><br><span class="line">                 #&#123;item.name, jdbcType=VARCHAR&#125;  </span><br><span class="line">            FROM DUAL  </span><br><span class="line">      &lt;/foreach&gt;  </span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>insert into string_string (key, value) values (?, ?) , (?, ?) </strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=&quot;ins_string_string&quot;&gt;    </span><br><span class="line">    insert into string_string (key, value) values    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; index=&quot;key&quot; collection=&quot;map&quot;    </span><br><span class="line">        open=&quot;&quot; separator=&quot;,&quot; close=&quot;&quot;&gt;(#&#123;key&#125;, #&#123;item&#125;)&lt;/foreach&gt;    </span><br><span class="line">&lt;/insert&gt;</span><br></pre></td></tr></table></figure></p>
-<p><strong>select count(*) from key_cols where col_a = ? AND col_b = ?</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;select id=&quot;sel_key_cols&quot; resultType=&quot;int&quot;&gt;    </span><br><span class="line">    select count(*) from key_cols where    </span><br><span class="line">    &lt;foreach item=&quot;item&quot; index=&quot;key&quot; collection=&quot;map&quot;    </span><br><span class="line">        open=&quot;&quot; separator=&quot;AND&quot; close=&quot;&quot;&gt;$&#123;key&#125; = #&#123;item&#125;&lt;/foreach&gt;    </span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure></p>
-<p><em>ps: 一定要注意到$和#的区别，$的参数直接输出，#的参数会被替换为?，然后传入参数值执行。</em></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2248,7 +2257,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">272</span>
+                    <span class="site-state-item-count">274</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2432,7 +2441,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">55</span>
+                      
+                    
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>

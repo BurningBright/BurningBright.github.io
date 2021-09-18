@@ -351,6 +351,389 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/05/Gif-camera/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/04/05/Gif-camera/" class="post-title-link" itemprop="url">Gif camera</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-04-05 17:28:52" itemprop="dateCreated datePublished" datetime="2018-04-05T17:28:52+08:00">2018-04-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="/2018/04/05/Gif-camera/prototype.jpg" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line"># Optional</span><br><span class="line">sudo apt-get upgrade</span><br><span class="line"></span><br><span class="line"># Used to control camera</span><br><span class="line">sudo apt-get install python-picamera python3-picamera</span><br><span class="line"># Used to convert jpg to gif</span><br><span class="line">sudo apt-get install graphicsmagick</span><br><span class="line"></span><br><span class="line">sudo apt-get install git-core</span><br><span class="line"># This script is used in &apos;PIX-E Gif Camera&apos; project</span><br><span class="line">sudo git clone https://github.com/nickbrewer/gifcam.git</span><br></pre></td></tr></table></figure>
+<h3>If we just want raspberry pi camera can take gif picture, we can just remove
+ `GPIO` and `Twitter` module, no need led notification/ real time upload ro so.</h3>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># import module first</span></span><br><span class="line"><span class="keyword">import</span> picamera</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> sleep</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> system</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> random, string</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set options</span></span><br><span class="line">um_frame = <span class="number">8</span>       <span class="comment"># Number of frames in Gif</span></span><br><span class="line">gif_delay = <span class="number">15</span>      <span class="comment"># Frame delay [ms]</span></span><br><span class="line">rebound = <span class="literal">True</span>      <span class="comment"># Create a video that loops start &lt;=&gt; end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set camera parameters</span></span><br><span class="line">camera = picamera.PiCamera()</span><br><span class="line">camera.resolution = (<span class="number">540</span>, <span class="number">405</span>)</span><br><span class="line">camera.rotation = <span class="number">90</span></span><br><span class="line"><span class="comment">#camera.brightness = 70</span></span><br><span class="line">camera.image_effect = <span class="string">'none'</span></span><br></pre></td></tr></table></figure>
+<h2 id="Take-jpg-pictures"><a href="#Take-jpg-pictures" class="headerlink" title="Take jpg pictures"></a>Take jpg pictures</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'Gif Started'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">### PREVENT DARK INIT IMAGE ###</span></span><br><span class="line">camera.led = <span class="literal">False</span></span><br><span class="line">camera.start_preview()</span><br><span class="line">sleep(<span class="number">1</span>)</span><br><span class="line">camera.led = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame):</span><br><span class="line">    camera.capture(<span class="string">'&#123;0:04d&#125;.jpg'</span>.format(i))</span><br></pre></td></tr></table></figure>
+<h2 id="If-rebound-is-True-then-make-picture-loop"><a href="#If-rebound-is-True-then-make-picture-loop" class="headerlink" title="If rebound is True then make picture loop"></a>If <code>rebound</code> is <code>True</code> then make picture loop</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### PROCESSING GIF ###</span></span><br><span class="line"><span class="keyword">if</span> rebound == <span class="literal">True</span>: <span class="comment"># make copy of images in reverse order</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_frame - <span class="number">1</span>):</span><br><span class="line">        source = str(num_frame - i - <span class="number">1</span>) + <span class="string">".jpg"</span></span><br><span class="line">        source = source.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        dest = str(num_frame + i) + <span class="string">".jpg"</span></span><br><span class="line">        dest = dest.zfill(<span class="number">8</span>) <span class="comment"># pad with zeros</span></span><br><span class="line">        copyCommand = <span class="string">"cp "</span> + source + <span class="string">" "</span> + dest</span><br><span class="line">        os.system(copyCommand)</span><br></pre></td></tr></table></figure>
+<h2 id="Convert-picture-to-gif-and-cleanup"><a href="#Convert-picture-to-gif-and-cleanup" class="headerlink" title="Convert picture to gif and cleanup"></a>Convert picture to gif and cleanup</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Correction of time difference</span></span><br><span class="line">now = datetime.datetime.now() + datetime.timedelta(hours=<span class="number">8</span>)</span><br><span class="line">filename = <span class="string">'/home/pi/gifcam/gifs'</span> + now.strftime(<span class="string">'%Y%m%d%H%M%S'</span>)</span><br><span class="line">print(<span class="string">'Processing'</span>)</span><br><span class="line"><span class="comment"># Convert command</span></span><br><span class="line">graphicsmagick = <span class="string">"gm convert -delay "</span> + str(gif_delay) + <span class="string">" "</span> + <span class="string">"*.jpg "</span> + filename + <span class="string">".gif"</span></span><br><span class="line">os.system(graphicsmagick)</span><br><span class="line">os.system(<span class="string">"rm ./*.jpg"</span>) <span class="comment"># cleanup source images</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line">print(<span class="string">'System Ready'</span>)</span><br></pre></td></tr></table></figure>
+<p><a href="http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html" target="_blank" rel="noopener">http://shumeipai.nxez.com/2016/11/06/build-a-disposable-gif-camera.html</a><br><a href="https://hackaday.io/project/16358-pix-e-gif-camera" target="_blank" rel="noopener">https://hackaday.io/project/16358-pix-e-gif-camera</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/03/21/Manacher-s-algorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/03/21/Manacher-s-algorithm/" class="post-title-link" itemprop="url">Manacher's algorithm</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-03-21 09:46:29" itemprop="dateCreated datePublished" datetime="2018-03-21T09:46:29+08:00">2018-03-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>O(n) time complexity find longest palindromic substring</p>
+<h2 id="Translate"><a href="#Translate" class="headerlink" title="Translate"></a>Translate</h2><p>put origin string into a new char array, take “ABBABCBA”<br>make odd/ even length origin string into a odd length array (#,…,#)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'\0'</span>&#125;;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'$'</span>&#125;;</span><br></pre></td></tr></table></figure>
+<p>put position 0 and last postion a placeholder, <strong>S.length = origin * 2 + 3</strong> odd length.</p>
+<h2 id="Mark"><a href="#Mark" class="headerlink" title="Mark"></a>Mark</h2><p>declare a array P[] to mark the S’s char symmetric radius length<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> S[] = &#123;<span class="string">'^'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'C'</span>, <span class="string">'#'</span>, <span class="string">'B'</span>, <span class="string">'#'</span>, <span class="string">'A'</span>, <span class="string">'#'</span>, <span class="string">'$'</span>&#125;;</span><br><span class="line"><span class="keyword">int</span>  P[] = &#123; <span class="number">0</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">5</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">4</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">6</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">2</span> ,  <span class="number">1</span> ,  <span class="number">0</span> &#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="describe"><a href="#describe" class="headerlink" title="describe:"></a>describe:</h3><blockquote>
+<p>array P used to describe radius, for example : <br><br>P[5] = 5 -&gt; S(1,5) | S(5, 9)</p>
+</blockquote>
+<h3 id="calculate"><a href="#calculate" class="headerlink" title="calculate:"></a>calculate:</h3><p>Declare varable</p>
+<ol>
+<li><code>center</code> the center of mirror</li>
+<li><code>right</code>  the right terminal of mirror</li>
+</ol>
+<blockquote>
+<p><code>right</code> <em>= center + P[center]</em> , right point = center point + radius <br><br><code>left</code> <em>= center - P[center]</em> , left point = center point - radius <br><br>declare <code>i</code> as current S cursor <br><br>delcare <code>mirror</code> as the i’s mirror index ps. <strong>2*center - right</strong></p>
+</blockquote>
+<p><strong><em>when right &gt; i, then P[i] &gt;= Min(P[mirror], right - i)<br></em></strong></p>
+<ol>
+<li>when <code>P[mirror]</code> is minimum, that meaning <strong>P[mirror] &lt; right - i</strong> <br><br>standard check block: <strong>(mirror - P[mirror], mirror + P[mirror]) | (i-P[mirror], i + P[mirror])</strong></li>
+<li>when <code>right - i</code> is minimum, that meaning <strong>P[mirror] &gt; right - i</strong> <br><br><code>mirror - P[mirror]</code> across the circle <em>left border</em>. <br><br>standard check block: <strong>(mirror - (right - i), mirrror + (right - i)) | (i - (right - i), right)</strong></li>
+</ol>
+<h2 id="Code-amp-Graph"><a href="#Code-amp-Graph" class="headerlink" title="Code &amp; Graph"></a>Code &amp; Graph</h2><p><img src="/2018/03/21/Manacher-s-algorithm/P[ j ] is less.png" alt></p>
+<p><img src="/2018/03/21/Manacher-s-algorithm/P[ j ] is more.png" alt></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// right = center + P[center]</span></span><br><span class="line"><span class="keyword">int</span> center = <span class="number">0</span>, right = <span class="number">0</span>;</span><br><span class="line"><span class="comment">// exclude last placeholder position</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>; i&lt;S.length-<span class="number">1</span>; i++) &#123;</span><br><span class="line">    <span class="comment">// j = 2*center - i</span></span><br><span class="line">    P[i] = right &gt; i? Math.min(P[<span class="number">2</span>*center - i], right - i): <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// include char itself, 1 bigger than standard implements</span></span><br><span class="line">    <span class="keyword">while</span>(S[i + P[i]] == S[i - P[i]]) P[i]++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// judge whether new radiu cross border</span></span><br><span class="line">    <span class="keyword">if</span>(i + P[i] &gt; right) &#123;</span><br><span class="line">        right = i + P[i];</span><br><span class="line">        center = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Biggest value in P[] is longest palindromic substring lengh<br>It’s index is substring’s char center index.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// find biggest value in P[]</span></span><br><span class="line">length--;</span><br><span class="line"><span class="comment">// and it's index</span></span><br><span class="line">center--;</span><br><span class="line">src.substring((center - length) / <span class="number">2</span>, (center + length) / <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>thanks:<br><a href="https://www.felix021.com/blog/read.php?2040" target="_blank" rel="noopener">https://www.felix021.com/blog/read.php?2040</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/03/10/Elementary-transformation-Linear-equations-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2852,603 +3235,6 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/12/28/determinant-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/12/28/determinant-4/" class="post-title-link" itemprop="url">determinant(4)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-12-28 09:04:23" itemprop="dateCreated datePublished" datetime="2017-12-28T09:04:23+08:00">2017-12-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Kramo-rule"><a href="#Kramo-rule" class="headerlink" title="Kramo rule"></a>Kramo rule</h2><p><strong>如果线性方程组的系数行列式不等于零，则方程组有唯一解</strong></p>
-<script type="math/tex; mode=display">
-x_1 = \frac {D_1}{D}
-, x_2 = \frac {D_2}{D}
-...
-, x_n = \frac {D_n}{D}</script><p>就方程组右边常数项b1 b2 … bn替换行列式列得到：</p>
-<script type="math/tex; mode=display">
-D_j = \begin{vmatrix}
-   a_{11} & ... & a_{1, j-1} & b_1 & a_{1, j+1} & ... a_{1n} \\
-   ... & ... & ... & ... & ... & ... \\
-   a_{n1} & ... & a_{n, j-1} & b_n & a_{n, j+1} & ... a_{nn}
-\end{vmatrix}</script><h3 id="定理4-如果线性方程组系数行列式D-neq-0，则方程组一定有解，且解唯一"><a href="#定理4-如果线性方程组系数行列式D-neq-0，则方程组一定有解，且解唯一" class="headerlink" title="定理4 如果线性方程组系数行列式D \neq 0，则方程组一定有解，且解唯一"></a>定理4 如果线性方程组系数行列式<script type="math/tex">D \neq 0</script>，则方程组一定有解，且解唯一</h3><h3 id="定理4’-如果方程组无解，或有两个以上的解，则方程组的行列式系数必为零"><a href="#定理4’-如果方程组无解，或有两个以上的解，则方程组的行列式系数必为零" class="headerlink" title="定理4’ 如果方程组无解，或有两个以上的解，则方程组的行列式系数必为零"></a>定理4’ 如果方程组无解，或有两个以上的解，则方程组的行列式系数必为零</h3><h3 id="定理5-如果齐次线性方程组的系数行列式D-neq-0，则方程组没有非零解"><a href="#定理5-如果齐次线性方程组的系数行列式D-neq-0，则方程组没有非零解" class="headerlink" title="定理5 如果齐次线性方程组的系数行列式D \neq 0，则方程组没有非零解"></a>定理5 如果齐次线性方程组的系数行列式<script type="math/tex">D \neq 0</script>，则方程组没有非零解</h3><h3 id="定理5’-如果齐次线性方程组有非零解，则方程组的行列式系数必为零"><a href="#定理5’-如果齐次线性方程组有非零解，则方程组的行列式系数必为零" class="headerlink" title="定理5’ 如果齐次线性方程组有非零解，则方程组的行列式系数必为零"></a>定理5’ 如果齐次线性方程组有非零解，则方程组的行列式系数必为零</h3><h2 id="Exercise"><a href="#Exercise" class="headerlink" title="Exercise"></a>Exercise</h2><ul>
-<li><script type="math/tex; mode=display">
-\begin{vmatrix}
-4 & 1 & 2 & 4 \\
-1 & 2 & 0 & 2 \\
-10 & 5 & 2 & 0 \\
-0 & 1 & 1 & 7
-\end{vmatrix}</script></li>
-</ul>
-<script type="math/tex; mode=display">r_1-2r_4, r_3-2r4</script><script type="math/tex; mode=display">
-\begin{vmatrix}
- 4 & -1 & 0 & -10 \\
- 1 & 2 & 0 & 2 \\
- 10 & 3 & 0 & -14 \\
- 0 & 1 & 1 & 7
-\end{vmatrix} =
-(-1)^7
-\begin{vmatrix}
- 4 & -1 & -10 \\
- 1 & 2 & 2 \\
- 10 & 3 & -14
-\end{vmatrix}</script><script type="math/tex; mode=display">c_2-2c_1, c_3-2c_1</script><script type="math/tex; mode=display">
-(-1)^7
-\begin{vmatrix}
- 4 & -9 & -18 \\
- 1 & 0 & 0 \\
- 10 & -17 & -34
-\end{vmatrix} =
-(-1)^7*(-1)^3
-\begin{vmatrix}
- -9 & -18 \\
- -17 & -34 \\
-\end{vmatrix} = 0</script><p>*</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
- 3 & 1 & -1 & 2\\
- -5 & 1 & 3 & -4\\
- 2 & 0 & 1 & -1\\
- 1 & -5 & 3 & -3
-\end{vmatrix}</script><p>求代数余子式</p>
-<script type="math/tex; mode=display">
-A_{31}+3A_{32}-2A_{33}+2A_{34}</script><p>系数替换对应行列式上的行：</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
- 3 & 1 & -1 & 2\\
- -5 & 1 & 3 & -4\\
- 1 & 3 & -2 & 2\\
- 1 & -5 & 3 & -3
-\end{vmatrix}</script><script type="math/tex; mode=display">c_3+c_4, r_2+r_1</script><script type="math/tex; mode=display">
-D = \begin{vmatrix}
- 3 & 1 & 1 & 2\\
- -2 & 2 & 0 & -2\\
- 1 & 3 & 0 & 2\\
- 1 & -5 & 0 & -3
-\end{vmatrix} = (-1)^4
-\begin{vmatrix}
- -2 & 2 & -2\\
- 1 & 3 & 2\\
- 1 & -5 & -3
-\end{vmatrix}</script><script type="math/tex; mode=display">c_2+c_1, c_3-c_1</script><script type="math/tex; mode=display">
-D = \begin{vmatrix}
- -2 & 0 & 0\\
- 1 & 4 & 1\\
- 1 & -4 & -4
-\end{vmatrix} = 24</script><p>*</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
- x & -1 & 0 & ... & 0 & 0\\
- 0 & x & -1 & ... & 0 & 0\\
- ... & ... & ... & ... & 0 & 0\\
- 0 & 0 & 0 & ... & x & -1\\
- a_0 & a_1 & a_2 & ... & a_{n-1} & a_n
-\end{vmatrix} =
-a_nx^n + a_{n-1}x^{n-1}...a_1x + a_0</script><script type="math/tex; mode=display">
-D_2 = \begin{vmatrix}
- x & -1 & 0 \\
- 0 & x & -1 \\
- a_0 & a_1 & a_2
-\end{vmatrix} = a_2x^2 + a_1x + a_0</script><script type="math/tex; mode=display">
-D_3 = \begin{vmatrix}
- x & -1 & 0 & 0\\
- 0 & x & -1 & 0\\
- 0 & 0 & x & -1\\
- a_0 & a_1 & a_2 & a_3
-\end{vmatrix} = b_{33}A_{33} + b_{34}A_{34}</script><p>$b_{34}$总是-1，排列位的和是奇数，与其代数余子式的符号相销得到：</p>
-<script type="math/tex; mode=display">
-b_{34}A_{34} = M_{34} = D_2</script><p>而$b_{33}$总是x，排列位的和是偶数，与余子式相等得到：</p>
-<script type="math/tex; mode=display">
-M_{33} = \begin{vmatrix}
- x & -1 & 0 \\
- 0 & x & 0 \\
- a_0 & a_1 & a_3
-\end{vmatrix}</script><p>交换r1 - r2, c1 - c2，可形成上三角型形式，可得：</p>
-<script type="math/tex; mode=display">
-b_{33}A_{33} = x * M_{33} = a_3x^3</script><script type="math/tex; mode=display">
-D_3 = b_{33}A_{33} + b_{34}A_{34} = a_3x^3 + D_2</script><p>根据归纳法可得：</p>
-<script type="math/tex; mode=display">
-D_n = a_nx^n + a_{n-1}x^{n-1}...a_1x + a_0</script><p>*</p>
-<script type="math/tex; mode=display">
-D_n = \begin{vmatrix}
- x & a & a & ... & a\\
- a & x & a & ... & a\\
- ... & ... & ... & ... & a\\
- a & a & a & ... & x
-\end{vmatrix}</script><script type="math/tex; mode=display">r_n-r_1</script><script type="math/tex; mode=display">
-D_n = \begin{vmatrix}
- x & a & a & ... & a\\
- a-x & x-a & 0 & ... & 0\\
- ... & ... & ... & ... & 0\\
- a-x & 0 & 0 & ... & x-a
-\end{vmatrix}</script><script type="math/tex; mode=display">c_1+c_2, c_1+c_3, ... c_1+c_n</script><script type="math/tex; mode=display">
-D_n = \begin{vmatrix}
- x + (n-1)a & a & a & ... & a\\
- 0 & x-a & 0 & ... & 0\\
- ... & ... & ... & ... & 0\\
- 0 & 0 & 0 & ... & x-a
-\end{vmatrix}</script><p>形成下三角型行列式，得到：</p>
-<script type="math/tex; mode=display">D_n = [x+(n-1)a](x-a)^{n-1}</script><ul>
-<li><script type="math/tex; mode=display">
-\begin{cases}
- 5x_1 &+& 6x_2 & & & & &= 1\\
- x_1 &+& 5x_2 &+& 6x_3 & & & = 0\\
- & & x_2 &+& 5x_3 &+& 6x_4 & = 0\\
- & & & & x_3 &+& 5x_4 & = 1
-\end{cases}</script></li>
-</ul>
-<script type="math/tex; mode=display">
-D = \begin{vmatrix}
-  5 & 6 & 0 & 0 \\
-  1 & 5 & 6 & 0 \\
-  0 & 1 & 5 & 6 \\
-  0 & 0 & 1 & 5
-\end{vmatrix} = 211</script><script type="math/tex; mode=display">
-D_1 = \begin{vmatrix}
-  1 & 6 & 0 & 0 \\
-  0 & 5 & 6 & 0 \\
-  0 & 1 & 5 & 6 \\
-  1 & 0 & 1 & 5
-\end{vmatrix} = 151</script><script type="math/tex; mode=display">
-D_2 = \begin{vmatrix}
-  5 & 1 & 0 & 0 \\
-  1 & 0 & 6 & 0 \\
-  0 & 0 & 5 & 6 \\
-  0 & 1 & 1 & 5
-\end{vmatrix} = 161</script><script type="math/tex; mode=display">
-D_3 = \begin{vmatrix}
-  5 & 6 & 1 & 0 \\
-  1 & 5 & 0 & 0 \\
-  0 & 1 & 0 & 6 \\
-  0 & 0 & 1 & 5
-\end{vmatrix} = 109</script><script type="math/tex; mode=display">
-D_4 = \begin{vmatrix}
-  5 & 6 & 0 & 1 \\
-  1 & 5 & 6 & 0 \\
-  0 & 1 & 5 & 0 \\
-  0 & 0 & 1 & 1
-\end{vmatrix} = 64</script>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/12/25/determinant-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/12/25/determinant-3/" class="post-title-link" itemprop="url">determinant(3)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-12-25 18:40:21" itemprop="dateCreated datePublished" datetime="2017-12-25T18:40:21+08:00">2017-12-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Expand-by-row-column"><a href="#Expand-by-row-column" class="headerlink" title="Expand by row(column)"></a>Expand by row(column)</h2><h3 id="表达"><a href="#表达" class="headerlink" title="表达"></a>表达</h3><p>把n阶行列式i行j列的元素划掉后剩下n-1阶行列行列式称为<script type="math/tex">a_{ij}</script>的余子式记作<script type="math/tex">M_{ij}</script></p>
-<p>加上符号变化，得到(i, j)元的代数余子式：</p>
-<script type="math/tex; mode=display">
-A_{ij} = (-1)^{(i + j)}M_{ij}</script><h3 id="引理-一个n阶行列式，如果第i行的元素除了-i-j-元a-ij-外都为0，那么行列式等于a-ij-和它的代数余子式的乘积"><a href="#引理-一个n阶行列式，如果第i行的元素除了-i-j-元a-ij-外都为0，那么行列式等于a-ij-和它的代数余子式的乘积" class="headerlink" title="引理 一个n阶行列式，如果第i行的元素除了(i, j)元a_{ij}外都为0，那么行列式等于a_{ij}和它的代数余子式的乘积"></a>引理 一个n阶行列式，如果第i行的元素除了(i, j)元<script type="math/tex">a_{ij}</script>外都为0，那么行列式等于<script type="math/tex">a_{ij}</script>和它的代数余子式的乘积</h3><script type="math/tex; mode=display">
-D = a_{ij}A_{ij}</script><ul>
-<li><p>当(i, j)元是(1, 1)时有：</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
-   a_{11} & 0 & ... & 0\\
-   a_{21} & a_{22} & ... & a_{2n}\\
-   ... & ... & ... & ...\\
-   a_{31} & a_{32} & ... & a_{3n}
-\end{vmatrix}</script><p>参照例10，右上角为0时，行列式等于主对角两行列式的积：</p>
-<script type="math/tex; mode=display">D = a_{11}M_{11}</script><script type="math/tex; mode=display">A_{11} = (-1)^2M_{11}</script><script type="math/tex; mode=display">D = a_{11}A_{11}</script></li>
-<li><p>当(i, j)为一般情况时有：</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
-   a_{11} & ... & a_{1j} & ... & a_{1n}\\
-   ... & ... & ... & ... & ... \\
-   0 & ... & a_{ij} & ... & 0\\
-   ... & ... & ... & ... & ... \\
-   a_{n1} & ... & a_{nj} & ... & a_{nn}
-\end{vmatrix}</script><p>将(i, j)元对换到(1, 1)位，需要i + j - 2次对换。</p>
-<script type="math/tex; mode=display">
-D_1 = (-1)^{(i + j - 2)}D = (-1)^{(i + j)}D</script><p>替换到(1, 1)元原行列式变号。所得的余子式，即是(i, j)元的余子式</p>
-<script type="math/tex; mode=display">
-D = (-1)^{(i + j)}D1 = (-1)^{(i + j)}a_{ij}M_{ij} = a_{ij}A_{ij}</script><p>根据(1, 1)元的结果，<script type="math/tex">D1 = a_{ij}M_{ij}</script><br><script type="math/tex">M_{ij}</script>的变号结果与之前的“换行”变号相销，即得到相同结论。</p>
-</li>
-</ul>
-<h3 id="定理3-行列式等于它的任一行（列）的元素与其对应代数余子式的乘积和"><a href="#定理3-行列式等于它的任一行（列）的元素与其对应代数余子式的乘积和" class="headerlink" title="定理3 行列式等于它的任一行（列）的元素与其对应代数余子式的乘积和"></a>定理3 行列式等于它的任一行（列）的元素与其对应代数余子式的乘积和</h3><p>将i行所有元素都表示为(i, k)元加n-1个0，根据性质5，展开n个行列式。<br>再根据之前的引理，即可得到：</p>
-<script type="math/tex; mode=display">
-D = a_{i1}A_{i1} + a_{i2}A_{i2} + ... + a_{in}A_{in}</script><p>或是：</p>
-<script type="math/tex; mode=display">
-D = a_{1i}A_{1i} + a_{2i}A_{2i} + ... + a_{ni}A_{ni}</script><h3 id="范德门德行列式-Vandermonde"><a href="#范德门德行列式-Vandermonde" class="headerlink" title="范德门德行列式(Vandermonde)"></a>范德门德行列式(Vandermonde)</h3><script type="math/tex; mode=display">
-D_n = \begin{vmatrix}
-   1 & 1 & ... & 1 \\
-   x_1 & x_2 & ... & x_n \\
-   x^2_1 & x^2_2 & ... & x^2_n \\
-   ... & ... & ... & ... \\
-   x^{n-1}_1 & x^{n-1}_2 & ... & x^{n-1}_n \\
-\end{vmatrix} = \prod_{n \ge i > j \ge 1}(x_i - x_j)</script><p>式子中的符号代表所有同类因子的乘积。<br>当n=2时，行列式结果为  <script type="math/tex">x_2-x_1</script> 符合结论。</p>
-<p>当一般情况时，将行列式降阶。将后一行减去前一行的x1倍得到：</p>
-<script type="math/tex; mode=display">
-\begin{vmatrix}
-   1 & 1 & ... & 1 \\
-   0 & x_2-x_1 & ... & x_n-x_1 \\
-   0 & x_2(x_2-x_1) & ... & x_n(x_n-x_1) \\
-   ... & ... & ... & ... \\
-   0 & x^{n-2}_2(x_2-x_1) & ... & x^{n-2}_n(x_n-x_1)
-\end{vmatrix}</script><p>按第一列展开，将公因子<script type="math/tex">x_i-x_1</script>提出：</p>
-<script type="math/tex; mode=display">
-D_n = (x_2 - x_1)(x_3 - x1)...(x_n - x1)\begin{vmatrix}
-   1 & 1 & ... & 1 \\
-   x_2 & x_3 & ... & x_n \\
-   x^2_2 & x^2_3 & ... & x^2_n \\
-   ... & ... & ... & ... \\
-   x^{n-2}_2 & x^{n-2}_3 & ... & x^{n-2}_n
-\end{vmatrix}</script><p>右端是n-1阶范德门德行列式，按归纳法有：</p>
-<script type="math/tex; mode=display">
-D_n = (x_2 - x_1)(x_3 - x1)...(x_n - x1)
-= \prod_{n \ge i > j \ge 2}(x_i - x_j)
-= \prod_{n \ge i > j \ge 1}(x_i - x_j)</script><p>递推过程中会将<script type="math/tex">x_i-x_j</script>的所有组合乘一遍，所得即是全体同类因子的乘积</p>
-<h3 id="推论-行列式某一行（列）元素与另一行（列）元素的对应代数余子式乘积只和等于零"><a href="#推论-行列式某一行（列）元素与另一行（列）元素的对应代数余子式乘积只和等于零" class="headerlink" title="推论 行列式某一行（列）元素与另一行（列）元素的对应代数余子式乘积只和等于零"></a>推论 行列式某一行（列）元素与另一行（列）元素的对应代数余子式乘积只和等于零</h3><script type="math/tex; mode=display">
-a_{i1}A_{j1} + a_{i2}A_{j2} + ... + a_{in}A_{jn} = 0, i \neq j</script><p>将行列式<script type="math/tex">D = det(a_{ij})</script>，按第j行展开有：</p>
-<script type="math/tex; mode=display">
-a_{j1}A_{j1} + a_{j2}A_{j2} + ... + a_{jn}A_{jn} =
-\begin{vmatrix}
-   a_{11} & ... & a_{1n} \\
-   ... & ... & ... \\
-   a_{i1} & ... & a_{in} \\
-   ... & ... & ... \\
-   a_{j1} & ... & a_{jn} \\
-   ... & ... & ... \\
-   a_{n1} & ... & a_{nn}
-\end{vmatrix}</script><p>将aj行换成ai行将导致有两行元素相同，导致行列式等于零。</p>
-<script type="math/tex; mode=display">
-\sum_{k=1}^{n}a_{ik}A_{jk}
-= D\delta_{ij}
-= \begin{cases}
-   D &\text{if } i = j  \\
-   0 &\text{if } i \neq j
-\end{cases}</script><script type="math/tex; mode=display">
-\delta_{ij}
-= \begin{cases}
-   1 &\text{if } i = j  \\
-   0 &\text{if } i \neq j
-\end{cases}</script>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3495,7 +3281,7 @@ a_{j1}A_{j1} + a_{j2}A_{j2} + ... + a_{jn}A_{jn} =
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">272</span>
+                    <span class="site-state-item-count">274</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3679,7 +3465,9 @@ a_{j1}A_{j1} + a_{j2}A_{j2} + ... + a_{jn}A_{jn} =
                     
                       
                     
-                    <span class="site-state-item-count">55</span>
+                      
+                    
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -4262,11 +4050,11 @@ a_{j1}A_{j1} + a_{j2}A_{j2} + ... + a_{jn}A_{jn} =
   
     
       
+    
+      
+    
+      
         
-      
-    
-      
-    
       
     
       
