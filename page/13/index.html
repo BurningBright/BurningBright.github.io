@@ -351,6 +351,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/25/Springboot-Schedule/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/07/25/Springboot-Schedule/" class="post-title-link" itemprop="url">Springboot Schedule</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-25 14:59:21" itemprop="dateCreated datePublished" datetime="2018-07-25T14:59:21+08:00">2018-07-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Maven-config"><a href="#Maven-config" class="headerlink" title="Maven config"></a>Maven config</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+<p>Add <code>@EnableScheduling</code> annotation in application main or configuration class</p>
+<h2 id="Thread-pool"><a href="#Thread-pool" class="headerlink" title="Thread pool"></a>Thread pool</h2><p>In <code>org.springframework.scheduling.config.ScheduledTaskRegistrar</code><br>after the after properties set, spring set a default single thread excutor.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">scheduleTasks</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> now = System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">this</span>.taskScheduler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.localExecutor = Executors.newSingleThreadScheduledExecutor();</span><br><span class="line">        <span class="keyword">this</span>.taskScheduler = <span class="keyword">new</span> ConcurrentTaskScheduler(<span class="keyword">this</span>.localExecutor);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>When the program’s schedules need time to deal with the job.<br>Single Thread excutor may cause job be blocked, then the job’s excuted time might be wrong.</p>
+<p>So when the single node have hard works need be done precisely, we need a selfdefine threadpool.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScheduleConfig</span> <span class="keyword">implements</span> <span class="title">SchedulingConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configureTasks</span><span class="params">(ScheduledTaskRegistrar taskRegistrar)</span> </span>&#123;</span><br><span class="line">        taskRegistrar.setScheduler(taskExecutor());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span>(destroyMethod=<span class="string">"shutdown"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">taskExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Executors.newScheduledThreadPool(<span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Close"><a href="#Close" class="headerlink" title="Close"></a>Close</h2><p>When the web application closed, the threadpool is still alive, we need actively close it.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class MyTask implements DisposableBean&#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void destroy() throws Exception &#123;</span><br><span class="line">        ThreadPoolTaskScheduler scheduler =</span><br><span class="line">            (ThreadPoolTaskScheduler)applicationContext.getBean(&quot;scheduler&quot;);</span><br><span class="line">        scheduler.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Cluster"><a href="#Cluster" class="headerlink" title="Cluster"></a>Cluster</h2><p>If the schedule needs enterprise level structure, a schedule cluster is needed.<br>Use consistency middle ware/[DB]/[Cache] control the schedule node’s behaviour.<br>Use Message queue control the job’s status/ corn, even add/ remove jobs.<br>Spring schedule not support the persistency feature, but through mechanism it still can be resolved.<br>If the requirement is that level, use spring schedule may not be a good choice.</p>
+<p><a href="https://www.cnblogs.com/skychenjiajun/p/9057379.html" target="_blank" rel="noopener">https://www.cnblogs.com/skychenjiajun/p/9057379.html</a><br><a href="https://blog.csdn.net/qq_34125349/article/details/77430956" target="_blank" rel="noopener">https://blog.csdn.net/qq_34125349/article/details/77430956</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/07/11/Kafka-quickstart-in-windows/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2099,199 +2282,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/20/Java-exec/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/04/20/Java-exec/" class="post-title-link" itemprop="url">Java exec</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-04-20 16:53:42" itemprop="dateCreated datePublished" datetime="2018-04-20T16:53:42+08:00">2018-04-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Init"><a href="#Init" class="headerlink" title="Init"></a>Init</h2><ol>
-<li><code>Runtime.getRuntime()</code> is the only method can get jvm runing environment</li>
-<li>Most method in Runtime is implements method</li>
-<li>Runtime.exit() is the only method exit current jvm. <code>System.exit()</code></li>
-<li><code>0</code> represent normal execute, !<code>0</code> represent exception</li>
-<li><code>Runtime.addShutdownHook()</code> can recieve a thread object as a handle</li>
-<li><code>public Process exec(String[] cmdarray, String[] envp, File dir)</code><br>when sub process use current process environment variable, envp is null.</li>
-</ol>
-<h2 id="Call"><a href="#Call" class="headerlink" title="Call"></a>Call</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.exitValue();</span><br></pre></td></tr></table></figure>
-<p>Process call exitValue is not block, if needed add a loop call</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>correct call process need set process’s stream setting, make sure thread will not block.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello &gt; hi"</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>in command line can’t execute bash sign like <code>&gt;</code> <code>&gt;&gt;</code> <code>&lt;</code> <code>&amp;</code>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"/bin/bash"</span>, <span class="string">"-c"</span>, <span class="string">"java hello &gt; hi"</span>&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure>
-<p>if need these local operation, you can write these in a shell script, or load bash in java.</p>
-<h2 id="Call-in-windows"><a href="#Call-in-windows" class="headerlink" title="Call in windows"></a>Call in windows</h2><p>if you want call in windows you need install bash first<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p>if jvm execute path is not the <code>exec</code> path, you need add specific path<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(</span><br><span class="line">              <span class="keyword">new</span> String[]&#123;<span class="string">"D:\\Program Files\\Git\\bin\\sh.exe"</span>, <span class="string">"-c"</span>, command&#125;, <span class="keyword">null</span>, <span class="keyword">new</span> File(workPath));</span><br><span class="line"><span class="comment">// add stream setting</span></span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p>ps. <code>-c</code> mean read parameter in string format, not directly %0 %1</p>
-<h2 id="Another-way"><a href="#Another-way" class="headerlink" title="Another way"></a>Another way</h2><p>If you want jvm do standard in /out, use another thread read or write data<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Process proc = Runtime.getRuntime().exec(<span class="string">"java hello"</span>);</span><br><span class="line"><span class="comment">// add pip stream thread setting</span></span><br><span class="line">StreamThread director = <span class="keyword">new</span> StreamThread(proc.getInputStream()，proc.getOutputStream());</span><br><span class="line">director.start();</span><br><span class="line"><span class="keyword">int</span> exitVal = proc.waitFor();</span><br></pre></td></tr></table></figure></p>
-<p><a href="https://blog.csdn.net/mengxingyuanlove/article/details/50707746" target="_blank" rel="noopener">https://blog.csdn.net/mengxingyuanlove/article/details/50707746</a><br><a href="https://blog.csdn.net/timo1160139211/article/details/75006938" target="_blank" rel="noopener">https://blog.csdn.net/timo1160139211/article/details/75006938</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2338,7 +2328,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">274</span>
+                    <span class="site-state-item-count">275</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

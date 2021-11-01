@@ -351,6 +351,240 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-whole-words/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/06/Match-whole-words/" class="post-title-link" itemprop="url">Match whole words</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-06 22:07:37" itemprop="dateCreated datePublished" datetime="2017-02-06T22:07:37+08:00">2017-02-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><blockquote>
+<p>My cat is brown<br>category<br>octocat<br>staccato</p>
+</blockquote>
+<ul>
+<li>find word ‘cat’</li>
+<li>find word begin with ‘cat’</li>
+<li>find word end with ‘cat’</li>
+<li>find word contain ‘cat’</li>
+<li>find word not begin with ‘cat’</li>
+<li>find word not end with ‘cat’</li>
+<li>find word not contain ‘cat’</li>
+</ul>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p><strong>Word boundaries</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\bcat\b</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>Regex options: None</li>
+<li><p>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<br><strong>Nonboundaries</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\Bcat\B</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Regex options: None</p>
+</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">\bcat       (?&lt;!\w)(?=\w)cat</span><br><span class="line">cat\b       cat(?&lt;=\w)(?!\w)</span><br><span class="line">\Bcat       (?&lt;=\w)cat(?!\w)</span><br><span class="line">cat\B       (?&lt;!\w)cat(?=\w)</span><br><span class="line">\b(?!\w*?cat\w*?)\w+?\b</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong><em>\b  -&gt;  (?&lt;=\w)(?!\w)|(?&lt;!\w)(?=\w)</em></strong></p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p><strong>‹\b› matches in these three positions:</strong></p>
+<ul>
+<li>Before the first character in the subject, if the first character is a word character</li>
+<li>After the last character in the subject, if the last character is a word character</li>
+<li>Between two characters in the subject, where one is a word character and the other<br>is not a word character</li>
+</ul>
+<p><strong>‹\B› matches in these five positions:</strong></p>
+<ul>
+<li>Before the first character in the subject, if the first character is not a word character</li>
+<li>After the last character in the subject, if the last character is not a word character</li>
+<li>Between two word characters</li>
+<li>Between two nonword characters</li>
+<li>The empty string</li>
+</ul>
+<h2 id="Word-Characters"><a href="#Word-Characters" class="headerlink" title="Word Characters"></a>Word Characters</h2><ul>
+<li><code>Java</code> :<ul>
+<li><strong>Java 4 to 6</strong> ‹\w› matches <strong>only ASCII</strong> characters</li>
+<li><strong>Java 7</strong> ‹\w› extended matches Unicode characters if set the <code>UNICODE_CHARACTER_CLASS</code> flag</li>
+<li><strong>All version Java</strong> ‹\b› is Unicode-enabled, supporting any script</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><code>.NET, JavaScript, PCRE, Perl, Python, and Ruby have</code>:<ul>
+<li>‹\b› match between two characters where <strong>one is</strong> matched by ‹\w› and <strong>the other</strong> by ‹\W›.</li>
+<li>‹\B› always matches between two characters where <strong>both</strong> are matched by ‹\w› or ‹\W›</li>
+</ul>
+</li>
+<li><code>JavaScript, PCRE, and Ruby</code> : ‹\w› is identical to ‹[a-zA-Z0-9_]› so only “whole words only” search in language which use <strong>Latin alphabet</strong>.</li>
+<li><p><code>.NET</code> : treats letters and digits from <strong>all scripts</strong> as word characters. You can do a “whole words only” search on words in <strong>any language</strong></p>
+</li>
+<li><p><code>Python 2.x</code>: non-ASCII characters are included only if you pass the <code>UNICODE</code> or <code>U</code> flag when creating the regex.</p>
+</li>
+<li><p><code>Python 3.x</code>: non-ASCII character are included by default, but you can exclude them with the <code>ASCII</code> or <code>A</code>flag. This flag affects both ‹\b› and ‹\w› equally.</p>
+</li>
+<li><p><code>Perl</code>: depends on your version of <code>Perl</code> and <code>/adlu</code> flags whether ‹\w› is pure ASCII or includes all Unicode letters, digits, and underscores.</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/06/Match-start-end/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2703,457 +2937,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/01/30/Full-text-retrieval-fundamental-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/01/30/Full-text-retrieval-fundamental-2/" class="post-title-link" itemprop="url">Full-text retrieval fundamental (2)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-01-30 14:17:51" itemprop="dateCreated datePublished" datetime="2017-01-30T14:17:51+08:00">2017-01-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="How-to-build-Index"><a href="#How-to-build-Index" class="headerlink" title="How to build Index"></a>How to build Index</h2><h3 id="1-Prepare-origin-Document"><a href="#1-Prepare-origin-Document" class="headerlink" title="1. Prepare origin Document"></a>1. Prepare origin Document</h3><ul>
-<li>file1: Researches of Chinese full-text search technologies based on word indexing is related to many fields.</li>
-<li>file2: The Index Data Service provides basic full-text functions for storage and retrieval of terms and indexed summary documents.<h3 id="2-Put-Document-TOKENIZER"><a href="#2-Put-Document-TOKENIZER" class="headerlink" title="2. Put Document TOKENIZER"></a>2. Put Document TOKENIZER</h3></li>
-</ul>
-<ol>
-<li>split Document into words</li>
-<li>separate <code>symbols</code></li>
-<li><p>separate <code>Stop word</code></p>
-<p>Stop word in english like: “like”, “a”, “this”…<br>After Tokenier got Token:<br>“Researches” “Chinese” “full” “text” “search” “technologies” “word” “indexing” “related” “many” “fields” “Index” “Data” “Service” “provides” “basic” “full” “text” “functions” “storage” “retrieval” “terms” “indexed” “summary” “documents”</p>
-</li>
-</ol>
-<h3 id="3-Put-TOKEN-to-LINGUISTIC-PROCESSOR"><a href="#3-Put-TOKEN-to-LINGUISTIC-PROCESSOR" class="headerlink" title="3. Put TOKEN to LINGUISTIC PROCESSOR"></a>3. Put TOKEN to LINGUISTIC PROCESSOR</h3><ol>
-<li>to Lowercase</li>
-<li>words reduce to root type like “fields” to “field” <code>stemming</code></li>
-<li><p>words to origin type like “indexed” to “index” <code>lemmatization</code></p>
-<p><strong><em>the difference between “Stemming” and “lemmatization”</em></strong></p>
-<ul>
-<li>same: make words to initial</li>
-<li><p>difference:</p>
-<blockquote>
-<ul>
-<li>Stemming is reduce</li>
-<li>lemmatization is change</li>
-</ul>
-</blockquote>
-</li>
-<li><p>difference in algorithm:</p>
-<blockquote>
-<ul>
-<li>Stemming is delete “s”, “ing”-&gt;”e”, “ational”-&gt;”ate”, “tional”-&gt; “tion”</li>
-<li>lemmatization is “drove” -&gt; “drive”</li>
-</ul>
-</blockquote>
-</li>
-<li>they are not mutex, but mates</li>
-</ul>
-<p><strong><em>After linguistic processor result be call <code>Term</code>:</em></strong><br>“researche” “chinese” “full” “text” “search” “technologie” “word” “index” “relate” “many” “field” “index” “data” “service” “provide” “basic” “full” “text” “function” “storage” “retrieve” “term” “index” “summary” “document”</p>
-<p>Because the linguistic processor when search drove, drive’s documents can be found.</p>
-</li>
-</ol>
-<h3 id="4-Put-TERM-to-INDEXER"><a href="#4-Put-TERM-to-INDEXER" class="headerlink" title="4. Put TERM to INDEXER"></a>4. Put TERM to INDEXER</h3><ol>
-<li>Build a dictionary in Term</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th style="text-align:right">Document ID</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>researche</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>chinese</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>search</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>technologie</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>word</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>relate</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>many</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>field</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>data</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>service</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>provide</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>basic</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>function</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>storage</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>retrieve</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>term</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>summary</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>document</td>
-<td style="text-align:right">2</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ol>
-<li>sort table by key’s first letter</li>
-</ol>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>Term</th>
-<th style="text-align:right">Document ID</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>basic</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>chinese</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>data</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>document</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>field</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>full</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>function</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>index</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>many</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>provide</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>relate</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>researche</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>retrieve</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>search</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>service</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>storage</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>summary</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>technologie</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>term</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">1</td>
-</tr>
-<tr>
-<td>text</td>
-<td style="text-align:right">2</td>
-</tr>
-<tr>
-<td>word</td>
-<td style="text-align:right">1</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ol>
-<li>merge same Term into Posting List<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Term-[Document Frequency] | DocumentID-Frequency</span><br><span class="line">basic-1        2-1</span><br><span class="line">chinese-1     1-1</span><br><span class="line">data-1        2-1</span><br><span class="line">document-1    2-1</span><br><span class="line">field-1       1-1</span><br><span class="line">full-2        1-1 -&gt; 2-1</span><br><span class="line">function-1    2-1</span><br><span class="line">index-2       2-2 -&gt; 1-1</span><br><span class="line">many-1        1-1</span><br><span class="line">provide-1     2-1</span><br><span class="line">relate-1      1-1</span><br><span class="line">researche-1   1-1</span><br><span class="line">retrieve-2    2-1</span><br><span class="line">search-1      1-1</span><br><span class="line">service-2     2-1</span><br><span class="line">storage-2     2-1</span><br><span class="line">summary-2     2-1</span><br><span class="line">technologie-1 1-1</span><br><span class="line">term-2        2-1</span><br><span class="line">text-2        2-1 -&gt; 1-1</span><br><span class="line">word-1        1-1</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<ul>
-<li>Document Frequency: Document appear times</li>
-<li>Frequency: Term appear times in Document</li>
-</ul>
-<p><strong><em> When searching “drive” “driving” “drove” “driven” will be processor to drive like build Index process </em></strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3200,7 +2983,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">274</span>
+                    <span class="site-state-item-count">275</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

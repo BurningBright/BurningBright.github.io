@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/19/Rtmp-in-raspberry/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/19/Rtmp-in-raspberry/" class="post-title-link" itemprop="url">Rtmp in raspberry</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-19 22:47:52" itemprop="dateCreated datePublished" datetime="2017-06-19T22:47:52+08:00">2017-06-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="install-relay"><a href="#install-relay" class="headerlink" title="install relay"></a>install relay</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential libpcre3 libpcre3-dev libssl-dev</span><br></pre></td></tr></table></figure>
+<h3 id="install-nginx"><a href="#install-nginx" class="headerlink" title="install nginx"></a>install nginx</h3><p>prepare</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo wget http://nginx.org/download/nginx-1.13.1.tar.gz</span><br><span class="line"></span><br><span class="line">tar -zxvf nginx-1.13.1.tar.gz</span><br><span class="line"></span><br><span class="line">sudo wget https://github.com/arut/nginx-rtmp-module/archive/master.zip</span><br><span class="line"></span><br><span class="line">unzip master.zip</span><br><span class="line"></span><br><span class="line">cd nginx-1.13.1</span><br></pre></td></tr></table></figure>
+<p>compile &amp; install</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master</span><br><span class="line">sudo make</span><br><span class="line">sudo sudo make install</span><br></pre></td></tr></table></figure>
+<h3 id="config"><a href="#config" class="headerlink" title="config"></a>config</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">rtmp &#123;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 1935;</span><br><span class="line">        chunk_size 4096;</span><br><span class="line">        application live &#123;</span><br><span class="line">            live on;</span><br><span class="line">            record off;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://blog.csdn.net/defonds/article/details/9274479/" target="_blank" rel="noopener">http://blog.csdn.net/defonds/article/details/9274479/</a></p>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>restart<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/local/nginx/sbin/nginx -s stop</span><br><span class="line">sudo /usr/local/nginx/sbin/nginx</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep nginx</span><br><span class="line">kill -QUIT xxx</span><br><span class="line">/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure>
+<h3 id="test"><a href="#test" class="headerlink" title="test"></a>test</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -re -i &quot;/mnt/pny/T25.mp4&quot; -vcodec libx264 -r 15 -vprofile baseline -acodec aac -ar 44100 -strict -2 -ac 1 -f flv -b:v 500k -s 360x240 -q 10 rtmp://192.168.xxx.xxx:1935/live/demo</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/16/Char-in-MFC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2100,212 +2282,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/29/ZK-queue/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/29/ZK-queue/" class="post-title-link" itemprop="url">ZK queue</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-29 22:19:42" itemprop="dateCreated datePublished" datetime="2017-05-29T22:19:42+08:00">2017-05-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><ul>
-<li><strong>Define</strong></li>
-</ul>
-<p><code>static public class Queue extends SyncPrimitive</code></p>
-<p>class define in SyncPrimitive, it’s inner static class.</p>
-<p>same as the previous article <code>ZK barrier</code></p>
-<ul>
-<li><p><strong>Properties</strong><br>no properties</p>
-</li>
-<li><p><strong>Constructor</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Queue(String address, String name) &#123;</span><br><span class="line">    <span class="keyword">super</span>(address);</span><br><span class="line">    <span class="keyword">this</span>.root = name;</span><br><span class="line">    <span class="comment">// Create ZK node name</span></span><br><span class="line">    <span class="keyword">if</span> (zk != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Stat s = zk.exists(root, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span><br><span class="line">                zk.create(root, <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">0</span>],</span><br><span class="line">                 Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                        CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (KeeperException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>the constructor is not same as barrier, it no need common path.</p>
-<ul>
-<li><strong>push</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">produce</span><span class="params">(<span class="keyword">int</span> i)</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    ByteBuffer b = ByteBuffer.allocate(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">byte</span>[] value;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add child with value i</span></span><br><span class="line">    b.putInt(i);</span><br><span class="line">    value = b.array();</span><br><span class="line">    zk.create(root + <span class="string">"/element"</span>, value, Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                CreateMode.PERSISTENT_SEQUENTIAL);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>create a node with value.</p>
-<ul>
-<li><strong>pop</strong><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">consume</span><span class="params">()</span> <span class="keyword">throws</span> KeeperException, InterruptedException</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> retvalue = -<span class="number">1</span>;</span><br><span class="line">    Stat stat = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get the first element available</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (mutex) &#123;</span><br><span class="line">            List&lt;String&gt; list = zk.getChildren(root, <span class="keyword">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (list.size() == <span class="number">0</span>) &#123;</span><br><span class="line">                System.out.println(<span class="string">"Going to wait"</span>);</span><br><span class="line">                mutex.wait();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                String min = list.get(<span class="number">0</span>).substring(<span class="number">7</span>);</span><br><span class="line">                <span class="keyword">for</span>(String s : list)&#123;</span><br><span class="line">                  String tempValue = s.substring(<span class="number">7</span>);</span><br><span class="line">                  min = tempValue.compareTo(min) &lt; <span class="number">0</span>? tempValue: min;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                System.out.println(<span class="string">"Temporary value: "</span> +</span><br><span class="line">                    root + <span class="string">"/element"</span> + min);</span><br><span class="line">                <span class="keyword">byte</span>[] b = zk.getData(root +</span><br><span class="line">                    <span class="string">"/element"</span> + min, <span class="keyword">false</span>, stat);</span><br><span class="line">                zk.delete(root + <span class="string">"/element"</span> + min, <span class="number">0</span>);</span><br><span class="line">                ByteBuffer buffer = ByteBuffer.wrap(b);</span><br><span class="line">                retvalue = buffer.getInt();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> retvalue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>Synchronously pop the minimum node name’s node.</p>
-<h3 id="Test-queue"><a href="#Test-queue" class="headerlink" title="Test queue"></a>Test queue</h3><ul>
-<li><p>a producer</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"7"</span>, <span class="string">"p"</span>&#125;;</span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        queueTest(args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>few customer</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> String[] args = &#123;<span class="string">"qTest"</span>, <span class="string">"192.168.3.11:2181"</span>, <span class="string">"3"</span>, <span class="string">"c"</span>&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;Integer.valueOf(args[<span class="number">2</span>]); i++) &#123;</span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            queueTest(args);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Thinking"><a href="#Thinking" class="headerlink" title="Thinking"></a>Thinking</h3><p>Queue’s sequential rely on the node name’s sequential.<br>If nodes’ name sequential messed up, the queue is messed as well.</p>
-<p>The queue rely on name form, so the data’s key must all be fetch from zookeeper.<br>If the key quantity is big, the I/O cost well be appreciable.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2352,7 +2328,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">274</span>
+                    <span class="site-state-item-count">275</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
