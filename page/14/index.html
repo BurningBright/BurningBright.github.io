@@ -351,6 +351,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/18/aws-ec2-mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/05/18/aws-ec2-mysql/" class="post-title-link" itemprop="url">aws ec2 mysql</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-05-18 15:23:50" itemprop="dateCreated datePublished" datetime="2018-05-18T15:23:50+08:00">2018-05-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install mysql mysql-server mysql-libs</span><br><span class="line"></span><br><span class="line"># change owner &amp; group</span><br><span class="line">sudo chgrp -R mysql /var/lib/mysql</span><br><span class="line">chmod -R 770 /var/lib/mysql</span><br></pre></td></tr></table></figure>
+<h2 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &apos;character_set_%&apos;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | latin1                     |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | latin1                     |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">set character_set_server=utf8;</span><br><span class="line">set character_set_database=utf8;</span><br><span class="line">SHOW VARIABLES LIKE &apos;character_set_%&apos;;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | utf8                       |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | utf8                       |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br></pre></td></tr></table></figure>
+<h2 id="Passwd"><a href="#Passwd" class="headerlink" title="Passwd"></a>Passwd</h2><ol>
+<li><p>mysqladmin</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -u root password &apos;psswd&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>update</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root</span><br><span class="line">　mysql&gt; use mysql;</span><br><span class="line">　mysql&gt; UPDATE user SET Password = PASSWORD(&apos;passwd&apos;) WHERE user = &apos;root&apos;;</span><br><span class="line">　mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>set</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MySQL -u root</span><br><span class="line">　　mysql&gt; SET PASSWORD FOR &apos;root&apos;@&apos;localhost&apos; = PASSWORD(&apos;passwd&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>skip</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/my.cnf</span><br><span class="line"># remove after the job</span><br><span class="line">add `skip-grant-tables`</span><br><span class="line">wq</span><br><span class="line">service mysqld restart</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">service mysqld stop</span><br><span class="line">mysqld_safe --skip-grant-tables&amp;</span><br></pre></td></tr></table></figure>
+<h2 id="User-amp-Db"><a href="#User-amp-Db" class="headerlink" title="User &amp; Db"></a>User &amp; Db</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create user &apos;test&apos;@&apos;localhost&apos; identified by &apos;123456&apos;;</span><br><span class="line">create database testdb default charset utf8 collate utf8_general_ci;</span><br><span class="line">grant all privileges on `testdb`.* to &apos;test&apos;@&apos;localhost&apos; identified by &apos;123456&apos;;</span><br><span class="line">flush privileges;</span><br><span class="line">mysql -u test -h 1.1.1.1 -p</span><br></pre></td></tr></table></figure>
+<h2 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h2><p><strong>ERROR 1227 (42000): Access denied; you need (at least one of) …</strong><br>If sign in mysql in localhost like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p</span><br></pre></td></tr></table></figure></p>
+<p>no privileges on create user/ create db/ show process …<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">show grants for &apos;&apos;@&apos;localhost&apos;;</span><br><span class="line">+----------------------------------------------------------------------+</span><br><span class="line">| Grants for @localhost                                                |</span><br><span class="line">+----------------------------------------------------------------------+</span><br><span class="line">| GRANT USAGE ON *.* TO &apos;&apos;@&apos;localhost&apos; IDENTIFIED BY PASSWORD &lt;secret&gt; |</span><br><span class="line">+----------------------------------------------------------------------+</span><br></pre></td></tr></table></figure></p>
+<p>the command should be like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -h 127.0.0.1 -p</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://blog.csdn.net/qq1010885678/article/details/47955717" target="_blank" rel="noopener">Amazon EC2</a><br><a href="https://blog.csdn.net/u013252149/article/details/52794880" target="_blank" rel="noopener">AWS Linux MySQL Install</a><br><a href="https://blog.csdn.net/mchdba/article/details/10435883" target="_blank" rel="noopener">ERROR 1227 (42000)</a><br><a href="https://blog.csdn.net/hill_night/article/details/45029601" target="_blank" rel="noopener">ERROR 1045 (28000)</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/04/20/Java-exec/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2611,336 +2806,6 @@ A^4 = \begin{pmatrix}
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/01/18/matrix-arithmetic-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/01/18/matrix-arithmetic-1/" class="post-title-link" itemprop="url">matrix & arithmetic (1)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-01-18 14:27:04" itemprop="dateCreated datePublished" datetime="2018-01-18T14:27:04+08:00">2018-01-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Matrix"><a href="#Matrix" class="headerlink" title="Matrix"></a>Matrix</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><script type="math/tex; mode=display">
-A = \begin{pmatrix}
-   a_{11} & a_{12} &  ... & a_{1n}\\
-   a_{21} & a_{22} & ... & a_{2n}\\
-   ... & ... & ... & ... \\
-   a_{m1} & a_{m2} & ... & a_{mn}
-\end{pmatrix}</script><p>A称作m x n矩阵，矩阵中的数称作矩阵A的元。<br>$a_{ij}$位于矩阵的第i行，j列，称作矩阵A的(i, j)元。</p>
-<ul>
-<li>行列均为n的矩阵成为<strong>n阶矩阵</strong>或<strong>n阶方阵</strong>；</li>
-<li>只有一行的矩阵成为<strong>行向量</strong></li>
-<li>只有一列的矩阵成为<strong>列向量</strong>。</li>
-<li>行列相同的两矩阵成为同型矩阵</li>
-<li>矩阵的元均是0的矩阵成为零矩阵</li>
-</ul>
-<h3 id="线性变换"><a href="#线性变换" class="headerlink" title="线性变换"></a>线性变换</h3><script type="math/tex; mode=display">
-\begin{cases}
-    y_1 = a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n \\
-    y_2 = a_{21}x_1 + a_{22}x_2 + ... + a_{2n}x_n \\
-    ... \\
-    y_m = a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n
-\end{cases}</script><p>从 <script type="math/tex">x_1 , x_2 , ... x_n</script>到<script type="math/tex">y_1 , y_2 , ... y_n</script>的过程称作线性变换</p>
-<p>n阶方阵，主对角线均为1的矩阵，称作<strong>单位矩阵</strong>E。<br>代表这线性变换中的恒等变换，$x_i -&gt; y_i$</p>
-<h2 id="Arithmetic"><a href="#Arithmetic" class="headerlink" title="Arithmetic"></a>Arithmetic</h2><h3 id="加减"><a href="#加减" class="headerlink" title="加减"></a>加减</h3><p>有矩阵<script type="math/tex">A = (a_{ij}), B = (b_{ij})</script>同型矩阵则：</p>
-<script type="math/tex; mode=display">A + B = C(a_{ij}+b_{ij})</script><p>矩阵加减满足<strong>交换率</strong>、<strong>结合律</strong></p>
-<ol>
-<li>A + B = B + A</li>
-<li>(A + B) + C = A + (B + C)</li>
-</ol>
-<h3 id="乘法"><a href="#乘法" class="headerlink" title="乘法"></a>乘法</h3><p><strong> 数乘矩阵：</strong></p>
-<script type="math/tex; mode=display">
-\lambda A = A \lambda = \begin{pmatrix}
-   \lambda a_{11} & \lambda a_{12} &  ... & \lambda a_{1n}\\
-   \lambda a_{21} & \lambda a_{22} & ... & \lambda a_{2n}\\
-   ... & ... & ... & ... \\
-   \lambda a_{m1} & \lambda a_{m2} & ... & \lambda a_{mn}
-\end{pmatrix}</script><ol>
-<li><script type="math/tex; mode=display">(\lambda \mu)A = \lambda (\mu A)</script></li>
-<li><script type="math/tex; mode=display">(\lambda + \mu) A = \lambda A + \mu A</script></li>
-<li><script type="math/tex; mode=display">\lambda(A + B) = \lambda A + \lambda B</script></li>
-</ol>
-<p><strong> 矩阵相乘：</strong><br>有矩阵<script type="math/tex">A = (a_{ij})</script>是m <em> s的矩阵，<script type="math/tex">B = (b_{ij})</script>是s </em> n的矩阵,<script type="math/tex">C = (c_{ij})</script>：</p>
-<script type="math/tex; mode=display">
-c_{ij} = a_{i1}b_{1j} + a_{i2}b_{2j} + ... a_{is}b_{sj} = \sum_{k=1}^s a_{ik}b_{kj}</script><p><strong>只有A矩阵的列和B矩阵的行相同时才能相乘</strong><br>把矩阵相乘记作AB = C，C中的元即是A的行元与B的列元的积和。</p>
-<ol>
-<li><script type="math/tex; mode=display">(AB)C = A(BC)</script></li>
-<li><script type="math/tex; mode=display">\lambda(AB) = (\lambda A)B = A(\lambda B)</script></li>
-<li><script type="math/tex; mode=display">A(B + C) = AB + AC, (A + B)C = AC + BC</script></li>
-</ol>
-<p>n阶方阵，主对角线均为<script type="math/tex">\lambda</script>的矩阵，称作<strong>纯量矩阵</strong></p>
-<p>矩阵乘法<strong>一般不满足交换律</strong>，开平方公式、平方和公式，只有在AB可交换是有效。</p>
-<h3 id="矩阵的转置"><a href="#矩阵的转置" class="headerlink" title="矩阵的转置"></a>矩阵的转置</h3><p>将矩阵元放入行列交换的位置形成的新矩阵，称为<strong>转置矩阵</strong><script type="math/tex">A^T</script></p>
-<ol>
-<li><script type="math/tex; mode=display">(A^T)^T = A</script></li>
-<li><script type="math/tex; mode=display">(A + B)^T = A^T + B^T</script></li>
-<li><script type="math/tex; mode=display">(\lambda A)^T = \lambda A^T</script></li>
-<li><script type="math/tex; mode=display">(AB)^T = B^TA^T</script></li>
-</ol>
-<h3 id="方阵行列式"><a href="#方阵行列式" class="headerlink" title="方阵行列式"></a>方阵行列式</h3><ol>
-<li><script type="math/tex; mode=display">\lvert A^T \rvert = \lvert A \rvert</script></li>
-<li><script type="math/tex; mode=display">\lvert \lambda A \rvert = \lambda^n \lvert A \rvert</script></li>
-<li><script type="math/tex; mode=display">\lvert AB \rvert = \lvert A \rvert \lvert B \rvert</script></li>
-</ol>
-<p>关于第一点可参考行列式性质一，转置的行列式的组合与未转置的行列式一一对应。</p>
-<p><strong>伴随矩阵</strong> 为原矩阵元的代数余子式所组成的矩阵的转置</p>
-<script type="math/tex; mode=display">
-A^* = \begin{pmatrix}
-   A_{11} & A_{21} &  ... & A_{m1}\\
-   A_{12} & A_{22} &  ... & A_{m2}\\
-   ... & ... & ... & ...\\
-   A_{1n} & A_{2n} &  ... & A_{mn}
-\end{pmatrix}</script><script type="math/tex; mode=display">
-AA^* = A^* A= \lvert A \rvert E</script><p>由于原矩阵的行和其伴随阵列的积，即行元对应代数余子式的和即是行列式的值D。<br>矩阵相乘，<strong>不在同行的积为0</strong>，所以最后得到的是一个纯量矩阵</p>
-<h2 id="Inverse-matrix"><a href="#Inverse-matrix" class="headerlink" title="Inverse matrix"></a>Inverse matrix</h2><p>给出一线性变换：</p>
-<script type="math/tex; mode=display">
-\begin{cases}
-    y_1 = a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n \\
-    y_2 = a_{21}x_1 + a_{22}x_2 + ... + a_{2n}x_n \\
-    ... \\
-    y_m = a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n
-\end{cases}</script><p>设X为xi组成的向量，Y为yi组成的向量， A为系数矩阵：</p>
-<script type="math/tex; mode=display">
-Y = AX</script><p>左乘A的伴随矩阵得到：</p>
-<script type="math/tex; mode=display">
-A^* Y = A^* AX = \lvert A \rvert X</script><p>当A的行列式不为0时，有</p>
-<script type="math/tex; mode=display">
-X = \frac{1}{\lvert A \rvert} A^* Y</script><p>设<script type="math/tex">B = \frac{1}{\lvert A \rvert} A^*</script>， 则有<script type="math/tex">X = BY</script></p>
-<ul>
-<li>如果对n阶矩阵A，有矩阵B使 AB=BA=E, 则称B为A的逆矩阵</li>
-<li>如果矩阵A可逆，则<script type="math/tex">\lvert A \rvert \neq 0</script></li>
-<li>如果<script type="math/tex">\lvert A \rvert \neq 0</script>, 则矩阵A可逆</li>
-</ul>
-<ul>
-<li>如果A可逆，则<script type="math/tex">A^{-1}</script>也可逆。<script type="math/tex">(A^{-1})^{-1} = A</script></li>
-<li>如果A可逆，<script type="math/tex">\lambda \neq 0</script>，则<script type="math/tex">\lambda A</script>也可逆。<script type="math/tex">(\lambda A)^{-1} = \frac{1}{\lambda} A^{-1}</script></li>
-<li>如果A、B为同阶矩阵均可逆，则AB也可逆。<script type="math/tex">(AB)^{-1} = B^{-1}A^{-1}</script></li>
-</ul>
-<h3 id="polynomial-多项式"><a href="#polynomial-多项式" class="headerlink" title="polynomial 多项式"></a>polynomial 多项式</h3><ol>
-<li><p>如果<script type="math/tex">A = P \Lambda P^-1</script> 则 <script type="math/tex">A^k = P \Lambda^k P^-1</script></p>
-<script type="math/tex; mode=display">
-\varphi(A) = a_0E+a_1A+...a_mA^m</script><script type="math/tex; mode=display">
-= Pa_0EP^{-1} + Pa_1AP^{-1}+...Pa_mA^mP^{-1}</script><script type="math/tex; mode=display">
-= P\varphi(\Lambda)P^{-1}</script></li>
-<li><p>如果<script type="math/tex">\Lambda = diag(\lambda_1, \lambda_2...\lambda_n)</script>是对角阵,则有<script type="math/tex">\Lambda^k = diag(\lambda_1^k, \lambda_2^k...\lambda_n^k)</script></p>
-<script type="math/tex; mode=display">
-\varphi(\Lambda) = a_0E + a_2\Lambda + ... a_m\Lambda^m</script></li>
-</ol>
-<h2 id="Matrix-block"><a href="#Matrix-block" class="headerlink" title="Matrix block"></a>Matrix block</h2><ul>
-<li>矩阵A、B有相同行列数、分块方法有：<script type="math/tex; mode=display">
-A = \begin{pmatrix}
- A_{11} & ... & A_{1r}\\
- ... & ... & ... \\
- A_{s1} & ... & A_{sr}
-\end{pmatrix},
-B = \begin{pmatrix}
- B_{11} & ... & B_{1r}\\
- ... & ... & ... \\
- B_{s1} & ... & B_{sr}
-\end{pmatrix}</script></li>
-</ul>
-<script type="math/tex; mode=display">
-A + B = \begin{pmatrix}
-   A_{11} + B_{11} & ... & A_{1r} + B_{1r}\\
-   ... & ... & ... \\
-   A_{s1} + B_{s1} & ... & A_{sr} + B_{sr}
-\end{pmatrix}</script><p>*</p>
-<script type="math/tex; mode=display">
-A = \begin{pmatrix}
-   A_{11} & ... & A_{1r}\\
-   ... & ... & ... \\
-   A_{s1} & ... & A_{sr}
-\end{pmatrix}</script><p>是分好块的矩阵， <script type="math/tex">\lambda</script>是一个数，则有：</p>
-<script type="math/tex; mode=display">
-\lambda A = \begin{pmatrix}
-   \lambda A_{11} & ... & \lambda A_{1r}\\
-   ... & ... & ... \\
-   \lambda A_{s1} & ... & \lambda A_{sr}
-\end{pmatrix}</script><ul>
-<li>A 为m x l矩阵，B为l x n, 分块同上，则有：<script type="math/tex; mode=display">
-AB = \begin{pmatrix}
- C_{11} & ... & C_{1r}\\
- ... & ... & ... \\
- C_{s1} & ... & C_{sr}
-\end{pmatrix}</script></li>
-</ul>
-<script type="math/tex; mode=display">
-C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵为s x t，B矩阵为t x r。</p>
-<ul>
-<li>设<script type="math/tex">A = \begin{pmatrix}
- A_{11} & ... & A_{1r}\\
- ... & ... & ... \\
- A_{s1} & ... & A_{sr}
-\end{pmatrix}</script>，则<script type="math/tex">A^T = \begin{pmatrix}
- A_{11}^T & ... & A_{1r}^T\\
- ... & ... & ... \\
- A_{s1}^T & ... & A_{sr}^T
-\end{pmatrix}</script></li>
-<li>如果A为n阶矩阵，如果A的分块只有在主对角线上有非零子块，称A为分块对角矩阵</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2987,7 +2852,7 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">275</span>
+                    <span class="site-state-item-count">276</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3173,7 +3038,9 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
                     
                       
                     
-                    <span class="site-state-item-count">56</span>
+                      
+                    
+                    <span class="site-state-item-count">57</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -3766,9 +3633,9 @@ C_{ij} = \sum_{k=1}^{t}{A_{ik}B_{kj}}(i=1,..,s;j=1,...r)</script><p>ps. A矩阵�
       
     
       
-        
-      
     
+      
+        
       
     
       

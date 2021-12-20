@@ -351,6 +351,202 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/11/26/Kullback-Leibler-Divergence-Explained/" class="post-title-link" itemprop="url">KL散度的解释【译】</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-11-26 13:00:51" itemprop="dateCreated datePublished" datetime="2020-11-26T13:00:51+08:00">2020-11-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-11-27 21:46:18" itemprop="dateModified" datetime="2020-11-27T21:46:18+08:00">2020-11-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>原文地址<a href="https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained" target="_blank" rel="noopener">Count Bayesie</a><br>这篇文章是博客Count Bayesie 上 Will Kurt 的文章<br><code>Kullback-Leibler Divergence Explained</code> 的翻译和笔记<br>原文对 <strong>KL散度</strong> 的概念诠释得非常清晰易懂，评论区中有很多致谢，建议阅读</p>
+</blockquote>
+<h1 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h1><p><code>KL散度</code>是<code>原始分布</code>中数据概率与<code>近似分布</code>中数据概率的<code>对数差</code>的<code>期望</code>，用于量化<code>参数化近似</code>代替<code>观测分布</code>时丢失了多少信息。散度越小，说明模拟越逼近现实。</p>
+<h2 id="信息"><a href="#信息" class="headerlink" title="信息"></a>信息</h2><p>信息论奠基人香农认为“信息是用来消除随机不确定性的东西”，也就是<strong>以前不知道现在知道的事实</strong>。</p>
+<p><code>熵</code>作为度量信息的期望，引用<code>PRML</code>中的观点，<code>信息量</code>可以看成是在了解事物时，感受到的<strong>“惊讶程度”</strong>。低概率事件内蕴的信息会比高概率的信息多，比如革命性产品问世、突破性科学发现。正所谓<strong>“无常生妖”</strong>，低概率事件有更多信息符合直觉。</p>
+<p>多个事件同时发生的概率是多个事件<strong>概率相乘</strong>，总信息量是多个事件<strong>信息量相加</strong>。<br><code>熵</code>计算公式中的对数不大好理解，参考严谨推导可以发现<code>信息量</code>确实是$f(x)=-log{x}$。</p>
+<script type="math/tex; mode=display">
+0-f(x)=f \prime(1) \int_{x}^{1} \frac{1}{t} dt</script><p>概率和信息量的对数关系，可以理解为 <strong>两件事情信息量之和 = 两件事情同时发生的信息量</strong>:<br>$x_1$和$x_2$同时发生的概率：$P(x_1, x_2) = P(x_1)×P(x_2)$<br>$x_1$和$x_2$的总信息量：$log_2(P(x_1)P(x_2)) = log_2P(x_1)+log_2P(x_2)$</p>
+<h2 id="趣闻"><a href="#趣闻" class="headerlink" title="趣闻"></a>趣闻</h2><p>评论区中，作者有回复关于<code>熵</code>的符号<code>H</code>的提问：</p>
+<p>谢谢你的评论，我不禁对这个符号的历史做了一些研究!如果你读过《通信的数学理论》(该书改编自香农为信息论奠定基础的原始论文 <a href="http://math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf" target="_blank" rel="noopener">http://math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf</a> )你会发现香农解释了<code>H</code>的起源:</p>
+<p><code>H</code>就是玻尔兹曼著名的<code>H定理</code>中的<code>H</code>。</p>
+<p>有趣的是玻尔兹曼最初把它命名为<code>E</code>，但后来他决定换成了<code>H</code>，虽说对他是不是取了希腊字母Eta <code>H</code>有些争议。</p>
+<p>在玻尔兹曼关于熵的论文中，他使用了<code>S</code>，而<code>S</code>(不是<code>E</code>)仍然是熵的标准物理符号。(维基百科中关于热力学第二定律的注释用了<code>S</code> <a href="https://en.wikipedia.org/wiki/Second_law_of_thermodynamics" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Second_law_of_thermodynamics</a>)</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.cnblogs.com/lemon-rain/p/9287991.html" target="_blank" rel="noopener">KL散度的理解（GAN网络的优化）</a><br><a href="https://blog.csdn.net/ericcchen/article/details/72357411" target="_blank" rel="noopener">KL散度的理解</a><br><a href="https://arxiv.org/abs/1606.05908" target="_blank" rel="noopener">Tutorial on Variational Autoencoders</a><br><a href="https://blog.csdn.net/dog250/article/details/78944526" target="_blank" rel="noopener">不知为不知—信息论和最大熵原则</a><br><a href="https://blog.csdn.net/dog250/article/details/79081043" target="_blank" rel="noopener">信息量为什么要表示成对数的形式</a></p>
+<h1 id="译文"><a href="#译文" class="headerlink" title="译文"></a>译文</h1><p>在这篇文章中，我们将研究一种比较两种概率分布的方法，即Kullback-Leibler散度(通常简称为KL散度)。在概率和统计中，我们经常用更简单的近似分布来代替观察到的数据或复杂分布。KL散度帮助我们测量当我们选择一个近似值时我们损失了多少信息。</p>
+<p><img src="/2020/11/26/Kullback-Leibler-Divergence-Explained/biting-worms.jpg" alt="biting-worms.jpg"></p>
+<p><div align="center">空间蠕虫和KL散度！！！</div><br><br></p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/11/26/Kullback-Leibler-Divergence-Explained/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/11/20/Stroll-keyboard-fan-community-Firmware/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1959,177 +2155,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/09/20/Trace-back-to-the-source-Japanese-ramble/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/09/20/Trace-back-to-the-source-Japanese-ramble/" class="post-title-link" itemprop="url">追根溯源，日语漫谈【转】</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-09-20 10:57:52 / Modified: 14:09:19" itemprop="dateCreated datePublished" datetime="2020-09-20T10:57:52+08:00">2020-09-20</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>　　今天开始，打算写一系列有关日语的随笔。不定期更新。这些内容一般不会在任何教科书里提到，考试当然也不会考到。所以，主要是我个人的研究爱好了。这系列的文章，主要是从日语的发展角度来对现在的一些常用词作出解释，从某种角度来说，我认为这也可以帮助学习日语的人来加深理解，起到一定的提高作用。<br>　　大多数内容都是基础的，有一点日语基础的人应该都可以阅读。</p>
-<p><a href="http://blog.sina.com.cn/s/blog_5555513b0100068o.html" target="_blank" rel="noopener">日语随笔　前言 (2006-09-04 12:12:29)</a></p>
-<h1 id="（一）从“海”的音读说起"><a href="#（一）从“海”的音读说起" class="headerlink" title="（一）从“海”的音读说起"></a>（一）从“海”的音读说起</h1><p>日语里分音读和训读。汉字作音读的时候，其发音和中文类似，这一点对于学习日语的中国人来说，是比较方便的。<br>　　但是，有一些汉字，音读的发音和中文的发音还是有不少区别的，我们有时候会很气恼，为什么日本人偏要把我们的发音改掉呢，好好地发成一样不是很好吗？教科书的解释，一般是说，日语的音读是采用了中国的古音，所以和现代的汉语有差距。<br>　　很多情况下的确如此，但也并不全是这样。比如“海”字。中文发“Ｈａｉ”（はい），日语发“Ｋａｉ”（かい），但是，并不是说这个字在中国古代发作Ｋａｉ，后来变成Ｈａｉ。事实上，“海”这个字，中国历史上从来没有发作Ｋａｉ过。即使不发Ｈａｉ，也是Ｈｅ，或者Ｈｅｉ，总而言之，和“Ｋ”是没有关系的。</p>
-<p>　　那么日本人引进这个字的时候，为什么不用はい作为读音，而用かい呢？答案很简单，在日本古代，は这个假名不发音为Ｈａ，而是发音为Ｐａ。<br>　　在室町以前，はひふへほ的发音，是Ｐａ，Ｐｉ，Ｐｕ，Ｐｅ，Ｐｏ。而日语里面，没有Ｈａ这个音。于是，对于“海”这个字的注音，只能在比较接近的Ｋａｉ，Ｇａｉ，Ｐａｉ中挑选，显然，Ｋａｉ的发音更为接近。<br>　　同样的原因，所有中文里以Ｈ为声母的汉字，到了日本后，发音全变成了か行，当然有一些因为浊化而成为が行。除了“海”，其他的例子还有“好”、“浩”、“号”等字，中文发音为Ｈａｏ，日语音读为こう（Ｋｏｕ）或者ごう（Ｇｏｕ）；贺，中文发音为Ｈｅ，日语发音则为か（Ｋａ）；黑，中文发音为Ｈｅｉ，日语发音则为こく（Ｋｏｋｕ）等等，大家可以自己再找许多例子出来，这里不多写了。<br>　　但是，有人可能要问，如果は行全变成了か行，那么日语中不是就不存在Ｈａｉ的音读了吗？当然不是。这一点，我们下一期再说吧。</p>
-<p><a href="http://blog.sina.com.cn/s/blog_5555513b0100068p.html" target="_blank" rel="noopener">追根溯源，日语漫谈（一）从“海”的音读说起 (2006-09-04 12:14:13)</a></p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/09/20/Trace-back-to-the-source-Japanese-ramble/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2176,7 +2201,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">275</span>
+                    <span class="site-state-item-count">276</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2362,7 +2387,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">56</span>
+                      
+                    
+                    <span class="site-state-item-count">57</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -2949,11 +2976,11 @@
   
     
       
-    
-      
-    
-      
         
+      
+    
+      
+    
       
     
       
