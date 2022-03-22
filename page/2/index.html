@@ -351,6 +351,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/02/26/compare-files-with-shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2021/02/26/compare-files-with-shell/" class="post-title-link" itemprop="url">Shell比较文件内容</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2021-02-26 18:54:53" itemprop="dateCreated datePublished" datetime="2021-02-26T18:54:53+08:00">2021-02-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2021-04-02 08:55:43" itemprop="dateModified" datetime="2021-04-02T08:55:43+08:00">2021-04-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div align="center"><h1>牛年大吉！</h1></div>
+
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>批量下载文件时，发现部分文件下载失败（大约10%）<br>手头上有原始文件地址、已下载文件名，需要找到下载失败的地址。</p>
+<h2 id="探索"><a href="#探索" class="headerlink" title="探索"></a>探索</h2><h3 id="A"><a href="#A" class="headerlink" title="A"></a>A</h3><p>首先是找到的awk差集命令<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk 'NR==FNR&#123; a[$1]=$1 &#125; NR&gt;FNR&#123; if(a[$1] == "")&#123; print $1&#125;&#125;' aaa.txt bbb.txt</span><br></pre></td></tr></table></figure></p>
+<p>思路是用数组存<code>文件1</code>的行数据，再用<code>文件2</code>搜是否存在<br>优点是效率高命令简洁，缺点是扩展麻烦，<code>文件2</code>需要做预处理，要把地址里的文件名单独提取一列。</p>
+<h3 id="B"><a href="#B" class="headerlink" title="B"></a>B</h3><p>然后找到的是awk对比脚本<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">/bin/bash</span></span><br><span class="line">file1="aaa.txt"</span><br><span class="line">file2="bbb.txt"</span><br><span class="line"></span><br><span class="line">lines=`cat $file1 | wc -l` + 1</span><br><span class="line"></span><br><span class="line">for ((i=1;i&lt;=$lines;i++))</span><br><span class="line">do</span><br><span class="line">  line1=`awk 'NR=='$i'&#123;print $0&#125;' $file1`</span><br><span class="line">  line2=`awk 'NR=='$i'&#123;print $0&#125;' $file2`</span><br><span class="line"></span><br><span class="line">  if [[ $line1 != $line2 ]]</span><br><span class="line">  then</span><br><span class="line">    echo "line $i is not equal"</span><br><span class="line">  fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
+<p>优点扩展性更好，缺点是每次循环都需要定位行，性能浪费严重。</p>
+<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><p>基于B魔改了一个脚本：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">文件地址</span></span><br><span class="line">file1="aaa.txt"</span><br><span class="line"><span class="meta">#</span><span class="bash">已下载文件名</span></span><br><span class="line">file2="bbb.txt"</span><br><span class="line"></span><br><span class="line">lines=`cat $file1 | wc -l`+1</span><br><span class="line"></span><br><span class="line">for ((i=1;i&lt;=$lines;i++))</span><br><span class="line">do</span><br><span class="line"><span class="meta">  #</span><span class="bash">定位当前循环对比行</span></span><br><span class="line">  line1=`awk 'NR=='$i'&#123;print $0&#125;' $file1`</span><br><span class="line"><span class="meta">  #</span><span class="bash">摘出文件名</span></span><br><span class="line">  name=`echo $line1 | grep -ioP "(?&lt;=/)[^/]*?(jpg|jpeg|bmp|gif|png)" `</span><br><span class="line"></span><br><span class="line"><span class="meta">  #</span><span class="bash">如果在已下载文件中不存在，则为下载失败文件</span></span><br><span class="line">  if [[ `grep $name $file2` == "" ]]</span><br><span class="line">  then</span><br><span class="line">    echo $line1</span><br><span class="line">  fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
+<p>性能非常捉急，1000多条数据跑了半个多小时。<br>awk那的优化估计比较难，进awk代码段里写逻辑的话参考<code>方案A</code>。<br>grep那应该可以优化，用数组散列表来替换。<br>数据量较大的话还是<code>方案A</code>比较理想，或者写代码来处理。</p>
+<p><a href="https://www.jianshu.com/p/cf428138caab" target="_blank" rel="noopener">awk 进阶（两文件的交集和差集）</a><br><a href="https://blog.csdn.net/weixin_42768584/article/details/103350848" target="_blank" rel="noopener">awk比较两个文件内容</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/11/26/Kullback-Leibler-Divergence-Explained/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1974,187 +2156,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/09/24/Hello-spring-data-redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/09/24/Hello-spring-data-redis/" class="post-title-link" itemprop="url">Hello spring data redis</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-09-24 16:20:19" itemprop="dateCreated datePublished" datetime="2020-09-24T16:20:19+08:00">2020-09-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-30 22:33:48" itemprop="dateModified" datetime="2020-09-30T22:33:48+08:00">2020-09-30</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="project"><a href="#project" class="headerlink" title="project"></a>project</h2><p>learn on project <code>springboot-learning-example</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/JeffLi1993/springboot-learning-example.git</span><br></pre></td></tr></table></figure></p>
-<p>copy module <code>springboot-mybatis-redis</code> to <code>springboot-redis</code><br>modify <code>pom.xml</code>, remove mybatis/mysql, add lombok</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;groupId&gt;springboot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;springboot-redis&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</span><br><span class="line">    &lt;name&gt;springboot-redis :: 使用 Redis 作为缓存&lt;/name&gt;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line"></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.16.14&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/09/24/Hello-spring-data-redis/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2201,7 +2202,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">276</span>
+                    <span class="site-state-item-count">277</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2498,7 +2499,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
@@ -2976,9 +2977,9 @@
   
     
       
-        
-      
     
+      
+        
       
     
       

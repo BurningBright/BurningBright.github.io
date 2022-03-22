@@ -351,6 +351,246 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/01/Arithmetic-in-compiling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/01/Arithmetic-in-compiling/" class="post-title-link" itemprop="url">Arithmetic in compiling</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-01 21:47:48" itemprop="dateCreated datePublished" datetime="2017-06-01T21:47:48+08:00">2017-06-01</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="simple-calc"><a href="#simple-calc" class="headerlink" title="simple calc"></a>simple calc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ((i + j - <span class="number">1</span>) &amp; ~(j - <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>variable 0 is <code>this</code> -&gt; <code>aload_0</code></li>
+</ul>
+<h3 id="javap-c"><a href="#javap-c" class="headerlink" title="javap -c"></a>javap -c</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: iload_2</span><br><span class="line">       2: iadd</span><br><span class="line">       3: iconst_1</span><br><span class="line">       4: isub</span><br><span class="line">       5: iload_2</span><br><span class="line">       6: iconst_1</span><br><span class="line">       7: isub</span><br><span class="line">       8: iconst_m1</span><br><span class="line">       9: ixor</span><br><span class="line">      10: iand</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[0]</td>
+<td>push <code>i</code> value into stack</td>
+</tr>
+<tr>
+<td>[1]</td>
+<td>push <code>j</code> value into stack</td>
+</tr>
+<tr>
+<td>[2]</td>
+<td>add; result push stack</td>
+</tr>
+<tr>
+<td>[3]</td>
+<td>push constant <code>1</code> into stack</td>
+</tr>
+<tr>
+<td>[4]</td>
+<td>subtract; push result</td>
+</tr>
+<tr>
+<td>[5]</td>
+<td><code>j</code> value push stack</td>
+</tr>
+<tr>
+<td>[6]</td>
+<td>push constant <code>1</code> again</td>
+</tr>
+<tr>
+<td>[7]</td>
+<td>subtract; push result</td>
+</tr>
+<tr>
+<td>[8]</td>
+<td>push constant <code>-1</code></td>
+</tr>
+<tr>
+<td>[9]</td>
+<td>do XOR; push result</td>
+</tr>
+<tr>
+<td>[10]</td>
+<td>do AND; push result</td>
+</tr>
+<tr>
+<td>[11]</td>
+<td>return int</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>~(j-1)</code> transform into <code>-1^(j-1)</code><br>exclusive or, <code>-1</code> bytes is <strong>all high bit</strong>.<br>any int oxr with all high bit, the high bit will be low, low will be high.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/31/Foundation-in-compiling/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2152,194 +2392,6 @@ method</code> references into <code>concrete method</code> references.</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/16/Java-ClassLoader-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/16/Java-ClassLoader-2/" class="post-title-link" itemprop="url">Java ClassLoader 2</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-16 22:33:53" itemprop="dateCreated datePublished" datetime="2017-05-16T22:33:53+08:00">2017-05-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Inheritance-system"><a href="#Inheritance-system" class="headerlink" title="Inheritance system"></a>Inheritance system</h3><p>When JVM start, <code>bookstrap</code> class loader will be loaded into java core.<br>like class in rt.jar.bookstrap is other ClassLoader’s parent,<br>it is the only loader has <strong>no parent</strong>.</p>
-<p>Then the <code>extension</code> class loader, it’s parent is bookstrap,<br>it used to load class from java’s environment path java.ext.dir.</p>
-<p>Third the most important class loader, the <code>system classpath</code><br>class loader, developer’s self define class.<br>It’s parent is extension, it load class from<br>java’s environment path <code>java.class.path</code>.<br>Path can be set in <code>-classpath</code> parameter in command.</p>
-<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><p>The system is not <code>Inheritance</code> but <code>Delegation</code><br>Most loader will find resource in it’s parents, if not find in local.<br>Actually it ensure the high level loader’s class<br>can be assign with lower level loader’s type.</p>
-<p>The motivation of <code>Delegation</code> is avoid load same class multi times.<br>When in 1995, java be used in <code>Applet</code>.<br>At that time the network bandwidth has priority, so program load class<br>when class be used then load it. Model is load parent first.</p>
-<p>But in this time java show it’s power in server part.<br>Server need loader follow <strong>reverse delegation priciple</strong>,<br>to load local class first, if can’t load class in parent.</p>
-<h3 id="JavaEE-Delegation-model"><a href="#JavaEE-Delegation-model" class="headerlink" title="JavaEE Delegation model"></a>JavaEE Delegation model</h3><p>Tomcat class load sequence(delegation model)</p>
-<ol>
-<li>Bookstrap  @rt.jar</li>
-<li>Extension  @lib/ext</li>
-<li>System     @%catalina_home%/bin/bootstrap.jar</li>
-<li>Common     @%catalina_home%/lib</li>
-<li>Webapp     @WEB-INF/lib</li>
-</ol>
-<p>In tomcat default model,<br>try to load class in Bootstrap and Extension first.<br>If can’t load, try to load class in Webapp<br>If still can’t load, load in Common.</p>
-<p>In Ali’s tomcat, it is in delegate model, so parent has priority.<br>So use Common loader first, then Webapp loader.</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2386,7 +2438,7 @@ method</code> references into <code>concrete method</code> references.</p>
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">276</span>
+                    <span class="site-state-item-count">277</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2683,7 +2735,7 @@ method</code> references into <code>concrete method</code> references.</p>
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

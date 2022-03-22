@@ -351,6 +351,201 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/29/Hello-Ant/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/29/Hello-Ant/" class="post-title-link" itemprop="url">Hello Ant</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-29 22:49:12" itemprop="dateCreated datePublished" datetime="2017-06-29T22:49:12+08:00">2017-06-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Create-project"><a href="#Create-project" class="headerlink" title="Create project"></a>Create project</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir hello</span><br><span class="line">mkdir src</span><br><span class="line">cd src</span><br><span class="line">vim Hello.java</span><br></pre></td></tr></table></figure>
+<p>Say hello to ant.</p>
+<h3 id="Build-xml"><a href="#Build-xml" class="headerlink" title="Build.xml"></a>Build.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">vim Build.xml</span><br></pre></td></tr></table></figure>
+<p>Set up properties<br>the source file path/ class path/ jar path and so on.<br>the trigger target is <code>rerun</code><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"hello"</span> <span class="attr">default</span>=<span class="string">"rerun"</span> <span class="attr">basedir</span>=<span class="string">"."</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"src"</span> <span class="attr">value</span>=<span class="string">"src"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dest"</span> <span class="attr">value</span>=<span class="string">"classes"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jar_path"</span> <span class="attr">value</span>=<span class="string">"hello.jar"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>Define the init method<br>clean workspace first<br>print a log and make classes directory<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"init"</span> <span class="attr">depends</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| B U I L D I N G $&#123;dest&#125; |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>compile project use javac command<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"compile"</span> <span class="attr">depends</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">javac</span> <span class="attr">srcdir</span>=<span class="string">"$&#123;src&#125;"</span> <span class="attr">destdir</span>=<span class="string">"$&#123;dest&#125;"</span> <span class="attr">includeAntRuntime</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>package project target to a jar and execute<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"build"</span> <span class="attr">depends</span>=<span class="string">"compile"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">jar</span> <span class="attr">jarfile</span>=<span class="string">"$&#123;jar_path&#125;"</span> <span class="attr">basedir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"run"</span> <span class="attr">depends</span>=<span class="string">"build"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java</span> <span class="attr">classname</span>=<span class="string">"Hello"</span> <span class="attr">classpath</span>=<span class="string">"$&#123;jar_path&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>delete build files<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">file</span>=<span class="string">"$&#123;jar_path&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>x<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>rerun the process<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"rerun"</span> <span class="attr">depends</span>=<span class="string">"clean,run"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"run"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"clean"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">echo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Procedure"><a href="#Procedure" class="headerlink" title="Procedure"></a>Procedure</h3><ol>
+<li>clean</li>
+<li>init</li>
+<li>compile</li>
+<li>build</li>
+<li>run</li>
+<li>1 -&gt; 5</li>
+<li>clean</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/21/Annotation-in-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2014,246 +2209,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/01/Arithmetic-in-compiling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/01/Arithmetic-in-compiling/" class="post-title-link" itemprop="url">Arithmetic in compiling</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-01 21:47:48" itemprop="dateCreated datePublished" datetime="2017-06-01T21:47:48+08:00">2017-06-01</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="simple-calc"><a href="#simple-calc" class="headerlink" title="simple calc"></a>simple calc</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">calc</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> ((i + j - <span class="number">1</span>) &amp; ~(j - <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>variable 0 is <code>this</code> -&gt; <code>aload_0</code></li>
-</ul>
-<h3 id="javap-c"><a href="#javap-c" class="headerlink" title="javap -c"></a>javap -c</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">int calc(int, int);</span><br><span class="line">    Code:</span><br><span class="line">       0: iload_1</span><br><span class="line">       1: iload_2</span><br><span class="line">       2: iadd</span><br><span class="line">       3: iconst_1</span><br><span class="line">       4: isub</span><br><span class="line">       5: iload_2</span><br><span class="line">       6: iconst_1</span><br><span class="line">       7: isub</span><br><span class="line">       8: iconst_m1</span><br><span class="line">       9: ixor</span><br><span class="line">      10: iand</span><br><span class="line">      11: ireturn</span><br></pre></td></tr></table></figure>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>a</th>
-<th>b</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>[0]</td>
-<td>push <code>i</code> value into stack</td>
-</tr>
-<tr>
-<td>[1]</td>
-<td>push <code>j</code> value into stack</td>
-</tr>
-<tr>
-<td>[2]</td>
-<td>add; result push stack</td>
-</tr>
-<tr>
-<td>[3]</td>
-<td>push constant <code>1</code> into stack</td>
-</tr>
-<tr>
-<td>[4]</td>
-<td>subtract; push result</td>
-</tr>
-<tr>
-<td>[5]</td>
-<td><code>j</code> value push stack</td>
-</tr>
-<tr>
-<td>[6]</td>
-<td>push constant <code>1</code> again</td>
-</tr>
-<tr>
-<td>[7]</td>
-<td>subtract; push result</td>
-</tr>
-<tr>
-<td>[8]</td>
-<td>push constant <code>-1</code></td>
-</tr>
-<tr>
-<td>[9]</td>
-<td>do XOR; push result</td>
-</tr>
-<tr>
-<td>[10]</td>
-<td>do AND; push result</td>
-</tr>
-<tr>
-<td>[11]</td>
-<td>return int</td>
-</tr>
-</tbody>
-</table>
-</div>
-<ul>
-<li><code>~(j-1)</code> transform into <code>-1^(j-1)</code><br>exclusive or, <code>-1</code> bytes is <strong>all high bit</strong>.<br>any int oxr with all high bit, the high bit will be low, low will be high.</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2300,7 +2255,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">276</span>
+                    <span class="site-state-item-count">277</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2597,7 +2552,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

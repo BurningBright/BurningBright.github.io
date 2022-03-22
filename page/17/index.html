@@ -351,6 +351,214 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/30/linux-execute-in-background/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/08/30/linux-execute-in-background/" class="post-title-link" itemprop="url">linux execute in background</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-08-30 20:34:43" itemprop="dateCreated datePublished" datetime="2017-08-30T20:34:43+08:00">2017-08-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="http://blog.csdn.net/zstu_zlj/article/details/51783937" target="_blank" rel="noopener">link</a></p>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h2><p>Always meet problem like this:<br>Login in by <code>telnet/ssh</code>, run some time costs task<br>But be interrupted, cause by the net problem.</p>
+<p>How to deal this kind problem, let task run background</p>
+<h2 id="Command-nohup-setsid-amp"><a href="#Command-nohup-setsid-amp" class="headerlink" title="Command nohup/setsid/&amp;"></a>Command <code>nohup/setsid/&amp;</code></h2><ol>
+<li><strong>nohup</strong></li>
+</ol>
+<blockquote>
+<p>in early version UNIX terminal communicate with system by<br>modem[cat?]. when logout or disconnect, modem send a hang up<br>signal to system to close current session process and all sub processes.</p>
+</blockquote>
+<p>When terminal logout or connect broke, terminal recieves a ‘HUP[hangup]’ signal.<br>So we have two solutions</p>
+<ul>
+<li>let process ignore ‘HUP’ signal</li>
+<li>change process’s owner</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./sunny.sh clientid xxxxx &amp;</span><br><span class="line">nohup ./sunny.sh clientid &gt; sunny.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>setsid</strong></li>
+</ol>
+<p>Change process’s owner to process id ‘1’</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setid ./sunny.sh clientid xxxxx</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>&amp;</strong></li>
+</ol>
+<p>When command put in <code>()</code> , command can be run in sub shell.<br>Put <code>&amp;</code> into <code>()</code> as well, the commited job wouldn’t be add in job list.<br>So command can ignore the <code>HUP</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(./sunny.sh clientid xxxxx &amp;)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>disown</strong></li>
+</ol>
+<p>If a process already running</p>
+<ul>
+<li><code>disown -h</code> make a job ignore signal</li>
+<li><code>disown -ah</code> make all jobs ignore signal</li>
+<li><code>disown -rh</code> make running jobs ignore signal</li>
+</ul>
+<p>if job already run in background<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+<p>if job already run in front<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># [ctrl + z]</span><br><span class="line">[1]+  Stopped                 ./sunny.sh clientid xxxxx</span><br><span class="line"></span><br><span class="line"># put to background</span><br><span class="line">bg %1</span><br><span class="line">[1]+  Running                 ./sunny.sh clientid xxxxx &amp;</span><br><span class="line"></span><br><span class="line">disown -h %1</span><br><span class="line"></span><br><span class="line">ps -ef |grep sunny</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/08/22/Java-memory-anaylsis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2221,201 +2429,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/06/29/Hello-Ant/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/06/29/Hello-Ant/" class="post-title-link" itemprop="url">Hello Ant</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-06-29 22:49:12" itemprop="dateCreated datePublished" datetime="2017-06-29T22:49:12+08:00">2017-06-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Create-project"><a href="#Create-project" class="headerlink" title="Create project"></a>Create project</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir hello</span><br><span class="line">mkdir src</span><br><span class="line">cd src</span><br><span class="line">vim Hello.java</span><br></pre></td></tr></table></figure>
-<p>Say hello to ant.</p>
-<h3 id="Build-xml"><a href="#Build-xml" class="headerlink" title="Build.xml"></a>Build.xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ..</span><br><span class="line">vim Build.xml</span><br></pre></td></tr></table></figure>
-<p>Set up properties<br>the source file path/ class path/ jar path and so on.<br>the trigger target is <code>rerun</code><br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"hello"</span> <span class="attr">default</span>=<span class="string">"rerun"</span> <span class="attr">basedir</span>=<span class="string">"."</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"src"</span> <span class="attr">value</span>=<span class="string">"src"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dest"</span> <span class="attr">value</span>=<span class="string">"classes"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"jar_path"</span> <span class="attr">value</span>=<span class="string">"hello.jar"</span>/&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>Define the init method<br>clean workspace first<br>print a log and make classes directory<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"init"</span> <span class="attr">depends</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| B U I L D I N G $&#123;dest&#125; |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>| |<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>+---------------------------------------------------+<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>compile project use javac command<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"compile"</span> <span class="attr">depends</span>=<span class="string">"init"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">javac</span> <span class="attr">srcdir</span>=<span class="string">"$&#123;src&#125;"</span> <span class="attr">destdir</span>=<span class="string">"$&#123;dest&#125;"</span> <span class="attr">includeAntRuntime</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>package project target to a jar and execute<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"build"</span> <span class="attr">depends</span>=<span class="string">"compile"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">jar</span> <span class="attr">jarfile</span>=<span class="string">"$&#123;jar_path&#125;"</span> <span class="attr">basedir</span>=<span class="string">"$&#123;dest&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"run"</span> <span class="attr">depends</span>=<span class="string">"build"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">java</span> <span class="attr">classname</span>=<span class="string">"Hello"</span> <span class="attr">classpath</span>=<span class="string">"$&#123;jar_path&#125;"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>delete build files<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"clean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">dir</span>=<span class="string">"$&#123;dest&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">file</span>=<span class="string">"$&#123;jar_path&#125;"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">echo</span>&gt;</span>x<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<p>rerun the process<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"rerun"</span> <span class="attr">depends</span>=<span class="string">"clean,run"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"run"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ant</span> <span class="attr">target</span>=<span class="string">"clean"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">echo</span>&gt;</span>xx<span class="tag">&lt;/<span class="name">echo</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="Procedure"><a href="#Procedure" class="headerlink" title="Procedure"></a>Procedure</h3><ol>
-<li>clean</li>
-<li>init</li>
-<li>compile</li>
-<li>build</li>
-<li>run</li>
-<li>1 -&gt; 5</li>
-<li>clean</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2462,7 +2475,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">276</span>
+                    <span class="site-state-item-count">277</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2759,7 +2772,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
