@@ -46,7 +46,7 @@
 
   
 
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/css/main.css?v=7.1.2">
 
@@ -335,6 +335,195 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/09/05/springboot-multi-mybatis-datasource/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2018/09/05/springboot-multi-mybatis-datasource/" class="post-title-link" itemprop="url">springboot multi mybatis datasource</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-05 18:30:07" itemprop="dateCreated datePublished" datetime="2018-09-05T18:30:07+08:00">2018-09-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Add-configuration"><a href="#Add-configuration" class="headerlink" title="Add configuration"></a>Add configuration</h2><p>In <code>application.properties</code> file add data source configuration<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">spring.datasource.test1.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">spring.datasource.test1.url=jdbc:mysql://localhost:3306/test1</span><br><span class="line">spring.datasource.test1.username=root</span><br><span class="line">spring.datasource.test1.password=root</span><br><span class="line"></span><br><span class="line">spring.datasource.test2.driverClassName=com.mysql.jdbc.Driver</span><br><span class="line">spring.datasource.test2.url=jdbc:mysql://localhost:3306/test2</span><br><span class="line">spring.datasource.test2.username=root</span><br><span class="line">spring.datasource.test2.password=root</span><br><span class="line"></span><br><span class="line">mybatis.mapperLocations=classpath:sql-mappers/**/*.xml</span><br></pre></td></tr></table></figure></p>
+<h2 id="Self-define-data-source"><a href="#Self-define-data-source" class="headerlink" title="Self define data source"></a>Self define data source</h2><h3 id="New-configuration"><a href="#New-configuration" class="headerlink" title="New configuration"></a>New configuration</h3><p>Point out base package path, sql session reference.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@MapperScan</span>(basePackages=<span class="string">"com.burningbright.test1"</span>,</span><br><span class="line">              sqlSessionFactoryRef=<span class="string">"test1SqlSessionFactory"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Datasource1</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Inject-xml-path-properties"><a href="#Inject-xml-path-properties" class="headerlink" title="Inject xml path properties"></a>Inject xml path properties</h3><p>Put mapper xml location into configuration class<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Value</span>(<span class="string">"$&#123;mybatis.mapperLocations&#125;"</span>)</span><br><span class="line"><span class="keyword">private</span> String mapperLocation;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Add-properties-holder"><a href="#Add-properties-holder" class="headerlink" title="Add properties holder"></a>Add properties holder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> PropertySourcesPlaceholderConfigurer</span><br><span class="line">                  propertySourcesPlaceholderConfigurer() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> PropertySourcesPlaceholderConfigurer();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-datasource"><a href="#Create-datasource" class="headerlink" title="Create datasource"></a>Create datasource</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1Datasource"</span>)</span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix=<span class="string">"spring.datasource.test1"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> DataSource <span class="title">testDatasource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> DataSourceBuilder.create().build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-session-factory"><a href="#Create-session-factory" class="headerlink" title="Create session factory"></a>Create session factory</h3><p>Make sure bean name is same as the class reference annotation<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1SqlSessionFactory"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactory <span class="title">testSqlSessionFactory</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    @Qualifier(<span class="string">"test1Datasource"</span>)</span>DataSource dataSource)</span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    SqlSessionFactoryBean bean=<span class="keyword">new</span> SqlSessionFactoryBean();</span><br><span class="line">    bean.setDataSource(dataSource);</span><br><span class="line">    bean.setMapperLocations(</span><br><span class="line">      <span class="keyword">new</span> PathMatchingResourcePatternResolver().</span><br><span class="line">        getResources(mapperLocation));</span><br><span class="line">    <span class="keyword">return</span> bean.getObject();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Create-transaction-manager-bean"><a href="#Create-transaction-manager-bean" class="headerlink" title="Create transaction manager bean"></a>Create transaction manager bean</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1TransactionManager"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> DataSourceTransactionManager <span class="title">testTransactionManager</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        @Qualifier(<span class="string">"test1Datasource"</span>)</span>DataSource dataSource) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DataSourceTransactionManager(dataSource);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Create-session-template"><a href="#Create-session-template" class="headerlink" title="Create session template"></a>Create session template</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span>(name=<span class="string">"test1SqlSessionTemplate"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionTemplate <span class="title">testSqlSessionTemplate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  @Qualifier(<span class="string">"test1SqlSessionFactory"</span>)</span>SqlSessionFactory sqlSessionFactory) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SqlSessionTemplate(sqlSessionFactory);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Use-data-source"><a href="#Use-data-source" class="headerlink" title="Use data source"></a>Use data source</h2><p>Add test data source test2 the same as above<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(basePackages=&#123;<span class="string">"com.burningbright.test1"</span>,<span class="string">"com.burningbright.test2"</span>&#125;)</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserMapper userMapper;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>Prefix must the same as properties keys’ prefix in application.properties</li>
+<li>If <code>@Primary</code> not be annotated, application will throw exception.<br> Unless the reseal framework level has a default primary datasource.</li>
+<li><code>@Qualifier</code> inject object by bean’s name.</li>
+<li><code>basePackages</code> is mapper file’s package path.</li>
+<li><code>sqlSessionTemplateRef</code> is the instance’s reference</li>
+</ol>
+<p><a href="https://blog.csdn.net/qq_37142346/article/details/78488452" target="_blank" rel="noopener">https://blog.csdn.net/qq_37142346/article/details/78488452</a><br><a href="https://blog.csdn.net/a123demi/article/details/74004499" target="_blank" rel="noopener">https://blog.csdn.net/a123demi/article/details/74004499</a><br><a href="https://blog.csdn.net/hongweigg/article/details/79104321" target="_blank" rel="noopener">https://blog.csdn.net/hongweigg/article/details/79104321</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2046,205 +2235,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2018/05/22/python-encode/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/05/22/python-encode/" class="post-title-link" itemprop="url">python encode</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-05-22 16:10:13" itemprop="dateCreated datePublished" datetime="2018-05-22T16:10:13+08:00">2018-05-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Declare"><a href="#Declare" class="headerlink" title="Declare"></a>Declare</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br></pre></td></tr></table></figure>
-<p>make clare that the origin code context use utf-8 encoding.</p>
-<p>if not declate when unioncode sign appare in origin text, python throw exception:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SyntaxError: Non-ASCII character &apos;\xe4&apos; in file code_test.py on line 6,</span><br><span class="line">but no encoding declared; see http://python.org/dev/peps/pep-0263/ for details</span><br></pre></td></tr></table></figure>
-<h2 id="Setting-default-encoding"><a href="#Setting-default-encoding" class="headerlink" title="Setting default encoding"></a>Setting default encoding</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(&apos;utf8&apos;)</span><br></pre></td></tr></table></figure>
-<p>told python use <code>utf8</code> as the default encoding to deal symbols<br>python’s type <code>str</code> use <code>ascii</code> as the default encoding ps. v2.7</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError: &apos;ascii&apos; codec can&apos;t encode character u&apos;\u4e07&apos; in position 0:</span><br><span class="line">ordinal not in range(128)</span><br></pre></td></tr></table></figure>
-<h2 id="Exception-in-db"><a href="#Exception-in-db" class="headerlink" title="Exception in db"></a>Exception in db</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnicodeEncodeError:&apos;latin-1&apos; codec can&apos;t encode character ...</span><br></pre></td></tr></table></figure>
-<p>declare the connection and the cursor’s encoding:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db = pymysql.connect(&quot;localhost&quot;, &quot;use&quot;, &quot;passwd&quot;, &quot;db_name&quot; , use_unicode=True,  charset=&quot;utf8&quot;)</span><br><span class="line">db = MySQLdb.connect(host=&quot;localhost&quot;, user = &quot;root&quot;, passwd = &quot;&quot;, db = &quot;testdb&quot;, use_unicode=True, charset=&quot;utf8&quot;)</span><br><span class="line">cursor.execute(&apos;SET NAMES utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET CHARACTER SET utf8;&apos;)</span><br><span class="line">cursor.execute(&apos;SET character_set_connection=utf8;&apos;)</span><br></pre></td></tr></table></figure></p>
-<h2 id="Exception-in-wb"><a href="#Exception-in-wb" class="headerlink" title="Exception in wb"></a>Exception in wb</h2><p>If the web is encoded in <code>gbk</code> or <code>gb2312</code>, use <code>utf8</code> to show will case messy encoding</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">html = unicode(html, &quot;gbk&quot;).encode(&quot;utf8&quot;)</span><br></pre></td></tr></table></figure>
-<p>turn the bytes stream to unicode first in <code>gbk</code> decoding, then encoding in <code>utf8</code></p>
-<h2 id="Encoding-transform"><a href="#Encoding-transform" class="headerlink" title="Encoding transform"></a>Encoding transform</h2><ol>
-<li>if in origin code <code>str</code> delcare has the prfix <code>u</code> then it is unicde encoding</li>
-<li>if origin code <code>str</code> has no prefix <code>u</code> then it use it’s text encoding</li>
-<li>use <code>unicode(str, codec)</code> to transform <code>str</code> to unicode</li>
-<li>most times use <code>str.decode(codec)</code> to decode to bytes stream</li>
-</ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">reload(sys)</span><br><span class="line">sys.setdefaultencoding(<span class="string">'utf8'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># u'\u4e07'</span></span><br><span class="line">a = <span class="string">u"万"</span></span><br><span class="line"><span class="keyword">print</span> a</span><br><span class="line"><span class="keyword">print</span> ord(a)</span><br><span class="line"><span class="keyword">print</span> unichr(ord(a))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"----------------"</span></span><br><span class="line"></span><br><span class="line">b = a.encode(<span class="string">'utf8'</span>)</span><br><span class="line"><span class="keyword">print</span> b</span><br><span class="line">c = a.encode(<span class="string">'gbk'</span>)</span><br><span class="line"><span class="keyword">print</span> c</span><br></pre></td></tr></table></figure>
-<p>in windows bash termianl’s encode is <code>utf8</code> , <code>gbk</code> is messy encoding<br><img src="/2018/05/22/python-encode/bash.png" alt="bash"><br>in windows dos terminal’s encode is <code>gbk</code> , <code>utf8</code> is messy encoding<br><img src="/2018/05/22/python-encode/dos.png" alt="dos"></p>
-<h2 id="Encoding-in-json"><a href="#Encoding-in-json" class="headerlink" title="Encoding in json"></a>Encoding in json</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">json.dumps # turn json object -&gt; string</span><br><span class="line">json.loads # turn json string -&gt; object</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># add encoding parameter</span><br><span class="line">json.loads(jStr, encoding=&quot;GB2312&quot;);</span><br><span class="line"># restrict the string in unicode encoding</span><br><span class="line">json.dumps(js, ensure_ascii=False)</span><br></pre></td></tr></table></figure>
-<p><a href="https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character" target="_blank" rel="noopener">https://stackoverflow.com/questions/3942888/unicodeencodeerror-latin-1-codec-cant-encode-character</a></p>
-<p><a href="https://blog.csdn.net/learn_tech/article/details/52982679" target="_blank" rel="noopener">https://blog.csdn.net/learn_tech/article/details/52982679</a></p>
-<p><a href="https://blog.csdn.net/xfyangle/article/details/60969522" target="_blank" rel="noopener">https://blog.csdn.net/xfyangle/article/details/60969522</a></p>
-<p><a href="https://blog.csdn.net/ran337287/article/details/56298949" target="_blank" rel="noopener">https://blog.csdn.net/ran337287/article/details/56298949</a></p>
-<p><a href="https://blog.csdn.net/chenzy945/article/details/18267905" target="_blank" rel="noopener">https://blog.csdn.net/chenzy945/article/details/18267905</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2291,7 +2281,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">277</span>
+                    <span class="site-state-item-count">278</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

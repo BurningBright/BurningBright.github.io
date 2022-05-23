@@ -46,7 +46,7 @@
 
   
 
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/css/main.css?v=7.1.2">
 
@@ -335,6 +335,188 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/07/05/maintain-log-files-by-shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/05/maintain-log-files-by-shell/" class="post-title-link" itemprop="url">maintain log files by shell</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-07-05 10:19:28" itemprop="dateCreated datePublished" datetime="2019-07-05T10:19:28+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-07-07 21:36:13" itemprop="dateModified" datetime="2019-07-07T21:36:13+08:00">2019-07-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="move-log-file-to-another-device"><a href="#move-log-file-to-another-device" class="headerlink" title="move log file to another device"></a>move log file to another device</h3><p>scheduled move specific file to target directory<br><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># move log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># file name</span></span><br><span class="line">default=<span class="string">"/logs/common-default.log."</span><span class="variable">$&#123;date&#125;</span><span class="string">".log"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -f <span class="string">"<span class="variable">$default</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="variable">$date</span><span class="string">' move '</span><span class="variable">$default</span><span class="string">' to /data0/backup'</span> &gt;&gt; /logs/backup.log</span><br><span class="line">    `mv <span class="variable">$default</span> /data0/backup`</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure></p>
+<p><code>crontab -e</code> add schedule<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10 0 * * * sh /move.sh</span><br></pre></td></tr></table></figure></p>
+<h3 id="delete-log-file-by-function"><a href="#delete-log-file-by-function" class="headerlink" title="delete log file by function"></a>delete log file by function</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="comment"># delete log 1 month ago</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># get date string</span></span><br><span class="line">date=`date -d <span class="string">'1 month ago'</span> +<span class="string">'%Y-%m-%d'</span>`</span><br><span class="line"></span><br><span class="line"><span class="comment"># find files modify 1 month ago</span></span><br><span class="line">files=find /data0/backup -<span class="built_in">type</span> f -not -newermt <span class="variable">$date</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> delete_log_files</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">test</span> <span class="variable">$#</span> -gt 0</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">        `rm -f <span class="variable">$1</span>`</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">'$date clean $1'</span> &gt;&gt; /logs/cleanup.log</span><br><span class="line">        <span class="built_in">shift</span></span><br><span class="line">    <span class="keyword">done</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">delete_log_files <span class="variable">$files</span></span><br></pre></td></tr></table></figure>
+<h3 id="delete-log-file-by-command"><a href="#delete-log-file-by-command" class="headerlink" title="delete log file by command"></a>delete log file by command</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">find /logs/ -<span class="built_in">type</span> f -mtime +30 -name <span class="string">'*.log'</span> -<span class="built_in">exec</span> rm -rf &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+<p><code>{}</code> is placeholder of the file be found<br><code>\;</code> mean exec command finish</p>
+<hr>
+<p>process every line in a multi-line variable<br><a href="https://cloud.tencent.com/developer/ask/46222" target="_blank" rel="noopener">https://cloud.tencent.com/developer/ask/46222</a></p>
+<p>‘crontab’ schedule<br><a href="https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html" target="_blank" rel="noopener">https://www.cnblogs.com/peida/archive/2013/01/08/2850483.html</a></p>
+<p>‘find’ command -exec<br><a href="https://blog.csdn.net/u010900754/article/details/83020378" target="_blank" rel="noopener">https://blog.csdn.net/u010900754/article/details/83020378</a></p>
+<p>‘find’ command useage<br><a href="https://blog.csdn.net/h106140873/article/details/72874455" target="_blank" rel="noopener">https://blog.csdn.net/h106140873/article/details/72874455</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2182,191 +2364,6 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/04/29/compile-spring-5-x-in-idea/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/04/29/compile-spring-5-x-in-idea/" class="post-title-link" itemprop="url">compile spring 5.x in idea</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2019-04-29 14:16:36 / Modified: 20:18:57" itemprop="dateCreated datePublished" datetime="2019-04-29T14:16:36+08:00">2019-04-29</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="prepare"><a href="#prepare" class="headerlink" title="prepare"></a>prepare</h2><ol>
-<li>source code spring5.x</li>
-<li>gradle 4.9</li>
-<li>jdk1.8_131</li>
-<li>ideaIC-2019.1.1.exe (IntelliJ IDEA Community Edition 2019.1.1 x64)</li>
-</ol>
-<p>Download source code in:<br><a href="https://github.com/spring-projects/spring-framework/tree/5.0.x" target="_blank" rel="noopener">https://github.com/spring-projects/spring-framework/tree/5.0.x</a><br>Download gradle in:<br><a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a><br>Download idea in:<br><a href="https://www.jetbrains.com/idea/download/" target="_blank" rel="noopener">https://www.jetbrains.com/idea/download/</a><br>Download jdk in oracle website</p>
-<p>the versions of these things are important</p>
-<ul>
-<li>gradle version should bigger than 4.2 and no big than 5.0<br>i use 4.6/ 5.1/ 5.4 gradle compile project failed.</li>
-<li>jdk version should in 1.8, and no bigger than 1.8_131<br>the blog of csdn editor has such experience.</li>
-<li>idea version the newer the better, i use idea 2017.1.2 failed in junit test.</li>
-</ul>
-<h2 id="install"><a href="#install" class="headerlink" title="install"></a>install</h2><p>JAVA_HOME: D:\jdk1.8.0_131<br>CLASSPATH: .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar;</p>
-<p>GRADLE_HOME: D:\gradle-4.6<br>GRADLE_USER_HOME: D:.gradle</p>
-<p>Add to path</p>
-<p>at setting of idea, set sdk/gradle path.<br>set gradle parameters <code>-XX:MaxPermSize=1024m -Xmx1024m -XX:MaxHeapSize=1024m</code></p>
-<p><img src="/2019/04/29/compile-spring-5-x-in-idea/20190429143526.png" alt="20190429143526.png"></p>
-<h2 id="compile"><a href="#compile" class="headerlink" title="compile"></a>compile</h2><p>import source code of spring5.x, import as a gradle project.<br>wait for gradle solve project sync.</p>
-<p>comment no use depend in <code>spring-beans.gradle</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//compileGroovy.dependsOn = compileGroovy.taskDependencies.values - &quot;compileJava&quot;</span><br></pre></td></tr></table></figure></p>
-<p>if meet dependency problem like this<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Circular dependency between the following tasks:</span><br><span class="line">  ...</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></p>
-<p>add <code>org.gradle.configureondemand = true</code> in gradle.properties</p>
-<h2 id="test"><a href="#test" class="headerlink" title="test"></a>test</h2><p>project is ready :)</p>
-<p><code>org.springframework.beans.factory.xml.BeanNameGenerationTests</code></p>
-<p><a href="https://blog.csdn.net/baomw/article/details/83956300" target="_blank" rel="noopener">https://blog.csdn.net/baomw/article/details/83956300</a><br><a href="https://www.jianshu.com/p/d6e3ec44f99a" target="_blank" rel="noopener">https://www.jianshu.com/p/d6e3ec44f99a</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2413,7 +2410,7 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">277</span>
+                    <span class="site-state-item-count">278</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3188,9 +3185,9 @@ P(B|A) = 0.2 * ( \frac{0.85}{0.85 * 0.2 + 0.09 * 0.8} ) \approx 0.702</script><p
   
     
       
-        
-      
     
+      
+        
       
     
       

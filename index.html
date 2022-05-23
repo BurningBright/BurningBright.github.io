@@ -46,7 +46,7 @@
 
   
 
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/css/main.css?v=7.1.2">
 
@@ -335,6 +335,210 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2022/05/18/about-asynchronous-export/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2022/05/18/about-asynchronous-export/" class="post-title-link" itemprop="url">关于数据异步导出</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2022-05-18 11:06:39" itemprop="dateCreated datePublished" datetime="2022-05-18T11:06:39+08:00">2022-05-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2022-05-23 08:23:31" itemprop="dateModified" datetime="2022-05-23T08:23:31+08:00">2022-05-23</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>上周开始做大量数据导出需求，今天记录些思路。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li>原系统使用同步导出，文件流形式响应前端。</li>
+<li>前端页面一直卡住无提示体验不佳，且数据量有限制以避免请求超时。</li>
+<li>POI导出工具类使用XSSFworkbook，如果数据量巨大可能会内存溢出。</li>
+</ol>
+<p>基于现状需要改造系统导出，采用异步导出。<br>异步导出可以做成统一界面、前端轮询或是邮件通知的形式。<br>异步导出文件对象，采用上传云存储返回用户URL的形式下载。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p><img src="/2022/05/18/about-asynchronous-export/asychronous _export.png" alt="asychronous _export.png"><br>不开发界面查询导出任务，用户提交导出请求后，以同参数轮询接口。<br><code>应用系统</code>兼顾<code>后台系统</code>和<code>导出系统</code>。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/364025382" target="_blank" rel="noopener">聊一聊数据导出那些事</a>   这篇文章中聊到的导出过程相当有范</p>
+<ol>
+<li>提交导出申请：接口实现</li>
+<li>生成导出批次：参数实现</li>
+<li>发送导出批次到中间件</li>
+<li>提交申请成功</li>
+<li>读取导出批次信息：异步线程池传参</li>
+<li>查询/生成/加密文件</li>
+<li>上传到云存储</li>
+<li>组装下载地址</li>
+<li>回填信息：前端轮询</li>
+<li>查询导出申请并下载：前端轮询</li>
+</ol>
+<p>总体看来思路相同，包括第六步对旧文件的处理<br>主要区别来自需求和架构，在用户交互和第五步对导出任务执行上的区别</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ol>
+<li>改造工具类使用SXSSFWorkbook导出excel</li>
+<li>设计导出任务数据结构</li>
+<li>同进程异步线程池执行导出任务；更新进度</li>
+<li>管道流在异步线程池中上传文件对象；更新进度</li>
+<li>列举云存储文件，删除旧导出文件</li>
+<li>返回轮询目标任务文件URL，导出完成</li>
+</ol>
+<hr>
+<p><a href="https://zhuanlan.zhihu.com/p/364025382" target="_blank" rel="noopener">聊一聊数据导出那些事</a><br><a href="https://www.ucloud.cn/yun/67542.html" target="_blank" rel="noopener">使用SXSSFWorkbook来导出excel</a><br><a href="https://wenku.baidu.com/view/127c0fde0142a8956bec0975f46527d3240ca628.html" target="_blank" rel="noopener">HSSFworkbook,XSSFworkbook,SXSSFworkbook区别总结</a><br><a href="https://www.yisu.com/zixun/542513.html" target="_blank" rel="noopener">Java中怎么将OutputStream 转换成InputStream</a><br><a href="https://help.aliyun.com/product/31815.html" target="_blank" rel="noopener">对象存储 OSS</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2237,191 +2441,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/03/19/comparison-of-distinct-and-group-by/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2021/03/19/comparison-of-distinct-and-group-by/" class="post-title-link" itemprop="url">mysql中 distinct 和 group by 的性能对比</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2021-03-19 18:40:49" itemprop="dateCreated datePublished" datetime="2021-03-19T18:40:49+08:00">2021-03-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2021-04-02 08:55:43" itemprop="dateModified" datetime="2021-04-02T08:55:43+08:00">2021-04-02</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="建张表"><a href="#建张表" class="headerlink" title="建张表"></a>建张表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`test_a`</span> (</span><br><span class="line"> <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> auto_increment,</span><br><span class="line"> <span class="string">`num`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">default</span> <span class="string">'0'</span>,</span><br><span class="line"> PRIMARY <span class="keyword">KEY</span>  (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM  <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 AUTO_INCREMENT=<span class="number">1</span> ;</span><br></pre></td></tr></table></figure>
-<h2 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p_test_a(pa <span class="built_in">int</span>(<span class="number">11</span>))</span><br><span class="line"> <span class="keyword">begin</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">declare</span> max_num <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">default</span> <span class="number">100000</span>;</span><br><span class="line">  <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">declare</span> rand_num <span class="built_in">int</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">select</span> <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">into</span> max_num <span class="keyword">from</span> test_a;</span><br><span class="line"></span><br><span class="line">  while i &lt; pa do</span><br><span class="line">          if max_num &lt; 100000 then</span><br><span class="line">                  <span class="keyword">select</span> <span class="keyword">cast</span>(<span class="keyword">rand</span>()*<span class="number">100</span> <span class="keyword">as</span> <span class="keyword">unsigned</span>) <span class="keyword">into</span> rand_num;</span><br><span class="line">                  <span class="keyword">insert</span> <span class="keyword">into</span> test_a(<span class="keyword">num</span>)<span class="keyword">values</span>(rand_num);</span><br><span class="line">          <span class="keyword">end</span> <span class="keyword">if</span>;</span><br><span class="line">          <span class="keyword">set</span> i = i +<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">end</span> <span class="keyword">while</span>;</span><br><span class="line"> <span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<p>生成数据<br><code>call p_test_a(100000);</code></p>
-<h2 id="不加索引"><a href="#不加索引" class="headerlink" title="不加索引"></a>不加索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> profiling=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> <span class="keyword">num</span> <span class="keyword">from</span> test_a;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">num</span> <span class="keyword">from</span> test_a <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">num</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">profiles</span>;</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/03/19/comparison-of-distinct-and-group-by/20210319181857.png" alt="20210319181857"></p>
-<h2 id="加索引"><a href="#加索引" class="headerlink" title="加索引"></a>加索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">`test_a`</span> <span class="keyword">ADD</span> <span class="keyword">INDEX</span> <span class="string">`num_index`</span> (<span class="string">`num`</span>) ;</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/03/19/comparison-of-distinct-and-group-by/20210319182050.png" alt="20210319182050"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>加了索引之后 distinct 比没加索引的 distinct 快了 27 倍。</li>
-<li>加了索引之后 group by 比没加索引的 group by 快了 50 倍。</li>
-</ul>
-<p>再来对比 ：distinct 和 group by<br>不管是加不加索引 group by 都比 distinct 快。<br>因此使用的时候建议选 group by</p>
-<p><a href="https://blog.csdn.net/caomiao2006/article/details/52145546" target="_blank" rel="noopener">MySQL中distinct和group by性能比较[转]</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2468,7 +2487,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">277</span>
+                    <span class="site-state-item-count">278</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3257,9 +3276,9 @@
       
     
       
-        
-      
     
+      
+        
       
     
       

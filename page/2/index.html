@@ -46,7 +46,7 @@
 
   
 
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/css/main.css?v=7.1.2">
 
@@ -335,6 +335,191 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/03/19/comparison-of-distinct-and-group-by/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2021/03/19/comparison-of-distinct-and-group-by/" class="post-title-link" itemprop="url">mysql中 distinct 和 group by 的性能对比</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2021-03-19 18:40:49" itemprop="dateCreated datePublished" datetime="2021-03-19T18:40:49+08:00">2021-03-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2021-04-02 08:55:43" itemprop="dateModified" datetime="2021-04-02T08:55:43+08:00">2021-04-02</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="建张表"><a href="#建张表" class="headerlink" title="建张表"></a>建张表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`test_a`</span> (</span><br><span class="line"> <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> auto_increment,</span><br><span class="line"> <span class="string">`num`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">default</span> <span class="string">'0'</span>,</span><br><span class="line"> PRIMARY <span class="keyword">KEY</span>  (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM  <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 AUTO_INCREMENT=<span class="number">1</span> ;</span><br></pre></td></tr></table></figure>
+<h2 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> p_test_a(pa <span class="built_in">int</span>(<span class="number">11</span>))</span><br><span class="line"> <span class="keyword">begin</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">declare</span> max_num <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">default</span> <span class="number">100000</span>;</span><br><span class="line">  <span class="keyword">declare</span> i <span class="built_in">int</span> <span class="keyword">default</span> <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">declare</span> rand_num <span class="built_in">int</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">select</span> <span class="keyword">count</span>(<span class="keyword">id</span>) <span class="keyword">into</span> max_num <span class="keyword">from</span> test_a;</span><br><span class="line"></span><br><span class="line">  while i &lt; pa do</span><br><span class="line">          if max_num &lt; 100000 then</span><br><span class="line">                  <span class="keyword">select</span> <span class="keyword">cast</span>(<span class="keyword">rand</span>()*<span class="number">100</span> <span class="keyword">as</span> <span class="keyword">unsigned</span>) <span class="keyword">into</span> rand_num;</span><br><span class="line">                  <span class="keyword">insert</span> <span class="keyword">into</span> test_a(<span class="keyword">num</span>)<span class="keyword">values</span>(rand_num);</span><br><span class="line">          <span class="keyword">end</span> <span class="keyword">if</span>;</span><br><span class="line">          <span class="keyword">set</span> i = i +<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">end</span> <span class="keyword">while</span>;</span><br><span class="line"> <span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>生成数据<br><code>call p_test_a(100000);</code></p>
+<h2 id="不加索引"><a href="#不加索引" class="headerlink" title="不加索引"></a>不加索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> profiling=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> <span class="keyword">num</span> <span class="keyword">from</span> test_a;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">num</span> <span class="keyword">from</span> test_a <span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">num</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">profiles</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/03/19/comparison-of-distinct-and-group-by/20210319181857.png" alt="20210319181857"></p>
+<h2 id="加索引"><a href="#加索引" class="headerlink" title="加索引"></a>加索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">`test_a`</span> <span class="keyword">ADD</span> <span class="keyword">INDEX</span> <span class="string">`num_index`</span> (<span class="string">`num`</span>) ;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/03/19/comparison-of-distinct-and-group-by/20210319182050.png" alt="20210319182050"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>加了索引之后 distinct 比没加索引的 distinct 快了 27 倍。</li>
+<li>加了索引之后 group by 比没加索引的 group by 快了 50 倍。</li>
+</ul>
+<p>再来对比 ：distinct 和 group by<br>不管是加不加索引 group by 都比 distinct 快。<br>因此使用的时候建议选 group by</p>
+<p><a href="https://blog.csdn.net/caomiao2006/article/details/52145546" target="_blank" rel="noopener">MySQL中distinct和group by性能比较[转]</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1972,190 +2157,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/09/30/HashMap-in-java8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2020/09/30/HashMap-in-java8/" class="post-title-link" itemprop="url">Java8 中的 HashMap</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2020-09-30 15:13:07" itemprop="dateCreated datePublished" datetime="2020-09-30T15:13:07+08:00">2020-09-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-10-11 12:04:01" itemprop="dateModified" datetime="2020-10-11T12:04:01+08:00">2020-10-11</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>JDK1.8 中对HashMap底层进行了改造，例如扩容重散列算法优化、加入链表过长转红黑树结构等。<br>鉴于日常搬砖靠HashMap打天下，面试题基本跑不了，全面认知散列表必不可少。</p>
-<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p>散列表的实现方法有两种：</p>
-<ul>
-<li>开放地址法(Hashing with linear probing)<br><img src="/2020/09/30/HashMap-in-java8/20200930161943.png" alt="20200930161943"></li>
-<li>链接地址法(Hashing with separate chaining)<br><img src="/2020/09/30/HashMap-in-java8/20200930161836.png" alt="20200930161836"></li>
-</ul>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2020/09/30/HashMap-in-java8/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2202,7 +2203,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">277</span>
+                    <span class="site-state-item-count">278</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -2979,9 +2980,9 @@
       
     
       
-        
-      
     
+      
+        
       
     
       

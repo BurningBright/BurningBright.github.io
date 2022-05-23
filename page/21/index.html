@@ -46,7 +46,7 @@
 
   
 
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="/css/main.css?v=7.1.2">
 
@@ -335,6 +335,207 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/08/ORA-00257/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/08/ORA-00257/" class="post-title-link" itemprop="url">ORA-00257</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-08 21:00:12" itemprop="dateCreated datePublished" datetime="2017-05-08T21:00:12+08:00">2017-05-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>ORA-00257: archiver error. Connect internal only, until freed</code></p>
+<ol>
+<li><p>login in <code>sys</code><br><code>sqlplus sys/pass@tt as sysdba</code></p>
+</li>
+<li><p>find <code>archiv log</code> position<br><code>SQL&gt; show parameter log_archive_dest;</code></p>
+</li>
+<li><p>if value is null, check directory<br><code>SQL&gt; archive log list;</code></p>
+</li>
+<li><p>check <code>flash recovery area</code> use condition<br><code>SQL&gt; select * from V$FLASH_RECOVERY_AREA_USAGE;</code></p>
+</li>
+<li><p>find recovery directory<br><code>SQL&gt; show parameter recover;</code></p>
+</li>
+<li><p>remove log file in no use.<br>caution: reserver file remain in time.</p>
+</li>
+<li><p>rman maintain<br><code>rman target sys/pass</code></p>
+</li>
+<li><p>check archivelog in no use<br><code>RMAN&gt; crosscheck archivelog all;</code></p>
+</li>
+<li><p>delete expired file in db<br><code>RMAN&gt; delete expired archivelog all;</code><br><code>RMAN&gt; delete archivelog until time &#39;sysdate-1&#39;;</code></p>
+</li>
+<li><p>check again<br><code>SQL&gt; select * from V$FLASH_RECOVERY_AREA_USAGE;</code></p>
+</li>
+</ol>
+<h3 id="Others"><a href="#Others" class="headerlink" title="Others"></a>Others</h3><p>if <code>archive log</code> model can’t startup,<br>recover to <code>noarchive log</code> startup then shutdown.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shutdown immediate;</span><br><span class="line">startup mount;</span><br><span class="line">alter database noarchivelog;</span><br><span class="line">alter database open;</span><br><span class="line">shutdown immediate;</span><br></pre></td></tr></table></figure>
+<p>turn to <code>archive log</code> again</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shutdown immediate;</span><br><span class="line">startup mount;</span><br><span class="line">show parameter log_archive_dest;</span><br><span class="line">alter database archivelog;</span><br><span class="line">archive log list;</span><br><span class="line">alter database open;</span><br></pre></td></tr></table></figure>
+<p>If still can’t modify startup.<br>Try to delete more log or expand space.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">## check log group</span><br><span class="line">SQL&gt; select group#,sequence# from v$log;</span><br><span class="line"></span><br><span class="line">## clean more space</span><br><span class="line">SQL&gt; alter database clear unarchived logfile group 1;</span><br><span class="line">alter database open;</span><br><span class="line"></span><br><span class="line">## change storage position</span><br><span class="line">select name from v$datafile;</span><br><span class="line">alter system set log_archive_dest=&apos;/opt/app/oracle/oradata/usagedb/arch&apos; scope=spfile</span><br><span class="line"></span><br><span class="line">## expand space</span><br><span class="line">SQL&gt; alter system set db_recovery_file_dest_size=3G scope=both;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -2154,211 +2355,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/24/Introduce-Shiro/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/04/24/Introduce-Shiro/" class="post-title-link" itemprop="url">Introduce Shiro</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-04-24 13:41:20" itemprop="dateCreated datePublished" datetime="2017-04-24T13:41:20+08:00">2017-04-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2017/04/24/Introduce-Shiro/d59f6d02-1f45-3285-8983-4ea5f18111d5.png" alt="d59f6d02-1f45-3285-8983-4ea5f18111d5.png"><br><strong>Shiro can be used in</strong></p>
-<ul>
-<li><em>Authentication</em> check current <code>user</code> has identity</li>
-<li><em>Authorization</em> check <code>user</code>‘s priority, what he can do</li>
-<li><em>Session management</em> when <code>user</code> not logout, it’s info will be storage in session.</li>
-<li><em>Cryptography</em> protect data, like password.</li>
-<li><em>Web support</em> easy integrate in web environment</li>
-<li><em>caching</em> like <code>user</code>‘s role/priority, for improve performence.</li>
-<li><em>Concurrency</em> support mulity thread priority share.</li>
-<li><em>Testing</em> test support.</li>
-<li><em>Run as</em> for <code>user</code> use other user’s mask</li>
-<li><em>Remember me</em> next time come, no more login.</li>
-</ul>
-<p><strong>Shiro wouldn’t maintain user/priority info</strong></p>
-<h2 id="See-shiro-from-outside"><a href="#See-shiro-from-outside" class="headerlink" title="See shiro from outside"></a>See shiro from outside</h2><p><img src="/2017/04/24/Introduce-Shiro/5e0e9b41-0cca-367f-8c87-a8398910e7a6.png" alt="5e0e9b41-0cca-367f-8c87-a8398910e7a6.png"></p>
-<ul>
-<li><em>Subject</em> represent a request entry from net, like user/ robot/ crawler</li>
-<li><em>SecurityManager</em> it’s the core of shiro, it’s the security executor.</li>
-<li><em>Realm</em> it’s the security data, like a class of user.</li>
-</ul>
-<p><strong>1. Use Subject to authentication and authorization, Subject entrust to SecurityManager</strong><br><strong>2. SecurityManager need Realm to judge whether a user is the use</strong></p>
-<h2 id="See-shiro-from-inside"><a href="#See-shiro-from-inside" class="headerlink" title="See shiro from inside"></a>See shiro from inside</h2><p><img src="/2017/04/24/Introduce-Shiro/9b959a65-799d-396e-b5f5-b4fcfe88f53c.png" alt="9b959a65-799d-396e-b5f5-b4fcfe88f53c.png"></p>
-<ul>
-<li><em>Subject</em> framework’s main body</li>
-<li><em>SecurityManager</em> like <code>DispatcherServlet</code> in SpringMVC, he controlls global; it’s shiro’s heart.</li>
-<li><em>Authenticator</em> this is a extention point</li>
-<li><em>Authrizer</em> the request controller, determain whether subject has priority to do so.</li>
-<li><em>Realm</em> maybe JDBC/ LDAP/ CAS</li>
-<li><em>SessionManager</em> manage session’s life cycle.</li>
-<li><em>SessionDAO</em> if we wan’t to put session into redis, we can implements SessionDao in ourselves.</li>
-<li><em>CacheManager</em> put user/role/priority into it, for improving performence.</li>
-<li><em>Cryptography</em> shiro improve some encryption module.</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2405,7 +2401,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">277</span>
+                    <span class="site-state-item-count">278</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

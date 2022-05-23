@@ -18551,4 +18551,50 @@ y = 0.0000004966195 x^{3}-0.0001752266754 x^{2}+0.0004323852126 x+0.997273936745
         <tag>symbol</tag>
       </tags>
   </entry>
+  <entry>
+    <title>关于数据异步导出</title>
+    <url>/2022/05/18/about-asynchronous-export/</url>
+    <content><![CDATA[<p>上周开始做大量数据导出需求，今天记录些思路。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ol>
+<li>原系统使用同步导出，文件流形式响应前端。</li>
+<li>前端页面一直卡住无提示体验不佳，且数据量有限制以避免请求超时。</li>
+<li>POI导出工具类使用XSSFworkbook，如果数据量巨大可能会内存溢出。</li>
+</ol>
+<p>基于现状需要改造系统导出，采用异步导出。<br>异步导出可以做成统一界面、前端轮询或是邮件通知的形式。<br>异步导出文件对象，采用上传云存储返回用户URL的形式下载。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p><img src="/2022/05/18/about-asynchronous-export/asychronous _export.png" alt="asychronous _export.png"><br>不开发界面查询导出任务，用户提交导出请求后，以同参数轮询接口。<br><code>应用系统</code>兼顾<code>后台系统</code>和<code>导出系统</code>。</p>
+<p><a href="https://zhuanlan.zhihu.com/p/364025382" target="_blank" rel="noopener">聊一聊数据导出那些事</a>   这篇文章中聊到的导出过程相当有范</p>
+<ol>
+<li>提交导出申请：接口实现</li>
+<li>生成导出批次：参数实现</li>
+<li>发送导出批次到中间件</li>
+<li>提交申请成功</li>
+<li>读取导出批次信息：异步线程池传参</li>
+<li>查询/生成/加密文件</li>
+<li>上传到云存储</li>
+<li>组装下载地址</li>
+<li>回填信息：前端轮询</li>
+<li>查询导出申请并下载：前端轮询</li>
+</ol>
+<p>总体看来思路相同，包括第六步对旧文件的处理<br>主要区别来自需求和架构，在用户交互和第五步对导出任务执行上的区别</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><ol>
+<li>改造工具类使用SXSSFWorkbook导出excel</li>
+<li>设计导出任务数据结构</li>
+<li>同进程异步线程池执行导出任务；更新进度</li>
+<li>管道流在异步线程池中上传文件对象；更新进度</li>
+<li>列举云存储文件，删除旧导出文件</li>
+<li>返回轮询目标任务文件URL，导出完成</li>
+</ol>
+<hr>
+<p><a href="https://zhuanlan.zhihu.com/p/364025382" target="_blank" rel="noopener">聊一聊数据导出那些事</a><br><a href="https://www.ucloud.cn/yun/67542.html" target="_blank" rel="noopener">使用SXSSFWorkbook来导出excel</a><br><a href="https://wenku.baidu.com/view/127c0fde0142a8956bec0975f46527d3240ca628.html" target="_blank" rel="noopener">HSSFworkbook,XSSFworkbook,SXSSFworkbook区别总结</a><br><a href="https://www.yisu.com/zixun/542513.html" target="_blank" rel="noopener">Java中怎么将OutputStream 转换成InputStream</a><br><a href="https://help.aliyun.com/product/31815.html" target="_blank" rel="noopener">对象存储 OSS</a></p>
+]]></content>
+      <categories>
+        <category>java</category>
+      </categories>
+      <tags>
+        <tag>constructure</tag>
+        <tag>io</tag>
+        <tag>redis</tag>
+        <tag>thread</tag>
+      </tags>
+  </entry>
 </search>
