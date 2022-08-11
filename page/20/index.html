@@ -351,6 +351,407 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/21/The-structure-of-the-JVM-overview-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/21/The-structure-of-the-JVM-overview-2/" class="post-title-link" itemprop="url">The structure of the JVM overview 2</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-21 18:58:53" itemprop="dateCreated datePublished" datetime="2017-05-21T18:58:53+08:00">2017-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Frames"><a href="#Frames" class="headerlink" title="Frames"></a>Frames</h2><h3 id="Local-Variables"><a href="#Local-Variables" class="headerlink" title="Local Variables"></a>Local Variables</h3><p>Each frame contains <strong>an array of variables</strong> known as its <code>local variables</code>.</p>
+<ul>
+<li><p>one can hold<br>&gt;<br>boolean, byte, char, short, int,<br>float, reference, returnAddress</p>
+</li>
+<li><p>a pair can hold <code>long or double</code></p>
+</li>
+</ul>
+<p>JVM uses local variables to pass parameters on method invocation.</p>
+<p>On instance method invocation, <strong>local variable 0</strong> is always used to pass<br>a reference to instance it’self(<code>this</code>).</p>
+<h3 id="Operand-Stacks"><a href="#Operand-Stacks" class="headerlink" title="Operand Stacks"></a>Operand Stacks</h3><p>Each frame contains a last-in-first-out (LIFO) stack known as its operand stack.</p>
+<p>Used to push or pop constant or values from variable or method.</p>
+<p>Values from the operand stack must be operated upon in ways <strong>appropriate to their types</strong>.</p>
+<p>These restrictions on operand stack manipulation are enforced through <strong>class file verification</strong>.</p>
+<h3 id="Dynamic-Linking"><a href="#Dynamic-Linking" class="headerlink" title="Dynamic Linking"></a>Dynamic Linking</h3><p>Each frame contains a reference to the <code>run-time constant pool</code> for<br>the type of the current method to support <code>dynamic linking</code> of the method code.</p>
+<p><code>invoke</code> <code>InvocationHandler</code> in java ?</p>
+<p>Used to reduce the <strong>invasive</strong> of the code linked code,<br>keep current code shape and solid.</p>
+<p>Dynamic linking translates these <code>symbolic
+method</code> references into <code>concrete method</code> references.</p>
+<h3 id="Normal-Method-Invocation-Completion"><a href="#Normal-Method-Invocation-Completion" class="headerlink" title="Normal Method Invocation Completion"></a>Normal Method Invocation Completion</h3><p>A method invocation completes normally if<br>that invocation does <strong>not cause</strong> an exception to be thrown.</p>
+<p>The current frame use <code>break</code> characteristic to restore <strong>the state of the invoker</strong><br>for the program counter of the invoker appropriately incremented to <strong>skip past</strong><br>the method invocation instruction(PC Register?).</p>
+<h3 id="Abrupt-Method-Invocation-Completion"><a href="#Abrupt-Method-Invocation-Completion" class="headerlink" title="Abrupt Method Invocation Completion"></a>Abrupt Method Invocation Completion</h3><p>A method invocation <code>completes abruptly</code> if execution of a JVM<br>instruction within the method causes the JVM to throw an<br>exception, and that exception is <strong>not handled</strong> within the method.</p>
+<p>Execution of an <code>athrow</code> instruction also causes an exception to<br>be <code>explicitly thrown</code> and, if the exception is not caught by the<br>current method, results in <strong>abrupt method</strong> invocation completion.</p>
+<p>A method invocation that completes abruptly <strong>never returns</strong> a value to its invoker.</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/19/The-structure-of-the-JVM-overview-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/19/The-structure-of-the-JVM-overview-1/" class="post-title-link" itemprop="url">The structure of the JVM overview 1</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-19 22:18:55" itemprop="dateCreated datePublished" datetime="2017-05-19T22:18:55+08:00">2017-05-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Run-Time-Data-Areas"><a href="#Run-Time-Data-Areas" class="headerlink" title="Run-Time Data Areas"></a>Run-Time Data Areas</h2><h3 id="The-pc-Register"><a href="#The-pc-Register" class="headerlink" title="The pc Register"></a>The pc Register</h3><p>JVM can support many thread run at once.<br>Each JVM thread has <strong>it’s own</strong> <code>pc register</code>.</p>
+<p>At any point,thread executing the code of a <strong>single method</strong> ,<br>called the current method for that thread.</p>
+<p>If the method is a <code>native</code> method, <code>pc register</code> is undefined,<br>else the <code>pc register</code> contains the address of <strong>JVM instruction</strong> current being executed.</p>
+<p>It is wide enough to hold a <code>returnAddress</code> or a <code>native pointer</code> on the specific platform.</p>
+<h3 id="Java-Virtual-Machine-Stacks"><a href="#Java-Virtual-Machine-Stacks" class="headerlink" title="Java Virtual Machine Stacks"></a>Java Virtual Machine Stacks</h3><p>Each Java Virtual Machine thread has a private <code>JVM stack</code></p>
+<p>A <code>JVM stack</code> stores frames, frames may be heap allocated.</p>
+<ul>
+<li><p>Requires a larger JVM stack than is permitted<br><code>StackOverflowError</code> in <strong>infinite recursion</strong> this error happen.</p>
+</li>
+<li><p>Stacks dynamically expanded, and expansion is attempted but<br>  insufficient memory can be made available to effect the expansion.<br><code>OutOfMemoryError</code> in <strong>fames too many?</strong> in stack this error may happen.</p>
+</li>
+</ul>
+<h3 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h3><p>The heap is the run-time data area, it’s a ‘public area’.<br><code>GC</code> be appointed to manage this area.</p>
+<p><code>OutOfMemoryError</code> when frame need memory size over the <strong>maximum heap size</strong>.</p>
+<h3 id="Method-Area"><a href="#Method-Area" class="headerlink" title="Method Area"></a>Method Area</h3><p><code>Method Area</code> is a ‘public area’ as well.</p>
+<p>It stores</p>
+<ol>
+<li><code>per-class structures</code> such as the <strong>run-time constant pool</strong></li>
+<li>field and method data</li>
+<li>the code for methods and constructors, including<br>the <code>special methods</code> (§2.9) used in class and instance initialization<br>and interface initialization.</li>
+</ol>
+<p>Accturally it is the <strong>origin class library</strong> of all programes in JVM.</p>
+<p><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</p>
+<h3 id="Run-Time-Constant-Pool"><a href="#Run-Time-Constant-Pool" class="headerlink" title="Run-Time Constant Pool"></a>Run-Time Constant Pool</h3><p>Each run-time constant pool is allocated from the JVM’s <code>method area</code>.</p>
+<p>The run-time constant pool serves a function similar to<br>that of <strong>a symbol table</strong> for a programming language</p>
+<p><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</p>
+<h3 id="Native-Method-Stacks"><a href="#Native-Method-Stacks" class="headerlink" title="Native Method Stacks"></a>Native Method Stacks</h3><p>JVM may use conventional stacks,<br>colloquially called <code>C stacks</code> to support <strong>native method</strong>.</p>
+<p>Also be used by the implementation of <strong>an interpreter</strong> for the JVM’s<br>instruction set in a language such as C.</p>
+<p>If JVM rely on conventional stack, it need not supply native method stacks.</p>
+<p>If supplied, native method stacks are<br>typically allocated per thread when <strong>each thread</strong> is created.</p>
+<ul>
+<li><code>StackOverflowError</code> thread requires a larger native method stack than <strong>is permitted</strong></li>
+<li><code>OutOfMemoryError</code> expansion/initialization is attempted<br>but insufficient memory can be made available</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/17/Java-ClassLoader-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1943,395 +2344,6 @@ p2region&gt;&gt; 101.105.35.57
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/10/FIND-IN-SET-Var-Field/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/10/FIND-IN-SET-Var-Field/" class="post-title-link" itemprop="url">FIND_IN_SET(Var, Field)</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-10 23:12:30" itemprop="dateCreated datePublished" datetime="2017-05-10T23:12:30+08:00">2017-05-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`user_org`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">30</span>)  <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`organizations`</span> <span class="built_in">varchar</span>(<span class="number">60</span>)  <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'Betty'</span>, <span class="string">'1001,1002,1003'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'William'</span>, <span class="string">'1001,1002'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'Thomas'</span>, <span class="string">'1002,1003'</span>);</span><br></pre></td></tr></table></figure>
-<h3 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h3><p>User <code>find_in_set</code> function directly.<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> user_org <span class="keyword">where</span> find_in_set(<span class="string">'1003'</span>, organizations);</span><br></pre></td></tr></table></figure></p>
-<h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><ol>
-<li>Use <code>LIKE</code> key word:<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> user_org <span class="keyword">where</span> organizations <span class="keyword">like</span> <span class="string">'%1003%'</span>;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>this may mis match, if element length are not fixed.</p>
-<ol>
-<li>Create a function</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> <span class="keyword">REPLACE</span></span><br><span class="line"><span class="keyword">FUNCTION</span> FIND_IN_SET(piv_str1 <span class="built_in">varchar2</span>, piv_str2 <span class="built_in">varchar2</span>, p_sep <span class="built_in">varchar2</span> := <span class="string">','</span>)</span><br><span class="line"><span class="keyword">RETURN</span> <span class="built_in">NUMBER</span> <span class="keyword">IS</span></span><br><span class="line">  l_idx       <span class="built_in">number</span>:=<span class="number">0</span>;      <span class="comment">-- 用于计算piv_str2中分隔符的位置</span></span><br><span class="line">  str         varchar2(500);  <span class="comment">-- 根据分隔符截取的子字符串</span></span><br><span class="line">  piv_str     varchar2(500) := piv_str2; <span class="comment">-- 将piv_str2赋值给piv_str</span></span><br><span class="line">  res         number:=0;      <span class="comment">-- 返回结果</span></span><br><span class="line">  res_place   number:=0;      <span class="comment">-- 原字符串在目标字符串中的位置</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="comment">-- 如果piv_str中没有分割符，直接判断piv_str1和piv_str是否相等，相等 res_place=1</span></span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">instr</span>(piv_str, p_sep, <span class="number">1</span>) = <span class="number">0</span><span class="keyword">THEN</span></span><br><span class="line">   <span class="keyword">IF</span> piv_str = piv_str1 <span class="keyword">THEN</span></span><br><span class="line">      res_place:=<span class="number">1</span>;</span><br><span class="line">   <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">ELSE</span><br><span class="line"> <span class="comment">-- 循环按分隔符截取piv_str</span></span><br><span class="line">LOOP</span><br><span class="line">    l_idx := instr(piv_str,p_sep);</span><br><span class="line">    <span class="comment">--</span></span><br><span class="line">    res_place := res_place + 1;</span><br><span class="line">    <span class="comment">-- 当piv_str中还有分隔符时</span></span><br><span class="line">      IF l_idx &gt; 0THEN</span><br><span class="line">      <span class="comment">-- 截取第一个分隔符前的字段str</span></span><br><span class="line">         str:= substr(piv_str,1,l_idx-1);</span><br><span class="line">         <span class="comment">-- 判断 str 和piv_str1 是否相等，相等则结束循环判断</span></span><br><span class="line">         IF str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">           EXIT;</span><br><span class="line">         <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        piv_str := substr(piv_str,l_idx+length(p_sep));</span><br><span class="line">      ELSE</span><br><span class="line">      <span class="comment">-- 当截取后的piv_str 中不存在分割符时，判断piv_str和piv_str1是否相等，相等 res=res_path</span></span><br><span class="line">        IF piv_str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        <span class="comment">-- no matter what jump out</span></span><br><span class="line">        EXIT;</span><br><span class="line">      <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line"> <span class="comment">-- stoped</span></span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> res := res_place;</span><br><span class="line"> <span class="comment">-- return</span></span><br><span class="line"> RETURN res;</span><br><span class="line"><span class="keyword">END</span> FIND_IN_SET;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/09/Difference-between-ibatis-and-mybatis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/05/09/Difference-between-ibatis-and-mybatis/" class="post-title-link" itemprop="url">Difference between ibatis and mybatis</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-05-09 21:54:36" itemprop="dateCreated datePublished" datetime="2017-05-09T21:54:36+08:00">2017-05-09</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>ibatis3.x change name to mybatis.</p>
-<h3 id="Object-relation-mapping-optimize"><a href="#Object-relation-mapping-optimize" class="headerlink" title="Object relation mapping optimize"></a>Object relation mapping optimize</h3><p>mybatis could package <code>N+1</code> query problem, in <code>&lt;association&gt;</code> and <code>&lt;collection&gt;</code><br>ibatis2 use <code>nest query</code> is a brute method, we can package in DAO or service as will.</p>
-<p>But mybatis <code>N+1</code> query not support paging query.<br>May be 1 to many is difficult to implements in framework,<br>and the number you want can’t be predict.</p>
-<h3 id="Mybatis-implements-interface-binding"><a href="#Mybatis-implements-interface-binding" class="headerlink" title="Mybatis implements interface binding"></a>Mybatis implements interface binding</h3><p>In ibatis2.x, we need to write<br>which xml mapping file is the DAO implements class binding.</p>
-<p>In mybatis DAO interface’s name automatically binding<br>implements with xml file.</p>
-<p>ps. although mybatis support annotation way config DAO,<br>but it loose flexibility, and invade code too much.</p>
-<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><h4 id="In-config"><a href="#In-config" class="headerlink" title="In config"></a>In config</h4><ol>
-<li>dtd restraint file is different.</li>
-<li>ibatis root element is <code>sqlMapConfig</code>, mybatis is <code>configuration</code></li>
-<li>global setting properties is different.</li>
-<li>ibatis use <code>sqlMap</code>，mybatis use <code>mappers</code>.</li>
-</ol>
-<h4 id="In-mapping-table"><a href="#In-mapping-table" class="headerlink" title="In mapping table"></a>In mapping table</h4><ol>
-<li><p>in ibatis namespace is not necessary, and has no meaning.<br>in mybatis it mean file’s corresponding DAO interface.</p>
-</li>
-<li><p>ibatis has <code>resultMap</code> <code>resultClass</code> two return types<br><code>resultMap</code> mean self define class, <code>resultClass</code> nean java class.<br>mybatis union these too <code>resultType</code>.</p>
-</li>
-<li><p>ibatis use <code>parameterClass</code>, mybatis use <code>parameterType</code></p>
-</li>
-<li><p>parameter difference<br>mybatis use <code>OGNL</code> expression.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># ibatis</span><br><span class="line">WHERE ID = #id:VARCHAR#</span><br><span class="line"></span><br><span class="line"># mybatis</span><br><span class="line">where ID = #&#123;id,jdbcType=VARCHAR&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="CLR"><a href="#CLR" class="headerlink" title="CLR"></a>CLR</h4><p>ibatis use <code>&lt;procedure&gt;</code> tag call precedure process.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parameterMap</span> <span class="attr">id</span>=<span class="string">"reduceParameters"</span> <span class="attr">class</span>=<span class="string">"map"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">jdbcType</span>=<span class="string">"INTEGER"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.Integer"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"firstName"</span> <span class="attr">jdbcType</span>=<span class="string">"VARCHAR"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.String"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"lastName"</span> <span class="attr">jdbcType</span>=<span class="string">"VARCHAR"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.String"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parameterMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">procedure</span> <span class="attr">id</span>=<span class="string">"reduceGroupNumber"</span> <span class="attr">parameterMap</span>=<span class="string">"reduceParameters"</span>&gt;</span></span><br><span class="line">&#123;call reduce_group_number (?, ?, ?)&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">procedure</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p> In mybatis <code>&lt;proccedure&gt;</code> has been removed,<br> <code>&lt;select&gt;</code> <code>&lt;insert&gt;</code> <code>&lt;update&gt;</code> replaced.</p>
- <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"reduceGroupNumber"</span> <span class="attr">parameterMap</span>=<span class="string">"reduceParameters"</span> <span class="attr">statementType</span>=<span class="string">"CALLABLE"</span>&gt;</span></span><br><span class="line">&#123; ? = call reduce_group_number (?,?,?)&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><code>statementType=&quot;CALLABLE&quot;</code> show it’s not a usual sql request.</p>
-<h4 id="Integration-difference"><a href="#Integration-difference" class="headerlink" title="Integration difference"></a>Integration difference</h4><p>ibatis:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlMapClient"</span> <span class="attr">class</span>=<span class="string">"org.springframework.orm.ibatis.SqlMapClientFactoryBean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:sqlMap-config.xml"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>mybatis:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionFactoryBean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:com/leon/core/config/mybatis-config.xml"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"mapperLocations"</span> <span class="attr">value</span>=<span class="string">"classpath*:com/leon/**/*Mapper.xml"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<ol>
-<li>implements machine from <code>SqlMapClient</code> to <code>SqlSessionFactory</code></li>
-<li>class processor interface from <code>TypeHandlerCallback</code> to <code>TypeHandler</code></li>
-<li><code>DataSourceFactory</code> move to <code>org.apache.ibatis.datasource</code> package</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2378,7 +2390,7 @@ p2region&gt;&gt; 101.105.35.57
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">278</span>
+                    <span class="site-state-item-count">280</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

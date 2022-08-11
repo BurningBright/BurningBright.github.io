@@ -351,6 +351,370 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/19/Hello-elasticsearch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/19/Hello-elasticsearch/" class="post-title-link" itemprop="url">Hello elasticsearch</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-19 21:42:51" itemprop="dateCreated datePublished" datetime="2017-03-19T21:42:51+08:00">2017-03-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/search/" itemprop="url" rel="index"><span itemprop="name">search</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo tar -xzvf elasticsearch-5.2.2.tar.gz</span><br><span class="line"></span><br><span class="line">sudo chown -R pi:pi elasticsearch-5.2.2</span><br></pre></td></tr></table></figure>
+<p>If not change directory’s owner, user command <code>sudo -E ./bin/elasticsearch</code> execute the script, or the java path can’t be find.</p>
+<h3 id="Config"><a href="#Config" class="headerlink" title="Config"></a>Config</h3><p>./bin/elasticsearch<br><strong>dispatch memory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ES_JAVA_OPTS=&quot;-Xms70m -Xmx70m&quot;</span><br></pre></td></tr></table></figure></p>
+<p>./config/elasticsearch.yml<br><strong>set bootstrap to single machine mode</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cluster.name: elastic-pi</span><br><span class="line"></span><br><span class="line">bootstrap.memory_lock: false</span><br><span class="line">bootstrap.system_call_filter: false</span><br><span class="line"></span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line">#http.cors.enabled: true  </span><br><span class="line">#http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure></p>
+<p>If exception happen like this<br><code>max virtual memory areas vm.max_map_count [65530] likely too low, increase to at least [262144]</code><br>In single machine mode looks like no this problem<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo echo &quot;vm.max_map_count=262144&quot; &gt;&gt; /etc/sysctl.conf</span><br><span class="line">sudo sysctl -p</span><br></pre></td></tr></table></figure></p>
+<h3 id="Plugin"><a href="#Plugin" class="headerlink" title="Plugin"></a>Plugin</h3><p><a href="https://github.com/medcl/elasticsearch-analysis-ik" target="_blank" rel="noopener">elasticsearch-analysis-ik</a></p>
+<p>Pharse process plugin<br><strong>release to plugin directory</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v5.2.2/elasticsearch-analysis-ik-5.2.2.zip</span><br><span class="line"></span><br><span class="line">unzip elasticsearch-analysis-ik-5.2.2.zip</span><br></pre></td></tr></table></figure></p>
+<h4 id="head"><a href="#head" class="headerlink" title="head"></a>head</h4><p>install npm/ nodejs/ elasticsearch-head</p>
+<h3 id="Exception"><a href="#Exception" class="headerlink" title="Exception"></a>Exception</h3><p><code>org.elasticsearch.indices.IndexClosedException: closed</code></p>
+<p>delete the origin index and rebuild index, it works.</p>
+<p><code>Could not find any executable java binary. Please install java in your PATH or set JAVA_HOME</code></p>
+<p>make sure java be right configed, and current user has privilege to use elasticsearch/ environment variable</p>
+<h3 id="Operate"><a href="#Operate" class="headerlink" title="Operate"></a>Operate</h3><ol>
+<li><p>start<br>nohup ./bin/elasticsearch&amp;<br>./bin/elasticsearch -d</p>
+</li>
+<li><p>stop<br>ps -ef|grep elastic<br>kill -9 51271</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/15/Hello-hbase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/03/15/Hello-hbase/" class="post-title-link" itemprop="url">Hello hbase</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-03-15 22:41:47" itemprop="dateCreated datePublished" datetime="2017-03-15T22:41:47+08:00">2017-03-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Download-Configure"><a href="#Download-Configure" class="headerlink" title="Download Configure"></a>Download Configure</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo curl -O http://mirrors.hust.edu.cn/apache/hbase/1.3.0/hbase-1.3.0-bin.tar.gz</span><br><span class="line"></span><br><span class="line">sudo tar -xzvf hbase-1.3.0-bin.tar.gz</span><br><span class="line"></span><br><span class="line">sudo vim conf/hbase-env.sh</span><br><span class="line"><span class="meta"> &gt;</span><span class="bash"> <span class="built_in">export</span> JAVA_HOME=/usr/lib/jdk1.8.0_121</span></span><br><span class="line"><span class="meta"> &gt;</span><span class="bash"> <span class="built_in">export</span> HBASE_CLASSPATH=/usr/lib/hbase-1.3.0/lib</span></span><br><span class="line"></span><br><span class="line">sudo bash bin/start-hbase.sh</span><br><span class="line"></span><br><span class="line">more logs/hbase-root-master-raspberrypi.log</span><br></pre></td></tr></table></figure>
+<h2 id="Have-a-try"><a href="#Have-a-try" class="headerlink" title="Have a try"></a>Have a try</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">bin/hbase shell</span><br><span class="line"></span><br><span class="line">create &apos;PageViews&apos;, &apos;info&apos;</span><br><span class="line"></span><br><span class="line">list</span><br><span class="line"></span><br><span class="line">descibe &apos;PageViews&apos;</span><br><span class="line"></span><br><span class="line">put &apos;PageViews&apos;, &apos;rowkey1&apos;, &apos;info:page&apos;, &apos;/mypage&apos;</span><br><span class="line"></span><br><span class="line">put &apos;PageViews&apos;, &apos;rowkey1&apos;, &apos;info:count&apos;, &apos;7&apos;</span><br><span class="line"></span><br><span class="line">get &apos;PageViews&apos;, &apos;rowkey1&apos;</span><br><span class="line"></span><br><span class="line">put &apos;PageViews&apos;, &apos;rowkey2&apos;, &apos;info:page&apos;, &apos;/myotherpage&apos;</span><br><span class="line"></span><br><span class="line">put &apos;PageViews&apos;, &apos;srowkey2&apos;, &apos;info:page&apos;, &apos;/myotherpage&apos;</span><br><span class="line"></span><br><span class="line">scan &apos;PageViews&apos;, &#123;STARTROW=&gt;&apos;r&apos;, ENDROW=&gt;&apos;s&apos;&#125;</span><br><span class="line"></span><br><span class="line">scan &apos;PageViews&apos;, &#123;STARTROW=&gt;&apos;r&apos;&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/14/Inverse-function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1908,411 +2272,6 @@ ex + \phi(n)y = 1</script><p>-&gt;</p>
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/02/Python-write-file/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/02/Python-write-file/" class="post-title-link" itemprop="url">Python write file</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-02 23:47:35" itemprop="dateCreated datePublished" datetime="2017-03-02T23:47:35+08:00">2017-03-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-18 21:24:09" itemprop="dateModified" datetime="2020-06-18T21:24:09+08:00">2020-06-18</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/python/" itemprop="url" rel="index"><span itemprop="name">python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">f = open(<span class="string">"out.txt"</span>, <span class="string">"a"</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">102</span>):</span><br><span class="line">	<span class="comment"># something before write here</span></span><br><span class="line">	<span class="keyword">if</span> i&lt;<span class="number">10</span>:</span><br><span class="line">		f.write(<span class="string">"00"</span>)</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">	<span class="keyword">elif</span> i&lt;<span class="number">100</span>:</span><br><span class="line">		f.write(<span class="string">"0"</span>)</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		f.write(str(i))</span><br><span class="line">		f.write(<span class="string">".jpg\n"</span>)</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure>
-<ul>
-<li>open file get a file variable</li>
-<li>write data from range of int</li>
-<li>after written close file</li>
-</ul>
-<p>string -&gt; char bunch slice method<br><code>target = src[0:len(src)-5]</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/03/02/RSA-Principle-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/02/RSA-Principle-1/" class="post-title-link" itemprop="url">RSA Principle 1</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-02 15:50:58" itemprop="dateCreated datePublished" datetime="2017-03-02T15:50:58+08:00">2017-03-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-16 20:50:36" itemprop="dateModified" datetime="2020-06-16T20:50:36+08:00">2020-06-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/math/" itemprop="url" rel="index"><span itemprop="name">math</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="History"><a href="#History" class="headerlink" title="History"></a>History</h2><p><img src="/2017/03/02/RSA-Principle-1/bg2013062702.jpg" alt="bg2013062702.jpg"><br>In 1977, three mathematician <strong>Rivest Shamir</strong> and <strong>Adleman</strong> designed the <code>RSA</code> algorithm.</p>
-<h2 id="Coprime-relation"><a href="#Coprime-relation" class="headerlink" title="Coprime relation"></a>Coprime relation</h2><p>If two positive integer <strong>no other common elements</strong> except <code>1</code>,<br>then these two number be called have coprime relation.</p>
-<ul>
-<li><strong>any two coprime number</strong> compose to coprime relation</li>
-<li>one coprime another is <strong>not multiple with</strong> the privous one then coprime relation.</li>
-<li>if the <strong>bigger one</strong> in two number is <strong>coprime number</strong>, then these two compose to coprime relation.</li>
-<li><code>1</code> with <strong>any nature number</strong> is coprime relation.</li>
-<li>p is integer bigger than <code>1</code>, <strong>p and p-1</strong> is coprime relation.</li>
-<li>p is <strong>odd number</strong> bigger than <code>1</code>, <strong>p and p-2</strong> is coprime relation.</li>
-</ul>
-<h2 id="Euler-formula-function"><a href="#Euler-formula-function" class="headerlink" title="Euler formula(function)"></a>Euler formula(function)</h2><h3 id="Condition-1"><a href="#Condition-1" class="headerlink" title="Condition 1"></a>Condition 1</h3><script type="math/tex; mode=display">
-\phi(1) = 1</script><p><code>1</code> with any nature number is coprime relation.</p>
-<h3 id="Condition-2"><a href="#Condition-2" class="headerlink" title="Condition 2"></a>Condition 2</h3><script type="math/tex; mode=display">
-\phi(n) = n - 1</script><p>If n is coprime number than every number <strong>lower than n</strong> is coprime relation with n.</p>
-<h3 id="Condition-3"><a href="#Condition-3" class="headerlink" title="Condition 3"></a>Condition 3</h3><script type="math/tex; mode=display">
-\phi(p^k) = p^k - p^{k-1} = p^k(1-\frac{1}{p})</script><p>If number n is some coprime number’s times square than.</p>
-<p>For example:</p>
-<script type="math/tex; mode=display">
-\varphi(16) = \varphi(2^4) = 2^4 - 2^3 = 8</script><p>In 1 -&gt; 16 totle 2^3 is multiple with <code>2</code>.<br>So the number coprime relation with 16 is 8;<br>1 3 5 7 9 11 13 15</p>
-<h3 id="Condition-4"><a href="#Condition-4" class="headerlink" title="Condition 4"></a>Condition 4</h3><p>If number can be separate into<br>two number that have coprime relation.</p>
-<script type="math/tex; mode=display">
-n = p1 \times p2</script><p>Then:</p>
-<script type="math/tex; mode=display">
-\phi(n) = \phi(p1) \times \phi(p2)</script><p>For example:</p>
-<script type="math/tex; mode=display">
-\varphi(72) = \varphi(9) \times \varphi(8) = 32</script><h3 id="Condition-5"><a href="#Condition-5" class="headerlink" title="Condition 5"></a>Condition 5</h3><p>Any positive integer can be separate into<br>a series of coprime number’s accumulate.</p>
-<script type="math/tex; mode=display">
-n = p_{1}^{k1} p_{2}^{k2}... p_{r}^{kr}</script><p>based on proposition 4 -&gt;</p>
-<script type="math/tex; mode=display">
-\phi(n) = \phi(p_{1}^{k1}) \phi(p_{2}^{k2})... \phi(p_{r}^{kr})</script><p>based on proposition 3-&gt;</p>
-<script type="math/tex; mode=display">
-\phi(n) = p_{1}^{k1} p_{2}^{k2}... p_{r}^{kr}(1-\frac{1}{p_1})(1-\frac{1}{p_2})...(1-\frac{1}{p_r})</script><p>then -&gt;</p>
-<script type="math/tex; mode=display">
-\phi(n) = n(1-\frac{1}{p_1})(1-\frac{1}{p_2})...(1-\frac{1}{p_r})</script><p>This is the Euler’s common formula , for example</p>
-<script type="math/tex; mode=display">
-\varphi(11025) = \varphi(7^2 \times 5^2 \times 3^2)
-= 11025 \times (1-\frac{1}{7}) \times (1-\frac{1}{5}) \times (1-\frac{1}{3}) = 720</script><h2 id="Euler-proposition"><a href="#Euler-proposition" class="headerlink" title="Euler proposition"></a>Euler proposition</h2><script type="math/tex; mode=display">
-a^{\phi(n)} \equiv 1 \quad ( mod \quad n)</script><p>Special Condition<br>If p is a coprime number than:</p>
-<script type="math/tex; mode=display">
-a^{p-1} \equiv 1 \quad ( mod \quad p)</script><ul>
-<li>Fermat little theorem</li>
-<li>Fermat euler theorem</li>
-</ul>
-<h2 id="Mod-inverse-element"><a href="#Mod-inverse-element" class="headerlink" title="Mod inverse element"></a>Mod inverse element</h2><p>If two number <code>a</code> and <code>n</code> is coprime relation<br>than definitely could find a number <code>b</code> that $ab \quad mod \quad n = 1$</p>
-<p>Call <code>b</code> is a’s mod reserve element</p>
-<p>For example:<br>3 and 5 is coprime relation , set a=3, n=5, then a’s mod reserve element is 7.<br>7 {+-} kn[-4, 7, 12, 17] is all a’s mod reserve element.</p>
-<hr>
-<p>Euler proposition proves mod reserve element definitely exists.</p>
-<script type="math/tex; mode=display">
-a^{\phi(n)} = a \times a^{\phi(n)-1} \equiv  1 \quad ( mod \quad n)</script><script type="math/tex; mode=display">
-a^{\phi(n)-1}
-$$ is a's mod reserve element
-Like above a=3 and n=5, a's mod reserve elementis</script><p>a^{\phi(5)-1} = 3^3 = 27</p>
-<p>$$</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2359,7 +2318,7 @@ Like above a=3 and n=5, a's mod reserve elementis</script><p>a^{\phi(5)-1} = 3^3
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">278</span>
+                    <span class="site-state-item-count">280</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3134,11 +3093,11 @@ Like above a=3 and n=5, a's mod reserve elementis</script><p>a^{\phi(5)-1} = 3^3
   
     
       
+    
+      
+    
+      
         
-      
-    
-      
-    
       
     
       

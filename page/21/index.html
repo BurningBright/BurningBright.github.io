@@ -351,6 +351,395 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/10/FIND-IN-SET-Var-Field/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/10/FIND-IN-SET-Var-Field/" class="post-title-link" itemprop="url">FIND_IN_SET(Var, Field)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-10 23:12:30" itemprop="dateCreated datePublished" datetime="2017-05-10T23:12:30+08:00">2017-05-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`user_org`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">30</span>)  <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`organizations`</span> <span class="built_in">varchar</span>(<span class="number">60</span>)  <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'Betty'</span>, <span class="string">'1001,1002,1003'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'William'</span>, <span class="string">'1001,1002'</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_org (<span class="keyword">name</span>, organizations) <span class="keyword">values</span>(<span class="string">'Thomas'</span>, <span class="string">'1002,1003'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="Mysql"><a href="#Mysql" class="headerlink" title="Mysql"></a>Mysql</h3><p>User <code>find_in_set</code> function directly.<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> user_org <span class="keyword">where</span> find_in_set(<span class="string">'1003'</span>, organizations);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><ol>
+<li>Use <code>LIKE</code> key word:<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> user_org <span class="keyword">where</span> organizations <span class="keyword">like</span> <span class="string">'%1003%'</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>this may mis match, if element length are not fixed.</p>
+<ol>
+<li>Create a function</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> <span class="keyword">REPLACE</span></span><br><span class="line"><span class="keyword">FUNCTION</span> FIND_IN_SET(piv_str1 <span class="built_in">varchar2</span>, piv_str2 <span class="built_in">varchar2</span>, p_sep <span class="built_in">varchar2</span> := <span class="string">','</span>)</span><br><span class="line"><span class="keyword">RETURN</span> <span class="built_in">NUMBER</span> <span class="keyword">IS</span></span><br><span class="line">  l_idx       <span class="built_in">number</span>:=<span class="number">0</span>;      <span class="comment">-- 用于计算piv_str2中分隔符的位置</span></span><br><span class="line">  str         varchar2(500);  <span class="comment">-- 根据分隔符截取的子字符串</span></span><br><span class="line">  piv_str     varchar2(500) := piv_str2; <span class="comment">-- 将piv_str2赋值给piv_str</span></span><br><span class="line">  res         number:=0;      <span class="comment">-- 返回结果</span></span><br><span class="line">  res_place   number:=0;      <span class="comment">-- 原字符串在目标字符串中的位置</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"><span class="comment">-- 如果piv_str中没有分割符，直接判断piv_str1和piv_str是否相等，相等 res_place=1</span></span><br><span class="line"><span class="keyword">IF</span> <span class="keyword">instr</span>(piv_str, p_sep, <span class="number">1</span>) = <span class="number">0</span><span class="keyword">THEN</span></span><br><span class="line">   <span class="keyword">IF</span> piv_str = piv_str1 <span class="keyword">THEN</span></span><br><span class="line">      res_place:=<span class="number">1</span>;</span><br><span class="line">   <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">ELSE</span><br><span class="line"> <span class="comment">-- 循环按分隔符截取piv_str</span></span><br><span class="line">LOOP</span><br><span class="line">    l_idx := instr(piv_str,p_sep);</span><br><span class="line">    <span class="comment">--</span></span><br><span class="line">    res_place := res_place + 1;</span><br><span class="line">    <span class="comment">-- 当piv_str中还有分隔符时</span></span><br><span class="line">      IF l_idx &gt; 0THEN</span><br><span class="line">      <span class="comment">-- 截取第一个分隔符前的字段str</span></span><br><span class="line">         str:= substr(piv_str,1,l_idx-1);</span><br><span class="line">         <span class="comment">-- 判断 str 和piv_str1 是否相等，相等则结束循环判断</span></span><br><span class="line">         IF str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">           EXIT;</span><br><span class="line">         <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        piv_str := substr(piv_str,l_idx+length(p_sep));</span><br><span class="line">      ELSE</span><br><span class="line">      <span class="comment">-- 当截取后的piv_str 中不存在分割符时，判断piv_str和piv_str1是否相等，相等 res=res_path</span></span><br><span class="line">        IF piv_str = piv_str1 THEN</span><br><span class="line">           res:= res_place;</span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line">        <span class="comment">-- no matter what jump out</span></span><br><span class="line">        EXIT;</span><br><span class="line">      <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">LOOP</span>;</span><br><span class="line"> <span class="comment">-- stoped</span></span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">IF</span>;</span><br><span class="line"> res := res_place;</span><br><span class="line"> <span class="comment">-- return</span></span><br><span class="line"> RETURN res;</span><br><span class="line"><span class="keyword">END</span> FIND_IN_SET;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/09/Difference-between-ibatis-and-mybatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/05/09/Difference-between-ibatis-and-mybatis/" class="post-title-link" itemprop="url">Difference between ibatis and mybatis</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-05-09 21:54:36" itemprop="dateCreated datePublished" datetime="2017-05-09T21:54:36+08:00">2017-05-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>ibatis3.x change name to mybatis.</p>
+<h3 id="Object-relation-mapping-optimize"><a href="#Object-relation-mapping-optimize" class="headerlink" title="Object relation mapping optimize"></a>Object relation mapping optimize</h3><p>mybatis could package <code>N+1</code> query problem, in <code>&lt;association&gt;</code> and <code>&lt;collection&gt;</code><br>ibatis2 use <code>nest query</code> is a brute method, we can package in DAO or service as will.</p>
+<p>But mybatis <code>N+1</code> query not support paging query.<br>May be 1 to many is difficult to implements in framework,<br>and the number you want can’t be predict.</p>
+<h3 id="Mybatis-implements-interface-binding"><a href="#Mybatis-implements-interface-binding" class="headerlink" title="Mybatis implements interface binding"></a>Mybatis implements interface binding</h3><p>In ibatis2.x, we need to write<br>which xml mapping file is the DAO implements class binding.</p>
+<p>In mybatis DAO interface’s name automatically binding<br>implements with xml file.</p>
+<p>ps. although mybatis support annotation way config DAO,<br>but it loose flexibility, and invade code too much.</p>
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h3><h4 id="In-config"><a href="#In-config" class="headerlink" title="In config"></a>In config</h4><ol>
+<li>dtd restraint file is different.</li>
+<li>ibatis root element is <code>sqlMapConfig</code>, mybatis is <code>configuration</code></li>
+<li>global setting properties is different.</li>
+<li>ibatis use <code>sqlMap</code>，mybatis use <code>mappers</code>.</li>
+</ol>
+<h4 id="In-mapping-table"><a href="#In-mapping-table" class="headerlink" title="In mapping table"></a>In mapping table</h4><ol>
+<li><p>in ibatis namespace is not necessary, and has no meaning.<br>in mybatis it mean file’s corresponding DAO interface.</p>
+</li>
+<li><p>ibatis has <code>resultMap</code> <code>resultClass</code> two return types<br><code>resultMap</code> mean self define class, <code>resultClass</code> nean java class.<br>mybatis union these too <code>resultType</code>.</p>
+</li>
+<li><p>ibatis use <code>parameterClass</code>, mybatis use <code>parameterType</code></p>
+</li>
+<li><p>parameter difference<br>mybatis use <code>OGNL</code> expression.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># ibatis</span><br><span class="line">WHERE ID = #id:VARCHAR#</span><br><span class="line"></span><br><span class="line"># mybatis</span><br><span class="line">where ID = #&#123;id,jdbcType=VARCHAR&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="CLR"><a href="#CLR" class="headerlink" title="CLR"></a>CLR</h4><p>ibatis use <code>&lt;procedure&gt;</code> tag call precedure process.<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parameterMap</span> <span class="attr">id</span>=<span class="string">"reduceParameters"</span> <span class="attr">class</span>=<span class="string">"map"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"id"</span> <span class="attr">jdbcType</span>=<span class="string">"INTEGER"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.Integer"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"firstName"</span> <span class="attr">jdbcType</span>=<span class="string">"VARCHAR"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.String"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parameter</span> <span class="attr">property</span>=<span class="string">"lastName"</span> <span class="attr">jdbcType</span>=<span class="string">"VARCHAR"</span> <span class="attr">javaType</span>=<span class="string">"java.lang.String"</span> <span class="attr">mode</span>=<span class="string">"IN"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parameterMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">procedure</span> <span class="attr">id</span>=<span class="string">"reduceGroupNumber"</span> <span class="attr">parameterMap</span>=<span class="string">"reduceParameters"</span>&gt;</span></span><br><span class="line">&#123;call reduce_group_number (?, ?, ?)&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">procedure</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p> In mybatis <code>&lt;proccedure&gt;</code> has been removed,<br> <code>&lt;select&gt;</code> <code>&lt;insert&gt;</code> <code>&lt;update&gt;</code> replaced.</p>
+ <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"reduceGroupNumber"</span> <span class="attr">parameterMap</span>=<span class="string">"reduceParameters"</span> <span class="attr">statementType</span>=<span class="string">"CALLABLE"</span>&gt;</span></span><br><span class="line">&#123; ? = call reduce_group_number (?,?,?)&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>statementType=&quot;CALLABLE&quot;</code> show it’s not a usual sql request.</p>
+<h4 id="Integration-difference"><a href="#Integration-difference" class="headerlink" title="Integration difference"></a>Integration difference</h4><p>ibatis:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlMapClient"</span> <span class="attr">class</span>=<span class="string">"org.springframework.orm.ibatis.SqlMapClientFactoryBean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:sqlMap-config.xml"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>mybatis:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"sqlSessionFactory"</span> <span class="attr">class</span>=<span class="string">"org.mybatis.spring.SqlSessionFactoryBean"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"dataSource"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"classpath:com/leon/core/config/mybatis-config.xml"</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"mapperLocations"</span> <span class="attr">value</span>=<span class="string">"classpath*:com/leon/**/*Mapper.xml"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>implements machine from <code>SqlMapClient</code> to <code>SqlSessionFactory</code></li>
+<li>class processor interface from <code>TypeHandlerCallback</code> to <code>TypeHandler</code></li>
+<li><code>DataSourceFactory</code> move to <code>org.apache.ibatis.datasource</code> package</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/05/08/ORA-00257/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1976,385 +2365,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/30/raspberry-home-media/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/04/30/raspberry-home-media/" class="post-title-link" itemprop="url">raspberry home media</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-04-30 20:06:20" itemprop="dateCreated datePublished" datetime="2017-04-30T20:06:20+08:00">2017-04-30</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/raspberry/" itemprop="url" rel="index"><span itemprop="name">raspberry</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Install-package-NTFS-exFAT"><a href="#Install-package-NTFS-exFAT" class="headerlink" title="Install package(NTFS/exFAT)"></a>Install package(NTFS/exFAT)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># if exfat</span><br><span class="line">sudo apt-get install exfat-fuse</span><br><span class="line"></span><br><span class="line"># add this at the end(exfat)</span><br><span class="line">/dev/sda1 /mnt/usbdisk vfat rw,defaults 0 0</span><br><span class="line"></span><br><span class="line"># if ntfs</span><br><span class="line">sudo apt-get install fuse-utils ntfs-3g</span><br><span class="line">modprobe fuse</span><br><span class="line">sudo nano /etc/fstab</span><br><span class="line"></span><br><span class="line"># add this at the end(ntfs)</span><br><span class="line">/dev/sda1 /mnt/myusbdrive ntfs-3g defaults,noexec,umask=0000 0 0</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>umask=0000</code> mean to all user <code>rwx</code></li>
-<li><code>0</code> followed mean no backup</li>
-<li><code>0</code> at last mean no <code>fsck</code> sequential check.</li>
-</ul>
-<h2 id="Mount-disk"><a href="#Mount-disk" class="headerlink" title="Mount disk"></a>Mount disk</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir /mnt/seagate_2.5_80</span><br><span class="line">sudo mount -o uid=pi,gid=pi /dev/sda1 /mnt/seagate_2.5_80</span><br><span class="line">sudo umount /mnt/seagate_2.5_80</span><br></pre></td></tr></table></figure>
-<p><code>sda1</code>:</p>
-<ul>
-<li><code>sd</code> mean usb equipment</li>
-<li><code>a</code> mean first equipment</li>
-<li><code>1</code> mean the first partition</li>
-</ul>
-<p><a href="http://elinux.org/RPi_Adding_USB_Drives" target="_blank" rel="noopener">http://elinux.org/RPi_Adding_USB_Drives</a><br><a href="http://shumeipai.nxez.com/2013/09/08/raspberry-pi-to-mount-the-removable-hard-disk.html#comments" target="_blank" rel="noopener">raspberry-pi-to-mount-the-removable-hard-disk</a></p>
-<h2 id="Install-MiniDLNA"><a href="#Install-MiniDLNA" class="headerlink" title="Install MiniDLNA"></a>Install MiniDLNA</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install minidlna</span><br></pre></td></tr></table></figure>
-<h3 id="config-file"><a href="#config-file" class="headerlink" title="config file"></a>config file</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/minidlna.conf</span><br><span class="line">media_dir=/mnt/seagate_2.5_80</span><br><span class="line">db_dir=/var/lib/minidlna</span><br><span class="line">listening_ip=192.168.3.1</span><br><span class="line">port=8200</span><br><span class="line">friendly_name=DLNA</span><br></pre></td></tr></table></figure>
-<h3 id="commands"><a href="#commands" class="headerlink" title="commands"></a>commands</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># start</span><br><span class="line">sudo service minidlna start</span><br><span class="line"># stop</span><br><span class="line">sudo service minidlna stop</span><br><span class="line">sudo killall minidlna</span><br><span class="line"># uninstall</span><br><span class="line">sudo apt-get remove --purge minidlna</span><br><span class="line"># auto load</span><br><span class="line">sudo update-rc.d minidlna defaults</span><br><span class="line"># cancel auto load</span><br><span class="line">sudo update-rc.d -f minidlna remove</span><br><span class="line"># reflesh resouces</span><br><span class="line">sudo service minidlna force-reload</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/04/29/B-Tree-index-in-mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/04/29/B-Tree-index-in-mysql/" class="post-title-link" itemprop="url">B-Tree index in mysql</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-04-29 23:34:29" itemprop="dateCreated datePublished" datetime="2017-04-29T23:34:29+08:00">2017-04-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-09-17 07:47:16" itemprop="dateModified" datetime="2020-09-17T07:47:16+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/db/" itemprop="url" rel="index"><span itemprop="name">db</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Create a table like this:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE People (</span><br><span class="line">   last_name  varchar(50)    not null,</span><br><span class="line">   first_name varchar(50)    not null,</span><br><span class="line">   birthday   date           not null,</span><br><span class="line">   gender     enum(&apos;m&apos;, &apos;f&apos;) not null,</span><br><span class="line">   key(last_name, first_name, dob)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></p>
-<p>Create a b-tree index by two name and birthday.</p>
-<p><strong>B-Tree structure’s data is Sequential</strong></p>
-<h2 id="Use-B-Tree-index"><a href="#Use-B-Tree-index" class="headerlink" title="Use B-Tree index"></a>Use B-Tree index</h2><blockquote>
-<p>First of all query’s sequential is required<br>    last_name -&gt; first_name -&gt; birthday<br>    if miss a key then the later condition is invalid.</p>
-</blockquote>
-<ol>
-<li><strong>Match the full value</strong> to all fields specific val.</li>
-<li><strong>Match a leftmost prefix</strong> search the the man who’s last_name is ‘Leon’</li>
-<li><strong>Match a column prefix</strong> last_name like ‘L%’<br>ps. the follow condition will be useless</li>
-<li><strong>Match a range of values</strong><br>date_format(birthday, ‘%Y-%m-%d’) &gt; ‘2017-04-29’ and<br>date_format(birthday, ‘%Y-%m-%d’) &lt; ‘2017-05-01’</li>
-<li><strong>Match one part exactly and match a range on another part</strong><br>last_name=’Leon’ and first_name like ‘L%’</li>
-</ol>
-<h2 id="Rule"><a href="#Rule" class="headerlink" title="Rule"></a>Rule</h2><ol>
-<li>Sql condition in B-Tree index must use the first field in index first.</li>
-<li>Sequential search condition, jump is useless(follower)</li>
-<li>Put range search condtion to the end of where<br>the follow index field is invalid</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2401,7 +2411,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">278</span>
+                    <span class="site-state-item-count">280</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

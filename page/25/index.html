@@ -351,6 +351,472 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/19/Lookahead-and-lookbehind/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/19/Lookahead-and-lookbehind/" class="post-title-link" itemprop="url">Lookahead and lookbehind</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-19 14:37:59" itemprop="dateCreated datePublished" datetime="2017-02-19T14:37:59+08:00">2017-02-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/regex/" itemprop="url" rel="index"><span itemprop="name">regex</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><code>(?&lt;=&lt;b&gt;)\w+(?=&lt;/b&gt;)</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: .NET, Java, PCRE, Perl, Python, Ruby 1.9</li>
+</ul>
+<p><em>JavaScript</em> and <em>Ruby 1.8</em> support the lookahead <code>(?=&lt;/b&gt;)</code><br>, but not the lookbehind <code>(?&lt;=&lt;b&gt;)</code></p>
+<ul>
+<li>I prefer call lookbehind that where ahead cursor is something</li>
+<li>I prefer call lookahead that where behind cursor is something</li>
+</ul>
+<h2 id="Positive-lookaround"><a href="#Positive-lookaround" class="headerlink" title="Positive lookaround"></a>Positive lookaround</h2><ul>
+<li><p>Essentially, lookaround checks whether certain text can be<br>matched <strong>without actually matching it</strong>.</p>
+</li>
+<li><p><em>lookbehind (?&lt;=…)</em> is <strong>the only</strong> regular expression construct that<br>will traverse the text <strong>right to left</strong> instead of from left to right</p>
+</li>
+<li><p>Lookaround constructs are therefore called <strong>zero-length assertions</strong>.</p>
+</li>
+</ul>
+<h2 id="Negative-lookaround"><a href="#Negative-lookaround" class="headerlink" title="Negative lookaround"></a>Negative lookaround</h2><ul>
+<li><p><code>(?!...) (?&lt;!...)</code>, with an <strong>exclamation point</strong><br>instead of an <strong>equals sign</strong>, is <strong>negative lookaround</strong>.</p>
+</li>
+<li><p><code>negative lookaround</code> <strong>matches</strong> when the regex inside the<br><code>lookaround</code> <strong>fails to match</strong>.</p>
+</li>
+</ul>
+<h3 id="Different-levels-of-lookbehind"><a href="#Different-levels-of-lookbehind" class="headerlink" title="Different levels of lookbehind"></a>Different levels of lookbehind</h3><ul>
+<li><p>lookahead is completely compatible, even<br>lookahead or lookbehind nested in lookahead.</p>
+</li>
+<li><p>lookbehind is different, because regex is design traverse<br>from <strong>left to right</strong>, but lookbehind needs <strong>right to left</strong></p>
+</li>
+</ul>
+<hr>
+<ol>
+<li><p><code>Perl</code> and <code>Python</code> still require lookbehind to have a <strong>fixed length</strong></p>
+</li>
+<li><p><code>PCRE</code> and <code>Ruby 1.9</code> <strong>allow alternatives</strong> of <strong>different lengths</strong> inside lookbehind<br>notepad++ use <code>PCRE7.2</code> regular expression engine?</p>
+</li>
+<li><p><code>Java</code> takes lookbehind one step further, allows any <strong>finite-length</strong><br>regular expression <code>‹*›, ‹+›, and ‹{42,}›</code> inside lookbehind</p>
+</li>
+<li><p><code>.NET Framework</code> is the only one in the world<br>that can actually apply a <strong>full regular expression</strong> from <strong>right to left</strong>.</p>
+</li>
+</ol>
+<hr>
+<h3 id="Lookaround-is-atomic"><a href="#Lookaround-is-atomic" class="headerlink" title="Lookaround is atomic"></a>Lookaround is atomic</h3><p><code>(?=(\d+))\w+\1</code></p>
+<ul>
+<li>Regex options: None</li>
+<li>Regex flavors: .NET, Java, JavaScript, PCRE, Perl, Python, Ruby</li>
+</ul>
+<p>The group capture inside the lookaround is <strong>same as usual group</strong>,<br>numbered from outter to inner , left to right</p>
+<h2 id="Alternative-to-Lookbehind"><a href="#Alternative-to-Lookbehind" class="headerlink" title="Alternative to Lookbehind"></a>Alternative to Lookbehind</h2><p><code>&lt;b&gt;\K\w+(?=&lt;/b&gt;)</code></p>
+<ul>
+<li>Regex options: Case insensitive</li>
+<li>Regex flavors: PCRE 7.2, Perl 5.10</li>
+</ul>
+<p>Match with ‘\K’, string in front of it will <strong>not be pattern</strong>.<br>It matches like a block, no recursive, no loop, no backtrack.</p>
+<p>For example:<br>when <code>(?&lt;=a)a</code> matches the string ‘aaaa’, three <code>a</code> be matched,<br>the <strong>2th/ 3th/ 4th</strong> <code>a</code>. Lookbehind will track to left one matched then next.</p>
+<p>But <code>a\Ka</code> matches two <code>a</code>, <strong>the 2th and the 4th</strong>.<br>when first/second <code>a</code> captured, abandon first, then second matches.<br>Then begin next matching, third/fourth <code>a</code> captured, abandon thrid.</p>
+<h3 id="Solution-Without-Lookbehind"><a href="#Solution-Without-Lookbehind" class="headerlink" title="Solution Without Lookbehind"></a>Solution Without Lookbehind</h3><p>In Ruby 1.8 or JavaScript there is no lookbehind can be use.<br>Solution:</p>
+<ul>
+<li>use a common expression to suit, <strong>group them</strong>, just pick the group you want.</li>
+<li>If replace operation needed, use group number to replace<br>which place you don’t want be changed <code>\1</code> or <code>\kxxx</code>.</li>
+</ul>
+<h4 id="simulate-lookbehind"><a href="#simulate-lookbehind" class="headerlink" title="simulate lookbehind"></a>simulate lookbehind</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">var mainregexp = /\w+(?=&lt;\/b&gt;)/;</span><br><span class="line">var lookbehind = /&lt;b&gt;$/;</span><br><span class="line">if (match = mainregexp.exec(&quot;My &lt;b&gt;cat&lt;/b&gt; is furry&quot;)) &#123;</span><br><span class="line">	// Found a word before a closing tag &lt;/b&gt;</span><br><span class="line">	var potentialmatch = match[0];</span><br><span class="line">	var leftContext = match.input.substring(0, match.index);</span><br><span class="line">	if (lookbehind.exec(leftContext)) &#123;</span><br><span class="line">		// Lookbehind matched:</span><br><span class="line">		// potentialmatch occurs between a pair of &lt;b&gt; tags</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		// Lookbehind failed: potentialmatch is no good</span><br><span class="line">	&#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">	// Unable to find a word before a closing tag &lt;/b&gt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>first find the target location with Lookahead, remove it.</li>
+<li>second if the forepart is end with what you <strong>lookbehind anticipated</strong> <code>&lt;b&gt;</code>, then lookbehind matched.</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/16/Linux-display-power-management/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/02/16/Linux-display-power-management/" class="post-title-link" itemprop="url">Linux display power management</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-02-16 22:27:16" itemprop="dateCreated datePublished" datetime="2017-02-16T22:27:16+08:00">2017-02-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-16 14:31:36" itemprop="dateModified" datetime="2018-12-16T14:31:36+08:00">2018-12-16</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="Gnome"><a href="#Gnome" class="headerlink" title="Gnome"></a>Gnome</h3><p><code>/etc/profile.d</code></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xset -q</td>
+<td>查询</td>
+</tr>
+<tr>
+<td>xset s off</td>
+<td>禁用屏幕保护</td>
+</tr>
+<tr>
+<td>xset s 3600 3600</td>
+<td>设置空闲时间为1小时</td>
+</tr>
+<tr>
+<td>xset -dpms</td>
+<td>关闭 DPMS[电源之星]</td>
+</tr>
+<tr>
+<td>xset +dpms</td>
+<td>开启 DPMS[电源之星]</td>
+</tr>
+<tr>
+<td>xset s off -dpms</td>
+<td>禁用 DPMS 并阻止屏幕进入空闲</td>
+</tr>
+<tr>
+<td>xset dpms force off</td>
+<td>立即关闭屏幕</td>
+</tr>
+<tr>
+<td>xset dpms force standby</td>
+<td>强制屏幕进入待命状态</td>
+</tr>
+<tr>
+<td>xset dpms force suspend</td>
+<td>强制屏幕进入暂停状态</td>
+</tr>
+<tr>
+<td>xset dpms 600 900 1200</td>
+<td>三个数值分别为  Standby Suspend Off[s]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="Command-line"><a href="#Command-line" class="headerlink" title="Command line"></a>Command line</h3><p>Raspbian &amp; Archlinux -&gt; /etc/bash.bashrc<br>CentOS -&gt; /etc/bashrc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setterm -blank [0-60|force|poke]</span><br><span class="line">setterm -powersave [on|vsync|hsync|powerdown|off]</span><br><span class="line">setterm -powerdown [0-60]</span><br></pre></td></tr></table></figure>
+<p><code>setterm -blank 0 -powerdown 0</code><br><strong>No protect mode , no powerdown close display</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/15/Linux-init-task/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2063,356 +2529,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-checkout/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/08/visual-git-checkout/" class="post-title-link" itemprop="url">visual git checkout</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-08 11:41:11" itemprop="dateCreated datePublished" datetime="2017-02-08T11:41:11+08:00">2017-02-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:36:40" itemprop="dateModified" datetime="2020-06-17T22:36:40+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Checkout"><a href="#Checkout" class="headerlink" title="Checkout"></a>Checkout</h4><p>checkout命令用于从历史提交（或者暂存区域）中拷贝文件到工作目录，也可用于切换分支。</p>
-<p>当给定某个文件名（或者打开-p选项，或者文件名和-p选项同时打开）时，git会从指定的提交中拷贝文件到暂存区域和工作目录。比如，git checkout HEAD~ foo.c会将提交节点HEAD~(即当前提交节点的父节点)中的foo.c复制到工作目录并且加到暂存区域中。（如果命令中没有指定提交节点，则会从暂存区域中拷贝内容。）注意当前分支不会发生变化。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-files.svg" alt><br>当不指定文件名，而是给出一个（本地）分支时，那么HEAD标识会移动到那个分支（也就是说，我们“切换”到那个分支了），然后暂存区域和工作目录中的内容会和HEAD对应的提交节点一致。新提交节点（下图中的a47c3）中的所有文件都会被复制（到暂存区域和工作目录中）；只存在于老的提交节点（ed489）中的文件会被删除；不属于上述两者的文件会被忽略，不受影响。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-branch.svg" alt><br>如果既没有指定文件名，也没有指定分支名，而是一个标签、远程分支、SHA-1值或者是像master~3类似的东西，就得到一个匿名分支，称作detached HEAD（被分离的HEAD标识）。这样可以很方便地在历史版本之间互相切换。比如说你想要编译1.6.6.1版本的git，你可以运行git checkout v1.6.6.1（这是一个标签，而非分支名），编译，安装，然后切换回另一个分支，比如说git checkout master。然而，当提交操作涉及到“分离的HEAD”时，其行为会略有不同，详情见在下面。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-detached.svg" alt></p>
-<h3 id="HEAD标识处于分离状态时的提交操作"><a href="#HEAD标识处于分离状态时的提交操作" class="headerlink" title="HEAD标识处于分离状态时的提交操作"></a>HEAD标识处于分离状态时的提交操作</h3><p>当HEAD处于分离状态（不依附于任一分支）时，提交操作可以正常进行，但是不会更新任何已命名的分支。(你可以认为这是在更新一个匿名分支。)<br><img src="http://marklodato.github.io/visual-git-guide/commit-detached.svg" alt><br>一旦此后你切换到别的分支，比如说master，那么这个提交节点（可能）再也不会被引用到，然后就会被丢弃掉了。注意这个命令之后就不会有东西引用2eecb。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-after-detached.svg" alt><br>但是，如果你想保存这个状态，可以用命令git checkout -b name来创建一个新的分支。<br><img src="http://marklodato.github.io/visual-git-guide/checkout-b-detached.svg" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2017/02/08/visual-git-diff-commit/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/08/visual-git-diff-commit/" class="post-title-link" itemprop="url">visual git diff & commit</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-08 11:36:20" itemprop="dateCreated datePublished" datetime="2017-02-08T11:36:20+08:00">2017-02-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2020-06-17 22:37:10" itemprop="dateModified" datetime="2020-06-17T22:37:10+08:00">2020-06-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/tool/" itemprop="url" rel="index"><span itemprop="name">tool</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Diff"><a href="#Diff" class="headerlink" title="Diff"></a>Diff</h3><p>有许多种方法查看两次提交之间的变动。下面是一些示例。</p>
-<p><img src="http://marklodato.github.io/visual-git-guide/diff.svg" alt></p>
-<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p>提交时，git用暂存区域的文件创建一个新的提交，并把此时的节点设为父节点。然后把当前分支指向新的提交节点。下图中，当前分支是master。 在运行命令之前，master指向ed489，提交后，master指向新的节点f0cec并以ed489作为父节点。<br><img src="http://marklodato.github.io/visual-git-guide/commit-master.svg" alt><br>即便当前分支是某次提交的祖父节点，git会同样操作。下图中，在master分支的祖父节点maint分支进行一次提交，生成了1800b。 这样，maint分支就不再是master分支的祖父节点。此时，<a href="/2017/02/08/visual-git-reset-merge/">合并</a> (或者 <a href="/2017/02/08/visual-git-cherry-pick-rebase/">衍合</a>) 是必须的。<br><img src="http://marklodato.github.io/visual-git-guide/commit-maint.svg" alt><br>如果想更改一次提交，使用 git commit —amend。git会使用与当前提交相同的父节点进行一次新提交，旧的提交会被取消。<br><img src="http://marklodato.github.io/visual-git-guide/commit-amend.svg" alt><br>另一个例子是<a href="/2017/02/08/visual-git-checkout/">分离HEAD</a>提交,后文讲。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2459,7 +2575,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">278</span>
+                    <span class="site-state-item-count">280</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>

@@ -351,6 +351,377 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2022/08/10/character-set-garbled/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2022/08/10/character-set-garbled/" class="post-title-link" itemprop="url">手持两把锟斤拷</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2022-08-10 14:09:27" itemprop="dateCreated datePublished" datetime="2022-08-10T14:09:27+08:00">2022-08-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2022-08-11 12:33:52" itemprop="dateModified" datetime="2022-08-11T12:33:52+08:00">2022-08-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/blog/" itemprop="url" rel="index"><span itemprop="name">blog</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="tomcat乱码"><a href="#tomcat乱码" class="headerlink" title="tomcat乱码"></a>tomcat乱码</h2><p>在准备注解驱动spring mvc时，发现idea的控制台tomcat日志存在乱码<code>淇℃伅</code><br>网上搜了搜文章，把tomcat的<code>logging.properties</code>字符集改GBK就能解决这个问题。</p>
+<p>分析一下：tomcat默认输出UTF8日志，到idea控制台以GBK展示出现乱码。</p>
+<h2 id="常凯申的锟斤拷"><a href="#常凯申的锟斤拷" class="headerlink" title="常凯申的锟斤拷"></a>常凯申的锟斤拷</h2><p>联想起<code>锟斤拷</code>，似乎也是一样的问题<br>看知乎的文章<a href="https://www.zhihu.com/question/23024782" target="_blank" rel="noopener">锟斤拷是什么？</a>，发现一个很简洁的回答和一个有意思的评论</p>
+<blockquote>
+<p>匿名用户:gbk编码传过去，utf8的服务器不认得，给你返回了容错字符，又被gbk翻译回了汉字。。<br>  万般皆苦唯有自度 回复 匿名用户:感觉和常凯申同理啊</p>
+</blockquote>
+<p>蒋介石的『韦氏拼音』译名是『Chiang Kai-shek』，结果被又被国内学者译为『常凯申』。<br>倒是和字符集的乱码有异曲同工之妙，国外的拉丁字母做了容错，国内的翻译又不认识，妙啊~~~</p>
+<h2 id="用java试一下"><a href="#用java试一下" class="headerlink" title="用java试一下"></a>用java试一下</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String a = <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;-<span class="number">70</span>, -<span class="number">70</span>&#125;, <span class="keyword">new</span> GBK());</span><br><span class="line">System.out.println(a);</span><br><span class="line"></span><br><span class="line">String b = <span class="keyword">new</span> String(<span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;-<span class="number">70</span>, -<span class="number">70</span>&#125;, StandardCharsets.UTF_8);</span><br><span class="line">System.out.println(b);</span><br><span class="line"></span><br><span class="line">String c = <span class="keyword">new</span> String(b.getBytes(StandardCharsets.UTF_8), <span class="keyword">new</span> GBK());</span><br><span class="line">System.out.println(c);</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>汉<br>��<br>锟斤拷</p>
+</blockquote>
+<p><a href="https://blog.csdn.net/zhm_cs/article/details/109497026" target="_blank" rel="noopener">IDEA中控制台启动乱码（淇℃伅）的原因简单分析</a><br><a href="https://blog.csdn.net/u011511756/article/details/107147491" target="_blank" rel="noopener">IDEA控制台乱码问题,原因&amp;解决方式,解决不了算我输</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2022/08/09/Spring-annotation-driven-development-Servlet-3-0-integrates-Spring-MVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2022/08/09/Spring-annotation-driven-development-Servlet-3-0-integrates-Spring-MVC/" class="post-title-link" itemprop="url">Spring注解驱动开发 Servlet 3.0整合Spring MVC</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2022-08-09 13:50:50" itemprop="dateCreated datePublished" datetime="2022-08-09T13:50:50+08:00">2022-08-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2022-08-10 08:18:43" itemprop="dateModified" datetime="2022-08-10T08:18:43+08:00">2022-08-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ul>
+<li>Intellij IDEA 2019</li>
+<li>JDK 1.8</li>
+<li>Maven 3.3.9</li>
+<li>Spring 5.2.2.RELEASE</li>
+<li>Tomcat 8.5.45</li>
+</ul>
+<p>使用 <code>maven-archetype-webapp</code> 新建工程</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2022/08/09/Spring-annotation-driven-development-Servlet-3-0-integrates-Spring-MVC/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2022/05/18/about-asynchronous-export/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2062,385 +2433,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/05/14/Bias-variance-decomposition-of-mean-squared-error/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2021/05/14/Bias-variance-decomposition-of-mean-squared-error/" class="post-title-link" itemprop="url">均方误差的偏方差分解</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2021-05-14 15:58:14 / Modified: 21:56:53" itemprop="dateCreated datePublished" datetime="2021-05-14T15:58:14+08:00">2021-05-14</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ul>
-<li><p>均方误差期望 = 偏差 + 方差 + 噪音</p>
-<script type="math/tex; mode=display">
-\mathrm{E}\left[(y-\hat{f}(x))^{2}\right]=
-\operatorname{Bias}[\hat{f}(x)]^{2}+
-\operatorname{Var}[\hat{f}(x)]+
-\sigma^{2}</script></li>
-<li><p>偏差显示了，预估模型和“真实”函数 $f(x)$ 之间的<strong>数值差别</strong>。</p>
-<script type="math/tex; mode=display">
-\operatorname{Bias}[\hat{f}(x)]=
-\mathrm{E}[\hat{f}(x)]-f(x)</script></li>
-<li><p>方差显示了预估函数 $\hat{f}(x)$ 值与其<strong>均值</strong>的分散程度</p>
-<script type="math/tex; mode=display">
-\operatorname{Var}[\hat{f}(x)]=
-\mathrm{E}\left[(\hat{f}(x)-\mathrm{E}[\hat{f}(x)])^{2}\right]</script></li>
-</ul>
-<p><a href="https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Bias%E2%80%93variance_tradeoff</a><br><a href="https://datawhalechina.github.io/pumpkin-book/#/chapter2/chapter2" target="_blank" rel="noopener">https://datawhalechina.github.io/pumpkin-book/#/chapter2/chapter2</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2021/04/18/u2u-converter/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leon">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="BurningBright">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2021/04/18/u2u-converter/" class="post-title-link" itemprop="url">usb 转 usb 转换器</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2021-04-18 21:34:45" itemprop="dateCreated datePublished" datetime="2021-04-18T21:34:45+08:00">2021-04-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2021-04-23 07:54:03" itemprop="dateModified" datetime="2021-04-23T07:54:03+08:00">2021-04-23</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步键圈/" itemprop="url" rel="index"><span itemprop="name">漫步键圈</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="/2021/04/18/u2u-converter/489871548.jpg" alt="489871548.jpg"></p>
-<p>19年初看到老莱频道剪辑师介绍的 Hasu u2u 转换器非常心动，可惜已售罄。<br>在geekhack上找到 Hasu 的帖子<a href="https://geekhack.org/index.php?topic=80421.0" target="_blank" rel="noopener">USB to USB keyboard converter build log</a>，但完全不知道怎么制作。<br>这是第一次了解到 Hasu 和他的 TMK，后来在看Yang的HHKB蓝牙双模改装方案时发现也有 Hasu 的贡献。</p>
-<p>20年8月看到<a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器</a>，正好ERGO88进展不顺，打算试试QMK换换心情。<br>结果是反复尝试进<code>DFU</code>都失败，一度以为运气不好，买到的 Arduino pro micro 板子没法刷固件。<br>纠结半天，曾打算买ISP工具重新烧录bootloader，最后担心花费太多时间精力还是放弃了。</p>
-<p>21年初完成ERGO88后，重买 pro micro，这次以防万一，买了16MHz-5V版本。<br>16MHz u2u运行正常，换到8MHz发现去年买的板子竟然烧录正常。<br>问题应该是出在第一次进<code>DFU</code>上，尝试在插入USB前就短接，插入后放开再短接一次就能顺利进入。</p>
-<h2 id="原理图"><a href="#原理图" class="headerlink" title="原理图"></a>原理图</h2><p><img src="/2021/04/18/u2u-converter/20210421155504.png" alt="20210421155504.png"><br>如果买的是3.3V版本的pro micro，就不用再接<code>U2</code>线性稳压元件</p>
-<p><a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器</a> 里面包板线序没有很清晰的标注出来，原理图参考 <a href="https://www.pjrc.com/teensy/td_libs_USBHostShield.html" target="_blank" rel="noopener">USB Host Shield Library, For Connecing Other USB Devices</a>。</p>
-<h2 id="Shield"><a href="#Shield" class="headerlink" title="Shield"></a>Shield</h2><p><img src="/2021/04/18/u2u-converter/20210421163704.jpg" alt="20210421163704.jpg"><br>usb hub的外接设备供电，需要和板子断开，如图中红圈所示断开线路。<br>飞线shield的<code>raw</code>针至图中箭头所示焊盘，使用 pro micro 的raw针为设备供电。</p>
-<p><img src="/2021/04/18/u2u-converter/20210421163804.jpg" alt="20210421163804.jpg"><br>外接设备供电飞线，3.3V和RST针飞线。</p>
-<p>线路参考： <a href="https://www.arduino.cn/thread-76102-1-1.html" target="_blank" rel="noopener">在 Arduino Min (3.3V,8MHz) 上使用 Usb Host Shield Mini</a></p>
-<p><img src="/2021/04/18/u2u-converter/130850.jpg" alt="130850.jpg"></p>
-<h2 id="Arduino"><a href="#Arduino" class="headerlink" title="Arduino"></a>Arduino</h2><p><img src="/2021/04/18/u2u-converter/20210422153200.jpg" alt="20210422153200.jpg"><br>旋转180度，层叠在一起。<br>右上第三针如果插接会短接VCC，这里我掰掉了 pro micro 的第三针GND脚。</p>
-<h2 id="固件"><a href="#固件" class="headerlink" title="固件"></a>固件</h2><p>解决好供电，晶振频率的问题可以通过固件适配。</p>
-<p>8Mhz <a href="https://config.qmk.fm/#/converter/usb_usb/pro_micro/LAYOUT_all" target="_blank" rel="noopener">https://config.qmk.fm/#/converter/usb_usb/pro_micro/LAYOUT_all</a></p>
-<p>16MHz <a href="https://config.qmk.fm/#/converter/usb_usb/hasu/LAYOUT_all" target="_blank" rel="noopener">https://config.qmk.fm/#/converter/usb_usb/hasu/LAYOUT_all</a></p>
-<p>如果键盘是非标键盘，或是有宏定义的需求，可以自行编译。<br><a href="https://github.com/qmk/qmk_firmware/tree/master/keyboards/converter/usb_usb" target="_blank" rel="noopener">https://github.com/qmk/qmk_firmware/tree/master/keyboards/converter/usb_usb</a></p>
-<p>在 <code>keymaps</code> 下新增映射表，并编译<br>./bin/qmk compile -kb converter/usb_usb/pro_micro -km default</p>
-<h2 id="烧录"><a href="#烧录" class="headerlink" title="烧录"></a>烧录</h2><ol>
-<li>下载<code>hex</code>固件文件</li>
-<li>下载 <a href="https://github.com/qmk/qmk_toolbox" target="_blank" rel="noopener">qmk_toolbox</a>，注意安装驱动</li>
-<li>短接两次<code>RST</code>脚和<code>GND</code>脚，进入bootloader，该状态会维持8秒。</li>
-<li>选择好<code>hex</code>固件文件，在<code>DFU</code>状态点击烧录按钮，等待界面升级日志提示成功。</li>
-</ol>
-<ul>
-<li>如果arduino插入toolbox没反应，检查驱动是否安装</li>
-<li>如果arduino两次短接没法进入DFU，尝试先短接<code>RST</code>、<code>GND</code>再连接电脑，放开再短接一次。</li>
-</ul>
-<hr>
-<p><a href="https://www.arduino.cn/thread-76102-1-1.html" target="_blank" rel="noopener">在 Arduino Min (3.3V,8MHz) 上使用 Usb Host Shield Mini</a><br><a href="https://post.smzdm.com/p/andgo2l3/" target="_blank" rel="noopener">我修我自己——Arduino充当ISP烧录器修复Arduino记录</a><br><a href="https://www.arduino.cn/thread-23762-1-1.html" target="_blank" rel="noopener">【HIDuino】 — 超迷你的USB-HID开发板</a><br><a href="https://www.arduino.cn/thread-6001-1-1.html" target="_blank" rel="noopener">https://www.arduino.cn/thread-6001-1-1.html</a><br><a href="https://www.arduino.cn/thread-1183-1-1.html" target="_blank" rel="noopener">Arduino串口调试助手（2013.12.28更新）</a></p>
-<hr>
-<p><a href="https://1upkeyboards.com/shop/controllers/usb-to-usb-converter/" target="_blank" rel="noopener">https://1upkeyboards.com/shop/controllers/usb-to-usb-converter/</a><br><a href="https://www.pjrc.com/teensy/td_libs_USBHostShield.html" target="_blank" rel="noopener">USB Host Shield Library, For Connecing Other USB Devices</a><br><a href="https://geekhack.org/index.php?topic=80421.0" target="_blank" rel="noopener">USB to USB keyboard converter build log(Pro Micro 3.3v with mini host shield)</a><br><a href="https://post.m.smzdm.com/p/alpo7gqg/" target="_blank" rel="noopener">50元成本自制转换器——普通键盘变全键可编程键盘<em>键盘</em>什么值得买</a><br><a href="https://www.bilibili.com/video/BV1Kb411y7Rk" target="_blank" rel="noopener">【官方双语】打鸡血的键盘-Hasu USB到USB键盘控制器转换器#linus谈科技</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2487,7 +2479,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">278</span>
+                    <span class="site-state-item-count">280</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -3278,53 +3270,11 @@
       
     
       
-        
-      
     
       
     
   
 
-  
-    
-      <script type="text/x-mathjax-config">
-  
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
-        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
-      }
-    });
-  });
-</script>
-
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
-    }
-  });
-</script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-    
   
 
 
