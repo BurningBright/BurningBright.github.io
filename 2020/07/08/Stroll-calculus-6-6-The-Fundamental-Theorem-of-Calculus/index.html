@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="目前为止，我们通过逼近和的极限，得到了一个相当复杂的连续函数定积分的定义，  \begin{equation} \int_a^bf(x)dx=\lim_{ {\rm max\ \Delta x_k}\to\infty}\sum_{k=1}^nf(x_k^*)\Delta x_k\tag1 \end{equation}">
+<meta name="keywords" content="calculus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漫步微积分6.6 - 微积分基本定理">
+<meta property="og:url" content="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="目前为止，我们通过逼近和的极限，得到了一个相当复杂的连续函数定积分的定义，  \begin{equation} \int_a^bf(x)dx=\lim_{ {\rm max\ \Delta x_k}\to\infty}\sum_{k=1}^nf(x_k^*)\Delta x_k\tag1 \end{equation}">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180235824">
+<meta property="og:image" content="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180305090">
+<meta property="og:image" content="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180429105">
+<meta property="og:updated_time" content="2020-07-08T23:44:46.107Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="漫步微积分6.6 - 微积分基本定理">
+<meta name="twitter:description" content="目前为止，我们通过逼近和的极限，得到了一个相当复杂的连续函数定积分的定义，  \begin{equation} \int_a^bf(x)dx=\lim_{ {\rm max\ \Delta x_k}\to\infty}\sum_{k=1}^nf(x_k^*)\Delta x_k\tag1 \end{equation}">
+<meta name="twitter:image" content="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180235824">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>漫步微积分6.6 - 微积分基本定理 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">漫步微积分6.6 - 微积分基本定理
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-08 09:16:45" itemprop="dateCreated datePublished" datetime="2020-07-08T09:16:45+08:00">2020-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-07-09 07:44:46" itemprop="dateModified" datetime="2020-07-09T07:44:46+08:00">2020-07-09</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前为止，我们通过逼近和的极限，得到了一个相当复杂的连续函数定积分的定义，</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int_a^bf(x)dx=\lim_{ {\rm max\ \Delta x_k}\to\infty}\sum_{k=1}^nf(x_k^*)\Delta x_k\tag1
+\end{equation}</script><a id="more"></a>
+<p>之前我们已经用这个定义计算了一些简单的积分，例如</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int_0^bxdx=\frac{b^2}{2},\quad \int_0^bx^2dx=\frac{b^3}{3},\quad and\quad \int_0^bx^3dx=\frac{b^4}{4}\tag2
+\end{equation}</script><p>这些计算有两个目的：通过提供一些逼近和的直观经验来强调积分的基本性质，并且这种方法得到的极限值可以作为计算其他积分的实用工具。那么，我们可以利用极限和的方方求解下面更复杂的积分吗？</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int_0^1\frac{x^4}{\sqrt[3]{7+x^5}}dx\quad and\quad \int_1^2\left(1+\frac{1}{x}\right)^4\frac{dx}{x^2}\tag3
+\end{equation}</script><p>这显然是不可能的，所以我们该何去何从呢？显然我们需要的是一种更高效、更强大的计算积分方法，而这种方法就是牛顿和莱布尼兹的想法。</p>
+<p>牛顿-莱布尼兹解决(1)那样积分问题的计算方法乍一看似乎是自相矛盾的。为了解决这个问题，我们用更难的问题来替换它。我们不求解图1左那样固定的面积，而是图1右边变化的面积，图像右边的边界是可以移动的，这样的话面积就是$x$ 的函数。面积函数用$A(x)$表示，那么显然左边图中$A(a)=0,A(b)$表示固定的面积。我们的目标是找到一个$A(x)$的显示公式，然后通过设置$x=b$来确定所需的面积。在这个过程中有几个步骤，为了清楚起见，我们单独考虑。</p>
+<center>
+<img src="/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180235824" alt="这里写图片描述" title>
+图1
+</center>
+
+<p><strong>步骤1</strong>：我们通过建立重要的事实</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dA}{dx}=f(x)\tag4
+\end{equation}</script><p>开始。这是说面积$A$关于$x$的变化率等于区域右边界的长度。为了证明这个命题，我们必须考虑导数的定义</p>
+<script type="math/tex; mode=display">
+
+\frac{dA}{dx}=\lim_{\Delta x\to 0}\frac{A(x+\Delta x)-A(x)}{\Delta x}</script><p>现在$A(x)$是图像下边$a,x$之间的面积，$A(x+\Delta  x)$ 是$a,x+\Delta x$之间的面积。因此，分子$A(x+\Delta x)-A(x)$是$a,x+\Delta x$之间的面积(看图2中阴影部分的面积)。很容易看出面积等于有着相同底，高为$f(\bar x)$的矩形面积，其中$\bar x$是$x,x+\Delta x$之间的某个点。由它我们继续(4)的证明：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\frac{dA}{dx}&=\lim_{\Delta x\to 0}\frac{A(x+\Delta x)-A(x)}{\Delta x}=\lim_{\Delta x\to 0}\frac{f(\bar x)\Delta x}{\Delta x}\\
+&=\lim_{\Delta x\to 0}f(\bar x)=f(x)
+\end{align*}</script><p>利用到$f(x)$是连续函数。为了更加详细的解释最后一步，我们指出$\Delta x\to 0$等价于$x+\Delta x\to x$；因为$\bar x$位于$x,x+\Delta x$之间，所以$\bar x\to x$，现在利用函数的连续性得$f(\bar x)\to f(x)$</p>
+<center>
+<img src="/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180305090" alt="这里写图片描述" title>
+图2
+</center>
+
+<p><strong>步骤2</strong>：方程(4)告诉我们，找到面积函数$A(x)$就能实现我们的目标。根据(4)，$A(x)$是函数$f(x)$的反导之一。但是，如果$F(x)$是任何一个$f(x)$的反导，根据前面不定积分的知识我们有</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+A(x)=F(x)+c\tag5
+\end{equation}</script><p>$c$是常数值。为了确定$c$，我们令$x=a$，从而得到$A(a)=F(a)+c$；但是因为$A(a)=0$，从而得出$c=-F(a)$。因此</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+A(x)=F(x)-F(a)\tag6
+\end{equation}</script><p>就是需要的公式。</p>
+<p><strong>步骤3</strong>：根据(6)和$A(x)$的意义，其余的工作就是观察</p>
+<script type="math/tex; mode=display">
+
+\int_a^bf(x)dx=A(b)=F(b)-F(a)</script><p>我们用正式地微积分基本定理总结我们得到的结论：</p>
+<p><strong>如果$f(x)$是闭区间$[a,b]$上的连续函数，并且$F(x)$是$f(x)$的任何一个原函数，即$(d/dx)F(x)=f(x)$或等价地</strong></p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int f(x)dx=F(x)\tag7
+\end{equation}</script><p><strong>那么</strong></p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\int_a^bf(x)dx=F(b)-F(a)\tag8
+\end{equation}</script><p>这个定理将计算极限和的问题转变成更容易的找原函数的问题，从而减小了评估定积分问题。因此，为了找出$\int_a^bf(x)dx$ 的值，我们没必要考虑求和；我们只是找到原函数即可，可以用任何方式如猜测、常规计算、巧妙计算或查书，然后计算$F(b)-F(a)$的值。</p>
+<p>例如，在上篇文章中，我们利用许多代数技巧得到了公式(2)。现在，借助基本定理，下面简单的公式就像明显的事实：</p>
+<script type="math/tex; mode=display">
+
+\int_0^bxdx=\frac{b^2}{2},\quad \int_0^bx^2dx=\frac{b^3}{3},\quad and\quad \int_0^bx^3dx=\frac{b^4}{4}</script><p>更一般地，对任何指数$n&gt;0$，明显可以得出</p>
+<script type="math/tex; mode=display">
+
+\int_a^bx^ndx=\frac{b^{n+1}}{n+1}-\frac{a^{n+1}}{n+1},\quad because\quad \int x^ndx=\frac{x^{n+1}}{n+1}</script><p><strong>注解1</strong>： 在计算问题的过程中，使用括号是很方便的</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+F(x)\big |_a^b=F(b)-F(a)\tag9
+\end{equation}</script><p>符号的意思就是说：$x$上限为$b$时的$F(x)$值减去$x$下限为$a$时的$F(x)$就是我们要找的数。例如$x^2\big|_3^4=4^2-3^2=16-9=7$。利用这个符号，(8)可以写成</p>
+<script type="math/tex; mode=display">
+
+\int_a^bf(x)dx=F(x)\big|_a^b</script><p><strong>注解2</strong>：从这次讨论中可以看出，任何$f(x)$的原函数都用(8)解决。如果对此还有疑问，那么回顾一下，如果$F(x)$是一个原函数，那么其他任何一个都可以通过添加一个常数$c$得到即$F(x)+c$；因为</p>
+<script type="math/tex; mode=display">
+
+F(x)+c\big|_a^b=[F(b)+c]-[F(a)+c]=F(b)-F(a)</script><p>常数$c$对结果没有影响。因此当计算定积分要找原函数时，我们可以忽略常数。(然而，当我们要解决微分方程时，这些常量是不可或缺。)</p>
+<p><strong>例1</strong>：计算下面的定积分：</p>
+<script type="math/tex; mode=display">
+
+(a)\int_{-1}^2x^4dx\quad(b)\int_1^{16}\frac{dx}{\sqrt{x}}\quad(c)\int_8^{27}\sqrt[3]{x}dx\quad(d)\int_{13}^{14}(x-13)^{10}dx</script><p><strong>解</strong>：通过观察每个原函数都比较容易得到：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+&(a)\int_{-1}^2x^4dx=\frac{1}{5}x^5\big|_{-1}^{2}=\frac{1}{5}[32-(-1)]=\frac{33}{5}\\
+&(b)\int_1^{16}\frac{dx}{\sqrt{x}}=2\sqrt{x}\big|_{1}^{16}=2(4-1)=6\\
+&(c)\int_8^{27}\sqrt[3]{x}dx=\frac{3}{4}x^{4/3}\big|_{8}^{27}=\frac{3}{4}(81-16)=\frac{195}{4}\\
+&(d)\int_{13}^{14}(x-13)^{10}dx=\frac{1}{11}(x-13)^{11}\big|_{13}^{14}=\frac{1}{11}(1-0)=\frac{1}{11}
+\end{align*}</script><p>基本定理在定积分和原函数之间建立了连接。该连接习惯使用积分符号表示原函数，就像(7)那样，并用不定积分替换了原函数。读者应该熟悉这些用法。从这个角度上，我们经常会放弃形容词(不定，定)，单独用积分一次表示函数(7)或数(8)，这需要上下文以及读者对所陈述事情的理解从而避免混淆。为了正确区分，我们强调定积分积分符号上有上下限，而不定积分从来没有这种。</p>
+<p>我们对使用这种相似符号$\int f(x)dx,\int_a^bf(x)dx$从而对大家引起困惑感到很抱歉，虽然他们表示非常不同的概念。然而，这些符号经历了300多年，现在试图改变他们没有多大用处。几年前，一位作者试图引进符号$A[f(x)]$取代$\int f(x)dx$。他的书比昨天报纸消失的都快。相反，学生有责任读懂符号$\int f(x)dx,\int_a^bf(x)dx$。就像我们认真阅读所有单词，从而可以区分类似于”peak”和”peek”，”venal”和”venal”，”manor”和“manner”，数学必须我们更加认真的阅读。</p>
+<p>根据前面学习到的经验，我们知道(或许可以计算)许多不定积分和定积分我们都能求解。尤其是，定积分(3)也不是那么难计算了。</p>
+<p><strong>例2</strong>：计算</p>
+<script type="math/tex; mode=display">
+
+\int_0^1\frac{x^4}{\sqrt[3]{7+x^5}}dx</script><p><strong>解</strong>：为了清楚起见，我们分别考虑不定积分。换元</p>
+<script type="math/tex; mode=display">
+
+u=7+x^5\quad du=5x^4dx</script><p>从而</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\int\frac{x^4}{\sqrt[3]{7+x^5}}dx=\int(7+x^5)^{-1/3}x^4dx
+&=\int u^{-1/3}\left(\frac{1}{5}du\right)=\frac{1}{5}\int u^{-1/3}du\\
+&=\frac{1}{5}\cdot\frac{3}{2}u^{2/3}\\
+&=\frac{3}{10}(7+x^5)^{2/3}
+\end{align*}</script><p>利用基本定理得</p>
+<script type="math/tex; mode=display">
+
+\int_0^1\frac{x^4}{\sqrt[3]{7+x^5}}dx=\frac{3}{10}(7+x^5)^{2/3}\big|_0^1=\frac{3}{10}(4-7^{2/3})=\frac{3}{10}(4-\sqrt[3]{49})</script><p><strong>例3</strong>：计算</p>
+<script type="math/tex; mode=display">
+
+\int_1^2\left(1+\frac{1}{x}\right)^4\frac{dx}{x^2}</script><p><strong>解</strong>：换元</p>
+<script type="math/tex; mode=display">
+
+u=1+\frac{1}{x},\quad du=-\frac{dx}{x^2}</script><p>所以</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\int\left(1+\frac{1}{x}\right)^4\frac{dx}{x^2}=\int u^4(-du)
+&=-\frac{1}{5}u^5\\
+&=-\frac{1}{5}\left(1+\frac{1}{x}\right)^5
+\end{align*}</script><p>根据基本定理</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\int_1^2\left(1+\frac{1}{x}\right)^4\frac{dx}{x^2}
+&=-\frac{1}{5}\left(1+\frac{1}{x}\right)^5\Big|_1^2\\
+&=-\frac{1}{5}\left(\frac{243}{32}-32\right)=\frac{781}{160}
+\end{align*}</script><p><strong>例4</strong>：求曲线$y=\cos x$下面，从$x=0$到$x=b$所围成的面积，其中$0&lt;b\leq\pi/2$</p>
+<p><strong>解</strong>：面积(看图1)可以用定积分给出</p>
+<script type="math/tex; mode=display">
+
+\int_0^b\cos xdx</script><p>但是我们熟悉不定积分</p>
+<script type="math/tex; mode=display">
+
+\int\cos xdx=\sin x</script><p>所以我们立刻得出</p>
+<script type="math/tex; mode=display">
+
+\int_0^b\cos xdx=\sin x\big|_0^b=\sin b-\sin 0=\sin b</script><p>与求极限和相比，可以清晰的看出基本定理的强大。之前极限和的计算很难，还要知道晦涩的三角恒等式，而知道了基本定理后，这里的计算依然很容易。</p>
+<p><strong>注解3</strong>：牛顿和莱布尼兹大约在同一时间相互独立的发现了微积分。然而，导数是切线的斜率和定积分是曲线下面积这些概念是在他们之前许多思想家都知道。在这种情况下，为什么是给予牛顿和莱布尼兹创建这个新数学分支的荣誉呢(该分支在西方文明的主要特征中，可以说是支柱)？主要是因为他们是微积分基本定理的主要发现者。他们理解到它的重要性，并开始构建所需的支撑材料，将其成功应用到科学和几何的问题上。</p>
+<p>然而，科学历史学家将基本定理的根源追溯到早些时候Barrow 和Pascal的几何工作上，他们的著作影响了牛顿和莱布尼兹。正如牛顿(他不是一个谦虚的人)说过的：如果我看得更远，那是因为我站在巨人的肩膀上。这是他难得一次的自我贬低。这些巨人之一还有费马，他第一个证明图3所述的面积公式。这表明，他必须知道基本定理(这似乎是最便捷的方法)。但不幸的是他没有注意到它。</p>
+<p>微积分基本定理无疑是人类思想最伟大的成就之一。当我们考虑数学和物理的后续发展在多大程度的取决于它时，它也是最有影响力的成就之一。在它被发现之前，从公元前三世纪的阿基米德到十七世纪中叶的费马，找出曲线面积、体积和长度问题非常困难，只有天才可能想着去解决他们，并且任何一代都只有少数人。但现在，牛顿、莱布尼兹以及他们的追随者在基本定理的基础上提出了大量的系统方法，之后我们会对这些问题进行探讨。</p>
+<center>
+<img src="/2020/07/08/Stroll-calculus-6-6-The-Fundamental-Theorem-of-Calculus/20160827180429105" alt="这里写图片描述" title>
+图3
+</center>
+
+<p><a href="https://blog.csdn.net/u010182633/article/details/52336301" target="_blank" rel="noopener">漫步微积分二十九——微积分基本定理</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/calculus/" rel="tag"># calculus</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/08/Stroll-calculus-6-5-The-Computation-of-Areas-as-Limits/" rel="next" title="漫步微积分6.5 - 极限思想下的面积计算">
+                <i class="fa fa-chevron-left"></i> 漫步微积分6.5 - 极限思想下的面积计算
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/08/Stroll-calculus-6-7-Properties-of-Definite-Integrals/" rel="prev" title="漫步微积分6.7 - 定积分的性质">
+                漫步微积分6.7 - 定积分的性质 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">282</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clocktoy" title="https://www.linchenguang.com/mnist-clocktoy" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/typing-cn/#/sentence-poem" title="https://www.linchenguang.com/typing-cn/#/sentence-poem" rel="noopener" target="_blank">typing-cn</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+    <div id="sidebar-dimmer"></div>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2024</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
+</body>
+</html>

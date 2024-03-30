@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Joseph Louis Lagrange definition on Wikipedia:  In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equality">
+<meta name="keywords" content="math">
+<meta property="og:type" content="article">
+<meta property="og:title" content="拉格朗日乘子法(一)">
+<meta property="og:url" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="Joseph Louis Lagrange definition on Wikipedia:  In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equality">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/Lagrange_portrait.jpg">
+<meta property="og:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/lagrange1.png">
+<meta property="og:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/20190605171448.png">
+<meta property="og:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/20190605181854.png">
+<meta property="og:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/20190605172014.png">
+<meta property="og:updated_time" content="2019-06-08T11:21:35.354Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="拉格朗日乘子法(一)">
+<meta name="twitter:description" content="Joseph Louis Lagrange definition on Wikipedia:  In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equality">
+<meta name="twitter:image" content="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/Lagrange_portrait.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>拉格朗日乘子法(一) | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2019/06/04/understand-lagrange-multiplier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">拉格朗日乘子法(一)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-06-04 11:12:41" itemprop="dateCreated datePublished" datetime="2019-06-04T11:12:41+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-06-08 19:21:35" itemprop="dateModified" datetime="2019-06-08T19:21:35+08:00">2019-06-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/ml/" itemprop="url" rel="index"><span itemprop="name">ml</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/2019/06/04/understand-lagrange-multiplier/Lagrange_portrait.jpg" alt="Lagrange_portrait.jpg"><br>Joseph Louis Lagrange</p>
+<p>definition on Wikipedia:</p>
+<blockquote>
+<p>In mathematical optimization, the method of Lagrange multipliers is a strategy for finding the local maxima and minima of a function subject to equality constraints. (Wikipedia)</p>
+</blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Lagrange_multiplier" target="_blank" rel="noopener">拉格朗日乘子法</a> 是一种在一个或多个约束条件下，局部最小化或最大化函数的方法。<br>例如：对变量 $x$ 和 $y$ 使 $x^2 + y^2$ 尽可能小，同时满足约束$xy = 1$。<br>以下是如何使用拉格朗日乘子法及其工作原理的解释：<br>这个解释（尤其是为什么它们的工作）只有一个约束要简单得多，所以我们将从一个直观的论证开始，然后在多个约束的情况下转向一个更严格的论证。这两种情况都需要熟悉<a href="https://en.wikipedia.org/wiki/Partial_derivative" target="_blank" rel="noopener">偏导数</a>和<a href="https://en.wikipedia.org/wiki/Euclidean_vector" target="_blank" rel="noopener">向量</a></p>
+<h3 id="一个约束条件"><a href="#一个约束条件" class="headerlink" title="一个约束条件"></a>一个约束条件</h3><p>假设我们想要根据约束 $g(x, y) = 0$， 最小化函数 $f(x, y)$ 。<br>(现在我们将最小化两个变量的函数，但是该方法将自然地扩展到更多变量的函数，并且最大化的过程完全相同。)<br>对于上面的例子，$f(x, y) = x^2 + y^2$ 和 $g(x, y)=xy-1$ (因为 $xy - 1 = 0$ 等价 $xy = 1$ )。<br>为了解决这个问题，我们创建了一个 $L(x, y, \lambda)$ 名为 <strong>Lagrangian</strong> 的新函数。<br>它被定义为 $L(x, y, \lambda)= f(x，y) -  \lambda g(x, y)$ ，其中 $\lambda$ 是一个称为<code>拉格朗日乘子</code>的新变量。<br>(有些人用 $+$，而不是 $-$ ，但这并没有改变定义，除了$\lambda$的符号发生变化。)<br>然后，我们取原始变量$x$ 、 $y$、 $\lambda$ 相对于 $L$ 的偏导数，将所有这些部分设置为零，并求解 $x$ 和 $y$ 。<br>对于上面给出的例子，我们有：</p>
+<script type="math/tex; mode=display">
+\begin{array}{rcl} L(x, y, \lambda) & = & x^2 + y^2 - \lambda (xy - 1) \\
+\partial L / \partial x & = & 2x - \lambda y \\
+\partial L / \partial y & = & 2y - \lambda x \\
+\partial L / \partial \lambda & = & -(xy - 1) \end{array}</script><p>将所有部分设置为零并求解，我们得到它 $\lambda = 2$ 并且(x, y)是(1, 1)或者(-1, -1)。<br>实际上，这些点是受制于约束 $g(x, y) = 0$的 $f(x, y)$ 局部最小值。（在这种情况下，它们也是全局极小值，虽然通常不能保证。）</p>
+<h4 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h4><p>为什么拉格朗日乘子法有效？<br>人们很容易认为我们可以通过找到一个不受约束 $L$ 的最小值, 来找到一个受约束的 $f$ 的最小值; 毕竟，我们将所有 $L$ 的分量设置为等于零。但这是错误的。解决方案 $(x, y, \lambda)$ 实际上，从来不是局部最小值或最大值，总是会有一个<code>马鞍点</code>对应到 $L$。那么为什么拉格朗日乘子法有效呢？答案与<a href="https://en.wikipedia.org/wiki/Level_set" target="_blank" rel="noopener">等高曲线</a>和<a href="https://en.wikipedia.org/wiki/Gradient" target="_blank" rel="noopener">梯度</a>有关。</p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/lagrange1.png" alt="lagrange1.png"></p>
+<h4 id="等值曲线"><a href="#等值曲线" class="headerlink" title="等值曲线"></a>等值曲线</h4><p>函数的<code>等值曲线</code>[等高线]是函数等于常数值的点集。<br>（在三个维度中，它们被称为等值面，更一般地说，等值集合。）<br>在上面的图片中，红色圆是一些等值曲线 $f(x, y) = x^2 + y^2$（较大的圆对应于 $f$中更高的值）。<br>蓝色曲线是满足约束 $g(x, y) = 0$ 的点集，使其成为 $ g(x, y)$ 的一条等值曲线。</p>
+<h4 id="几何分析"><a href="#几何分析" class="headerlink" title="几何分析"></a>几何分析</h4><p>约束最小化就是寻找蓝色曲线上红色谷中最低的点：每个红色曲线代表不同高度的谷。<br>事实证明，这极值点总是红色和蓝色等值曲线的相切点，例如上图中的黑点。<br>要了解原因，有必要查看曲线不相切的点，例如橙色点。由于红色和蓝色等值曲线在橙色点彼此不相切，它们彼此交叉。由于它们交叉，当沿着蓝色曲线在红色谷中向一个方向上移动时，红谷值向另一个方向移动向下移动。<br><strong>换句话说，存在局部变化 $(x, y)$，在保持约束 $g(x, y) = 0$ 的情况下，导致目标函数$f(x, y)$减少，而相反的变化导致它增加。</strong> 因此交叉点不可能是受限制的最小值或最大值。由于最小值不能在等值曲线交叉的点处，因此它必须在它们相切的点处。<strong>在切点，当你沿着曲线 $g(x, y) = 0$ 移动时, $f(x, y)$ 是近似不变的一阶导数</strong>，因此它可能是最小值或最大值。（它可能也不是，但至少它可能是。）</p>
+<h4 id="数学分析"><a href="#数学分析" class="headerlink" title="数学分析"></a>数学分析</h4><p>我们如何在数学上表达等值曲线 $f$ 和 $g$ 相切？这是梯度的来源。函数的梯度 $f$ 被写为 $ \nabla f$ 并定义为向量，其中每个分量是 $f$ 相对于相应变量的偏导数：$\nabla f = (\partial f / \partial x, \partial f / \partial y)$。梯度具有对我们非常有用的属性：$f$ 的梯度总是垂直于 $f$ 给定的等值曲线$(x, y)$。要探究这个问题，我们定义 $(\Delta x, \Delta y)$ 是改变$(x, y)$的微元[small amount]。它将如何改变f$(x, y)$？首先，答案是：</p>
+<script type="math/tex; mode=display">f(x + \Delta x, y + \Delta y) \approx f(x, y) + \frac{\partial f}{\partial x} \Delta x + \frac{\partial f}{\partial y} \Delta y</script><p>如果$(\Delta x, \Delta y)$是在等值曲线的方向，我们将拥有 $ f(x + \Delta x, y + \Delta y) \approx f(x, y)$，这意味着 $\frac{\partial f}{\partial x}\Delta x + \frac{\partial f}{\partial y} \Delta y = 0 $ 。换句话说，$\nabla f$ 和 $(\Delta x, \Delta y)$ 的点积为零。由于  $(\Delta x, \Delta y)$在等值曲线的方向上，这意味着 <strong>等值曲线和梯度彼此垂直</strong>。</p>
+<p>由于我们希望的等值曲线 $f$ 和 $g$ 为彼此相切，并且每个函数的梯度是垂直于它的等值曲线中，我们希望梯度以在相同的方向（或沿相反方向）指向。<strong>如果一个是另一个的标量倍数，则两个向量指向相同的方向。</strong> 这个标量将成为<code>拉格朗日乘子</code>，我们称之为$ \lambda: \nabla f = \lambda \nabla g$。该向量方程扩展为每个 $x$ 和的一个方程 $y$。将约束本身添加到我们的方程组中，我们得到：</p>
+<p>\begin{array}{rcl}\frac{\partial f}{\partial x}&amp;=&amp;\lambda \frac{\partial g}{\partial x}\ \frac{\partial f}{\partial y}&amp;=&amp;\lambda \frac{\partial g}{\partial y} \ g(x, y) &amp; = &amp; 0 \end{array}</p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p><code>Lagrange multipliers</code>方法就是产生这些方程并求解它们。然而它通常用拉格朗日函数来描述 $ L(x, y, \lambda) = f(x, y) - \lambda g(x, y)$。将 $x$, $y$, $\lambda$ 关于<code>Lagrangian</code>的偏导数，写成以上例子的形式。例如，$ \partial L / \partial x = \partial f / \partial x - \lambda \partial g / \partial x$。 将这个值设为零就可以得到例子中的第一个方程。最后还有一个等式，$ \partial L / \partial \lambda = -g(x, y)$。如果你愿意，你根本就不需要担心<code>Lagrangian</code>，你只需要找到一个点$(x, y)$ 和标量 $\lambda$，使$ \nabla f = \lambda \nabla g$ 满足约束条件。这些点将是约束最小值（或最大值）的候选值。</p>
+<p>总之，约束极小值和极大值出现在<code>约束函数的等值曲线</code> $g$与 <code>目标函数的等值曲线</code> $f$的相切的点处。<br>当 $ \nabla f = \lambda \nabla g$ 时，有以上例子中的方程式成立。拉格朗日函数$L$用一个函数的偏导数将这些方程统一起来。</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>在切点位置两等值曲线方向平行，考虑到梯度和等值曲线垂直，那么可以用梯度平行来求切点位置。</p>
+<p>切点 -&gt; 变量偏导比例相等 -&gt; 梯度方向相同 -&gt; 梯度模成比例 -&gt; 候选极值</p>
+<hr>
+<script type="math/tex; mode=display">
+f(x, y) = x^2 + y^2  \\
+g(x, y) = x*y - 1 \\
+x*y -1 = 0 \\
+t(x) = 1/x</script><p><img src="/2019/06/04/understand-lagrange-multiplier/20190605171448.png" alt="20190605171448.png"></p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/20190605181854.png" alt="20190605181854.png"></p>
+<p><img src="/2019/06/04/understand-lagrange-multiplier/20190605172014.png" alt="20190605172014.png"></p>
+<p><a href="https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/" target="_blank" rel="noopener">https://danstronger.wordpress.com/2015/08/08/lagrange-multipliers/</a><br><a href="https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/" target="_blank" rel="noopener">https://jermmy.github.io/2017/07/27/2017-7-27-understand-lagrange-multiplier/</a><br><a href="https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/" target="_blank" rel="noopener">https://www.svm-tutorial.com/2016/09/duality-lagrange-multipliers/</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/math/" rel="tag"># math</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/29/Mathjax-in-hexo/" rel="next" title="Mathjax in hexo">
+                <i class="fa fa-chevron-left"></i> Mathjax in hexo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/05/understand-lagrange-multiplier/" rel="prev" title="拉格朗日乘子法（二）">
+                拉格朗日乘子法（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">282</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clocktoy" title="https://www.linchenguang.com/mnist-clocktoy" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/typing-cn/#/sentence-poem" title="https://www.linchenguang.com/typing-cn/#/sentence-poem" rel="noopener" target="_blank">typing-cn</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个约束条件"><span class="nav-number">1.</span> <span class="nav-text">一个约束条件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#引言"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#等值曲线"><span class="nav-number">1.2.</span> <span class="nav-text">等值曲线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#几何分析"><span class="nav-number">1.3.</span> <span class="nav-text">几何分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数学分析"><span class="nav-number">1.4.</span> <span class="nav-text">数学分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">1.5.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number">2.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+    <div id="sidebar-dimmer"></div>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2024</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
+</body>
+</html>

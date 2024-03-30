@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":true},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="微积分发展的许多原始灵感来自于力学，这两个主题到今天为止一直是不可分割的。力学建立在牛顿提出的基本原则上。这些原则的陈述需要导数的概念，在本文我们会看到这些应用依赖于积分和微分方程的解。 直线运动是沿着一条直线的运动，与之相对应，沿着曲线的运动有时称为曲线运动。我们目前是研究单个微粒的直线运动，也就是说，将质量为$m$的物体想象成一个点。在讨论物理对象的运动时，例如汽车，子弹，落石等，我们经常忽略">
+<meta name="keywords" content="calculus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漫步微积分5.5 - 重力作用下的运动 逃逸速度和黑洞">
+<meta property="og:url" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/index.html">
+<meta property="og:site_name" content="BurningBright">
+<meta property="og:description" content="微积分发展的许多原始灵感来自于力学，这两个主题到今天为止一直是不可分割的。力学建立在牛顿提出的基本原则上。这些原则的陈述需要导数的概念，在本文我们会看到这些应用依赖于积分和微分方程的解。 直线运动是沿着一条直线的运动，与之相对应，沿着曲线的运动有时称为曲线运动。我们目前是研究单个微粒的直线运动，也就是说，将质量为$m$的物体想象成一个点。在讨论物理对象的运动时，例如汽车，子弹，落石等，我们经常忽略">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195617726">
+<meta property="og:image" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195714431">
+<meta property="og:image" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195807416">
+<meta property="og:image" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195855074">
+<meta property="og:updated_time" content="2020-07-07T11:09:45.646Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="漫步微积分5.5 - 重力作用下的运动 逃逸速度和黑洞">
+<meta name="twitter:description" content="微积分发展的许多原始灵感来自于力学，这两个主题到今天为止一直是不可分割的。力学建立在牛顿提出的基本原则上。这些原则的陈述需要导数的概念，在本文我们会看到这些应用依赖于积分和微分方程的解。 直线运动是沿着一条直线的运动，与之相对应，沿着曲线的运动有时称为曲线运动。我们目前是研究单个微粒的直线运动，也就是说，将质量为$m$的物体想象成一个点。在讨论物理对象的运动时，例如汽车，子弹，落石等，我们经常忽略">
+<meta name="twitter:image" content="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195617726">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>漫步微积分5.5 - 重力作用下的运动 逃逸速度和黑洞 | BurningBright</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">BurningBright</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://linchenguang.com/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leon">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BurningBright">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">漫步微积分5.5 - 重力作用下的运动 逃逸速度和黑洞
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-07-07 09:19:12 / Modified: 19:09:45" itemprop="dateCreated datePublished" datetime="2020-07-07T09:19:12+08:00">2020-07-07</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/漫步微积分/" itemprop="url" rel="index"><span itemprop="name">漫步微积分</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>微积分发展的许多原始灵感来自于力学，这两个主题到今天为止一直是不可分割的。力学建立在牛顿提出的基本原则上。这些原则的陈述需要导数的概念，在本文我们会看到这些应用依赖于积分和微分方程的解。</p>
+<p>直线运动是沿着一条直线的运动，与之相对应，沿着曲线的运动有时称为曲线运动。我们目前是研究单个微粒的直线运动，也就是说，将质量为$m$的物体想象成一个点。在讨论物理对象的运动时，例如汽车，子弹，落石等，我们经常忽略对象的大小和形状，将它看成一个质点。</p>
+<p>质点的位置完全取决于坐标系的选择(图1)。因为质点移动，$s$是时间$t$的函数，为了测量初始时间为$t=0$。用符号表示就是$s=s(t)$。正如前面文章所讨论的，质点的速度是位置的变化率</p>
+<a id="more"></a>
+<script type="math/tex; mode=display">
+
+v=\frac{ds}{dt}</script><center>
+<img src="/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195617726" alt="这里写图片描述" title>
+图1
+</center>
+
+<p>速度(speed)是速度(velocity)的绝对值。一般情况，移动质点的速度随着时间而改变，加速度$a$是速度的变化率</p>
+<script type="math/tex; mode=display">
+
+a=\frac{dv}{dt}=\frac{d}{dt}\left(\frac{ds}{dt}\right)=\frac{d^2s}{dt^2}</script><p>它的正负取决于$v$是增加还是减小。</p>
+<p>牛顿力学的基本假设是力引起速度的变化，也就是说加速度是由力造成的。力的概念来源于我们日常中的主观感受，例如当我们推一辆车或者扔一个石头时我们改变了物理的速度。对于直线运动，我们假设运动是一个具体数值，它的正负由运动方向的正负确定。</p>
+<p>牛顿第二运动定律说质点的加速度和作用在它上面的力$F$成正比，与质量$m$成反比</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+a=\frac{F}{m}\tag1
+\end{equation}</script><p>或等价地</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+F=ma\tag2
+\end{equation}</script><p>如果力加倍，那么根据(1)加速度也加倍；如果质量加倍，那么加速度减倍。在这种情况下，物体的质量可以解释为抑制加速力的能力。</p>
+<p>等式(2)可以看做力的一种定义，因为右边的量都可以计算得到，他们确定力力。另一方面，力$F$经常会提前知道。那么方程$F=ma$可以写成二阶微分方程</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+m\frac{d^2s}{dt^2}=F\tag3
+\end{equation}</script><p>此式有深远的影响，在合适的初始条件下，通过求解(3)可以得出任意时间$t$时的质点位置$s$。</p>
+<p><strong>例1</strong>：质量为$m$的石头从地球表面上的某点下降，求出它的运动方程。</p>
+<p><strong>解</strong>：最重要的例子就是大家熟悉的重力。根据实验结果，我们知道作用在石头上的重力竖直向下并且$F=mg$，其中$g$是恒定的加速度($g=32\ ft/s^2\ or\ 9.80\ m/s^2$)。如果$s$是垂直坐标轴上测量的石头位置，向下为正方向，原点是石头的初始位置(图2)，那么方程(3)就是</p>
+<script type="math/tex; mode=display">
+
+m\frac{d^2s}{dt^2}=mg\quad or\quad \frac{d^2s}{dt^2}=g</script><center>
+<img src="/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195714431" alt="这里写图片描述" title>
+图2
+</center>
+方程两边积分两次得
+
+$$
+\begin{align}
+u&=\frac{ds}{dt}=gt+c_1\tag4\\
+s&=\frac{1}{2}gt^2+c_1t+c_2\tag5
+\end{align}
+$$
+
+其中$c_1,c_2$是常数。因为石头在$t=0$时下降，也就是没有初始速度，所以初始条件为
+
+$$
+
+v=0\quad and \quad s=0\quad when \quad t=0
+
+$$
+
+条件$v=0\ when \ t=0$求出$c_1=0$，条件$s=0\ when \ t=0$求出$c_2=0$。因此我们有
+
+$$
+\begin{align}
+v&=gt\tag6\\
+s&=\frac{1}{2}gt^2\tag7
+\end{align}
+$$
+
+如果我们改变条件，在$t=0$时，初始位置为$s=s_0$，以初始速度为$v_0$向下扔石头，那么初始条件为
+
+$$
+
+v=v_0\quad and \quad s=s_0\quad when\quad t=0
+
+$$
+
+(4)(5)变为
+
+$$
+\begin{align*}
+v&=gt+v_0\\
+s&=\frac{1}{2}gt^2+v_0t+s_0
+\end{align*}
+$$
+
+需要说明的是，在我们的讨论中我们忽略掉了空气阻力，假设只要重力作用在落石上。也可以考虑空气阻力，但是那样方程(3)会变得很复杂，以至于我们无法解决。不过我们会在后面讨论这个主题。
+
+我们还说明了如果距离单位用$ft$，时间单位用$s$，即$g$的大小为32，那么(6)(7)变为
+
+$$
+
+v=32t\quad and \quad s=16t^2
+
+$$
+
+从第一个方程可以看出石头的速度以每秒$32\ ft/s$增加，当然这也是加速度的大小。
+
+<strong>例2</strong>：从高为$320\ ft$的建筑物上向上以初速度为$128\ ft/s$扔石头。写出时间表示的高度函数。找出石头的最大高度。假设石头落向地面，那么从抛出到落地需要多久？落地的瞬间，石头的速度和加速度分别是多少？
+
+<strong>解</strong>：我们取原点为地面，正方向朝上的坐标轴(图3)。因为重力是竖直向下的，根据方程(2)，力和加速度有相同的符号，石头的加速度为
+
+$$
+\begin{equation}
+a=\frac{d^2s}{dt^2}=-32\tag8
+\end{equation}
+$$
+
+对它积分得
+
+$$
+
+v=\frac{ds}{dt}=-32t+c_1
+
+$$
+
+利用初始条件$v=128\ when \ t=0$得
+
+$$
+\begin{equation}
+v=\frac{ds}{dt}=-32t+128\tag9
+\end{equation}
+$$
+
+再次积分得
+
+$$
+
+s=-16t^2+128t+c_2
+
+$$
+
+因为$s=320\ when \ t=0$，所以
+
+$$
+\begin{equation}
+s=-16t^2+128t+320\tag{10}
+\end{equation}
+$$
+
+这就是任何时刻$t$石头离地面的高度函数。
+<center>
+<img src="/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195807416" alt="这里写图片描述" title>
+图3
+</center>
+
+<p>为了找到石头的最大高度，我们将(9)写为以下形式</p>
+<script type="math/tex; mode=display">
+
+v=-32(t-4)</script><p>这说明在$t<4$时，速度一直为正，所以石头一直在向上运动。当$t=4$时，速度为零，石头在那一时刻静止。当$t>4$，速度为负，石头开始向下运动。因此最大高度就是$t=4$时刻方程(10)的解。即$s=-16\cdot 16+128\cdot 4+320=-256+512+320=576$。</4$时，速度一直为正，所以石头一直在向上运动。当$t=4$时，速度为零，石头在那一时刻静止。当$t></p>
+<p>当$s=0$时，石头到达地面。利用方程(10)得</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+-16t^2+128t+320&=0\\
+-16(t^2-8t-20)&=0\\
+(t-10)(t+2)&=0
+\end{align*}</script><p>当$t=10\ or \ t=-2$时，$s=0$。在该环境中第二个结果是没有意义的所以舍弃掉。所以石头抛出$10\ s$后落地。</p>
+<p>为了求出落地时石头的速度和加速度，我们将$t=10$代入(9): $v=-32\cdot 10+128=320+128=-192$。那个时刻的速度为$-192\ ft/s$，符号表明石头是向下运动的。速度大小为$|-192|=192\ ft/s$</p>
+<p>这些例子中加速度都是重力产生的，所以都是个常数。对于地球表面运动的物体几乎如此。然而，为了研究太空中物体的运动，我们必须了解到，重力是变化的，并且跟物理离地球中心距离的平方反向变化。</p>
+<p><strong>例3</strong>：假设火箭以初始速度$v_0$垂直向上发射，然后在不消耗任何能量的情况下滑行。那么$v_0$越大，所到达的高度就越高。为了让火箭不停下来从而完全逃离地球引力，需要多大的$v_0$？</p>
+<p><strong>解</strong>：根据牛顿万有引力定律，宇宙中任何两个物体之间存在引力，这和他们的质量成正比，距离的平方成反比。根据题意(图4),地球吸引火箭的力$F$为</p>
+<script type="math/tex; mode=display">
+
+F=-G\frac{Mm}{s^2}</script><p>其中$G$是一个正的常数，$M,m$分别是地球和火箭的质量，$s$是火箭与球心的距离。</p>
+<center>
+<img src="/2020/07/07/Stroll-calculus-5-5-Motion-under-Gravity-Escape-Velocity-and-Black-Holes/20160821195855074" alt="这里写图片描述" title>
+图4
+</center>
+
+<p>根据牛顿第二定律$F=ma$得</p>
+<script type="math/tex; mode=display">
+
+m\frac{d^2s}{dt^2}=-G\frac{Mm}{s^2}</script><p>所以</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{d^2s}{dt^2}=-\frac{GM}{s^2}\tag{11}
+\end{equation}</script><p>这告诉我们火箭额运动不依赖于自身的重量。注意到$s=R$时$d^2s/dt^2=-g$，所以我们用常数替换的得到更加简便的形式</p>
+<script type="math/tex; mode=display">
+
+-g=-\frac{GM}{R^2}\quad or\quad GM=gR^2</script><p>因为$d^2s/dt^2=dv/dt$，所以(11)可写为</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{dv}{dt}=-\frac{gR^2}{s^2}\tag{12}
+\end{equation}</script><p>下一步是利用链式法则消除方程中的$t$</p>
+<script type="math/tex; mode=display">
+
+\frac{dv}{dt}=\frac{dv}{ds}\frac{ds}{dt}=\frac{dv}{ds}v</script><p>方程(12)就变为</p>
+<script type="math/tex; mode=display">
+
+v\frac{dv}{ds}=-\frac{gR^2}{s^2}</script><p>分离变量并积分得</p>
+<script type="math/tex; mode=display">
+
+\int vdv=gR^2\int -\frac{ds}{s^2}</script><p>或者</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{1}{2}v^2=\frac{gR^2}{s}+c\tag{13}
+\end{equation}</script><p>为了估计常数$c$，我们用初始条件$v=v_0\ when \ s=R$，所以</p>
+<script type="math/tex; mode=display">
+
+\frac{1}{2}v_0^2=gR+c</script><p>故</p>
+<script type="math/tex; mode=display">
+
+c=\frac{1}{2}v_0^2-gR</script><p>将其代入(13)得</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\frac{1}{2}v^2=\frac{gR^2}{s}+(\frac{1}{2}v_0^2-gR)\tag{14}
+\end{equation}</script><p>从(14)得到的结论如下;火箭要想从地球表面逃离，那么$\frac{1}{2}v^2$必须始终为正，如果没有速度，那么火箭将会停止移动然后回到地球上。但是但是右边的第一项，当$s$ 增加时，它将区域零。因此，无论$s$多大，为了保证$\frac{1}{2}v^2$为正，我们必须让$\frac{1}{2}v^2-gR\geq 0$。等价于$v_0^\geq 2gR\ or\ v_0\geq \sqrt{gR}$。$\sqrt{gR}$通常称为地球的逃逸速度。通过近似取$g\cong 32\ ft/s^2,R\cong 4000\ mi$可以很容易的计算出它的值为：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+\sqrt{2gR}&\cong\sqrt{2\cdot 32\ ft/s^2\cdot 4000\ mi}\\
+&\cong\sqrt{2\cdot 32\cdot \frac{1}{5280}\ mi/s^2\cdot 4000\ mi}\\
+&\cong 7\ mi/s\cong 25000\ mi/h
+\end{align*}</script><p><strong>注解1</strong>：利用例子中的方法，$\sqrt{2g’R’}$可以计算出任何行星，卫星或恒星的逃逸速度，其中$R’,g’$可以看做半径和表面的加速度。如果质量不变而半径减小，那么表面的逃逸速度将增大，为什么？</p>
+<p><strong>注解2</strong>：大多数恒星由于内部的辐射力保持着气态、膨化态。辐射力是由于内部核燃料的燃烧造成的。当核燃料散发的时候，恒星因为引力坍塌变成几乎质量不变体积变小的球体。减小的质量能够维持两种类型的平衡，这取决于恒星的质量。当质量小于1.3个太阳质量时，是一种类型，如白矮星。当质量介于1.3和2个太阳质量之间时，产生中子星。对于质量更大的，不可能存在平衡，坍塌会继续直到表面的逃逸速度达到光速为止。这种类型的恒星完全看不见，因为没有任何辐射能够逃离。这就是所谓的黑洞。</p>
+<p><a href="https://blog.csdn.net/u010182633/article/details/52269090" target="_blank" rel="noopener">漫步微积分二十三——重力作用下的运动 逃逸速度和黑洞</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/calculus/" rel="tag"># calculus</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/07/Stroll-calculus-5-4-Differential-Equations-Separation-of-Variables/" rel="next" title="漫步微积分5.4 - 微分方程和分离变量法">
+                <i class="fa fa-chevron-left"></i> 漫步微积分5.4 - 微分方程和分离变量法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/08/Stroll-calculus-6-1-Introduction/" rel="prev" title="漫步微积分6.1 - 定积分引言">
+                漫步微积分6.1 - 定积分引言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Leon</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">282</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">20</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">58</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/burningbright" title="GitHub &rarr; https://github.com/burningbright" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/mnist-clocktoy" title="https://www.linchenguang.com/mnist-clocktoy" rel="noopener" target="_blank">clock</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/typing-cn/#/sentence-poem" title="https://www.linchenguang.com/typing-cn/#/sentence-poem" rel="noopener" target="_blank">typing-cn</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.mathjax.org/#demo" title="https://www.mathjax.org/#demo" rel="noopener" target="_blank">mathjax</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.katex.org" title="https://www.katex.org" rel="noopener" target="_blank">katex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/cron" title="https://www.linchenguang.com/cron" rel="noopener" target="_blank">cron</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/dos" title="https://www.linchenguang.com/dos" rel="noopener" target="_blank">dos</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/keyboard" title="https://www.linchenguang.com/keyboard" rel="noopener" target="_blank">keyboard</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/regex" title="https://www.linchenguang.com/regex" rel="noopener" target="_blank">regex</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/sql" title="https://www.linchenguang.com/sql" rel="noopener" target="_blank">sql</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.linchenguang.com/toy" title="https://www.linchenguang.com/toy" rel="noopener" target="_blank">toy</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+    <div id="sidebar-dimmer"></div>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 – <span itemprop="copyrightYear">2024</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leon</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.2</div>
+
+
+
+
+        
+
+
+  <script>
+    var _mtac = {};
+    (function() {
+      var mta = document.createElement("script");
+      mta.src = "https://pingjs.qq.com/h5/stats.js";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500722550");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/clipboard-use.js"></script>
+</body>
+</html>
